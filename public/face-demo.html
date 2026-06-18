@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Face Recognition Demo - SIAP Puskesmas</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%);
+      min-height: 100vh;
+      color: white;
+      padding: 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    h1 { font-size: 24px; text-align: center; margin-bottom: 8px; }
+    .subtitle {
+      text-align: center;
+      opacity: 0.7;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    .step-indicator {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+      font-size: 12px;
+    }
+    .step {
+      padding: 8px 12px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s;
+    }
+    .step.active {
+      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+      font-weight: bold;
+    }
+    .step.done {
+      background: #10b981;
+      color: white;
+    }
+    .camera-container {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto 16px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: black;
+      aspect-ratio: 3/4;
+    }
+    #video, #canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1); /* mirror effect */
+    }
+    #canvas { display: none; }
+    .face-frame {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 260px;
+      border: 3px dashed rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      transition: all 0.3s;
+    }
+    .face-frame.detected {
+      border-color: #10b981;
+      border-style: solid;
+    }
+    .face-frame.error {
+      border-color: #ef4444;
+    }
+    .status {
+      text-align: center;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .status.loading { background: rgba(59, 130, 246, 0.2); }
+    .status.success { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+    .status.error { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+    .status.warning { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 8px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+      color: white;
+    }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+    .instructions {
+      font-size: 13px;
+      opacity: 0.7;
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+    .result-box {
+      display: none;
+      padding: 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      margin-top: 12px;
+    }
+    .result-box.show { display: block; }
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 13px;
+    }
+    .loader {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .device-info {
+      font-size: 11px;
+      opacity: 0.5;
+      text-align: center;
+      margin-top: 16px;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📸 Face Recognition Demo</h1>
+    <p class="subtitle">Test kompatibilitas face-api.js di iPhone/Android</p>
+
+    <div class="step-indicator">
+      <div class="step active" id="step1">1. Load Model</div>
+      <div class="step" id="step2">2. Buka Kamera</div>
+      <div class="step" id="step3">3. Deteksi Wajah</div>
+    </div>
+
+    <div class="status loading" id="status">
+      <span class="loader"></span>
+      Memuat model AI...
+    </div>
+
+    <div class="camera-container" id="cameraContainer" style="display:none;">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="canvas"></canvas>
+      <div class="face-frame" id="faceFrame"></div>
+    </div>
+
+    <button class="btn-primary" id="startBtn" disabled>Mulai Kamera</button>
+    <button class="btn-primary" id="captureBtn" style="display:none;">Ambil Foto & Deteksi</button>
+    <button class="btn-secondary" id="stopBtn" style="display:none;">Stop Kamera</button>
+
+    <div class="result-box" id="resultBox">
+      <h3 style="margin-bottom:8px; color:#6ee7b7;">✅ Hasil Deteksi</h3>
+      <div class="result-row"><span>Wajah terdeteksi:</span> <span id="faceDetected">-</span></div>
+      <div class="result-row"><span>Jumlah wajah:</span> <span id="faceCount">-</span></div>
+      <div class="result-row"><span>Confidence:</span> <span id="confidence">-</span></div>
+      <div class="result-row"><span>Waktu proses:</span> <span id="processTime">-</span></div>
+      <div class="result-row"><span>Landmarks:</span> <span id="landmarks">-</span></div>
+    </div>
+
+    <div class="instructions">
+      <strong>Instruksi:</strong><br>
+      1. Klik "Mulai Kamera" → Allow permission<br>
+      2. Posisikan wajah di dalam lingkaran<br>
+      3. Klik "Ambil Foto & Deteksi"<br>
+      4. Lihat hasil di bawah
+    </div>
+
+    <div class="device-info" id="deviceInfo">
+      Detecting device info...
+    </div>
+  </div>
+
+  <!-- Load face-api.js dari CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  
+  <script>
+    const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const status = document.getElementById('status');
+    const startBtn = document.getElementById('startBtn');
+    const captureBtn = document.getElementById('captureBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const cameraContainer = document.getElementById('cameraContainer');
+    const faceFrame = document.getElementById('faceFrame');
+    const resultBox = document.getElementById('resultBox');
+    const deviceInfo = document.getElementById('deviceInfo');
+
+    let stream = null;
+    let modelsLoaded = false;
+
+    // Deteksi device info
+    const ua = navigator.userAgent;
+    let device = 'Unknown';
+    let browser = 'Unknown';
+    if (/iPhone|iPad|iPod/i.test(ua)) {
+      device = 'iOS';
+      const match = ua.match(/OS (\d+)_/);
+      if (match) device += ' ' + match[1];
+    } else if (/Android/i.test(ua)) {
+      device = 'Android';
+      const match = ua.match(/Android (\d+)/);
+      if (match) device += ' ' + match[1];
+    } else if (/Windows/i.test(ua)) device = 'Windows';
+    else if (/Mac/i.test(ua)) device = 'macOS';
+
+    if (/Chrome/i.test(ua) && !/Edg|OPR/i.test(ua)) browser = 'Chrome';
+    else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = 'Safari';
+    else if (/Firefox/i.test(ua)) browser = 'Firefox';
+    else if (/Edg/i.test(ua)) browser = 'Edge';
+
+    deviceInfo.textContent = `📱 ${device} | 🌐 ${browser} | 📸 face-api.js v0.22.2`;
+
+    // Load models
+    async function loadModels() {
+      try {
+        status.className = 'status loading';
+        status.innerHTML = '<span class="loader"></span> Memuat model AI (6MB)...';
+        
+        await Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+          faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+          faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+        ]);
+        
+        modelsLoaded = true;
+        status.className = 'status success';
+        status.textContent = '✅ Model AI berhasil dimuat! Klik "Mulai Kamera"';
+        startBtn.disabled = false;
+        
+        document.getElementById('step1').className = 'step done';
+        document.getElementById('step2').className = 'step active';
+      } catch (err) {
+        status.className = 'status error';
+        status.textContent = '❌ Gagal memuat model: ' + err.message;
+        console.error(err);
+      }
+    }
+
+    // Start camera
+    startBtn.addEventListener('click', async () => {
+      try {
+        status.className = 'status loading';
+        status.innerHTML = '<span class="loader"></span> Meminta akses kamera...';
+        
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+          audio: false
+        });
+        
+        video.srcObject = stream;
+        cameraContainer.style.display = 'block';
+        startBtn.style.display = 'none';
+        captureBtn.style.display = 'block';
+        stopBtn.style.display = 'block';
+        
+        status.className = 'status success';
+        status.textContent = '✅ Kamera aktif! Posisikan wajah di lingkaran.';
+        
+        document.getElementById('step2').className = 'step done';
+        document.getElementById('step3').className = 'step active';
+      } catch (err) {
+        status.className = 'status error';
+        status.textContent = '❌ Gagal akses kamera: ' + err.message;
+        console.error(err);
+      }
+    });
+
+    // Capture & detect
+    captureBtn.addEventListener('click', async () => {
+      if (!modelsLoaded) return;
+      
+      const startTime = performance.now();
+      status.className = 'status loading';
+      status.innerHTML = '<span class="loader"></span> Mendeteksi wajah...';
+      faceFrame.className = 'face-frame';
+      
+      try {
+        // Set canvas size sama dengan video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Deteksi wajah
+        const detections = await faceapi
+          .detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 }))
+          .withFaceLandmarks()
+          .withFaceDescriptors();
+        
+        const processTime = ((performance.now() - startTime) / 1000).toFixed(2);
+        
+        if (detections.length > 0) {
+          const det = detections[0];
+          const confidence = (det.detection.score * 100).toFixed(1);
+          
+          faceFrame.className = 'face-frame detected';
+          status.className = 'status success';
+          status.textContent = `✅ Wajah terdeteksi! Confidence: ${confidence}%`;
+          
+          // Tampilkan hasil
+          document.getElementById('faceDetected').textContent = '✅ YA';
+          document.getElementById('faceCount').textContent = detections.length;
+          document.getElementById('confidence').textContent = confidence + '%';
+          document.getElementById('processTime').textContent = processTime + ' detik';
+          document.getElementById('landmarks').textContent = '68 points (mata, hidung, mulut)';
+          resultBox.className = 'result-box show';
+          
+          document.getElementById('step3').className = 'step done';
+        } else {
+          faceFrame.className = 'face-frame error';
+          status.className = 'status warning';
+          status.textContent = '⚠️ Tidak ada wajah terdeteksi. Coba posisikan wajah lebih jelas.';
+        }
+      } catch (err) {
+        status.className = 'status error';
+        status.textContent = '❌ Error: ' + err.message;
+        console.error(err);
+      }
+    });
+
+    // Stop camera
+    stopBtn.addEventListener('click', () => {
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+      }
+      cameraContainer.style.display = 'none';
+      startBtn.style.display = 'block';
+      captureBtn.style.display = 'none';
+      stopBtn.style.display = 'none';
+      status.className = 'status';
+      status.textContent = 'Kamera dihentikan.';
+    });
+
+    // Auto load models on page load
+    loadModels();
+  </script>
+</body>
+</html>
