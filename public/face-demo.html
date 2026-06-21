@@ -23,12 +23,10 @@
       background: #000;
       color: white;
       position: relative;
-      /* Safe area untuk iPhone */
       padding-top: env(safe-area-inset-top);
       padding-bottom: env(safe-area-inset-bottom);
     }
     
-    /* Animated gradient background */
     .bg-gradient {
       position: fixed;
       inset: 0;
@@ -43,18 +41,16 @@
       100% { background-position: 0% 50%; }
     }
     
-    /* Container pakai 100dvh untuk iPhone */
     .container {
       position: relative;
       z-index: 1;
       height: 100vh;
-      height: 100dvh; /* Dynamic viewport - iPhone friendly */
+      height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 20px 24px;
-      /* Extra padding bawah untuk Safari bar */
       padding-bottom: max(120px, env(safe-area-inset-bottom));
       max-width: 420px;
       margin: 0 auto;
@@ -62,7 +58,6 @@
       -webkit-overflow-scrolling: touch;
     }
     
-    /* Header */
     .header {
       text-align: center;
       margin-bottom: 32px;
@@ -97,7 +92,6 @@
       font-weight: 400;
     }
     
-    /* Camera Frame - lebih kecil untuk mobile */
     .camera-frame {
       position: relative;
       width: 220px;
@@ -118,7 +112,6 @@
       transform: scaleX(-1);
     }
     
-    /* Pulsing ring */
     .pulse-ring {
       position: absolute;
       inset: -6px;
@@ -147,7 +140,6 @@
       100% { transform: scale(1.2); opacity: 0; }
     }
     
-    /* Face guide overlay */
     .face-guide {
       position: absolute;
       top: 50%;
@@ -162,7 +154,6 @@
     }
     .face-guide.hidden { opacity: 0; }
     
-    /* Status text */
     .status-text {
       text-align: center;
       margin-top: 24px;
@@ -189,19 +180,6 @@
       50% { opacity: 0.5; }
     }
     
-    /* Loading spinner */
-    .spinner {
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(255,255,255,0.15);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    
-    /* Buttons - fixed at bottom */
     .btn-container {
       position: absolute;
       bottom: max(40px, env(safe-area-inset-bottom));
@@ -246,7 +224,6 @@
     .btn-capture:active { transform: scale(0.96); }
     .btn-capture:disabled { opacity: 0.3; cursor: not-allowed; }
     
-    /* Result overlay */
     .result-overlay {
       position: fixed;
       inset: 0;
@@ -350,7 +327,6 @@
     <div class="status-text" id="statusText"></div>
   </div>
   
-  <!-- Buttons fixed at bottom -->
   <div class="btn-container">
     <button class="btn-start" id="startBtn" disabled>
       <span id="startBtnText">Memuat...</span>
@@ -360,7 +336,6 @@
     </button>
   </div>
   
-  <!-- Result overlay -->
   <div class="result-overlay" id="resultOverlay">
     <div class="result-content">
       <div class="result-icon-big">✓</div>
@@ -405,7 +380,6 @@
     let lastBlinkTime = 0;
     let blinkStartTime = 0;
     
-    // Adaptive threshold variables
     let earSamples = [];
     let earBaseline = null;
     let calibrationDone = false;
@@ -485,10 +459,10 @@
       if (!isVerifying) return;
       
       try {
-        // INPUT SIZE 512 - lebih akurat untuk landmark mata
+        // GANTI 512 KE 416 UNTUK IPHONE 8 (LEBIH CEPAT)
         const detection = await faceapi
           .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ 
-            inputSize: 512, 
+            inputSize: 416, 
             scoreThreshold: 0.4 
           }))
           .withFaceLandmarks();
@@ -503,28 +477,31 @@
           return;
         }
         
-        // Validate face position
+        // VALIDASI WAJAH YANG LEBIH LONGGAR (FORGIVING)
         const box = detection.detection.box;
         const vw = video.videoWidth;
         const vh = video.videoHeight;
         
+        // Margin tengah 30% (sebelumnya 20%)
         const isCentered = 
-          Math.abs((box.x + box.width/2) - vw/2) < vw * 0.2 &&
-          Math.abs((box.y + box.height/2) - vh/2) < vh * 0.2;
-        const isBigEnough = box.width > vw * 0.3;
-        const notCropped = box.x > 5 && box.y > 5 && box.x + box.width < vw - 5 && box.y + box.height < vh - 5;
+          Math.abs((box.x + box.width/2) - vw/2) < vw * 0.3 &&
+          Math.abs((box.y + box.height/2) - vh/2) < vh * 0.3;
+        // Ukuran minimal 25% (sebelumnya 30%)
+        const isBigEnough = box.width > vw * 0.25;
+        // Boleh terpotong sedikit (margin 0)
+        const notCropped = box.x > 0 && box.y > 0 && box.x + box.width < vw && box.y + box.height < vh;
         
         if (!isCentered || !isBigEnough || !notCropped) {
           isFaceValid = false;
           captureBtn.disabled = true;
           faceGuide.classList.remove('hidden');
           pulseRing.className = 'pulse-ring scanning';
-          consecutiveClosedFrames = 0; // Reset
+          consecutiveClosedFrames = 0;
           
           if (calibrationDone) {
-            if (!isCentered) showStatus('Posisikan wajah di tengah');
-            else if (!isBigEnough) showStatus('Mendekatlah ke kamera');
-            else showStatus('Mundur sedikit');
+            if (!isBigEnough) showStatus('Mendekatlah sedikit ke kamera');
+            else if (!isCentered) showStatus('Posisikan wajah di tengah');
+            else if (!notCropped) showStatus('Wajah terpotong, mundur sedikit');
           }
           if (isVerifying) detectionTimer = setTimeout(detectionLoop, 80);
           return;
@@ -537,7 +514,6 @@
         faceGuide.classList.add('hidden');
         pulseRing.className = 'pulse-ring scanning';
         
-        // === BLINK DETECTION (HIGH SENSITIVITY) ===
         const landmarks = detection.landmarks;
         const leftEye = landmarks.getLeftEye();
         const rightEye = landmarks.getRightEye();
@@ -545,11 +521,9 @@
         const rightEAR = calculateEAR(rightEye);
         const avgEAR = (leftEAR + rightEAR) / 2;
         
-        // Calibration phase (15 frame)
         if (!calibrationDone) {
           earSamples.push(avgEAR);
           if (earSamples.length >= CALIBRATION_FRAMES) {
-            // Baseline = trimmed average
             const sorted = [...earSamples].sort((a, b) => a - b);
             const trimmed = sorted.slice(2, -2);
             earBaseline = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
@@ -562,12 +536,10 @@
           }
         }
         
-        // THRESHOLD 85% baseline (15% drop = trigger, sangat sensitif)
         const EAR_THRESHOLD = earBaseline * 0.85;
         const now = performance.now();
         
         if (avgEAR < EAR_THRESHOLD) {
-          // Mata tertutup
           consecutiveClosedFrames++;
           if (!isEyeClosed && consecutiveClosedFrames >= 2) {
             isEyeClosed = true;
@@ -575,14 +547,12 @@
             pulseRing.className = 'pulse-ring blink-detected';
           }
         } else {
-          // Mata terbuka
           if (isEyeClosed) {
             const blinkDuration = now - blinkStartTime;
             isEyeClosed = false;
             consecutiveClosedFrames = 0;
             pulseRing.className = 'pulse-ring scanning';
             
-            // Durasi longgar: 20ms - 3000ms
             if (blinkDuration >= 20 && blinkDuration <= 3000 && (now - lastBlinkTime) > 150) {
               blinkCount++;
               lastBlinkTime = now;
@@ -607,7 +577,7 @@
       
       try {
         const detection = await faceapi
-          .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 512, scoreThreshold: 0.4 }))
+          .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.4 }))
           .withFaceLandmarks();
         
         if (detection) {
