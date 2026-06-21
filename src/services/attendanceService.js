@@ -18,15 +18,12 @@ let cachedRadius = null;
  * @returns {Promise<{latitude, longitude, name, radius_meter}>}
  */
 export async function getPuskesmasLocation() {
-  // Kalau sudah ada di cache, pakai cache
   if (cachedLocation && cachedRadius) {
     return { ...cachedLocation, radius_meter: cachedRadius };
   }
 
   try {
-    // Fetch lokasi aktif via RPC
-    const { data, error } = await supabase
-      .rpc('get_active_location');
+    const { data, error } = await supabase.rpc('get_active_location');
 
     if (error) throw error;
 
@@ -41,7 +38,6 @@ export async function getPuskesmasLocation() {
       return { ...cachedLocation, radius_meter: cachedRadius };
     }
     
-    // Kalau tidak ada data di DB, pakai default
     return { ...DEFAULT_PUSKESMAS_LOCATION, radius_meter: DEFAULT_RADIUS_METER };
   } catch (err) {
     console.error("❌ Gagal fetch lokasi dari DB, pakai default:", err.message);
@@ -50,11 +46,10 @@ export async function getPuskesmasLocation() {
 }
 
 /**
- * Ambil radius meter (untuk kompatibilitas dengan kode lama)
+ * Ambil radius meter
  */
 export async function getRadiusMeter() {
   if (cachedRadius !== null) return cachedRadius;
-  
   const loc = await getPuskesmasLocation();
   return loc.radius_meter;
 }
@@ -78,20 +73,31 @@ export function calculateDistance(lat1, lon1, lat2, lon2) {
 
 /**
  * Cek apakah user dalam radius puskesmas
- * ✅ Sekarang async karena fetch dari DB
+ * + ANTI FAKE GPS DETECTION
  */
-export async function isWithinRadius(userLat, userLon) {
+export async function isWithinRadius(userLat, userLon, accuracy, altitude) {
   const puskesmas = await getPuskesmasLocation();
   const distance = calculateDistance(
     userLat, userLon,
     puskesmas.latitude,
     puskesmas.longitude
   );
+  
+  // === ANTI FAKE GPS HEURISTIK ===
+  // 1. Akurasi terlalu sempurna (< 5 meter) = curiga Fake GPS
+  // 2. Altitude null/0 = curiga Fake GPS (GPS asli biasanya punya ketinggian)
+  const isSuspiciousAccuracy = accuracy && accuracy < 5;
+  const isSuspiciousAltitude = altitude === null || altitude === 0 || altitude === undefined;
+  const isFakeGPS = isSuspiciousAccuracy || isSuspiciousAltitude;
+  
   return {
     withinRadius: distance <= puskesmas.radius_meter,
     distance: Math.round(distance),
     puskesmasName: puskesmas.name,
     radius: puskesmas.radius_meter,
+    isFakeGPS: isFakeGPS,
+    accuracy: accuracy,
+    altitude: altitude,
   };
 }
 
@@ -111,24 +117,11 @@ export async function getTodayAttendance(userId) {
 }
 
 /**
- * Clock In
+ * Clock In - ANTI MANIPULASI WAKTU
+ * Waktu dicatat oleh SERVER (NOW()), bukan dari HP pegawai
  */
 export async function clockIn(userId, location, selfieBase64) {
   const today = new Date().toISOString().split("T")[0];
-  const now = new Date();
-
-  // Ambil jam kerja default dari settings
-  const { data: workStartStr } = await supabase.rpc('get_system_setting', {
-    p_setting_key: 'work_start_time'
-  });
-
-  const workStart = workStartStr || '08:00';
-  const [hours, minutes] = workStart.split(':').map(Number);
-  
-  const jamMasuk = new Date();
-  jamMasuk.setHours(hours, minutes, 0, 0);
-  const isLate = now > jamMasuk;
-  const lateMinutes = isLate ? Math.round((now - jamMasuk) / 60000) : 0;
 
   // Upload selfie
   let selfieUrl = null;
@@ -137,7 +130,7 @@ export async function clockIn(userId, location, selfieBase64) {
     const base64Data = selfieBase64.replace(/^data:image\/\w+;base64,/, "");
     const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from("selfies")
       .upload(fileName, byteArray, {
         contentType: "image/jpeg",
@@ -152,17 +145,18 @@ export async function clockIn(userId, location, selfieBase64) {
     }
   }
 
+  // ❌ JANGAN KIRIM clock_in_time dari HP!
+  // ✅ Biarkan database Supabase catat waktu (DEFAULT NOW())
   const { data, error } = await supabase
     .from("attendance")
     .insert({
       user_id: userId,
       date: today,
-      clock_in_time: now.toISOString(),
+      // clock_in_time TIDAK DIKIRIM - server akan isi dengan NOW()
       location_in: location,
       selfie_in_url: selfieUrl,
       attendance_status: "hadir",
-      is_late: isLate,
-      late_minutes: lateMinutes,
+      // is_late & late_minutes akan dihitung oleh database trigger
     })
     .select()
     .single();
@@ -172,21 +166,24 @@ export async function clockIn(userId, location, selfieBase64) {
   // Catat ke audit log
   await supabase.rpc('log_audit', {
     p_action: 'CLOCK_IN',
-    p_description: `Clock in: ${user?.email || userId}`,
+    p_description: `Clock in berhasil`,
     p_entity_type: 'attendance',
     p_entity_id: data.id,
-    p_metadata: { late: isLate, late_minutes: lateMinutes }
-  }).catch(() => {}); // ignore audit error
+    p_metadata: { 
+      location: location,
+      server_time: data.clock_in_time // Waktu dari server
+    }
+  }).catch(() => {});
 
   return data;
 }
 
 /**
- * Clock Out
+ * Clock Out - ANTI MANIPULASI WAKTU
+ * Waktu dicatat oleh SERVER (NOW()), bukan dari HP pegawai
  */
 export async function clockOut(userId, location, selfieBase64) {
   const today = new Date().toISOString().split("T")[0];
-  const now = new Date();
 
   // Upload selfie out
   let selfieUrl = null;
@@ -195,7 +192,7 @@ export async function clockOut(userId, location, selfieBase64) {
     const base64Data = selfieBase64.replace(/^data:image\/\w+;base64,/, "");
     const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from("selfies")
       .upload(fileName, byteArray, {
         contentType: "image/jpeg",
@@ -210,10 +207,12 @@ export async function clockOut(userId, location, selfieBase64) {
     }
   }
 
+  // ❌ JANGAN KIRIM clock_out_time dari HP!
+  // ✅ Biarkan database Supabase catat waktu (DEFAULT NOW())
   const { data, error } = await supabase
     .from("attendance")
     .update({
-      clock_out_time: now.toISOString(),
+      // clock_out_time TIDAK DIKIRIM - server akan isi dengan NOW()
       location_out: location,
       selfie_out_url: selfieUrl,
     })
@@ -223,6 +222,19 @@ export async function clockOut(userId, location, selfieBase64) {
     .single();
 
   if (error) throw error;
+
+  // Catat ke audit log
+  await supabase.rpc('log_audit', {
+    p_action: 'CLOCK_OUT',
+    p_description: `Clock out berhasil`,
+    p_entity_type: 'attendance',
+    p_entity_id: data.id,
+    p_metadata: { 
+      location: location,
+      server_time: data.clock_out_time // Waktu dari server
+    }
+  }).catch(() => {});
+
   return data;
 }
 
@@ -240,7 +252,6 @@ export async function getAttendanceHistory(userId, limit = 30) {
   return data || [];
 }
 
-// ✅ Export untuk kompatibilitas dengan AttendancePage lama
-// (akan di-fetch ulang dari DB, tapi export sebagai object untuk import existing)
+// ✅ Export untuk kompatibilitas
 export const PUSKESMAS_LOCATION = DEFAULT_PUSKESMAS_LOCATION;
 export const RADIUS_METER = DEFAULT_RADIUS_METER;
