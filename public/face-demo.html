@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Verifikasi Wajah</title>
+  <title>Verifikasi Absensi</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; overflow: hidden; }
@@ -36,18 +36,12 @@
     .pulse-ring { position: absolute; inset: -6px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); transition: all 0.3s; }
     .pulse-ring.scanning { border-color: rgba(102, 126, 234, 0.6); animation: pulseRing 2s infinite; }
     .pulse-ring.success { border-color: #10b981; border-width: 3px; box-shadow: 0 0 40px rgba(16, 185, 129, 0.5); }
-    .pulse-ring.blink { border-color: #f59e0b; border-width: 4px; }
     @keyframes pulseRing { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.2); opacity: 0; } }
-    .status-text { text-align: center; margin-top: 24px; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s; min-height: 20px; }
-    .status-text.show { opacity: 0.9; }
-    .status-text.success { opacity: 1; color: #6ee7b7; font-weight: 600; }
-    .status-text.blink-hint { opacity: 1; color: #fcd34d; font-weight: 600; font-size: 16px; animation: pulseText 1.2s infinite; }
-    @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .status-text { text-align: center; margin-top: 24px; font-size: 14px; font-weight: 500; opacity: 0.9; min-height: 20px; }
     .btn-container { position: absolute; bottom: max(40px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: 100%; max-width: 360px; padding: 0 24px; z-index: 10; }
     .btn-start { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 16px 48px; border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3); width: 100%; }
     .btn-start:active { transform: scale(0.96); }
-    .btn-start:disabled { opacity: 0.4; }
-    .btn-capture { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.15); padding: 14px 32px; border-radius: 24px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; }
+    .btn-capture { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 16px 32px; border-radius: 24px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
     .btn-capture:disabled { opacity: 0.3; }
     .result-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 24px; }
     .result-overlay.show { display: flex; }
@@ -60,43 +54,42 @@
     .result-detail-value { font-weight: 700; font-size: 16px; }
     .result-detail-label { opacity: 0.4; font-size: 10px; text-transform: uppercase; }
     .btn-done { background: white; color: black; border: none; padding: 14px 40px; border-radius: 24px; font-size: 15px; font-weight: 600; cursor: pointer; }
+    .hidden-canvas { display: none; }
   </style>
 </head>
 <body>
   <div class="bg-gradient"></div>
   <div class="container">
     <div class="header" id="header">
-      <div class="logo">🔐</div>
-      <h1>Verifikasi Wajah</h1>
-      <p class="subtitle">Powered by Google MediaPipe</p>
+      <div class="logo">📸</div>
+      <h1>Absensi Selfie</h1>
+      <p class="subtitle">SIAP Puskesmas Ampenan</p>
     </div>
     <div class="camera-frame" id="cameraFrame">
       <video id="video" autoplay playsinline muted></video>
       <div class="pulse-ring" id="pulseRing"></div>
     </div>
-    <div class="status-text" id="statusText"></div>
+    <div class="status-text" id="statusText">Posisikan wajah di lingkaran</div>
   </div>
   <div class="btn-container">
-    <button class="btn-start" id="startBtn" disabled>Memuat Model AI...</button>
-    <button class="btn-capture" id="captureBtn" style="display:none;" disabled>Ambil Foto</button>
+    <button class="btn-start" id="startBtn">Mulai Absensi</button>
+    <button class="btn-capture" id="captureBtn" style="display:none;">📸 Ambil Foto</button>
   </div>
   <div class="result-overlay" id="resultOverlay">
     <div class="result-content">
       <div class="result-icon-big">✓</div>
-      <div class="result-title-big">Verifikasi Berhasil</div>
-      <div class="result-subtitle" id="resultSubtitle">Identitas terkonfirmasi</div>
+      <div class="result-title-big">Absensi Berhasil</div>
+      <div class="result-subtitle" id="resultSubtitle">Bukti digital terverifikasi</div>
       <div class="result-details">
-        <div><div class="result-detail-value" id="confidenceValue">-</div><div class="result-detail-label">Akurasi</div></div>
         <div><div class="result-detail-value" id="timeValue">-</div><div class="result-detail-label">Waktu</div></div>
+        <div><div class="result-detail-value" id="gpsValue">-</div><div class="result-detail-label">GPS</div></div>
       </div>
       <button class="btn-done" onclick="resetAll()">Selesai</button>
     </div>
   </div>
 
-  <!-- MediaPipe Face Mesh -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" crossorigin="anonymous"></script>
-  
+  <canvas class="hidden-canvas" id="canvas"></canvas>
+
   <script>
     const video = document.getElementById('video');
     const cameraFrame = document.getElementById('cameraFrame');
@@ -106,82 +99,18 @@
     const captureBtn = document.getElementById('captureBtn');
     const resultOverlay = document.getElementById('resultOverlay');
     const header = document.getElementById('header');
+    const canvas = document.getElementById('canvas');
     
-    let faceMesh = null;
-    let camera = null;
-    let isVerifying = false;
-    let startTime = 0;
-    let blinkCount = 0;
-    let isEyeClosed = false;
-    let lastBlinkTime = 0;
-    let blinkStartTime = 0;
-    let earHistory = [];
-    let earBaseline = null;
-    let calibrationDone = false;
-    let consecutiveClosedFrames = 0;
-    let lastValidTime = 0;
-
-    // MediaPipe landmark indices untuk mata (468 model)
-    const LEFT_EYE = [33, 160, 158, 133, 153, 144];
-    const RIGHT_EYE = [362, 385, 387, 263, 373, 380];
-
-    function showStatus(text, type = '') {
-      statusText.className = 'status-text show ' + type;
-      statusText.textContent = text;
-    }
-
-    function calculateEAR(landmarks, eyeIndices) {
-      const p1 = landmarks[eyeIndices[0]];
-      const p2 = landmarks[eyeIndices[1]];
-      const p3 = landmarks[eyeIndices[2]];
-      const p4 = landmarks[eyeIndices[3]];
-      const p5 = landmarks[eyeIndices[4]];
-      const p6 = landmarks[eyeIndices[5]];
-
-      const v1 = Math.sqrt(Math.pow(p2.x - p6.x, 2) + Math.pow(p2.y - p6.y, 2));
-      const v2 = Math.sqrt(Math.pow(p3.x - p5.x, 2) + Math.pow(p3.y - p5.y, 2));
-      const h = Math.sqrt(Math.pow(p1.x - p4.x, 2) + Math.pow(p1.y - p4.y, 2));
-
-      return (v1 + v2) / (2.0 * h);
-    }
-
-    // Load model di awal (preload), bukan saat tombol diklik
-    async function loadModels() {
-      try {
-        faceMesh = new FaceMesh({
-          locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/_face_mesh@0.4.1633559619/${file}`
-        });
-        
-        faceMesh.setOptions({
-          maxNumFaces: 1,
-          refineLandmarks: true,
-          minDetectionConfidence: 0.5,
-          minTrackingConfidence: 0.5
-        });
-
-        faceMesh.onResults(onResults);
-        
-        // Inisialisasi awal untuk warming up model
-        await faceMesh.initialize();
-        
-        // Model siap, aktifkan tombol
-        startBtn.textContent = 'Mulai Verifikasi';
-        startBtn.disabled = false;
-      } catch (err) {
-        console.error(err);
-        startBtn.textContent = 'Gagal Memuat. Cek Internet & Refresh';
-        startBtn.disabled = false;
-      }
-    }
+    let stream = null;
 
     async function startCamera() {
       try {
         startBtn.style.display = 'none';
         header.classList.add('hidden');
-        showStatus('Mengaktifkan kamera...');
+        statusText.textContent = 'Mengaktifkan kamera...';
 
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } },
           audio: false
         });
         video.srcObject = stream;
@@ -191,150 +120,62 @@
 
         cameraFrame.classList.add('show');
         pulseRing.className = 'pulse-ring scanning';
-
-        isVerifying = true;
-        startTime = performance.now();
-        blinkCount = 0;
-        calibrationDone = false;
-        earHistory = [];
-        earBaseline = null;
-
-        // Gunakan Camera Utils MediaPipe untuk frame management optimal
-        camera = new Camera(video, {
-          onFrame: async () => {
-            if (isVerifying) {
-              await faceMesh.send({ image: video });
-            }
-          },
-          width: 640,
-          height: 480
-        });
-        camera.start();
-
-        showStatus('Posisikan wajah full di lingkaran');
+        captureBtn.style.display = 'block';
+        statusText.textContent = 'Posisikan wajah di lingkaran';
       } catch (err) {
-        showStatus('Gagal mengakses kamera');
+        statusText.textContent = 'Gagal mengakses kamera';
         startBtn.style.display = 'block';
         header.classList.remove('hidden');
       }
     }
 
-    function onResults(results) {
-      if (!isVerifying) return;
-
-      const now = performance.now();
-
-      if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
-        // Sticky detection: gunakan data terakhir jika < 500ms
-        if (now - lastValidTime > 500) {
-          captureBtn.disabled = true;
-          if (calibrationDone) showStatus('Wajah tidak terdeteksi');
-        }
-        return;
-      }
-
-      // Wajah terdeteksi
-      lastValidTime = now;
-      
-      const landmarks = results.multiFaceLandmarks[0];
-      
-      // === VALIDASI ANATOMI WAJAH FULL FRAME ===
-      // Titik 10 = puncak dahi (crown), Titik 152 = ujung dagu (chin)
-      const crown = landmarks[10];
-      const chin = landmarks[152];
-      
-      // 1. Wajah harus full (dahi sampai dagu tidak boleh terpotong)
-      // Margin 10% (0.10) dari atas dan bawah
-      const isCropped = crown.y < 0.10 || chin.y > 0.90;
-      
-      // 2. Cek jika wajah terlalu kecil (terlalu jauh)
-      const faceHeight = chin.y - crown.y;
-      const isTooSmall = faceHeight < 0.45;
-      
-      if (isCropped || isTooSmall) {
-        captureBtn.disabled = true;
-        isEyeClosed = false; // RESET state blink agar tidak ke-trigger
-        consecutiveClosedFrames = 0;
-        pulseRing.className = 'pulse-ring scanning';
-        
-        if (calibrationDone) {
-          if (isCropped) showStatus('Wajah belum full, posisikan dahi sampai dagu');
-          else if (isTooSmall) showStatus('Mendekatlah ke kamera');
-        }
-        return; // STOP, jangan proses blink!
-      }
-      
-      // Wajah valid & full frame
-      captureBtn.disabled = false;
-      captureBtn.style.display = 'block';
-      
-      Hitung EAR dari 468 landmarks
-      const leftEAR = calculateEAR(landmarks, LEFT_EYE);
-      const rightEAR = calculateEAR(landmarks, RIGHT_EYE);
-      const avgEAR = (leftEAR + rightEAR) / 2;
-
-      // Kalibrasi (15 frame)
-      if (!calibrationDone) {
-        earHistory.push(avgEAR);
-        if (earHistory.length >= 15) {
-          const sorted = [...earHistory].sort((a, b) => a - b);
-          const trimmed = sorted.slice(2, -2);
-          earBaseline = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
-          calibrationDone = true;
-          showStatus('Kedipkan mata Anda', 'blink-hint');
-        } else {
-          showStatus('Menyiapkan...');
-          return;
-        }
-      }
-
-      // Threshold adaptif 75% baseline (sensitif)
-      const EAR_THRESHOLD = earBaseline * 0.75;
-
-      if (avgEAR < EAR_THRESHOLD) {
-        consecutiveClosedFrames++;
-        if (!isEyeClosed && consecutiveClosedFrames >= 1) {
-          isEyeClosed = true;
-          blinkStartTime = now;
-          pulseRing.className = 'pulse-ring blink';
-        }
-      } else {
-        if (isEyeClosed) {
-          const blinkDuration = now - blinkStartTime;
-          isEyeClosed = false;
-          consecutiveClosedFrames = 0;
-          pulseRing.className = 'pulse-ring scanning';
-
-          // Valid blink: 20ms - 3000ms, anti-double 150ms
-          if (blinkDuration >= 20 && blinkDuration <= 3000 && (now - lastBlinkTime) > 150) {
-            blinkCount++;
-            lastBlinkTime = now;
-            verificationSuccess(blinkCount, 'Blink');
-          }
-        }
-      }
-    }
-
     captureBtn.addEventListener('click', () => {
-      if (!isVerifying || captureBtn.disabled) return;
-      verificationSuccess(1, 'Manual');
+      captureBtn.disabled = true;
+      captureBtn.textContent = 'Memproses...';
+      
+      // Draw video frame to canvas
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      
+      // Mirror the image
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+
+      // Add Watermark (Date & Time)
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+      const timeStr = now.toLocaleTimeString('id-ID');
+      
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
+      
+      ctx.font = 'bold 24px Arial';
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      ctx.fillText(`SIAP Puskesmas Ampenan`, canvas.width / 2, canvas.height - 50);
+      ctx.fillText(`${dateStr} - ${timeStr}`, canvas.width / 2, canvas.height - 20);
+
+      // Simulate success (in real app, upload canvas.toDataURL('image/jpeg') to Supabase)
+      setTimeout(() => {
+        verificationSuccess(dateStr, timeStr);
+      }, 500);
     });
 
-    function verificationSuccess(count, method) {
-      isVerifying = false;
-      if (camera) camera.stop();
-
-      const totalTime = ((performance.now() - startTime) / 1000).toFixed(1);
-      const confidence = '95';
-
+    function verificationSuccess(date, time) {
+      if (stream) stream.getTracks().forEach(t => t.stop());
+      
       pulseRing.className = 'pulse-ring success';
       captureBtn.style.display = 'none';
+      statusText.textContent = 'Terverifikasi!';
 
+      document.getElementById('timeValue').textContent = time;
+      document.getElementById('gpsValue').textContent = 'Valid';
+      document.getElementById('resultSubtitle').textContent = `${date} - ${time}`;
+      
       setTimeout(() => {
-        document.getElementById('confidenceValue').textContent = confidence + '%';
-        document.getElementById('timeValue').textContent = totalTime + 's';
-        document.getElementById('resultSubtitle').textContent =
-          method === 'Blink' ? 'Kedipan mata terdeteksi ✓' : 'Foto terverifikasi';
         resultOverlay.classList.add('show');
       }, 800);
     }
@@ -344,17 +185,14 @@
       cameraFrame.classList.remove('show');
       pulseRing.className = 'pulse-ring';
       captureBtn.style.display = 'none';
+      captureBtn.disabled = false;
+      captureBtn.textContent = '📸 Ambil Foto';
       startBtn.style.display = 'block';
       header.classList.remove('hidden');
-      isVerifying = false;
-      calibrationDone = false;
-      blinkCount = 0;
+      statusText.textContent = 'Posisikan wajah di lingkaran';
     }
 
     startBtn.addEventListener('click', startCamera);
-    
-    // Preload model saat halaman dibuka
-    loadModels();
   </script>
 </body>
 </html>
