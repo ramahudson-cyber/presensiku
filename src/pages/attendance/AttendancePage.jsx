@@ -116,6 +116,7 @@ export default function AttendancePage() {
 
   useEffect(() => {
     getLocation();
+    setLoading(false); // ← TAMBAHKAN INI supaya loading berhenti
   }, []);
 
   // Start Camera & Face Detection
