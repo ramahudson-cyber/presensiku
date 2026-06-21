@@ -79,3 +79,26 @@ body {
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.3); border-radius: 4px; }
+/* Animated Gradient Background */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient-bg {
+  background-size: 200% 200%;
+  animation: gradientShift 12s ease infinite;
+}
+
+/* Floating Orbs */
+@keyframes floatOrb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+.animate-orb {
+  animation: floatOrb 15s infinite ease-in-out;
+}
+.animate-orb-delay {
+  animation-delay: 5s;
+}

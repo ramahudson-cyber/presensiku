@@ -4,6 +4,7 @@ import DashboardPage from "../pages/admin/DashboardPage";
 import EmployeesPage from "../pages/admin/EmployeesPage";
 import AttendancePage from "../pages/attendance/AttendancePage";
 import AttendanceHistoryPage from "../pages/admin/AttendanceHistoryPage";
+import PengaturanPage from "../pages/admin/PengaturanPage";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import ComingSoonPage from "../pages/admin/ComingSoonPage";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
@@ -35,7 +36,7 @@ function AppRoutes() {
         <Route path="schedules" element={<ComingSoonPage />} />
         <Route path="leave" element={<ComingSoonPage />} />
         <Route path="announcements" element={<ComingSoonPage />} />
-        <Route path="reports" element={<ComingSoonPage />} />
+        <Route path="settings" element={<PengaturanPage />} />
       </Route>
 
       {/* PEGAWAI */}
