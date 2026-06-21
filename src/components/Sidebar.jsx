@@ -41,7 +41,7 @@ export default function Sidebar() {
       roles: ["super_admin", "admin_puskesmas"],
     },
     {
-      path: "/admin/attendance",
+      path: user?.role === "pegawai" ? "/employee" : "/admin/attendance",
       label: "Absensi",
       icon: CalendarCheck,
       roles: ["super_admin", "admin_puskesmas", "supervisor", "pegawai"],
