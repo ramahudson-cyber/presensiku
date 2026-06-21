@@ -10,7 +10,7 @@ import {
   sendOtpEmail,
   verifyOtp,
   createDeviceRequest,
-} from "../../services/deviceservice";
+} from "../../services/deviceService";
 import {
   Activity, LogIn, AlertCircle, Smartphone, Mail, Clock,
   CheckCircle2, XCircle, RefreshCw,
