@@ -12,7 +12,7 @@ import {
   createDeviceRequest,
 } from "../../services/deviceService";
 import {
-  LogIn, AlertCircle, Mail, Clock, CheckCircle2, RefreshCw, ArrowLeft
+  LogIn, AlertCircle, Mail, Clock, RefreshCw, ArrowLeft, ShieldCheck
 } from "lucide-react";
 
 export default function LoginPage() {
@@ -192,27 +192,41 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4 relative overflow-hidden">
       {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-900 via-purple-900 to-slate-950"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-950 via-slate-950 to-purple-950"></div>
       
-      {/* Blur Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-30"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-30"></div>
+      {/* Decorative Blurs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-600 rounded-full mix-blend-multiply filter blur-[120px] opacity-20"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-[120px] opacity-20"></div>
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-[380px]">
-        {/* Logo - Minimal */}
+        
+        {/* Logo & Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white tracking-tight">SIAP</h1>
-          <p className="text-slate-400 text-xs mt-1">Puskesmas Ampenan</p>
+          {/* Logo - Modern Elegant */}
+          <div className="inline-flex items-center justify-center w-16 h-16 mb-4 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl rotate-6 opacity-50"></div>
+            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500 to-violet-600 rounded-2xl -rotate-3 opacity-50"></div>
+            <div className="relative w-14 h-14 bg-gradient-to-br from-violet-500 to-purple-700 rounded-2xl flex items-center justify-center shadow-2xl shadow-violet-600/40">
+              <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-white">
+                <path d="M12 2L2 7v10l10 5 10-5V7L12 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                <path d="M12 22V12M2 7l10 5 10-5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
+              </svg>
+            </div>
+          </div>
+          
+          {/* Header Text */}
+          <h1 className="text-2xl font-bold text-white tracking-tight">Selamat Datang di SIAP</h1>
+          <p className="text-slate-400 text-xs mt-2">Sistem Informasi dan Administrasi</p>
         </div>
 
-        {/* Card - Glassmorphism Minimal */}
+        {/* Card - Glassmorphism */}
         <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
           
           {/* STEP 1: LOGIN */}
           {step === "login" && (
             <>
-              <h2 className="text-xl font-semibold text-white mb-6">Masuk</h2>
               {error && (
                 <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2">
                   <AlertCircle size={16} className="text-red-400 shrink-0" />
@@ -243,11 +257,15 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 bg-white text-slate-900 font-semibold rounded-xl text-sm hover:bg-slate-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white font-semibold rounded-xl text-sm hover:shadow-lg hover:shadow-violet-600/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Memproses..." : "Masuk"}
                 </button>
               </form>
+              <div className="mt-6 flex items-center justify-center gap-2 text-[10px] text-slate-500">
+                <ShieldCheck size={12} className="text-emerald-400" />
+                <span>Terlindungi Sistem Keamanan Berlapis</span>
+              </div>
             </>
           )}
 
@@ -258,7 +276,7 @@ export default function LoginPage() {
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 mb-3">
                   <Mail size={24} className="text-white" />
                 </div>
-                <h2 className="text-xl font-semibold text-white mb-1">Verifikasi OTP</h2>
+                <h2 className="text-lg font-semibold text-white mb-1">Verifikasi OTP</h2>
                 <p className="text-slate-400 text-xs">Kode dikirim ke {userEmail}</p>
               </div>
               {error && (
@@ -280,7 +298,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading || otpCode.length !== 6}
-                  className="w-full py-3 bg-white text-slate-900 font-semibold rounded-xl text-sm hover:bg-slate-100 transition disabled:opacity-50"
+                  className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white font-semibold rounded-xl text-sm hover:shadow-lg hover:shadow-violet-600/30 transition disabled:opacity-50"
                 >
                   {loading ? "Memproses..." : "Verifikasi"}
                 </button>
@@ -303,7 +321,7 @@ export default function LoginPage() {
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-amber-500/20 mb-3">
                   <Clock size={24} className="text-amber-400" />
                 </div>
-                <h2 className="text-xl font-semibold text-white mb-1">Menunggu Approval</h2>
+                <h2 className="text-lg font-semibold text-white mb-1">Menunggu Approval</h2>
                 <p className="text-slate-400 text-xs">OTP terverifikasi</p>
               </div>
               <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg mb-4">
@@ -320,7 +338,7 @@ export default function LoginPage() {
                 <button
                   onClick={checkApprovalStatus}
                   disabled={loading}
-                  className="w-full py-3 bg-white text-slate-900 font-semibold rounded-xl text-sm hover:bg-slate-100 transition disabled:opacity-50"
+                  className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl text-sm hover:shadow-lg transition disabled:opacity-50"
                 >
                   {loading ? "Memeriksa..." : "Cek Status"}
                 </button>
@@ -336,7 +354,7 @@ export default function LoginPage() {
         </div>
         
         <p className="text-center text-[10px] text-slate-600 mt-6">
-          Sistem Informasi Administrasi & Presensi
+          Puskesmas Ampenan © {new Date().getFullYear()}
         </p>
       </div>
     </div>
