@@ -230,9 +230,7 @@
 
       // Wajah terdeteksi
       lastValidTime = now;
-      captureBtn.disabled = false;
-      captureBtn.style.display = 'block';
-
+      
       const landmarks = results.multiFaceLandmarks[0];
       
       // === VALIDASI ANATOMI WAJAH FULL FRAME ===
@@ -240,27 +238,28 @@
       const crown = landmarks[10];
       const chin = landmarks[152];
       
-      // 1. Cek apakah puncak kepala & dagu berada di dalam frame
+      // 1. Wajah harus full (dahi sampai dagu tidak boleh terpotong)
       // Margin 10% (0.10) dari atas dan bawah
-      const isCroppedVertical = crown.y < 0.05 || chin.y > 0.95;
+      const isCropped = crown.y < 0.10 || chin.y > 0.90;
       
-      // 2. Cek jika wajah terlalu dekat (dahi & dagu keluar dari bingkai)
-      const isTooClose = crown.y < 0.05 || chin.y > 0.95;
-      
-      // 3. Cek jika wajah terlalu kecil (terlalu jauh)
+      // 2. Cek jika wajah terlalu kecil (terlalu jauh)
       const faceHeight = chin.y - crown.y;
       const isTooSmall = faceHeight < 0.45;
       
-      if (isCroppedVertical || isTooClose || isTooSmall) {
+      if (isCropped || isTooSmall) {
         captureBtn.disabled = true;
+        isEyeClosed = false; // RESET state blink agar tidak ke-trigger
+        consecutiveClosedFrames = 0;
+        pulseRing.className = 'pulse-ring scanning';
+        
         if (calibrationDone) {
-          if (isCroppedVertical) showStatus('Wajah terpotong, posisikan full di lingkaran');
+          if (isCropped) showStatus('Wajah belum full, posisikan dahi sampai dagu');
           else if (isTooSmall) showStatus('Mendekatlah ke kamera');
         }
-        return; 
+        return; // STOP, jangan proses blink!
       }
       
-      // Wajah valid
+      // Wajah valid & full frame
       captureBtn.disabled = false;
       captureBtn.style.display = 'block';
       
