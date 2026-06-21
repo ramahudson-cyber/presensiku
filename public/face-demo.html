@@ -473,7 +473,7 @@
         // GANTI 512 KE 416 UNTUK IPHONE 8 (LEBIH CEPAT)
         const detection = await faceapi
           .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ 
-            inputSize: 608, 
+            inputSize: 320, 
             scoreThreshold: 0.4 
           }))
           .withFaceLandmarks();
@@ -594,7 +594,7 @@
           }
         }
         
-        if (isVerifying) detectionTimer = setTimeout(detectionLoop, 30);
+        if (isVerifying) detectionTimer = setTimeout(detectionLoop, 80);
       } catch (err) {
         if (isVerifying) detectionTimer = setTimeout(detectionLoop, 100);
       }
