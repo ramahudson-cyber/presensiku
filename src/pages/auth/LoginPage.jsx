@@ -218,7 +218,7 @@ export default function LoginPage() {
           
           {/* Header Text */}
           <h1 className="text-2xl font-bold text-white tracking-tight">Selamat Datang di SIAP</h1>
-          <p className="text-slate-400 text-xs mt-2">Sistem Informasi dan Administrasi</p>
+          <p className="text-slate-400 text-xs mt-2">Sistem Informasi Administrasi dan Presensi</p>
         </div>
 
         {/* Card - Glassmorphism */}
