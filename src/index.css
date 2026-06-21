@@ -102,3 +102,39 @@ body {
 .animate-orb-delay {
   animation-delay: 5s;
 }
+/* Animasi Background */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-bg {
+  background-size: 200% 200% !important;
+  animation: gradientShift 10s ease infinite !important;
+}
+
+@keyframes floatOrb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -50px) scale(1.1); }
+  66% { transform: translate(-30px, 30px) scale(0.9); }
+}
+
+.animate-orb {
+  animation: floatOrb 12s infinite ease-in-out !important;
+}
+.animate-orb-delay {
+  animation-delay: 4s !important;
+}
+
+/* Fix mobile viewport */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #0f0524;
+}
+
+#root {
+  min-height: 100%;
+}
