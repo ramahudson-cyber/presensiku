@@ -201,6 +201,12 @@ export default function LoginPage() {
                   {loading ? "Memproses..." : "Masuk"}
                 </button>
               </form>
+              <div className="mt-5 flex items-center justify-center gap-2 text-[10px] text-violet-300/40">
+                <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                </svg>
+                <span>Device baru memerlukan verifikasi OTP & approval admin</span>
+              </div>
             </>
           )}
 
