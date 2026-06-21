@@ -13,7 +13,7 @@ import {
 } from "../../services/deviceService";
 import {
   Activity, LogIn, AlertCircle, Smartphone, Mail, Clock,
-  CheckCircle2, XCircle, RefreshCw,
+  CheckCircle2, XCircle, RefreshCw, ShieldCheck
 } from "lucide-react";
 
 export default function LoginPage() {
@@ -191,50 +191,59 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
-      <div className="w-full max-w-sm">
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-slate-950">
+      {/* Animated Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-900 via-purple-900 to-slate-950 animate-gradient"></div>
+      
+      {/* Decorative Blurs */}
+      <div className="absolute top-0 left-0 w-72 h-72 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+      <div className="absolute top-0 right-0 w-72 h-72 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+      <div className="absolute bottom-0 left-0 w-72 h-72 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+
+      <div className="relative z-10 w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-700 shadow-lg shadow-violet-600/30 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-lg mb-4">
             <Activity size={32} className="text-white" />
           </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-wider">SIAP</h1>
-          <p className="text-violet-300 text-xs mt-1 tracking-widest uppercase">Puskesmas Ampenan</p>
+          <h1 className="text-4xl font-extrabold text-white tracking-wider">SIAP</h1>
+          <p className="text-violet-200/70 text-xs mt-2 tracking-[0.3em] uppercase">Puskesmas Ampenan</p>
         </div>
 
-        <div className="bg-slate-900/80 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-violet-900/50">
+        {/* Card Glassmorphism */}
+        <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/10">
           
           {/* STEP 1: LOGIN */}
           {step === "login" && (
             <>
-              <h2 className="text-xl font-bold text-white mb-6 text-center">Masuk ke Sistem</h2>
+              <h2 className="text-2xl font-bold text-white mb-6 text-center">Masuk ke Sistem</h2>
               {error && (
                 <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-2">
                   <AlertCircle size={18} className="text-red-400 shrink-0 mt-0.5" />
                   <p className="text-sm text-red-300 whitespace-pre-line">{error}</p>
                 </div>
               )}
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label className="block text-xs font-semibold text-violet-300 mb-1.5">Username atau Email</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-2">Username atau Email</label>
                   <input
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="AMP002"
                     required
-                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-transparent transition"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-violet-300 mb-1.5">Password</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-2">Password</label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-transparent transition"
                   />
                 </div>
                 <button
@@ -249,11 +258,9 @@ export default function LoginPage() {
                   )}
                 </button>
               </form>
-              <div className="mt-6 p-3 bg-violet-500/5 border border-violet-500/20 rounded-xl flex items-start gap-2">
-                <Smartphone size={16} className="text-violet-400 shrink-0 mt-0.5" />
-                <p className="text-[11px] text-violet-300/80">
-                  <strong>Keamanan Device:</strong> Login dari device baru memerlukan verifikasi OTP & approval admin.
-                </p>
+              <div className="mt-6 flex items-center gap-2 text-xs text-slate-400">
+                <ShieldCheck size={14} className="text-emerald-400" />
+                <span>Terlindungi oleh Verifikasi Wajah & Anti-Fake GPS</span>
               </div>
             </>
           )}
@@ -262,10 +269,10 @@ export default function LoginPage() {
           {step === "otp" && (
             <>
               <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-violet-600 mb-3">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 mb-3">
                   <Mail size={28} className="text-white" />
                 </div>
-                <h2 className="text-xl font-bold text-white mb-1">Verifikasi OTP</h2>
+                <h2 className="text-2xl font-bold text-white mb-1">Verifikasi OTP</h2>
                 <p className="text-slate-400 text-xs">Kode OTP telah dikirim ke:</p>
                 <p className="text-white font-semibold text-sm mt-1 break-all">{userEmail}</p>
               </div>
@@ -277,7 +284,6 @@ export default function LoginPage() {
               )}
               <form onSubmit={handleVerifyOtp} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-violet-300 mb-1.5">Kode OTP (6 digit)</label>
                   <input
                     type="text"
                     value={otpCode}
@@ -285,7 +291,7 @@ export default function LoginPage() {
                     placeholder="000000"
                     required
                     maxLength={6}
-                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white text-center text-2xl font-mono tracking-[0.5em] placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition"
+                    className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white text-center text-3xl font-mono tracking-[0.5em] placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-transparent transition"
                   />
                   <p className="text-[10px] text-slate-500 mt-2 text-center">Kode berlaku 10 menit</p>
                 </div>
@@ -314,10 +320,10 @@ export default function LoginPage() {
           {step === "pending" && (
             <>
               <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 mb-3">
-                  <Clock size={28} className="text-white" />
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-500/20 backdrop-blur-md border border-amber-500/30 mb-3">
+                  <Clock size={28} className="text-amber-400" />
                 </div>
-                <h2 className="text-xl font-bold text-white mb-1">Menunggu Approval</h2>
+                <h2 className="text-2xl font-bold text-white mb-1">Menunggu Approval</h2>
                 <p className="text-slate-400 text-xs">OTP berhasil diverifikasi!</p>
               </div>
               <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl mb-4">
@@ -346,7 +352,7 @@ export default function LoginPage() {
                 </button>
                 <button
                   onClick={handleCancel}
-                  className="w-full py-3 border border-slate-700 text-slate-400 rounded-xl hover:bg-slate-800 transition text-sm"
+                  className="w-full py-3 border border-white/10 text-slate-400 rounded-xl hover:bg-white/5 transition text-sm"
                 >
                   Logout & Kembali
                 </button>
