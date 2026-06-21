@@ -87,7 +87,7 @@ export default function Sidebar() {
     <aside
       className={`${
         collapsed ? "w-20" : "w-[280px]"
-      } bg-gradient-to-b from-violet-900 to-black text-white flex flex-col transition-all duration-300 min-h-screen shadow-2xl fixed top-0 left-0 z-40`}
+      } hidden md:flex bg-gradient-to-b from-violet-900 to-black text-white flex-col transition-all duration-300 min-h-screen shadow-2xl fixed top-0 left-0 z-40`}
     >
       {/* Header / Logo */}
       <div className="p-6 flex items-center justify-between border-b border-purple-700/50">
