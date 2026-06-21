@@ -5,7 +5,6 @@ import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { signOut } from "../services/authService";
 
-// ✅ Map path → title halaman
 const PAGE_TITLES = {
   "/admin": "Dashboard",
   "/admin/employees": "Manajemen Pegawai",
@@ -18,7 +17,6 @@ const PAGE_TITLES = {
   "/employee": "Absensi Saya",
 };
 
-// ✅ Map role → label
 const ROLE_LABELS = {
   super_admin: "Super Admin",
   admin_puskesmas: "Admin Puskesmas",
@@ -26,16 +24,13 @@ const ROLE_LABELS = {
   pegawai: "Pegawai",
 };
 
-function Header() {
+function Header({ onMenuClick }) {
   const { darkMode, setDarkMode } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ Dapatkan title berdasarkan path saat ini
   const pageTitle = PAGE_TITLES[location.pathname] || "SIAP Puskesmas";
-  
-  // ✅ Dapatkan label role user
   const roleLabel = ROLE_LABELS[user?.role] || "User";
 
   async function handleLogout() {
@@ -49,20 +44,22 @@ function Header() {
   }
 
   return (
-    <header className="h-24 bg-white dark:bg-slate-950 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between px-8">
-      
-      {/* ✅ Title dinamis + role user */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-          {pageTitle}
-        </h1>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-          {roleLabel} • {user?.full_name || user?.email || ""}
-        </p>
+    <header className="sticky top-0 z-20 h-20 bg-white dark:bg-slate-950 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between px-4 md:px-8">
+      <div className="flex items-center gap-3">
+        {/* Spacer for mobile hamburger menu (positioned fixed top-4 left-4) */}
+        <div className="w-8 md:hidden"></div>
+        
+        <div>
+          <h1 className="text-lg md:text-2xl font-bold text-gray-800 dark:text-white truncate">
+            {pageTitle}
+          </h1>
+          <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500 hidden sm:block">
+            {roleLabel} • {user?.full_name || user?.email || ""}
+          </p>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        {/* Toggle dark/light mode */}
+      <div className="flex items-center gap-2 md:gap-4">
         <button
           onClick={() => setDarkMode(!darkMode)}
           className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition"
@@ -70,13 +67,11 @@ function Header() {
           {darkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
 
-        {/* Bell */}
         <button className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition relative">
           <Bell size={20} />
         </button>
 
-        {/* User Info */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-slate-800">
+        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-slate-800">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm">
             {user?.full_name?.charAt(0) || user?.username?.charAt(0) || "U"}
           </div>
@@ -91,10 +86,10 @@ function Header() {
         <button
           type="button"
           onClick={handleLogout}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/40 transition text-sm font-medium"
+          className="flex items-center gap-2 px-2 md:px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/40 transition text-xs md:text-sm font-medium"
         >
           <LogOut size={16} />
-          Logout
+          <span className="hidden sm:inline">Logout</span>
         </button>
       </div>
     </header>
