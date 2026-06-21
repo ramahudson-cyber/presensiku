@@ -4,25 +4,22 @@ import Header from "../components/Header";
 import { Outlet } from "react-router-dom";
 
 function AdminLayout() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-slate-950">
-      {/* Sidebar */}
-      <Sidebar isMobileOpen={isMobileMenuOpen} setIsMobileOpen={setIsMobileMenuOpen} />
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      {/* Overlay for mobile when sidebar is open */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
+      {menuOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-30 md:hidden"
+          onClick={() => setMenuOpen(false)}
         />
       )}
 
-      {/* Main Content */}
-      <div className="w-full md:ml-[280px] transition-all duration-300">
-        <Header onMenuClick={() => setIsMobileMenuOpen(true)} />
-        <main className="p-4 md:p-8 max-w-screen-xl mx-auto">
+      <div className="w-full md:ml-[280px] min-h-screen flex flex-col">
+        <Header onMenuClick={() => setMenuOpen(true)} />
+        <main className="flex-1 p-3 md:p-6 max-w-2xl mx-auto w-full">
           <Outlet />
         </main>
       </div>
