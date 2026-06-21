@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Verifikasi Wajah - MediaPipe</title>
+  <title>Verifikasi Wajah</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; overflow: hidden; }
@@ -77,7 +77,7 @@
     <div class="status-text" id="statusText"></div>
   </div>
   <div class="btn-container">
-    <button class="btn-start" id="startBtn" disabled>Memuat...</button>
+    <button class="btn-start" id="startBtn" disabled>Memuat Model AI...</button>
     <button class="btn-capture" id="captureBtn" style="display:none;" disabled>Ambil Foto</button>
   </div>
   <div class="result-overlay" id="resultOverlay">
@@ -93,7 +93,7 @@
     </div>
   </div>
 
-  <!-- MediaPipe Face Mesh dari CDN Google -->
+  <!-- MediaPipe Face Mesh -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
   
@@ -119,9 +119,9 @@
     let earBaseline = null;
     let calibrationDone = false;
     let consecutiveClosedFrames = 0;
+    let lastValidTime = 0;
 
-    // MediaPipe Face Mesh landmark indices untuk mata
-    // Left eye (468 model)
+    // MediaPipe landmark indices untuk mata (468 model)
     const LEFT_EYE = [33, 160, 158, 133, 153, 144];
     const RIGHT_EYE = [362, 385, 387, 263, 373, 380];
 
@@ -130,7 +130,7 @@
       statusText.textContent = text;
     }
 
-        function calculateEAR(landmarks, eyeIndices) {
+    function calculateEAR(landmarks, eyeIndices) {
       const p1 = landmarks[eyeIndices[0]];
       const p2 = landmarks[eyeIndices[1]];
       const p3 = landmarks[eyeIndices[2]];
@@ -144,8 +144,8 @@
 
       return (v1 + v2) / (2.0 * h);
     }
-    }
 
+    // Load model di awal (preload), bukan saat tombol diklik
     async function loadModels() {
       try {
         faceMesh = new FaceMesh({
@@ -154,17 +154,18 @@
         
         faceMesh.setOptions({
           maxNumFaces: 1,
-          refineLandmarks: true, // Aktifkan iris tracking (468 → 478 titik)
+          refineLandmarks: true,
           minDetectionConfidence: 0.5,
           minTrackingConfidence: 0.5
         });
 
         faceMesh.onResults(onResults);
         
+        // Model siap, aktifkan tombol
         startBtn.textContent = 'Mulai Verifikasi';
         startBtn.disabled = false;
       } catch (err) {
-        startBtn.textContent = 'Gagal Memuat';
+        startBtn.textContent = 'Gagal Memuat Model';
       }
     }
 
@@ -193,13 +194,17 @@
         earHistory = [];
         earBaseline = null;
 
-        // MediaPipe pakai requestAnimationFrame untuk efisiensi
-        const processFrame = async () => {
-          if (!isVerifying) return;
-          await faceMesh.send({ image: video });
-          requestAnimationFrame(processFrame);
-        };
-        processFrame();
+        // Gunakan Camera Utils MediaPipe untuk frame management optimal
+        camera = new Camera(video, {
+          onFrame: async () => {
+            if (isVerifying) {
+              await faceMesh.send({ image: video });
+            }
+          },
+          width: 640,
+          height: 480
+        });
+        camera.start();
 
         showStatus('Posisikan wajah di lingkaran');
       } catch (err) {
@@ -212,17 +217,25 @@
     function onResults(results) {
       if (!isVerifying) return;
 
+      const now = performance.now();
+
       if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
-        captureBtn.disabled = true;
-        if (calibrationDone) showStatus('Wajah tidak terdeteksi');
+        // Sticky detection: gunakan data terakhir jika < 500ms
+        if (now - lastValidTime > 500) {
+          captureBtn.disabled = true;
+          if (calibrationDone) showStatus('Wajah tidak terdeteksi');
+        }
         return;
       }
 
-      const landmarks = results.multiFaceLandmarks[0];
+      // Wajah terdeteksi
+      lastValidTime = now;
       captureBtn.disabled = false;
       captureBtn.style.display = 'block';
 
-      // Hitung EAR dari 468 landmarks (jauh lebih presisi)
+      const landmarks = results.multiFaceLandmarks[0];
+      
+      // Hitung EAR dari 468 landmarks
       const leftEAR = calculateEAR(landmarks, LEFT_EYE);
       const rightEAR = calculateEAR(landmarks, RIGHT_EYE);
       const avgEAR = (leftEAR + rightEAR) / 2;
@@ -242,13 +255,12 @@
         }
       }
 
-      // Threshold adaptif 75% baseline
+      // Threshold adaptif 75% baseline (sensitif)
       const EAR_THRESHOLD = earBaseline * 0.75;
-      const now = performance.now();
 
       if (avgEAR < EAR_THRESHOLD) {
         consecutiveClosedFrames++;
-        if (!isEyeClosed && consecutiveClosedFrames >= 2) {
+        if (!isEyeClosed && consecutiveClosedFrames >= 1) {
           isEyeClosed = true;
           blinkStartTime = now;
           pulseRing.className = 'pulse-ring blink';
@@ -260,6 +272,7 @@
           consecutiveClosedFrames = 0;
           pulseRing.className = 'pulse-ring scanning';
 
+          // Valid blink: 20ms - 3000ms, anti-double 150ms
           if (blinkDuration >= 20 && blinkDuration <= 3000 && (now - lastBlinkTime) > 150) {
             blinkCount++;
             lastBlinkTime = now;
@@ -279,7 +292,7 @@
       if (camera) camera.stop();
 
       const totalTime = ((performance.now() - startTime) / 1000).toFixed(1);
-      const confidence = '95'; // MediaPipe sangat akurat
+      const confidence = '95';
 
       pulseRing.className = 'pulse-ring success';
       captureBtn.style.display = 'none';
@@ -306,6 +319,8 @@
     }
 
     startBtn.addEventListener('click', startCamera);
+    
+    // Preload model saat halaman dibuka
     loadModels();
   </script>
 </body>
