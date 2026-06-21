@@ -235,36 +235,27 @@
 
       const landmarks = results.multiFaceLandmarks[0];
       
-      // === VALIDASI UKURAN & POSISI WAJAH ===
-      let minX = 1, maxX = 0, minY = 1, maxY = 0;
-      const faceOval = [10, 152, 234, 454, 127, 356]; 
-      for (let i of faceOval) {
-        const pt = landmarks[i];
-        if (pt.x < minX) minX = pt.x;
-        if (pt.x > maxX) maxX = pt.x;
-        if (pt.y < minY) minY = pt.y;
-        if (pt.y > maxY) maxY = pt.y;
-      }
+      // === VALIDASI ANATOMI WAJAH FULL FRAME ===
+      // Titik 10 = puncak dahi (crown), Titik 152 = ujung dagu (chin)
+      const crown = landmarks[10];
+      const chin = landmarks[152];
       
-      const faceWidth = maxX - minX;
-      const faceHeight = maxY - minY;
-      const centerX = (minX + maxX) / 2;
+      // 1. Cek apakah puncak kepala & dagu berada di dalam frame
+      // Margin 10% (0.10) dari atas dan bawah
+      const isCroppedVertical = crown.y < 0.05 || chin.y > 0.95;
       
-      // 1. Cek jika wajah terlalu besar (terlalu dekat, hanya mata/hidung yang kelihatan)
-      const isTooClose = faceWidth > 0.60 || faceHeight > 0.70;
+      // 2. Cek jika wajah terlalu dekat (dahi & dagu keluar dari bingkai)
+      const isTooClose = crown.y < 0.05 || chin.y > 0.95;
       
-      // 2. Cek jika wajah terlalu kecil (terlalu jauh)
-      const isTooSmall = faceWidth < 0.35;
+      // 3. Cek jika wajah terlalu kecil (terlalu jauh)
+      const faceHeight = chin.y - crown.y;
+      const isTooSmall = faceHeight < 0.45;
       
-      // 3. Cek jika wajah tidak di tengah
-      const isOffCenter = Math.abs(centerX - 0.5) > 0.15;
-      
-      if (isTooClose || isTooSmall || isOffCenter) {
+      if (isCroppedVertical || isTooClose || isTooSmall) {
         captureBtn.disabled = true;
         if (calibrationDone) {
-          if (isTooClose) showStatus('Wajah terlalu dekat, mundur sedikit');
-          else if (isTooSmall) showStatus('Wajah terlalu kecil, mendekatlah');
-          else showStatus('Posisikan wajah di tengah lingkaran');
+          if (isCroppedVertical) showStatus('Wajah terpotong, posisikan full di lingkaran');
+          else if (isTooSmall) showStatus('Mendekatlah ke kamera');
         }
         return; 
       }
@@ -273,7 +264,7 @@
       captureBtn.disabled = false;
       captureBtn.style.display = 'block';
       
-      // Hitung EAR dari 468 landmarks
+      Hitung EAR dari 468 landmarks
       const leftEAR = calculateEAR(landmarks, LEFT_EYE);
       const rightEAR = calculateEAR(landmarks, RIGHT_EYE);
       const avgEAR = (leftEAR + rightEAR) / 2;
