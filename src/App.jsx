@@ -20,7 +20,7 @@ function App() {
           pauseOnFocusLoss={true}
           draggable={true}
           pauseOnHover={true}
-          theme="light"
+          theme="dark"
         />
       </AuthProvider>
     </ThemeProvider>
