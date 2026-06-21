@@ -3,11 +3,11 @@ import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import {
   LayoutDashboard, Users, CalendarCheck, CalendarDays,
-  FileText, Megaphone, Settings, LogOut, ChevronLeft, ChevronRight,
+  FileText, Megaphone, Settings, LogOut,
   ClipboardList, History, Menu, X
 } from "lucide-react";
 
-export default function Sidebar({ isMobileOpen = false, setIsMobileOpen = () => {} }) {
+export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -16,107 +16,110 @@ export default function Sidebar({ isMobileOpen = false, setIsMobileOpen = () => 
     navigate("/");
   };
 
-  const menuItems = [
-    { path: user?.role === "pegawai" ? "/employee" : "/admin", label: "Dashboard", icon: LayoutDashboard, roles: ["super_admin", "admin_puskesmas", "pegawai"], end: true },
-    { path: "/admin/employees", label: "Pegawai", icon: Users, roles: ["super_admin", "admin_puskesmas"] },
-    { path: user?.role === "pegawai" ? "/employee" : "/admin/attendance", label: "Absensi", icon: CalendarCheck, roles: ["super_admin", "admin_puskesmas", "pegawai"] },
-    { path: "/admin/attendance-history", label: "Riwayat Absensi", icon: History, roles: ["super_admin", "admin_puskesmas"] },
-    { path: "/admin/schedules", label: "Jadwal Kerja", icon: CalendarDays, roles: ["super_admin", "admin_puskesmas"] },
-    { path: "/admin/leave", label: "Cuti & Izin", icon: FileText, roles: ["super_admin", "admin_puskesmas", "supervisor"] },
-    { path: "/admin/announcements", label: "Pengumuman", icon: Megaphone, roles: ["super_admin", "admin_puskesmas"] },
-    { path: "/admin/settings", label: "Pengaturan", icon: Settings, roles: ["super_admin"] },
+  const userRole = user?.role || "pegawai";
+
+  // Menu khusus untuk Pegawai (route /employee)
+  const pegawaiMenus = [
+    { path: "/employee", label: "Dashboard", icon: LayoutDashboard, end: true },
+    { path: "/employee/attendance", label: "Absensi", icon: CalendarCheck },
   ];
 
-  const userRole = user?.role || "pegawai";
-  const filteredMenus = menuItems.filter(item => item.roles.includes(userRole));
+  // Menu untuk Admin / Super Admin (route /admin)
+  const adminMenus = [
+    { path: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
+    { path: "/admin/employees", label: "Pegawai", icon: Users },
+    { path: "/admin/attendance", label: "Absensi", icon: CalendarCheck },
+    { path: "/admin/attendance-history", label: "Riwayat Absensi", icon: History },
+    { path: "/admin/schedules", label: "Jadwal Kerja", icon: CalendarDays },
+    { path: "/admin/leave", label: "Cuti & Izin", icon: FileText },
+    { path: "/admin/announcements", label: "Pengumuman", icon: Megaphone },
+    { path: "/admin/settings", label: "Pengaturan", icon: Settings },
+  ];
+
+  const menus = userRole === "pegawai" ? pegawaiMenus : adminMenus;
 
   return (
     <>
-      {/* Mobile Hamburger Button - Fixed top left */}
-      {!isMobileOpen && (
-        <button 
-          onClick={() => setIsMobileOpen(true)}
-          className="md:hidden fixed top-4 left-4 z-50 p-2 bg-violet-600 text-white rounded-lg shadow-lg"
+      {/* Tombol Hamburger untuk Mobile */}
+      {!menuOpen && (
+        <button
+          onClick={() => setMenuOpen(true)}
+          className="md:hidden fixed top-3 left-3 z-50 p-2 bg-violet-600 text-white rounded-lg shadow-lg shadow-violet-600/30"
+          aria-label="Buka Menu"
         >
-          <Menu size={24} />
+          <Menu size={20} />
         </button>
       )}
 
       <aside
-        className={`fixed top-0 left-0 h-full w-[280px] bg-gradient-to-b from-violet-900 to-black text-white flex flex-col transition-transform duration-300 z-40
-        ${isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+        className={`fixed top-0 left-0 h-full w-[260px] bg-gradient-to-b from-violet-900 to-slate-900 text-white flex flex-col z-40 transition-transform duration-300 ease-in-out
+        ${menuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
         {/* Header / Logo */}
-        <div className="p-6 flex items-center justify-between border-b border-purple-700/50">
+        <div className="p-5 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-              <ClipboardList size={24} className="text-white" />
+            <div className="w-9 h-9 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-lg shrink-0">
+              <ClipboardList size={20} className="text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-wider">SIAP</h1>
-              <p className="text-xs text-purple-300">Puskesmas Ampenan</p>
+              <h1 className="text-lg font-bold tracking-wide">SIAP</h1>
+              <p className="text-[10px] text-purple-300">Puskesmas Ampenan</p>
             </div>
           </div>
-          {/* Close button for mobile */}
-          <button 
-            onClick={() => setIsMobileOpen(false)}
-            className="md:hidden text-purple-300 hover:text-white"
+          {/* Tombol Close di Mobile */}
+          <button
+            onClick={() => setMenuOpen(false)}
+            className="md:hidden p-1.5 text-purple-300 hover:text-white hover:bg-white/10 rounded-lg transition"
+            aria-label="Tutup Menu"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
-        {/* User Info */}
+        {/* Info User */}
         {user && (
-          <div className="px-6 py-4 border-b border-purple-700/50 bg-purple-900/30">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full flex items-center justify-center font-bold text-sm">
-                {user.full_name?.charAt(0) || user.username?.charAt(0) || "U"}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold truncate">
-                  {user.full_name || user.username || "User"}
-                </p>
-                <p className="text-xs text-purple-300 truncate capitalize">
-                  {userRole.replace("_", " ")}
-                </p>
-              </div>
-            </div>
+          <div className="px-5 py-3 border-b border-white/10 bg-white/5">
+            <p className="text-sm font-semibold truncate">
+              {user.full_name || user.username || "User"}
+            </p>
+            <p className="text-[10px] text-purple-300 truncate capitalize">
+              {userRole.replace("_", " ")}
+            </p>
           </div>
         )}
 
-        {/* Navigation Menu */}
-        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-          {filteredMenus.map((item) => {
+        {/* Navigasi Menu */}
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {menus.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
                 end={item.end}
-                onClick={() => setIsMobileOpen(false)}
+                onClick={() => setMenuOpen(false)}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                     isActive
-                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30"
-                      : "text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/20"
+                      : "text-purple-200 hover:bg-white/10 hover:text-white"
                   }`
                 }
               >
-                <Icon size={20} className="shrink-0" />
+                <Icon size={18} className="shrink-0" />
                 <span className="text-sm font-medium">{item.label}</span>
               </NavLink>
             );
           })}
         </nav>
 
-        {/* Logout */}
-        <div className="p-4 border-t border-purple-700/50">
+        {/* Tombol Logout */}
+        <div className="p-3 border-t border-white/10">
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 w-full px-4 py-3 text-red-300 hover:bg-red-500/20 hover:text-red-200 rounded-xl transition-colors"
           >
-            <LogOut size={20} className="shrink-0" />
+            <LogOut size={18} className="shrink-0" />
             <span className="text-sm font-medium">Logout</span>
           </button>
         </div>
