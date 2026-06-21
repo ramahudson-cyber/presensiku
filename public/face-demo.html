@@ -384,7 +384,7 @@
     let earBaseline = null;
     let calibrationDone = false;
     let consecutiveClosedFrames = 0;
-    const CALIBRATION_FRAMES = 15;
+    const CALIBRATION_FRAMES = 10;
     
     function calculateEAR(eye) {
       const A = Math.sqrt(Math.pow(eye[1].x - eye[5].x, 2) + Math.pow(eye[1].y - eye[5].y, 2));
@@ -536,12 +536,12 @@
           }
         }
         
-        const EAR_THRESHOLD = earBaseline * 0.85;
+        const EAR_THRESHOLD = earBaseline * 0.75;
         const now = performance.now();
         
         if (avgEAR < EAR_THRESHOLD) {
           consecutiveClosedFrames++;
-          if (!isEyeClosed && consecutiveClosedFrames >= 2) {
+          if (!isEyeClosed && consecutiveClosedFrames >= 1) {
             isEyeClosed = true;
             blinkStartTime = now;
             pulseRing.className = 'pulse-ring blink-detected';
