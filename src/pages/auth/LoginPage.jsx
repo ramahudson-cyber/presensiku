@@ -10,7 +10,7 @@ import {
   sendOtpEmail,
   verifyOtp,
   createDeviceRequest,
-} from "../../services/deviceService";
+} from "../../services/deviceservice";
 import {
   Activity, LogIn, AlertCircle, Smartphone, Mail, Clock,
   CheckCircle2, XCircle, RefreshCw,
@@ -22,15 +22,12 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Multi-step state
-  const [step, setStep] = useState("login"); // login | otp | pending | approved
+  const [step, setStep] = useState("login");
   const [otpCode, setOtpCode] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState(null);
   const [userEmail, setUserEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("");
-  const [requestStatus, setRequestStatus] = useState(null);
 
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
@@ -51,7 +48,6 @@ export default function LoginPage() {
     return data.email;
   };
 
-  // ─── STEP 1: LOGIN (username + password + device check) ───
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -59,15 +55,12 @@ export default function LoginPage() {
 
     try {
       const email = await resolveEmail(username);
-      console.log("Logging in with:", email);
-
       await signIn(email, password);
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const { data: { user: authUser } } = await supabase.auth.getUser();
       if (!authUser) throw new Error("Gagal mendapatkan user session");
 
-      // Ambil profil lengkap
       const { data: profile } = await supabase
         .from("profiles")
         .select("*")
@@ -80,76 +73,45 @@ export default function LoginPage() {
       setUserName(profile.full_name || username);
       setUserId(authUser.id);
 
-      // Cek device binding
       const info = await getDeviceInfo();
       setDeviceInfo(info);
-      console.log("📱 Device info:", info);
 
       const deviceCheck = await checkDeviceBinding(authUser.id, info);
-      console.log("🔒 Device check:", deviceCheck);
 
       if (deviceCheck.canLogin && !deviceCheck.requiresOtp) {
-        // ✅ Device terdaftar, langsung login
         await refreshUser();
         redirectByRole(profile.role);
         return;
       }
 
-      // Cek apakah sudah ada request device sebelumnya
-      const requestStatusInfo = await checkDeviceRequestStatus(
-        authUser.id,
-        info.visitorId
-      );
-      console.log("📋 Device request status:", requestStatusInfo);
+      const requestStatusInfo = await checkDeviceRequestStatus(authUser.id, info.visitorId);
 
       if (requestStatusInfo.hasRequest) {
         if (requestStatusInfo.status === "pending") {
-          // Sudah pernah OTP, masih menunggu admin approval
           setStep("pending");
-          setRequestStatus("pending");
           setLoading(false);
           return;
         } else if (requestStatusInfo.status === "approved") {
-          // Seharusnya sudah bisa login, tapi mungkin cache
           await refreshUser();
           redirectByRole(profile.role);
           return;
         } else if (requestStatusInfo.status === "rejected") {
-          // Request ditolak
-          setError(
-            `🚫 Permintaan device Anda DITOLAK oleh admin.\n\n` +
-            `Hubungi admin puskesmas untuk informasi lebih lanjut.`
-          );
+          setError("🚫 Permintaan device Anda DITOLAK oleh admin.\n\nHubungi admin puskesmas.");
           await supabase.auth.signOut();
           setLoading(false);
           return;
         }
       }
 
-      // Device baru & belum ada request → kirim OTP
-      const sendResult = await sendOtpEmail(
-        profile.email || email,
-        profile.full_name || username
-      );
-
-      if (!sendResult.success) {
-        // Fallback: tampilkan OTP di console untuk development
-        console.warn("⚠️ Email OTP gagal terkirim. Cek table otp_codes di Supabase.");
-      } else {
-        console.log("✅ OTP terkirim ke email:", profile.email || email);
-      }
-
+      const sendResult = await sendOtpEmail(profile.email || email, profile.full_name || username);
       setStep("otp");
-      setOtpSent(true);
     } catch (err) {
-      console.error("Login error:", err);
-      setError("Username/email atau password salah. Silakan coba lagi.");
+      setError("Username/email atau password salah.");
     } finally {
       setLoading(false);
     }
   };
 
-  // ─── STEP 2: OTP VERIFICATION ───
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setError("");
@@ -157,83 +119,62 @@ export default function LoginPage() {
 
     try {
       const result = await verifyOtp(otpCode);
-      console.log("🔑 OTP verify result:", result);
-
       if (!result.isValid) {
         setError(result.message || "Kode OTP salah");
         setLoading(false);
         return;
       }
 
-      // OTP valid → buat device request
       const reqResult = await createDeviceRequest(deviceInfo);
-      console.log("📋 Device request:", reqResult);
-
       if (!reqResult.success) {
         setError("Gagal membuat device request: " + reqResult.error);
         setLoading(false);
         return;
       }
 
-      // Pindah ke step pending approval
       setStep("pending");
-      setRequestStatus("pending");
     } catch (err) {
-      console.error("OTP verify error:", err);
       setError("Terjadi kesalahan: " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // ─── STEP 3: PENDING APPROVAL (refresh status) ───
   const checkApprovalStatus = async () => {
     setLoading(true);
     try {
       const status = await checkDeviceRequestStatus(userId, deviceInfo.visitorId);
-      console.log("🔄 Approval status:", status);
-
       if (status.status === "approved") {
-        // Admin sudah approve → lanjut login
         await refreshUser();
-
         const { data: profile } = await supabase
           .from("profiles")
           .select("role")
           .eq("id", userId)
           .single();
-
         if (profile?.role) {
           redirectByRole(profile.role);
           return;
         }
         navigate("/admin", { replace: true });
       } else if (status.status === "rejected") {
-        setError(
-          `🚫 Permintaan device Anda DITOLAK oleh admin.\n\n` +
-          `Hubungi admin puskesmas untuk informasi lebih lanjut.`
-        );
+        setError("🚫 Permintaan device Anda DITOLAK oleh admin.\n\nHubungi admin.");
         await supabase.auth.signOut();
         setStep("login");
       } else {
-        // Masih pending
-        setError("Masih menunggu approval admin. Hubungi admin untuk percepat proses.");
+        setError("Masih menunggu approval admin.");
       }
     } catch (err) {
-      console.error("Check status error:", err);
       setError("Gagal cek status: " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // ─── RESEND OTP ───
   const handleResendOtp = async () => {
     setLoading(true);
     setError("");
     try {
       await sendOtpEmail(userEmail, userName);
-      console.log("✅ OTP baru terkirim");
     } catch (err) {
       setError("Gagal kirim ulang OTP: " + err.message);
     } finally {
@@ -241,7 +182,6 @@ export default function LoginPage() {
     }
   };
 
-  // ─── CANCEL & LOGOUT ───
   const handleCancel = async () => {
     await supabase.auth.signOut();
     setStep("login");
@@ -250,128 +190,94 @@ export default function LoginPage() {
     setError("");
   };
 
-  // ════════════════════════════════════════════════
-  // RENDER - MULTI STEP UI
-  // ════════════════════════════════════════════════
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-black p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
+      <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/30 mb-4">
-            <Activity size={40} className="text-white" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-700 shadow-lg shadow-violet-600/30 mb-4">
+            <Activity size={32} className="text-white" />
           </div>
-          <h1 className="text-4xl font-extrabold text-white tracking-wider">
-            SIAP
-          </h1>
-          <p className="text-purple-200 text-sm mt-2 tracking-widest uppercase">
-            Puskesmas Ampenan
-          </p>
+          <h1 className="text-3xl font-extrabold text-white tracking-wider">SIAP</h1>
+          <p className="text-violet-300 text-xs mt-1 tracking-widest uppercase">Puskesmas Ampenan</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
-          {/* ═══ STEP 1: LOGIN FORM ═══ */}
+        <div className="bg-slate-900/80 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-violet-900/50">
+          
+          {/* STEP 1: LOGIN */}
           {step === "login" && (
             <>
-              <h2 className="text-2xl font-bold text-white mb-6 text-center">
-                Masuk ke Sistem
-              </h2>
-
+              <h2 className="text-xl font-bold text-white mb-6 text-center">Masuk ke Sistem</h2>
               {error && (
-                <div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-xl flex items-start gap-3">
-                  <AlertCircle size={20} className="text-red-300 shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-200 whitespace-pre-line">{error}</p>
+                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-2">
+                  <AlertCircle size={18} className="text-red-400 shrink-0 mt-0.5" />
+                  <p className="text-sm text-red-300 whitespace-pre-line">{error}</p>
                 </div>
               )}
-
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-purple-200 mb-2">
-                    Username atau Email
-                  </label>
+                  <label className="block text-xs font-semibold text-violet-300 mb-1.5">Username atau Email</label>
                   <input
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="AMP002 atau email@puskesmas.local"
+                    placeholder="AMP002"
                     required
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-semibold text-purple-200 mb-2">
-                    Password
-                  </label>
+                  <label className="block text-xs font-semibold text-violet-300 mb-1.5">Password</label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition"
                   />
                 </div>
-
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white font-bold rounded-xl shadow-lg shadow-violet-600/30 hover:shadow-violet-600/50 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      <span>Memverifikasi...</span>
-                    </>
+                    <><div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div><span>Memverifikasi...</span></>
                   ) : (
-                    <>
-                      <LogIn size={20} />
-                      <span>Masuk</span>
-                    </>
+                    <><LogIn size={18} /><span>Masuk</span></>
                   )}
                 </button>
               </form>
-
-              <div className="mt-6 p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl flex items-start gap-2">
-                <Smartphone size={16} className="text-blue-300 shrink-0 mt-0.5" />
-                <p className="text-xs text-blue-200">
-                  <strong>Keamanan Device:</strong> Login dari device baru memerlukan verifikasi OTP email + approval admin.
+              <div className="mt-6 p-3 bg-violet-500/5 border border-violet-500/20 rounded-xl flex items-start gap-2">
+                <Smartphone size={16} className="text-violet-400 shrink-0 mt-0.5" />
+                <p className="text-[11px] text-violet-300/80">
+                  <strong>Keamanan Device:</strong> Login dari device baru memerlukan verifikasi OTP & approval admin.
                 </p>
               </div>
             </>
           )}
 
-          {/* ═══ STEP 2: OTP VERIFICATION ═══ */}
+          {/* STEP 2: OTP */}
           {step === "otp" && (
             <>
               <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 mb-4">
-                  <Mail size={32} className="text-white" />
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-violet-600 mb-3">
+                  <Mail size={28} className="text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  Verifikasi OTP
-                </h2>
-                <p className="text-purple-200 text-sm">
-                  Kode OTP telah dikirim ke:
-                </p>
-                <p className="text-white font-semibold text-sm mt-1">
-                  {userEmail}
-                </p>
+                <h2 className="text-xl font-bold text-white mb-1">Verifikasi OTP</h2>
+                <p className="text-slate-400 text-xs">Kode OTP telah dikirim ke:</p>
+                <p className="text-white font-semibold text-sm mt-1 break-all">{userEmail}</p>
               </div>
-
               {error && (
-                <div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-xl flex items-start gap-3">
-                  <AlertCircle size={20} className="text-red-300 shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-200 whitespace-pre-line">{error}</p>
+                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-2">
+                  <AlertCircle size={18} className="text-red-400 shrink-0 mt-0.5" />
+                  <p className="text-sm text-red-300 whitespace-pre-line">{error}</p>
                 </div>
               )}
-
-              <form onSubmit={handleVerifyOtp} className="space-y-5">
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-purple-200 mb-2">
-                    Kode OTP (6 digit)
-                  </label>
+                  <label className="block text-xs font-semibold text-violet-300 mb-1.5">Kode OTP (6 digit)</label>
                   <input
                     type="text"
                     value={otpCode}
@@ -379,121 +285,79 @@ export default function LoginPage() {
                     placeholder="000000"
                     required
                     maxLength={6}
-                    className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white text-center text-3xl font-mono tracking-[0.5em] placeholder-purple-300/30 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white text-center text-2xl font-mono tracking-[0.5em] placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition"
                   />
-                  <p className="text-xs text-purple-300 mt-2 text-center">
-                    Kode berlaku 10 menit
-                  </p>
+                  <p className="text-[10px] text-slate-500 mt-2 text-center">Kode berlaku 10 menit</p>
                 </div>
-
                 <button
                   type="submit"
                   disabled={loading || otpCode.length !== 6}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white font-bold rounded-xl shadow-lg shadow-violet-600/30 hover:shadow-violet-600/50 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      <span>Memverifikasi...</span>
-                    </>
+                    <><div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div><span>Memverifikasi...</span></>
                   ) : (
-                    <>
-                      <CheckCircle2 size={20} />
-                      <span>Verifikasi OTP</span>
-                    </>
+                    <><CheckCircle2 size={18} /><span>Verifikasi OTP</span></>
                   )}
                 </button>
               </form>
-
               <div className="mt-4 flex justify-between items-center">
-                <button
-                  onClick={handleCancel}
-                  className="text-xs text-purple-300 hover:text-white transition"
-                >
-                  ← Kembali
-                </button>
-                <button
-                  onClick={handleResendOtp}
-                  disabled={loading}
-                  className="text-xs text-purple-300 hover:text-white transition flex items-center gap-1"
-                >
-                  <RefreshCw size={12} />
-                  Kirim ulang OTP
+                <button onClick={handleCancel} className="text-xs text-slate-400 hover:text-white transition">← Kembali</button>
+                <button onClick={handleResendOtp} disabled={loading} className="text-xs text-violet-400 hover:text-violet-300 transition flex items-center gap-1">
+                  <RefreshCw size={12} /> Kirim ulang OTP
                 </button>
               </div>
             </>
           )}
 
-          {/* ═══ STEP 3: PENDING APPROVAL ═══ */}
+          {/* STEP 3: PENDING */}
           {step === "pending" && (
             <>
               <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 mb-4">
-                  <Clock size={32} className="text-white" />
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 mb-3">
+                  <Clock size={28} className="text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  Menunggu Approval Admin
-                </h2>
-                <p className="text-purple-200 text-sm">
-                  OTP berhasil diverifikasi!
-                </p>
+                <h2 className="text-xl font-bold text-white mb-1">Menunggu Approval</h2>
+                <p className="text-slate-400 text-xs">OTP berhasil diverifikasi!</p>
               </div>
-
-              <div className="p-4 bg-amber-500/20 border border-amber-500/50 rounded-xl mb-4">
-                <p className="text-sm text-amber-100">
-                  <strong>📋 Status:</strong> Pending Approval
-                </p>
-                <p className="text-xs text-amber-200 mt-2">
-                  Device Anda:
-                </p>
-                <p className="text-xs text-white font-mono mt-1 bg-black/30 p-2 rounded">
-                  {deviceInfo?.deviceName}
-                </p>
-                <p className="text-xs text-amber-200 mt-3">
-                  Mohon tunggu admin puskesmas menyetujui device Anda. Hubungi admin untuk mempercepat proses approval.
-                </p>
+              <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl mb-4">
+                <p className="text-sm text-amber-200"><strong>📋 Status:</strong> Pending Approval</p>
+                <p className="text-xs text-amber-300/80 mt-2">Device Anda:</p>
+                <p className="text-xs text-white font-mono mt-1 bg-black/30 p-2 rounded-lg break-all">{deviceInfo?.deviceName}</p>
+                <p className="text-xs text-amber-300/80 mt-3">Mohon tunggu admin menyetujui device Anda.</p>
               </div>
-
               {error && (
-                <div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-xl flex items-start gap-3">
-                  <AlertCircle size={20} className="text-red-300 shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-200 whitespace-pre-line">{error}</p>
+                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-2">
+                  <AlertCircle size={18} className="text-red-400 shrink-0 mt-0.5" />
+                  <p className="text-sm text-red-300 whitespace-pre-line">{error}</p>
                 </div>
               )}
-
               <div className="space-y-3">
                 <button
                   onClick={checkApprovalStatus}
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold rounded-xl shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50"
                 >
                   {loading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      <span>Memeriksa...</span>
-                    </>
+                    <><div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div><span>Memeriksa...</span></>
                   ) : (
-                    <>
-                      <RefreshCw size={20} />
-                      <span>Cek Status Approval</span>
-                    </>
+                    <><RefreshCw size={18} /><span>Cek Status Approval</span></>
                   )}
                 </button>
-
                 <button
                   onClick={handleCancel}
-                  className="w-full py-3 border border-white/20 text-purple-200 rounded-xl hover:bg-white/10 transition text-sm"
+                  className="w-full py-3 border border-slate-700 text-slate-400 rounded-xl hover:bg-slate-800 transition text-sm"
                 >
-                  Logout & Kembali ke Login
+                  Logout & Kembali
                 </button>
               </div>
             </>
           )}
-
-          <p className="text-center text-xs text-purple-300/70 mt-6">
-            Sistem Informasi Administrasi & Presensi
-          </p>
         </div>
+        
+        <p className="text-center text-[10px] text-slate-600 mt-6">
+          Sistem Informasi Administrasi & Presensi
+        </p>
       </div>
     </div>
   );
