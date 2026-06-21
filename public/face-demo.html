@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liveness Detection Demo - SIAP Puskesmas</title>
+  <title>Verifikasi Wajah - SIAP Puskesmas</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -11,229 +11,300 @@
       background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%);
       min-height: 100vh;
       color: white;
-      padding: 20px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .container {
-      max-width: 500px;
-      margin: 0 auto;
-      background: rgba(255, 255, 255, 0.1);
+      max-width: 420px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(20px);
       border-radius: 24px;
       padding: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
-    h1 { font-size: 24px; text-align: center; margin-bottom: 8px; }
-    .subtitle { text-align: center; opacity: 0.7; font-size: 14px; margin-bottom: 16px; }
+    h1 { 
+      font-size: 22px; 
+      text-align: center; 
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+    .subtitle { 
+      text-align: center; 
+      opacity: 0.6; 
+      font-size: 13px; 
+      margin-bottom: 20px;
+    }
     
-    .toggle-row {
+    .progress-bar {
       display: flex;
-      gap: 8px;
-      justify-content: center;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 20px;
     }
-    .toggle-btn {
-      padding: 6px 14px;
-      border-radius: 20px;
+    .progress-step {
+      flex: 1;
+      height: 4px;
       background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: white;
-      cursor: pointer;
-      font-size: 12px;
-      transition: all 0.2s;
+      border-radius: 2px;
+      transition: all 0.3s;
     }
-    .toggle-btn.active {
-      background: linear-gradient(135deg, #ec4899, #8b5cf6);
-      border-color: transparent;
+    .progress-step.active {
+      background: linear-gradient(90deg, #ec4899, #8b5cf6);
+    }
+    .progress-step.done {
+      background: #10b981;
     }
     
-    .camera-container {
+    .camera-wrapper {
       position: relative;
       width: 100%;
-      max-width: 320px;
+      max-width: 280px;
       margin: 0 auto 16px;
-      border-radius: 16px;
+      border-radius: 20px;
       overflow: hidden;
       background: black;
       aspect-ratio: 3/4;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
-    #video { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-    #video.mirrored { transform: scaleX(-1); }
+    #video { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover;
+    }
     
-    .face-frame {
+    .face-overlay {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 200px;
-      height: 260px;
-      border: 3px dashed rgba(255, 255, 255, 0.5);
-      border-radius: 50%;
+      width: 180px;
+      height: 240px;
+      border: 3px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50% 50% 45% 45%;
       pointer-events: none;
-      transition: all 0.2s;
+      transition: all 0.3s;
     }
-    .face-frame.detected { border-color: #10b981; border-style: solid; }
-    .face-frame.error { border-color: #ef4444; }
-    .face-frame.blink { border-color: #f59e0b; border-width: 5px; }
+    .face-overlay.success {
+      border-color: #10b981;
+      border-width: 4px;
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+    }
+    .face-overlay.error {
+      border-color: #ef4444;
+    }
+    .face-overlay.detecting {
+      border-color: #f59e0b;
+      animation: pulse-border 1s infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { border-color: #f59e0b; }
+      50% { border-color: #fbbf24; }
+    }
     
-    .status {
+    .status-card {
       text-align: center;
-      padding: 12px;
-      border-radius: 12px;
-      margin-bottom: 12px;
+      padding: 14px;
+      border-radius: 14px;
+      margin-bottom: 14px;
       font-size: 14px;
       font-weight: 500;
       background: rgba(255, 255, 255, 0.05);
+      transition: all 0.3s;
     }
-    .status.loading { background: rgba(59, 130, 246, 0.2); }
-    .status.success { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
-    .status.error { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
-    .status.warning { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+    .status-card.loading { background: rgba(59, 130, 246, 0.15); }
+    .status-card.success { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+    .status-card.error { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+    .status-card.warning { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+    
+    .status-icon {
+      font-size: 20px;
+      display: block;
+      margin-bottom: 4px;
+    }
     
     button {
       width: 100%;
-      padding: 14px;
+      padding: 16px;
       border: none;
-      border-radius: 12px;
+      border-radius: 14px;
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.2s;
       margin-bottom: 8px;
     }
-    .btn-primary { background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-secondary { background: rgba(255, 255, 255, 0.1); color: white; }
-    .btn-manual { background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; }
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
     
-    .ear-display {
+    .btn-primary { 
+      background: linear-gradient(135deg, #ec4899, #8b5cf6); 
+      color: white;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    }
+    .btn-capture { 
+      background: linear-gradient(135deg, #10b981, #059669); 
+      color: white;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    }
+    .btn-secondary { 
+      background: rgba(255, 255, 255, 0.1); 
+      color: white;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-row button { margin-bottom: 0; }
+    
+    .instruction {
+      font-size: 13px;
+      opacity: 0.7;
+      text-align: center;
       margin-top: 16px;
-      padding: 16px;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 12px;
-      text-align: center;
-    }
-    .ear-label { font-size: 11px; opacity: 0.7; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-    .ear-value-big {
-      font-size: 36px;
-      font-weight: bold;
-      font-family: monospace;
-      margin: 8px 0;
-      transition: color 0.2s;
-    }
-    .ear-value-big.closed { color: #f59e0b; }
-    .ear-value-big.open { color: #10b981; }
-    .ear-status { font-size: 14px; opacity: 0.9; }
-    
-    .instruction-prompt {
-      font-size: 18px;
-      text-align: center;
+      line-height: 1.6;
       padding: 12px;
-      background: rgba(245, 158, 11, 0.2);
-      border: 2px solid rgba(245, 158, 11, 0.5);
+      background: rgba(0, 0, 0, 0.2);
       border-radius: 12px;
-      margin-bottom: 12px;
-      animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
     }
     
-    .result-box {
+    .result-card {
       display: none;
-      padding: 16px;
-      background: rgba(16, 185, 129, 0.1);
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
       border: 1px solid rgba(16, 185, 129, 0.3);
-      border-radius: 12px;
-      margin-top: 12px;
+      border-radius: 16px;
+      margin-top: 16px;
+      text-align: center;
     }
-    .result-box.show { display: block; }
-    .result-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+    .result-card.show { display: block; }
+    .result-icon {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+    .result-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #6ee7b7;
+      margin-bottom: 12px;
+    }
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .result-item {
+      background: rgba(0,0,0,0.2);
+      padding: 8px;
+      border-radius: 8px;
+    }
+    .result-label {
+      opacity: 0.6;
+      font-size: 11px;
+      margin-bottom: 2px;
+    }
     
     .loader {
       display: inline-block;
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       border: 2px solid rgba(255, 255, 255, 0.3);
       border-top-color: white;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin-right: 8px;
+      margin-right: 6px;
       vertical-align: middle;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     
-    .debug-info {
-      font-size: 10px;
-      opacity: 0.5;
-      font-family: monospace;
+    .details-toggle {
+      text-align: center;
       margin-top: 12px;
+      font-size: 11px;
+      opacity: 0.5;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .debug-info {
+      display: none;
+      font-size: 10px;
+      opacity: 0.4;
+      font-family: monospace;
+      margin-top: 8px;
       padding: 8px;
       background: rgba(0, 0, 0, 0.3);
       border-radius: 8px;
       text-align: left;
       word-break: break-all;
     }
-    .instructions { font-size: 12px; opacity: 0.6; text-align: center; margin-top: 12px; line-height: 1.6; }
+    .debug-info.show { display: block; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>👁️ Liveness Detection Demo v3</h1>
-    <p class="subtitle">Anti-fraud verifikasi wajah + toggle mirror + manual capture</p>
+    <h1>📸 Verifikasi Wajah</h1>
+    <p class="subtitle">SIAP Puskesmas Ampenan</p>
 
-    <div class="toggle-row">
-      <button class="toggle-btn active" id="mirrorBtn" onclick="toggleMirror()">🪞 Mirror: ON</button>
-      <button class="toggle-btn active" id="modeBtn" onclick="toggleMode()">👁️ Mode: Blink</button>
+    <div class="progress-bar">
+      <div class="progress-step active" id="step1"></div>
+      <div class="progress-step" id="step2"></div>
+      <div class="progress-step" id="step3"></div>
     </div>
 
-    <div class="status loading" id="status">
+    <div class="status-card loading" id="status">
       <span class="loader"></span>
       Memuat model AI...
     </div>
 
-    <div class="camera-container" id="cameraContainer" style="display:none;">
-      <video id="video" autoplay playsinline muted class="mirrored"></video>
-      <div class="face-frame" id="faceFrame"></div>
-    </div>
-
-    <div class="instruction-prompt" id="instructionPrompt" style="display:none;">
-      👁️ Silakan kedipkan mata Anda
-    </div>
-
-    <div class="ear-display" id="earDisplay" style="display:none;">
-      <div class="ear-label">Eye Aspect Ratio (EAR)</div>
-      <div class="ear-value-big open" id="earValueBig">0.300</div>
-      <div class="ear-status" id="earStatus">👀 Mata terbuka</div>
-      <div style="font-size: 10px; opacity: 0.6; margin-top: 8px;">
-        Kedip jika EAR &lt; 0.20 (turun dari baseline)
-      </div>
+    <div class="camera-wrapper" id="cameraWrapper" style="display:none;">
+      <video id="video" autoplay playsinline muted></video>
+      <div class="face-overlay" id="faceOverlay"></div>
     </div>
 
     <button class="btn-primary" id="startBtn" disabled>Mulai Verifikasi</button>
-    <button class="btn-manual" id="manualBtn" style="display:none;">📸 Capture Manual (Skip Blink)</button>
-    <button class="btn-secondary" id="stopBtn" style="display:none;">Stop</button>
-
-    <div class="result-box" id="resultBox">
-      <h3 style="margin-bottom:8px; color:#6ee7b7;">✅ Verifikasi Berhasil!</h3>
-      <div class="result-row"><span>Metode:</span> <span id="methodUsed">-</span></div>
-      <div class="result-row"><span>Kedipan terdeteksi:</span> <span id="blinkDetected">-</span></div>
-      <div class="result-row"><span>Wajah full:</span> <span id="faceFull">-</span></div>
-      <div class="result-row"><span>Confidence:</span> <span id="confidence">-</span></div>
-      <div class="result-row"><span>Waktu total:</span> <span id="processTime">-</span></div>
+    
+    <div class="btn-row" id="actionRow" style="display:none;">
+      <button class="btn-capture" id="captureBtn">📸 Ambil Foto</button>
+      <button class="btn-secondary" id="cancelBtn" style="flex:0 0 auto;width:auto;padding:16px 20px;">✕</button>
     </div>
 
-    <div class="instructions">
-      <strong>Cara pakai:</strong><br>
-      1. Toggle Mirror ON/OFF sesuai selera<br>
-      2. Klik "Mulai Verifikasi" → Allow camera<br>
-      3. Posisikan wajah full di lingkaran<br>
-      4. Mode Blink: Kedipkan mata jelas (atau klik "Capture Manual")<br>
-      5. Mode Manual: Klik "Capture Manual" langsung
+    <div class="result-card" id="resultCard">
+      <div class="result-icon">✅</div>
+      <div class="result-title">Verifikasi Berhasil!</div>
+      <div class="result-grid">
+        <div class="result-item">
+          <div class="result-label">Metode</div>
+          <div id="methodUsed" style="font-weight:600">-</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Confidence</div>
+          <div id="confidence" style="font-weight:600">-</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Wajah</div>
+          <div id="faceStatus" style="font-weight:600">-</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Waktu</div>
+          <div id="processTime" style="font-weight:600">-</div>
+        </div>
+      </div>
     </div>
 
-    <div class="debug-info" id="debugInfo" style="display:none;"></div>
+    <div class="instruction" id="instruction">
+      <strong>📋 Cara Pakai:</strong><br>
+      1. Klik "Mulai Verifikasi" → Allow kamera<br>
+      2. Posisikan wajah di dalam lingkaran<br>
+      3. Kedipkan mata (auto-capture) atau klik "Ambil Foto"
+    </div>
+
+    <div class="details-toggle" onclick="toggleDebug()">Show debug info</div>
+    <div class="debug-info" id="debugInfo"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
@@ -243,18 +314,14 @@
     const video = document.getElementById('video');
     const status = document.getElementById('status');
     const startBtn = document.getElementById('startBtn');
-    const manualBtn = document.getElementById('manualBtn');
-    const stopBtn = document.getElementById('stopBtn');
-    const cameraContainer = document.getElementById('cameraContainer');
-    const faceFrame = document.getElementById('faceFrame');
-    const resultBox = document.getElementById('resultBox');
-    const instructionPrompt = document.getElementById('instructionPrompt');
-    const earDisplay = document.getElementById('earDisplay');
-    const earValueBig = document.getElementById('earValueBig');
-    const earStatus = document.getElementById('earStatus');
+    const captureBtn = document.getElementById('captureBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const cameraWrapper = document.getElementById('cameraWrapper');
+    const faceOverlay = document.getElementById('faceOverlay');
+    const resultCard = document.getElementById('resultCard');
+    const instruction = document.getElementById('instruction');
     const debugInfo = document.getElementById('debugInfo');
-    const mirrorBtn = document.getElementById('mirrorBtn');
-    const modeBtn = document.getElementById('modeBtn');
+    const actionRow = document.getElementById('actionRow');
 
     let stream = null;
     let modelsLoaded = false;
@@ -269,32 +336,9 @@
     let earBaseline = null;
     let earSamples = [];
     let calibrationFrames = 0;
-    let minEarSeen = 1.0;
-    let maxEarSeen = 0.0;
-    let isMirrorOn = true;
-    let captureMode = 'blink'; // 'blink' or 'manual'
 
-    // Toggle mirror
-    function toggleMirror() {
-      isMirrorOn = !isMirrorOn;
-      video.classList.toggle('mirrored', isMirrorOn);
-      mirrorBtn.textContent = `🪞 Mirror: ${isMirrorOn ? 'ON' : 'OFF'}`;
-      mirrorBtn.classList.toggle('active', isMirrorOn);
-    }
-
-    // Toggle capture mode
-    function toggleMode() {
-      captureMode = captureMode === 'blink' ? 'manual' : 'blink';
-      modeBtn.textContent = captureMode === 'blink' ? '👁️ Mode: Blink' : '📸 Mode: Manual';
-      if (captureMode === 'manual') {
-        manualBtn.style.display = isVerifying ? 'block' : 'none';
-        instructionPrompt.style.display = 'none';
-      } else {
-        manualBtn.style.display = 'none';
-        if (isVerifying && earBaseline) {
-          instructionPrompt.style.display = 'block';
-        }
-      }
+    function toggleDebug() {
+      debugInfo.classList.toggle('show');
     }
 
     // EAR calculation
@@ -305,44 +349,58 @@
       return (A + B) / (2 * C);
     }
 
+    function updateStatus(type, icon, message) {
+      status.className = `status-card ${type}`;
+      status.innerHTML = `<span class="status-icon">${icon}</span>${message}`;
+    }
+
+    function updateStep(stepNum) {
+      ['step1', 'step2', 'step3'].forEach((id, idx) => {
+        const el = document.getElementById(id);
+        if (idx + 1 < stepNum) {
+          el.className = 'progress-step done';
+        } else if (idx + 1 === stepNum) {
+          el.className = 'progress-step active';
+        } else {
+          el.className = 'progress-step';
+        }
+      });
+    }
+
     async function loadModels() {
       try {
-        status.className = 'status loading';
-        status.innerHTML = '<span class="loader"></span> Memuat model AI (6MB)...';
+        updateStatus('loading', '⏳', 'Memuat model AI (6MB)...');
         await Promise.all([
           faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
           faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
           faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
         ]);
         modelsLoaded = true;
-        status.className = 'status success';
-        status.textContent = '✅ Model AI berhasil dimuat! Klik "Mulai Verifikasi"';
+        updateStatus('success', '✅', 'Model siap! Klik "Mulai Verifikasi"');
         startBtn.disabled = false;
+        updateStep(2);
       } catch (err) {
-        status.className = 'status error';
-        status.textContent = '❌ Gagal memuat model: ' + err.message;
+        updateStatus('error', '❌', 'Gagal memuat model: ' + err.message);
       }
     }
 
     async function startCamera() {
       try {
-        status.className = 'status loading';
-        status.innerHTML = '<span class="loader"></span> Meminta akses kamera...';
+        updateStatus('loading', '📹', 'Meminta akses kamera...');
         stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
           audio: false
         });
         video.srcObject = stream;
-        cameraContainer.style.display = 'block';
+        cameraWrapper.style.display = 'block';
         startBtn.style.display = 'none';
-        stopBtn.style.display = 'block';
-        earDisplay.style.display = 'block';
-        debugInfo.style.display = 'block';
+        actionRow.style.display = 'flex';
+        instruction.style.display = 'none';
         
         await new Promise(resolve => video.onloadedmetadata = resolve);
         
-        status.className = 'status success';
-        status.textContent = '✅ Kamera aktif! Posisikan wajah full di lingkaran.';
+        updateStatus('success', '✅', 'Kamera aktif! Posisikan wajah di lingkaran.');
+        updateStep(3);
         
         isVerifying = true;
         startTime = performance.now();
@@ -350,14 +408,9 @@
         earBaseline = null;
         earSamples = [];
         
-        if (captureMode === 'manual') {
-          manualBtn.style.display = 'block';
-        }
-        
         detectionInterval = setInterval(detectFaces, 80);
       } catch (err) {
-        status.className = 'status error';
-        status.textContent = '❌ Gagal akses kamera: ' + err.message;
+        updateStatus('error', '❌', 'Gagal akses kamera: ' + err.message);
       }
     }
 
@@ -374,10 +427,9 @@
           .withFaceLandmarks();
 
         if (!detection) {
-          faceFrame.className = 'face-frame error';
+          faceOverlay.className = 'face-overlay error';
           if (frameCount % 5 === 0) {
-            status.className = 'status warning';
-            status.textContent = '⚠️ Wajah tidak terdeteksi. Posisikan wajah di lingkaran.';
+            updateStatus('warning', '⚠️', 'Wajah tidak terdeteksi. Posisikan wajah di lingkaran.');
           }
           return;
         }
@@ -405,21 +457,20 @@
           box.y + box.height < videoHeight - 10;
 
         if (!isCentered || !isBigEnough || !notCropped) {
-          faceFrame.className = 'face-frame error';
+          faceOverlay.className = 'face-overlay error';
           if (frameCount % 5 === 0) {
-            status.className = 'status warning';
             if (!isCentered) {
-              status.textContent = '⚠️ Wajah tidak di tengah. Posisikan wajah di tengah lingkaran.';
+              updateStatus('warning', '⚠️', 'Wajah tidak di tengah. Posisikan wajah di tengah lingkaran.');
             } else if (!isBigEnough) {
-              status.textContent = '⚠️ Wajah terlalu kecil. Mendekat ke kamera.';
+              updateStatus('warning', '⚠️', 'Wajah terlalu kecil. Mendekat ke kamera.');
             } else {
-              status.textContent = '⚠️ Wajah terpotong. Mundur sedikit.';
+              updateStatus('warning', '⚠️', 'Wajah terpotong. Mundur sedikit.');
             }
           }
           return;
         }
 
-        faceFrame.className = 'face-frame detected';
+        faceOverlay.className = 'face-overlay detecting';
 
         // Hitung EAR
         const landmarks = detection.landmarks;
@@ -429,13 +480,8 @@
         const rightEAR = calculateEAR(rightEye);
         const avgEAR = (leftEAR + rightEAR) / 2;
 
-        if (avgEAR < minEarSeen) minEarSeen = avgEAR;
-        if (avgEAR > maxEarSeen) maxEarSeen = avgEAR;
-
-        earValueBig.textContent = avgEAR.toFixed(3);
-
-        // Kalibrasi (hanya di mode blink)
-        if (captureMode === 'blink' && calibrationFrames < 25) {
+        // Kalibrasi (25 frame pertama)
+        if (calibrationFrames < 25) {
           earSamples.push(avgEAR);
           calibrationFrames++;
           
@@ -444,67 +490,56 @@
             const trimmed = sorted.slice(2, -2);
             earBaseline = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
             
-            status.className = 'status success';
-            status.textContent = `✅ Kalibrasi selesai! Baseline: ${earBaseline.toFixed(3)}. Silakan kedipkan mata.`;
-            instructionPrompt.style.display = 'block';
-            instructionPrompt.textContent = '👁️ Silakan kedipkan mata dengan jelas';
+            updateStatus('success', '👁️', 'Kalibrasi selesai! Kedipkan mata atau klik "Ambil Foto"');
           } else {
-            status.className = 'status loading';
-            status.innerHTML = `<span class="loader"></span> Kalibrasi... (${calibrationFrames}/25) - Jangan berkedip dulu`;
+            updateStatus('loading', '⏳', `Kalibrasi... (${calibrationFrames}/25) - Jangan berkedip dulu`);
             return;
           }
         }
 
-        // Threshold adaptif (70% dari baseline) atau 0.20
-        const EAR_THRESHOLD = earBaseline ? earBaseline * 0.70 : 0.20;
+        // Threshold adaptif (70% dari baseline)
+        const EAR_THRESHOLD = earBaseline ? earBaseline * 0.65 : 0.18;
         const now = performance.now();
 
+        debugInfo.textContent = `Frame: ${frameCount} | EAR: ${avgEAR.toFixed(3)} | Threshold: ${EAR_THRESHOLD.toFixed(3)} | Baseline: ${earBaseline?.toFixed(3) || '-'}`;
+
         if (avgEAR < EAR_THRESHOLD) {
-          earValueBig.className = 'ear-value-big closed';
-          earStatus.textContent = '😴 Mata tertutup';
-          
           if (!isEyeClosed) {
             isEyeClosed = true;
             blinkStartTime = now;
-            faceFrame.className = 'face-frame blink';
+            faceOverlay.className = 'face-overlay detecting';
           }
         } else {
-          earValueBig.className = 'ear-value-big open';
-          earStatus.textContent = '👀 Mata terbuka';
-          
           if (isEyeClosed) {
             const blinkDuration = now - blinkStartTime;
-            // Durasi lebih longgar: 50ms - 1500ms
+            // Durasi longgar: 50ms - 1500ms
             if (blinkDuration >= 50 && blinkDuration <= 1500 && (now - lastBlinkTime) > 200) {
               blinkCount++;
               lastBlinkTime = now;
               
-              instructionPrompt.style.display = 'block';
-              instructionPrompt.textContent = `✅ Kedipan terdeteksi! (${blinkCount}/1)`;
-              
-              debugInfo.textContent = `Frame: ${frameCount} | EAR: ${avgEAR.toFixed(3)} | Duration: ${blinkDuration.toFixed(0)}ms | Baseline: ${earBaseline?.toFixed(3) || '-'} | Min: ${minEarSeen.toFixed(3)} | Max: ${maxEarSeen.toFixed(3)}`;
+              updateStatus('success', '👁️', 'Kedipan terdeteksi! Mengcapture...');
               
               if (blinkCount >= 1) {
-                await verificationSuccess(detection, 'Blink');
+                await verificationSuccess(detection, 'Blink (Auto)');
                 return;
               }
             }
             isEyeClosed = false;
-            faceFrame.className = 'face-frame detected';
           }
         }
-
-        debugInfo.textContent = `Frame: ${frameCount} | EAR: ${avgEAR.toFixed(3)} | Threshold: ${EAR_THRESHOLD.toFixed(3)} | Baseline: ${earBaseline?.toFixed(3) || '-'} | Min: ${minEarSeen.toFixed(3)} | Max: ${maxEarSeen.toFixed(3)}`;
       } catch (err) {
         console.error(err);
       }
     }
 
-    // Manual capture fallback
-    manualBtn.addEventListener('click', async () => {
+    // Manual capture
+    captureBtn.addEventListener('click', async () => {
       if (!isVerifying) return;
       
       try {
+        captureBtn.disabled = true;
+        captureBtn.textContent = '⏳ Memproses...';
+        
         const detection = await faceapi
           .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.4 }))
           .withFaceLandmarks();
@@ -512,13 +547,19 @@
         if (detection) {
           await verificationSuccess(detection, 'Manual');
         } else {
-          status.className = 'status warning';
-          status.textContent = '⚠️ Wajah tidak terdeteksi. Posisikan wajah dulu.';
+          updateStatus('warning', '⚠️', 'Wajah tidak terdeteksi. Posisikan wajah dulu.');
+          captureBtn.disabled = false;
+          captureBtn.textContent = '📸 Ambil Foto';
         }
       } catch (err) {
-        status.className = 'status error';
-        status.textContent = '❌ Error: ' + err.message;
+        updateStatus('error', '❌', 'Error: ' + err.message);
+        captureBtn.disabled = false;
+        captureBtn.textContent = '📸 Ambil Foto';
       }
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      stopCamera();
     });
 
     async function verificationSuccess(detection, method) {
@@ -528,42 +569,40 @@
       const totalTime = ((performance.now() - startTime) / 1000).toFixed(2);
       const confidence = (detection.detection.score * 100).toFixed(1);
       
-      faceFrame.className = 'face-frame detected';
-      instructionPrompt.style.display = 'none';
-      manualBtn.style.display = 'none';
+      faceOverlay.className = 'face-overlay success';
+      actionRow.style.display = 'none';
       
-      status.className = 'status success';
-      status.textContent = `✅ Verifikasi berhasil! Metode: ${method}`;
+      updateStatus('success', '✅', 'Verifikasi berhasil!');
       
       document.getElementById('methodUsed').textContent = method;
-      document.getElementById('blinkDetected').textContent = method === 'Blink' ? `✅ ${blinkCount} kedipan` : '⚠️ Manual (skip blink)';
-      document.getElementById('faceFull').textContent = '✅ YA (valid)';
       document.getElementById('confidence').textContent = confidence + '%';
-      document.getElementById('processTime').textContent = totalTime + ' detik';
-      resultBox.className = 'result-box show';
+      document.getElementById('faceStatus').textContent = '✅ Valid';
+      document.getElementById('processTime').textContent = totalTime + 's';
+      resultCard.classList.add('show');
       
-      if (stream) {
-        stream.getTracks().forEach(t => t.stop());
-      }
+      // Stop camera after 2 seconds
+      setTimeout(() => {
+        if (stream) {
+          stream.getTracks().forEach(t => t.stop());
+        }
+      }, 2000);
     }
 
-    stopBtn.addEventListener('click', () => {
+    function stopCamera() {
       isVerifying = false;
       clearInterval(detectionInterval);
       if (stream) {
         stream.getTracks().forEach(t => t.stop());
         stream = null;
       }
-      cameraContainer.style.display = 'none';
+      cameraWrapper.style.display = 'none';
+      actionRow.style.display = 'none';
       startBtn.style.display = 'block';
-      stopBtn.style.display = 'none';
-      manualBtn.style.display = 'none';
-      earDisplay.style.display = 'none';
-      instructionPrompt.style.display = 'none';
-      debugInfo.style.display = 'none';
-      status.className = 'status';
-      status.textContent = 'Verifikasi dihentikan.';
-    });
+      startBtn.textContent = 'Mulai Ulang Verifikasi';
+      instruction.style.display = 'block';
+      updateStatus('loading', 'ℹ️', 'Verifikasi dihentikan.');
+      updateStep(2);
+    }
 
     startBtn.addEventListener('click', startCamera);
     loadModels();
