@@ -130,8 +130,7 @@
       statusText.textContent = text;
     }
 
-    function calculateEAR(landmarks, eyeIndices) {
-      // Ambil 6 titik mata dari 468 landmarks MediaPipe
+        function calculateEAR(landmarks, eyeIndices) {
       const p1 = landmarks[eyeIndices[0]];
       const p2 = landmarks[eyeIndices[1]];
       const p3 = landmarks[eyeIndices[2]];
@@ -139,12 +138,12 @@
       const p5 = landmarks[eyeIndices[4]];
       const p6 = landmarks[eyeIndices[5]];
 
-      // Rumus EAR (sama seperti artikel)
       const v1 = Math.sqrt(Math.pow(p2.x - p6.x, 2) + Math.pow(p2.y - p6.y, 2));
-      const v2 = Math.sqrt(Math.pow(p3 - p5.x, 2) + Math.pow(p3.y - p5.y, 2));
+      const v2 = Math.sqrt(Math.pow(p3.x - p5.x, 2) + Math.pow(p3.y - p5.y, 2));
       const h = Math.sqrt(Math.pow(p1.x - p4.x, 2) + Math.pow(p1.y - p4.y, 2));
 
       return (v1 + v2) / (2.0 * h);
+    }
     }
 
     async function loadModels() {
@@ -194,17 +193,13 @@
         earHistory = [];
         earBaseline = null;
 
-        // Pakai MediaPipe Camera Utils
-        camera = new Camera(video, {
-          onFrame: async () => {
-            if (isVerifying) {
-              await faceMesh.send({ image: video });
-            }
-          },
-          width: 640,
-          height: 480
-        });
-        camera.start();
+        // MediaPipe pakai requestAnimationFrame untuk efisiensi
+        const processFrame = async () => {
+          if (!isVerifying) return;
+          await faceMesh.send({ image: video });
+          requestAnimationFrame(processFrame);
+        };
+        processFrame();
 
         showStatus('Posisikan wajah di lingkaran');
       } catch (err) {
