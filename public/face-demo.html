@@ -156,7 +156,7 @@
       
       try {
         const detection = await faceapi
-          .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.3 }))
+          .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.3 }))
           .withFaceLandmarks()
           .withFaceExpressions();
         
@@ -188,7 +188,7 @@
           if (isCropped) showStatus('Wajah terpotong! Posisikan full dahi-dagu', 'error');
           else if (isTooSmall) showStatus('Wajah terlalu kecil. Mendekatlah', 'error');
           
-          if (isVerifying) detectionTimer = setTimeout(detectionLoop, 80);
+          if (isVerifying) detectionTimer = setTimeout(detectionLoop, 40);
           return;
         }
 
@@ -197,37 +197,26 @@
         captureBtn.style.display = 'block';
         pulseRing.className = 'pulse-ring scanning';
         
-        // === DETEKSI SENYUM ===
+        // === DETEKSI SENYUM (INSTANT CAPTURE) ===
         const happyScore = detection.expressions.happy;
         const now = performance.now();
 
-        if (happyScore > 0.7) {
-          if (!isSmiling) {
-            isSmiling = true;
-            smileStartTime = now;
-            pulseRing.className = 'pulse-ring smile';
-          }
-        } else {
-          if (isSmiling) {
-            const smileDuration = now - smileStartTime;
-            isSmiling = false;
-            pulseRing.className = 'pulse-ring scanning';
-            
-            if (smileDuration >= 200 && smileDuration <= 5000 && (now - lastSmileTime) > 1000) {
-              lastSmileTime = now;
-              await verificationSuccess();
-              return;
-            }
-          }
+        // Langsung capture begitu senyum terdeteksi (>0.7), anti-double 1.5 detik
+        if (happyScore > 0.7 && (now - lastSmileTime) > 1500) {
+          lastSmileTime = now;
+          isSmiling = true;
+          pulseRing.className = 'pulse-ring smile';
+          showStatus('Senyum terdeteksi!', 'hint');
+          
+          await verificationSuccess();
+          return;
         }
 
         if (!isSmiling) {
           showStatus('😊 Senyum ke kamera!', 'hint');
-        } else {
-          showStatus('Senyum terdeteksi...', 'hint');
         }
         
-        if (isVerifying) detectionTimer = setTimeout(detectionLoop, 80);
+        if (isVerifying) detectionTimer = setTimeout(detectionLoop, 40);
       } catch (err) {
         if (isVerifying) detectionTimer = setTimeout(detectionLoop, 100);
       }
