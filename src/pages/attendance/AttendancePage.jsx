@@ -10,8 +10,6 @@ import * as faceapi from "face-api.js";
 const PUSKESMAS_LOCATION = { latitude: -8.5699, longitude: 116.0770 };
 const RADIUS_METER = 50000; // TEST MODE — ubah ke 300 untuk produksi
 const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
-
-// Jam masuk default: 08:00. Terlambat jika > 08:00.
 const STANDARD_CLOCK_IN_HOUR = 8;
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -141,7 +139,7 @@ export default function AttendancePage() {
   };
 
   // ============================================================
-  // SAVE ABSENSI — sesuai schema asli Supabase
+  // SAVE ABSENSI — dengan error detail lengkap untuk debugging
   // ============================================================
   const saveAttendanceToSupabase = async (photoData, location) => {
     try {
@@ -149,25 +147,15 @@ export default function AttendancePage() {
       const now = new Date();
       const today = now.toISOString().split("T")[0];
 
-      // Hitung keterlambatan
       const standardTime = new Date(now);
       standardTime.setHours(STANDARD_CLOCK_IN_HOUR, 0, 0, 0);
       const lateMs = now - standardTime;
       const isLate = lateMs > 0;
       const lateMinutes = isLate ? Math.floor(lateMs / 60000) : 0;
-      const status = isLate ? "terlambat" : "hadir";
+      const status = "hadir"; // hardcode untuk test
 
       const deviceName = getDeviceInfoLite();
 
-      // Payload sesuai schema attendance:
-      // - selfie_in_url (text)         → foto base64
-      // - location_in (jsonb)          → { lat, lng, accuracy, altitude }
-      // - device_visitor_id (text)     → fingerprint
-      // - device_name (text)           → nama device
-      // - attendance_status (enum)     → 'hadir' | 'terlambat'
-      // - shift_code (enum)            → 'PG' (default)
-      // - is_late (bool)               → true/false
-      // - late_minutes (int)           → menit keterlambatan
       const payload = {
         user_id: user.id,
         date: today,
@@ -192,6 +180,8 @@ export default function AttendancePage() {
         device_name: deviceName,
       };
 
+      console.log("🔍 Payload yang akan di-insert:", payload);
+
       const { data, error } = await supabase
         .from("attendance")
         .insert(payload)
@@ -199,34 +189,17 @@ export default function AttendancePage() {
         .single();
 
       if (error) {
-        console.error("❌ Insert error:", error);
-        // Fallback: coba update jika sudah ada record hari ini (constraint unique user_id+date)
-        if (error.code === "23505") {
-          const { error: updateErr } = await supabase
-            .from("attendance")
-            .update({
-              clock_in_time: now.toISOString(),
-              location_in: payload.location_in,
-              selfie_in_url: photoData,
-              attendance_status: status,
-              is_late: isLate,
-              late_minutes: lateMinutes,
-              device_visitor_id: deviceVisitorId,
-              device_name: deviceName,
-            })
-            .eq("user_id", user.id)
-            .eq("date", today);
-          if (updateErr) throw updateErr;
-        } else {
-          throw error;
-        }
+        console.error("❌ Insert error details:", error);
+        throw error;
       }
 
+      console.log("✅ Save berhasil:", data);
       await fetchTodayAttendance();
       return true;
     } catch (err) {
       console.error("❌ saveAttendanceToSupabase error:", err);
-      setCameraError("Gagal menyimpan absensi: " + err.message);
+      const errorDetail = `${err.message || err.toString()} | Code: ${err.code || "N/A"} | Hint: ${err.hint || "N/A"}`;
+      setCameraError("GAGAL SAVE: " + errorDetail);
       return false;
     } finally {
       setSavingAttendance(false);
@@ -275,7 +248,7 @@ export default function AttendancePage() {
     } catch (err) {
       console.error("Camera error:", err);
       setCameraError(
-        err.name === "NotAllowedError" ? "Izin kamera ditolak. Buka Settings → Browser → Camera → Allow." :
+        err.name === "NotAllowedError" ? "Izin kamera ditolak." :
         err.name === "NotFoundError" ? "Kamera tidak ditemukan." :
         "Gagal akses kamera: " + err.message
       );
@@ -328,8 +301,9 @@ export default function AttendancePage() {
         return;
       }
       if (detection.expressions.happy > 0.7) {
-        setFaceStatus("success");
-        setFaceMessage("Menyimpan absensi...");
+        setFaceStatus("scanning");
+        setFaceMessage("Senyum terdeteksi! Sedang menyimpan...");
+
         const canvas = canvasRef.current;
         canvas.width = videoRef.current.videoWidth;
         canvas.height = videoRef.current.videoHeight;
@@ -343,7 +317,8 @@ export default function AttendancePage() {
 
         const saved = await saveAttendanceToSupabase(photoData, currentCoords);
         if (saved) {
-          setFaceMessage("✅ Absensi tersimpan!");
+          setFaceStatus("success");
+          setFaceMessage("Absensi tersimpan!");
           setTimeout(() => closeCameraModal(), 1800);
         } else {
           setFaceStatus("idle");
@@ -467,8 +442,8 @@ export default function AttendancePage() {
           </div>
 
           {cameraError && (
-            <div className="relative w-full max-w-md mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
-              <p className="text-xs text-red-300 text-center">{cameraError}</p>
+            <div className="relative w-full max-w-md mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-2xl">
+              <p className="text-xs text-red-300 text-center break-words">{cameraError}</p>
             </div>
           )}
 
@@ -491,10 +466,10 @@ export default function AttendancePage() {
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div
                   className={`w-3/5 h-4/5 border-4 rounded-[50%] transition-all duration-300 ${
-                    faceStatus === "success" ? "border-emerald-400 shadow-[0_0_40px_rgba(16,185,129,0.5)]" :
-                    faceStatus === "smiling" ? "border-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.4)]" :
-                    faceStatus === "scanning" ? "border-white/60" :
-                    "border-white/30"
+                    faceStatus === "success" ? "border-violet-400 shadow-[0_0_50px_rgba(167,139,250,0.6)]" :
+                    faceStatus === "smiling" ? "border-violet-300 shadow-[0_0_40px_rgba(196,181,253,0.4)]" :
+                    faceStatus === "scanning" ? "border-violet-200/60" :
+                    "border-violet-300/30"
                   }`}
                   style={{ borderStyle: faceStatus === "scanning" || faceStatus === "idle" ? "dashed" : "solid" }}
                 ></div>
@@ -514,12 +489,12 @@ export default function AttendancePage() {
               )}
 
               {faceStatus === "success" && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-emerald-500/20 backdrop-blur-sm">
-                  <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center shadow-2xl mb-4">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-violet-600/30 backdrop-blur-sm">
+                  <div className="w-24 h-24 bg-gradient-to-br from-violet-500 to-purple-700 rounded-full flex items-center justify-center shadow-2xl shadow-violet-900/50 mb-4">
                     <CheckCircle2 size={48} className="text-white" />
                   </div>
                   <p className="text-white font-bold text-lg">Absensi Berhasil!</p>
-                  <p className="text-emerald-200 text-xs mt-1">{faceMessage}</p>
+                  <p className="text-violet-200 text-xs mt-1">{faceMessage}</p>
                 </div>
               )}
             </div>
@@ -527,9 +502,9 @@ export default function AttendancePage() {
 
           <div className="relative w-full max-w-md mt-6">
             <div className={`text-center p-3.5 rounded-2xl text-sm font-medium transition-all ${
-              faceStatus === "success" ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20" :
-              faceStatus === "smiling" ? "bg-amber-500/10 text-amber-300 border border-amber-500/20" :
-              faceStatus === "scanning" ? "bg-white/5 text-white border border-white/10" :
+              faceStatus === "success" ? "bg-violet-500/15 text-violet-200 border border-violet-500/30" :
+              faceStatus === "smiling" ? "bg-violet-400/10 text-violet-200 border border-violet-400/20" :
+              faceStatus === "scanning" ? "bg-violet-500/5 text-white border border-violet-500/10" :
               "bg-white/5 text-slate-400 border border-white/10"
             }`}>
               {faceMessage || "Menyiapkan kamera..."}
