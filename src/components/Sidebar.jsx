@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabase";
 import {
   LayoutDashboard, Users, CalendarCheck, CalendarDays,
   FileText, Megaphone, Settings, LogOut,
-  History, Menu, X
+  History, X
 } from "lucide-react";
 
 export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
@@ -38,18 +38,10 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
 
   return (
     <>
-      {!menuOpen && (
-        <button
-          onClick={() => setMenuOpen(true)}
-          className="md:hidden fixed top-3 left-3 z-50 p-2 bg-[#6B4BA3] text-white rounded-xl shadow-lg"
-        >
-          <Menu size={20} />
-        </button>
-      )}
-
       <aside
-        className={`fixed top-0 left-0 h-full w-[260px] bg-[#160a29]/80 backdrop-blur-xl text-white flex flex-col z-40 border-r border-white/10 transition-transform duration-300
+        className={`fixed top-0 left-0 h-full w-[260px] bg-[#160a29]/95 backdrop-blur-xl text-white flex flex-col z-40 border-r border-white/10 transition-transform duration-300
         ${menuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         {/* Logo */}
         <div className="p-5 flex items-center justify-between border-b border-white/10">
@@ -111,7 +103,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
         </nav>
 
         {/* Logout */}
-        <div className="p-3 border-t border-white/10">
+        <div className="p-3 border-t border-white/10" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 w-full px-3 py-3 text-red-400/80 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition text-sm"

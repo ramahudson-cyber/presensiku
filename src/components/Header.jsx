@@ -28,8 +28,15 @@ function Header({ onMenuClick }) {
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-[#160a29]/95 backdrop-blur-xl border-b border-white/10">
-      <div className="flex items-center justify-between h-[68px] px-4 md:px-6">
+    <header
+      className="sticky top-0 z-30 bg-[#160a29]/95 backdrop-blur-xl border-b border-white/10"
+      style={{
+        paddingTop: "env(safe-area-inset-top)",
+        paddingLeft: "env(safe-area-inset-left)",
+        paddingRight: "env(safe-area-inset-right)",
+      }}
+    >
+      <div className="flex items-center justify-between h-[60px] px-4 md:px-6">
         {/* LEFT: Hamburger (mobile only) + Title */}
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <button
