@@ -205,7 +205,7 @@ export default function AttendanceHistoryPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-5 p-4 md:p-6 pb-20 md:pb-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
 
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
@@ -224,7 +224,7 @@ export default function AttendanceHistoryPage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <SummaryCard label="Hadir"  value={summary.hadir}  accent="from-emerald-500 to-teal-700"  icon={CheckCircle2}   />
         <SummaryCard label="Izin"   value={summary.izin}   accent="from-amber-500 to-orange-700" icon={Clock}          />
         <SummaryCard label="Sakit"  value={summary.sakit}  accent="from-orange-500 to-rose-700"  icon={AlertTriangle}  />

@@ -179,7 +179,7 @@ const EmployeesPage = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 pb-20 md:pb-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between gap-3 mb-5">
         <div className="min-w-0">

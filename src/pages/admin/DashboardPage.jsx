@@ -150,7 +150,7 @@ export default function DashboardPage() {
       : "-";
 
   return (
-    <div className="space-y-5 md:space-y-6 p-4 md:p-6 pb-20 md:pb-6 animate-fade-in">
+    <div className="space-y-5 md:space-y-6 animate-fade-in">
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -178,7 +178,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 md:gap-4">
         <StatCard
           title="Total Pegawai"
           value={stats.totalPegawai}
