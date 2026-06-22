@@ -142,7 +142,9 @@ export default function AttendancePage() {
 
   const fetchTodayAttendance = async () => {
     try {
-      const today = new Date(Date.now() + serverOffset).toISOString().split("T")[0];
+      // Pakai WITA date supaya konsisten dengan save (UTC+8)
+      const witaMs = Date.now() + serverOffset + (8 * 60 * 60 * 1000);
+      const today = new Date(witaMs).toISOString().split("T")[0];
       const { data } = await supabase
         .from("attendance")
         .select("*")
@@ -192,12 +194,18 @@ export default function AttendancePage() {
       const now = new Date(serverNow);
       const today = now.toISOString().split("T")[0];
 
-      // Hitung keterlambatan berdasarkan SERVER TIME
-      const standardTime = new Date(now);
-      standardTime.setHours(8, 0, 0, 0);
-      const isLate = now > standardTime;
-      const lateMinutes = isLate ? Math.floor((now - standardTime) / 60000) : 0;
-      const status = "hadir"; // hardcode untuk test enum
+      // Hitung keterlambatan berdasarkan SERVER TIME dalam WITA (UTC+8)
+      // Puskesmas di Mataram, jam masuk 08:00 WITA
+      const witaMs = now.getTime() + (8 * 60 * 60 * 1000); // konversi UTC → WITA
+      const witaDate = new Date(witaMs);
+      const witaHour = witaDate.getUTCHours();
+      const witaMinute = witaDate.getUTCMinutes();
+      const totalWitaMinutes = witaHour * 60 + witaMinute;
+      const standardMinutes = 8 * 60; // 08:00 WITA
+      const isLate = totalWitaMinutes > standardMinutes;
+      const lateMinutes = isLate ? totalWitaMinutes - standardMinutes : 0;
+      const status = isLate ? "terlambat" : "hadir";
+      const today = witaDate.toISOString().split("T")[0]; // tanggal WITA, bukan UTC
 
       const payload = {
         user_id: user.id,
