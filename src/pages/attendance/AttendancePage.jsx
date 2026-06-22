@@ -106,11 +106,22 @@ export default function AttendancePage() {
   useEffect(() => {
     const loadModels = async () => {
       try {
-        await Promise.all([
-          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-          faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-          faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
-        ]);
+        // ⚡ Pakai preload yang sudah dimulai di main.jsx (lebih cepat)
+        let preloadModule;
+        try {
+          preloadModule = await import("../../utils/preloadModels");
+        } catch { preloadModule = null; }
+
+        if (preloadModule) {
+          await preloadModule.preloadFaceModels();
+        } else {
+          // Fallback: load langsung
+          await Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+            faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+            faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
+          ]);
+        }
         setModelsLoaded(true);
       } catch (err) { console.error("Gagal load model:", err); }
     };
@@ -209,31 +220,33 @@ export default function AttendancePage() {
   };
 
   // ============================================================
-  // 📷 CAMERA — OPTIMIZED FOR SPEED (Safari PWA)
+  // 📷 CAMERA — AGGRESSIVE OPTIMIZATION FOR SAFARI PWA
   // ============================================================
   const openCameraModal = async () => {
     if (!modelsLoaded) {
-      setCameraError("AI model belum siap.");
+      setCameraError("AI model belum siap. Tunggu beberapa detik.");
       return;
     }
     setCameraError("");
     setFaceStatus("loading");
-    setFaceMessage("Mengaktifkan kamera...");
+    setFaceMessage("Memulai kamera...");
     setCameraOpen(true);
 
     try {
-      // ⚡ Resolution lebih kecil = load lebih cepat
+      // ⚡ STEP 1: Tampilkan modal DULU, lalu mulai camera
+      await new Promise(resolve => requestAnimationFrame(resolve));
+
+      // ⚡ STEP 2: getUserMedia dengan constraint MINIMAL
+      // (biarkan Safari pilih resolution tercepat)
+      setFaceMessage("Meminta izin kamera...");
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "user",
-          width: { ideal: 480 },
-          height: { ideal: 480 },
-        },
+        video: { facingMode: "user" },
         audio: false
       });
       streamRef.current = stream;
 
-      // ⚡ Pakai requestAnimationFrame (lebih cepat dari setTimeout 300ms)
+      // ⚡ STEP 3: Tunggu React render <video> element
+      setFaceMessage("Menyiapkan tampilan...");
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
       if (!videoRef.current) throw new Error("Video element tidak ter-render.");
@@ -241,16 +254,21 @@ export default function AttendancePage() {
       const video = videoRef.current;
       video.srcObject = stream;
 
-      // ⚡ Gabung onloadedmetadata + play dalam 1 step
+      // ⚡ STEP 4: Tunggu metadata + play (gabung dalam 1 step)
+      setFaceMessage("Menyalakan kamera...");
       await new Promise((resolve, reject) => {
+        let resolved = false;
+        const done = () => { if (!resolved) { resolved = true; resolve(); } };
+        const fail = (err) => { if (!resolved) { resolved = true; reject(err); } };
+
         video.onloadedmetadata = () => {
-          video.play().then(resolve).catch(() => {
+          video.play().then(done).catch(() => {
             video.muted = true;
-            video.play().then(resolve).catch(reject);
+            video.play().then(done).catch(fail);
           });
         };
-        video.onerror = reject;
-        setTimeout(() => reject(new Error("Timeout loading video")), 8000);
+        video.onerror = fail;
+        setTimeout(() => fail(new Error("Timeout")), 10000);
       });
 
       setFaceStatus("scanning");
@@ -259,9 +277,9 @@ export default function AttendancePage() {
     } catch (err) {
       console.error("Camera error:", err);
       setCameraError(
-        err.name === "NotAllowedError" ? "Izin kamera ditolak. Buka Settings → Safari → Camera → Allow." :
+        err.name === "NotAllowedError" ? "Izin kamera ditolak. Settings → Safari → Camera → Allow." :
         err.name === "NotFoundError" ? "Kamera tidak ditemukan." :
-        err.name === "NotReadableError" ? "Kamera sedang dipakai app lain. Tutup app lain lalu coba lagi." :
+        err.name === "NotReadableError" ? "Kamera sedang dipakai app lain. Tutup app lain." :
         "Gagal akses kamera: " + err.message
       );
       setFaceStatus("idle");
@@ -475,7 +493,7 @@ export default function AttendancePage() {
           <div className="relative w-full max-w-md aspect-square">
             <div className="absolute -inset-4 bg-gradient-to-br from-violet-600/20 to-purple-800/20 rounded-[2rem] blur-2xl"></div>
             <div className="relative w-full h-full rounded-[2rem] overflow-hidden bg-slate-900 shadow-2xl border border-white/10">
-              <video ref={videoRef} autoPlay playsInline muted width={480} height={480} className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
+              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
               <canvas ref={canvasRef} className="hidden" />
 
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
