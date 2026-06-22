@@ -7,8 +7,13 @@ import {
 } from "lucide-react";
 import * as faceapi from "face-api.js";
 
+// ============================================================
+// KONFIGURASI LOKASI PUSKESMAS
+// Default: -8.5697, 116.0821 (perlu diverifikasi)
+// Radius: 500 meter (cukup untuk GPS dalam gedung)
+// ============================================================
 const PUSKESMAS_LOCATION = { latitude: -8.5697, longitude: 116.0821 };
-const RADIUS_METER = 200;
+const RADIUS_METER = 500;
 const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -29,6 +34,8 @@ export default function AttendancePage() {
   const [loading, setLoading] = useState(false);
   const [locationStatus, setLocationStatus] = useState("checking");
   const [distance, setDistance] = useState(null);
+  const [gpsAccuracy, setGpsAccuracy] = useState(null);
+  const [currentCoords, setCurrentCoords] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
@@ -71,15 +78,25 @@ export default function AttendancePage() {
     if (!navigator.geolocation) { setLocationStatus("error"); return; }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const loc = { latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy, altitude: pos.coords.altitude };
+        const loc = {
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
+          altitude: pos.coords.altitude
+        };
+        setCurrentCoords(loc);
+        setGpsAccuracy(Math.round(loc.accuracy));
         const isFake = (loc.accuracy < 3) && (loc.altitude === null || loc.altitude === 0);
         if (isFake) { setIsFakeGPS(true); setLocationStatus("invalid"); return; }
         const dist = calculateDistance(loc.latitude, loc.longitude, PUSKESMAS_LOCATION.latitude, PUSKESMAS_LOCATION.longitude);
         setDistance(Math.round(dist));
         setLocationStatus(dist <= RADIUS_METER ? "valid" : "invalid");
       },
-      () => setLocationStatus("error"),
-      { enableHighAccuracy: true, timeout: 10000 }
+      (err) => {
+        console.error("GPS error:", err);
+        setLocationStatus("error");
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
   };
 
@@ -172,7 +189,7 @@ export default function AttendancePage() {
         )}
       </div>
 
-      {/* GPS */}
+      {/* GPS - Dengan Debugging Info */}
       <div className={`rounded-2xl border p-4 backdrop-blur-sm ${
         locationStatus === "valid" ? "bg-emerald-500/5 border-emerald-500/20" :
         locationStatus === "invalid" ? "bg-red-500/5 border-red-500/20" :
@@ -195,8 +212,25 @@ export default function AttendancePage() {
         )}
         {locationStatus === "checking" && <p className="text-xs text-slate-400">Mendeteksi...</p>}
         {locationStatus === "valid" && <p className="text-xs text-emerald-400">Dalam radius ({distance}m)</p>}
-        {locationStatus === "invalid" && !isFakeGPS && <p className="text-xs text-red-400">Di luar radius ({distance}m)</p>}
-        {locationStatus === "error" && <p className="text-xs text-red-400">GPS tidak aktif</p>}
+        {locationStatus === "invalid" && !isFakeGPS && (
+          <p className="text-xs text-red-400">Di luar radius ({distance}m) — Radius max: {RADIUS_METER}m</p>
+        )}
+        {locationStatus === "error" && <p className="text-xs text-red-400">GPS tidak aktif / ditolak. Pastikan izin lokasi diaktifkan.</p>}
+
+        {/* DEBUG INFO - untuk troubleshooting */}
+        {currentCoords && (
+          <div className="mt-3 pt-3 border-t border-white/10 space-y-1">
+            <p className="text-[10px] text-slate-500 font-mono">
+              📍 Anda: {currentCoords.latitude.toFixed(6)}, {currentCoords.longitude.toFixed(6)}
+            </p>
+            <p className="text-[10px] text-slate-500 font-mono">
+              🏥 Puskesmas: {PUSKESMAS_LOCATION.latitude.toFixed(6)}, {PUSKESMAS_LOCATION.longitude.toFixed(6)}
+            </p>
+            <p className="text-[10px] text-slate-500 font-mono">
+              📏 Akurasi GPS: ±{gpsAccuracy}m {gpsAccuracy > 100 && "(kurang akurat, coba ke luar ruangan)"}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Face Verification */}
