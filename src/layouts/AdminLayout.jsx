@@ -16,7 +16,6 @@ function AdminLayout() {
       <div className="fixed top-[-10%] left-[5%] w-[400px] h-[400px] bg-purple-700 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-orb"></div>
       <div className="fixed bottom-[-10%] right-[5%] w-[400px] h-[400px] bg-violet-800 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-orb animate-orb-delay"></div>
 
-      {/* Sidebar — desktop only */}
       <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
       {menuOpen && (
@@ -25,8 +24,11 @@ function AdminLayout() {
 
       <div className="relative z-10 w-full md:ml-[260px] min-h-screen flex flex-col">
         <Header onMenuClick={() => setMenuOpen(true)} />
-        <main className="flex-1 p-4 md:p-6 max-w-2xl mx-auto w-full pb-24 md:pb-6">
-          <Outlet />
+        {/* FIX: hapus max-w-2xl mx-auto, pakai padding responsif */}
+        <main className="flex-1 p-4 md:p-6 lg:p-8 pb-24 md:pb-8 w-full">
+          <div className="max-w-7xl mx-auto w-full">
+            <Outlet />
+          </div>
         </main>
       </div>
 
