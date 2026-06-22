@@ -6,12 +6,57 @@ import {
   MapPin, Clock, Users, FileText, Save, RefreshCw,
   Plus, Pencil, Trash2, X, Search, Key, Shield,
   CheckCircle2, AlertTriangle, Activity, Eye, Smartphone,
-  Mail, Clock as ClockIcon, XCircle,
+  Mail, Clock as ClockIcon, XCircle, Inbox, MapPinned,
+  Briefcase, User, IdCard, Calendar, Bell,
 } from "lucide-react";
 
-// ============================================================
-// TAB 1: PROFIL PUSKESMAS & LOKASI GPS
-// ============================================================
+/* ──────────────────────────────────────────────────────────────────────────
+   SHARED THEME TOKENS
+   ────────────────────────────────────────────────────────────────────────── */
+const cardBase =
+  "bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl transition-all";
+
+const inputBase =
+  "w-full px-3 py-2.5 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-violet-300/30 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all";
+
+const labelBase =
+  "block text-xs font-medium text-violet-300/70 mb-1.5 uppercase tracking-wider";
+
+const sectionTitle =
+  "text-xl md:text-2xl font-bold text-white tracking-tight";
+
+const sectionSub = "text-sm text-violet-300/60 mt-1";
+
+const btnPrimary =
+  "flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed";
+
+const btnGhost =
+  "p-2 rounded-xl border border-white/10 bg-white/5 text-violet-300/70 hover:text-violet-200 hover:bg-white/10 hover:scale-105 transition-all";
+
+const avatarGradient = (name = "") => {
+  const grads = [
+    "from-violet-500 to-purple-700",
+    "from-sky-500 to-blue-700",
+    "from-emerald-500 to-teal-700",
+    "from-amber-500 to-orange-700",
+    "from-rose-500 to-pink-700",
+    "from-fuchsia-500 to-purple-700",
+  ];
+  let sum = 0;
+  for (let i = 0; i < name.length; i++) sum += name.charCodeAt(i);
+  return grads[sum % grads.length];
+};
+
+const initials = (name) => {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+};
+
+/* ============================================================
+   TAB 1: PROFIL PUSKESMAS & LOKASI GPS
+   ============================================================ */
 function TabProfilPuskesmas() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -198,118 +243,125 @@ function TabProfilPuskesmas() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-violet-500" />
+        <RefreshCw size={28} className="animate-spin text-violet-400" />
       </div>
     );
   }
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-            Lokasi Puskesmas
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Kelola lokasi puskesmas & radius absensi GPS
-          </p>
+          <h2 className={sectionTitle}>Lokasi Puskesmas</h2>
+          <p className={sectionSub}>Kelola lokasi puskesmas & radius absensi GPS</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-xl hover:bg-violet-700 transition text-sm"
+          className={btnPrimary}
         >
           <Plus size={16} /> Tambah Lokasi
         </button>
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b dark:border-slate-700">
-              <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-[#1a0a35] border border-white/10 rounded-2xl shadow-2xl shadow-violet-900/40 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-5 md:p-6 border-b border-white/10 sticky top-0 bg-[#1a0a35]/95 backdrop-blur-md z-10">
+              <h3 className="text-lg font-bold text-white">
                 {editingId ? "Edit Lokasi" : "Tambah Lokasi Baru"}
               </h3>
-              <button onClick={resetForm} className="text-gray-400 hover:text-gray-600">
+              <button onClick={resetForm} className="p-1.5 rounded-lg text-violet-300/60 hover:text-white hover:bg-white/5 transition-all">
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-5 md:p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Lokasi *</label>
+                <label className={labelBase}>
+                  <MapPin size={11} className="inline mr-1" />
+                  Nama Lokasi *
+                </label>
                 <input
                   type="text" required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Contoh: Puskesmas Ampenan"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+                  className={inputBase}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Alamat</label>
+                <label className={labelBase}>
+                  <MapPinned size={11} className="inline mr-1" />
+                  Alamat
+                </label>
                 <input
                   type="text"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   placeholder="Jl. ..."
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+                  className={inputBase}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Latitude *</label>
+                  <label className={labelBase}>Latitude *</label>
                   <input
                     type="number" step="any" required
                     value={formData.latitude}
                     onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
                     placeholder="-8.5697"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+                    className={`${inputBase} font-mono`}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Longitude *</label>
+                  <label className={labelBase}>Longitude *</label>
                   <input
                     type="number" step="any" required
                     value={formData.longitude}
                     onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
                     placeholder="116.0821"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+                    className={`${inputBase} font-mono`}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Radius Absensi (meter) *</label>
+                <label className={labelBase}>
+                  <MapPin size={11} className="inline mr-1" />
+                  Radius Absensi (meter) *
+                </label>
                 <input
                   type="number" required min="10" max="2000"
                   value={formData.radius_meter}
                   onChange={(e) => setFormData({ ...formData, radius_meter: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+                  className={inputBase}
                 />
               </div>
 
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-3 cursor-pointer p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
                 <input
                   type="checkbox"
                   checked={formData.is_active}
                   onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                  className="w-4 h-4 rounded text-violet-600"
+                  className="w-4 h-4 rounded accent-violet-500"
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300">Jadikan lokasi aktif (untuk absensi)</span>
+                <span className="text-sm text-violet-100/90">
+                  Jadikan lokasi aktif (untuk absensi)
+                </span>
               </label>
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-3 pt-2 sticky bottom-0 bg-[#1a0a35]/95 backdrop-blur-md -mx-5 md:-mx-6 px-5 md:px-6 pb-2 -mb-2">
                 <button
                   type="button" onClick={resetForm}
-                  className="flex-1 py-2 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-slate-800 transition"
+                  className="flex-1 py-2.5 border border-white/10 text-violet-200/80 rounded-xl text-sm font-medium hover:bg-white/5 transition-all"
                 >
                   Batal
                 </button>
                 <button
                   type="submit" disabled={saving}
-                  className="flex-1 py-2 bg-violet-600 text-white rounded-lg text-sm hover:bg-violet-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {saving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
                   {editingId ? "Update" : "Simpan"}
@@ -320,57 +372,64 @@ function TabProfilPuskesmas() {
         </div>
       )}
 
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 overflow-hidden">
+      <div className={`${cardBase} overflow-hidden`}>
         {locations.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            <MapPin size={40} className="mx-auto mb-3 opacity-30" />
-            <p>Belum ada lokasi. Klik "Tambah Lokasi" untuk menambahkan.</p>
+          <div className="text-center py-12 flex flex-col items-center gap-3">
+            <div className="p-4 rounded-2xl bg-white/5">
+              <MapPin size={32} className="text-violet-300/40" />
+            </div>
+            <div>
+              <p className="text-violet-200/60 font-medium">Belum ada lokasi</p>
+              <p className="text-violet-300/40 text-xs mt-1">Klik "Tambah Lokasi" untuk menambahkan</p>
+            </div>
           </div>
         ) : (
-          <div className="divide-y divide-gray-50 dark:divide-slate-800">
+          <div className="divide-y divide-white/5">
             {locations.map((loc) => (
-              <div key={loc.id} className="p-4 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition">
+              <div key={loc.id} className="p-4 md:p-5 hover:bg-white/5 transition-all">
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-3 flex-1">
-                    <div className={`p-2 rounded-xl ${loc.is_active ? "bg-emerald-100 dark:bg-emerald-900/30" : "bg-gray-100 dark:bg-gray-800"}`}>
-                      <MapPin size={18} className={loc.is_active ? "text-emerald-600" : "text-gray-400"} />
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                    <div className={`p-2.5 rounded-xl ${loc.is_active ? "bg-emerald-500/15" : "bg-white/5"}`}>
+                      <MapPin size={18} className={loc.is_active ? "text-emerald-300" : "text-violet-300/50"} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-semibold text-gray-800 dark:text-gray-100">{loc.name}</h4>
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h4 className="font-semibold text-white">{loc.name}</h4>
                         {loc.is_active && (
-                          <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium rounded-full">
-                            AKTIF
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/15 text-emerald-300 text-xs font-medium rounded-full ring-1 ring-emerald-500/30">
+                            <CheckCircle2 size={10} /> AKTIF
                           </span>
                         )}
                       </div>
-                      {loc.address && <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{loc.address}</p>}
-                      <div className="flex flex-wrap gap-3 text-xs text-gray-400 dark:text-gray-500 mt-1">
+                      {loc.address && <p className="text-sm text-violet-200/60 mb-1">{loc.address}</p>}
+                      <div className="flex flex-wrap gap-3 text-xs text-violet-300/50 mt-1">
                         <span className="font-mono">📍 {loc.latitude}, {loc.longitude}</span>
                         <span>📏 {loc.radius_meter}m</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 shrink-0">
                     {!loc.is_active && (
                       <button
                         onClick={() => handleSetActive(loc.id, loc.name)}
                         title="Jadikan aktif"
-                        className="p-2 text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition"
+                        className="p-2 text-emerald-300 hover:bg-emerald-500/15 rounded-lg transition-all hover:scale-110"
                       >
                         <CheckCircle2 size={16} />
                       </button>
                     )}
                     <button
                       onClick={() => handleEdit(loc)}
-                      className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition"
+                      className="p-2 text-sky-300 hover:bg-sky-500/15 rounded-lg transition-all hover:scale-110"
+                      title="Edit"
                     >
                       <Pencil size={15} />
                     </button>
                     <button
                       onClick={() => handleDelete(loc.id, loc.name)}
-                      className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
+                      className="p-2 text-rose-300 hover:bg-rose-500/15 rounded-lg transition-all hover:scale-110"
+                      title="Hapus"
                     >
                       <Trash2 size={15} />
                     </button>
@@ -382,13 +441,17 @@ function TabProfilPuskesmas() {
         )}
       </div>
 
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4">
+      <div className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-4">
         <div className="flex gap-3">
-          <AlertTriangle size={18} className="text-blue-500 shrink-0 mt-0.5" />
-          <div className="text-sm text-blue-700 dark:text-blue-300">
+          <AlertTriangle size={18} className="text-sky-300 shrink-0 mt-0.5" />
+          <div className="text-sm text-sky-200/90">
             <p className="font-semibold mb-1">Tips Mendapatkan Koordinat GPS</p>
-            <p className="text-blue-600 dark:text-blue-400 text-xs">
-              Buka <a href="https://www.google.com/maps" target="_blank" rel="noreferrer" className="underline">Google Maps</a>, klik kanan di lokasi puskesmas, copy koordinatnya (format: -8.569700, 116.082100).
+            <p className="text-sky-300/70 text-xs">
+              Buka{" "}
+              <a href="https://www.google.com/maps" target="_blank" rel="noreferrer" className="underline text-sky-300">
+                Google Maps
+              </a>
+              , klik kanan di lokasi puskesmas, copy koordinatnya (format: -8.569700, 116.082100).
             </p>
           </div>
         </div>
@@ -397,25 +460,25 @@ function TabProfilPuskesmas() {
   );
 }
 
-// ============================================================
-// TAB 2: JAM KERJA & SETTINGS
-// ============================================================
+/* ============================================================
+   TAB 2: JAM KERJA & SETTINGS
+   ============================================================ */
 function TabJamKerja() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({});
 
   const settingKeys = [
-    { key: "work_start_time", label: "Jam Mulai Kerja", type: "time", category: "attendance", icon: Clock },
-    { key: "work_end_time", label: "Jam Selesai Kerja", type: "time", category: "attendance", icon: Clock },
-    { key: "late_tolerance_minutes", label: "Toleransi Terlambat (menit)", type: "number", category: "attendance", icon: AlertTriangle },
-    { key: "default_radius_meter", label: "Radius Default (meter)", type: "number", category: "attendance", icon: MapPin },
-    { key: "selfie_retention_days", label: "Retensi Foto Selfie (hari)", type: "number", category: "attendance", icon: FileText },
-    { key: "annual_leave_quota_asn", label: "Kuota Cuti ASN (hari/tahun)", type: "number", category: "leave", icon: Users },
-    { key: "annual_leave_quota_pppk", label: "Kuota Cuti PPPK (hari/tahun)", type: "number", category: "leave", icon: Users },
-    { key: "annual_leave_quota_tpk", label: "Kuota Cuti TPK (hari/tahun)", type: "number", category: "leave", icon: Users },
-    { key: "default_password", label: "Password Default Pegawai Baru", type: "text", category: "security", icon: Key },
-    { key: "password_min_length", label: "Panjang Minimal Password", type: "number", category: "security", icon: Shield },
+    { key: "work_start_time", label: "Jam Mulai Kerja", type: "time", category: "attendance", icon: Clock, desc: "Waktu mulai jam kerja" },
+    { key: "work_end_time", label: "Jam Selesai Kerja", type: "time", category: "attendance", icon: Clock, desc: "Waktu selesai jam kerja" },
+    { key: "late_tolerance_minutes", label: "Toleransi Terlambat (menit)", type: "number", category: "attendance", icon: AlertTriangle, desc: "Batas toleransi keterlambatan" },
+    { key: "default_radius_meter", label: "Radius Default (meter)", type: "number", category: "attendance", icon: MapPin, desc: "Radius GPS default untuk absensi" },
+    { key: "selfie_retention_days", label: "Retensi Foto Selfie (hari)", type: "number", category: "attendance", icon: FileText, desc: "Lama penyimpanan foto selfie" },
+    { key: "annual_leave_quota_asn", label: "Kuota Cuti ASN (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan ASN" },
+    { key: "annual_leave_quota_pppk", label: "Kuota Cuti PPPK (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan PPPK" },
+    { key: "annual_leave_quota_tpk", label: "Kuota Cuti TPK (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan TPK" },
+    { key: "default_password", label: "Password Default Pegawai Baru", type: "text", category: "security", icon: Key, desc: "Password awal pegawai baru" },
+    { key: "password_min_length", label: "Panjang Minimal Password", type: "number", category: "security", icon: Shield, desc: "Jumlah karakter minimal password" },
   ];
 
   const fetchSettings = async () => {
@@ -469,7 +532,7 @@ function TabJamKerja() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-violet-500" />
+        <RefreshCw size={28} className="animate-spin text-violet-400" />
       </div>
     );
   }
@@ -480,56 +543,81 @@ function TabJamKerja() {
     leave: "Pengaturan Cuti",
     security: "Keamanan",
   };
+  const categoryIcons = {
+    attendance: Clock,
+    leave: Calendar,
+    security: Shield,
+  };
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5 pb-20 md:pb-0">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white">Jam Kerja & Konfigurasi</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Atur jam kerja, radius, kuota cuti, dll</p>
+          <h2 className={sectionTitle}>Jam Kerja & Konfigurasi</h2>
+          <p className={sectionSub}>Atur jam kerja, radius, kuota cuti, dll</p>
         </div>
         <button
           onClick={handleSave} disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition text-sm disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-emerald-900/30 hover:scale-105 transition-all disabled:opacity-50"
         >
           {saving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
           Simpan Semua
         </button>
       </div>
 
-      {categories.map(cat => (
-        <div key={cat} className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 p-6">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-            {categoryLabels[cat]}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {settingKeys.filter(s => s.category === cat).map(item => {
-              const Icon = item.icon;
-              return (
-                <div key={item.key}>
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    <Icon size={14} className="text-violet-500" />
-                    {item.label}
-                  </label>
-                  <input
-                    type={item.type}
-                    value={settings[item.key] || ""}
-                    onChange={(e) => setSettings({ ...settings, [item.key]: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
-                  />
-                </div>
-              );
-            })}
+      {categories.map(cat => {
+        const CatIcon = categoryIcons[cat];
+        return (
+          <div key={cat} className={`${cardBase} p-5 md:p-6`}>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-2 rounded-lg bg-violet-500/15">
+                <CatIcon size={16} className="text-violet-300" />
+              </div>
+              <h3 className="text-lg font-semibold text-white">
+                {categoryLabels[cat]}
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {settingKeys.filter(s => s.category === cat).map(item => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.key} className="p-3 rounded-xl bg-white/5 border border-white/5">
+                    <label className="flex items-center gap-2 text-xs font-medium text-violet-300/70 mb-1 uppercase tracking-wider">
+                      <Icon size={12} className="text-violet-400" />
+                      {item.label}
+                    </label>
+                    <p className="text-xs text-violet-300/40 mb-2">{item.desc}</p>
+                    <input
+                      type={item.type}
+                      value={settings[item.key] || ""}
+                      onChange={(e) => setSettings({ ...settings, [item.key]: e.target.value })}
+                      className={inputBase + (item.type === "time" || item.type === "date" ? " [color-scheme:dark]" : "")}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
+
+      {/* Sticky save button (mobile bottom) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-[#0f0524]/90 backdrop-blur-md border-t border-white/10">
+        <button
+          onClick={handleSave} disabled={saving}
+          className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50"
+        >
+          {saving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
+          Simpan Semua Perubahan
+        </button>
+      </div>
     </div>
   );
 }
 
-// ============================================================
-// TAB 3: MANAJEMEN USER
-// ============================================================
+/* ============================================================
+   TAB 3: MANAJEMEN USER
+   ============================================================ */
 function TabManajemenUser() {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
@@ -589,7 +677,7 @@ function TabManajemenUser() {
 
   const handleResetPassword = async (user) => {
     if (!window.confirm(`Reset password ${user.full_name} (${user.username}) ke default?`)) return;
-    
+
     setResettingId(user.id);
     try {
       const { error } = await supabase.rpc("reset_user_password", {
@@ -619,9 +707,9 @@ function TabManajemenUser() {
     const confirmMsg = visitorId
       ? `Hapus device ini dari ${user.full_name}? Pegawai perlu login ulang di device tersebut.`
       : `Hapus SEMUA device terdaftar dari ${user.full_name}? Pegawai perlu login ulang di semua device.`;
-    
+
     if (!window.confirm(confirmMsg)) return;
-    
+
     setResettingDeviceId(visitorId || user.id);
     try {
       const { data, error } = await supabase.rpc("reset_user_device", {
@@ -652,12 +740,12 @@ function TabManajemenUser() {
 
   const roleBadge = (role) => {
     const map = {
-      super_admin: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
-      admin_puskesmas: "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400",
-      kepala_unit: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
-      pegawai: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
+      super_admin: "bg-rose-500/15 text-rose-300 ring-rose-500/30",
+      admin_puskesmas: "bg-purple-500/15 text-purple-300 ring-purple-500/30",
+      kepala_unit: "bg-sky-500/15 text-sky-300 ring-sky-500/30",
+      pegawai: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
     };
-    return map[role] || "bg-gray-100 dark:bg-gray-800 text-gray-700";
+    return map[role] || "bg-white/5 text-violet-300/60 ring-white/10";
   };
 
   const filtered = users.filter(u =>
@@ -669,7 +757,7 @@ function TabManajemenUser() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-violet-500" />
+        <RefreshCw size={28} className="animate-spin text-violet-400" />
       </div>
     );
   }
@@ -677,65 +765,65 @@ function TabManajemenUser() {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white">Manajemen User</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <h2 className={sectionTitle}>Manajemen User</h2>
+        <p className={sectionSub}>
           Reset password & device binding ({users.length} user)
         </p>
       </div>
 
       <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-300/40" />
         <input
           type="text"
           placeholder="Cari nama, username, atau email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 border border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+          className={`w-full pl-10 pr-4 py-2.5 ${inputBase}`}
         />
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 overflow-hidden">
+      <div className={`${cardBase} overflow-hidden`}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-slate-800/50 border-b dark:border-slate-700">
+            <thead className="bg-white/5 border-b border-white/10">
               <tr>
-                <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">User</th>
-                <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400 hidden md:table-cell">Username</th>
-                <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400 hidden lg:table-cell">Email</th>
-                <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Role</th>
-                <th className="text-center px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Aksi</th>
+                <th className="text-left px-4 py-3 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">User</th>
+                <th className="text-left px-4 py-3 font-semibold text-violet-300/60 text-xs uppercase tracking-wider hidden md:table-cell">Username</th>
+                <th className="text-left px-4 py-3 font-semibold text-violet-300/60 text-xs uppercase tracking-wider hidden lg:table-cell">Email</th>
+                <th className="text-left px-4 py-3 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Role</th>
+                <th className="text-center px-4 py-3 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
+            <tbody className="divide-y divide-white/5">
               {filtered.map(u => (
                 <>
-                  <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition">
+                  <tr key={u.id} className="hover:bg-white/5 transition-all">
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2.5">
                         <button
                           onClick={() => toggleExpand(u.id)}
-                          className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-bold"
+                          className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarGradient(u.full_name)} flex items-center justify-center text-white text-xs font-bold shadow-lg shrink-0 hover:scale-110 transition-all`}
                         >
-                          {u.full_name?.charAt(0) || "U"}
+                          {initials(u.full_name)}
                         </button>
-                        <div>
-                          <p className="font-medium text-gray-800 dark:text-gray-200">{u.full_name || "-"}</p>
-                          <p className="text-xs text-gray-400 md:hidden">{u.username || "-"} • {u.email || "-"}</p>
+                        <div className="min-w-0">
+                          <p className="font-medium text-white truncate">{u.full_name || "-"}</p>
+                          <p className="text-xs text-violet-300/40 md:hidden truncate">{u.username || "-"} • {u.email || "-"}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 font-mono hidden md:table-cell">{u.username || "-"}</td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs hidden lg:table-cell">{u.email || "-"}</td>
+                    <td className="px-4 py-3 text-violet-200/60 font-mono text-xs hidden md:table-cell">{u.username || "-"}</td>
+                    <td className="px-4 py-3 text-violet-200/60 text-xs hidden lg:table-cell">{u.email || "-"}</td>
                     <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleBadge(u.role)}`}>{u.role || "-"}</span>
+                      <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${roleBadge(u.role)}`}>{u.role || "-"}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-1 flex-wrap">
+                      <div className="flex items-center justify-center gap-1.5 flex-wrap">
                         <button
                           onClick={() => handleResetPassword(u)}
                           disabled={resettingId === u.id}
                           title="Reset password ke default"
-                          className="inline-flex items-center gap-1 px-2 py-1.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-lg text-xs font-medium transition disabled:opacity-50"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 rounded-lg text-xs font-medium transition-all disabled:opacity-50"
                         >
                           {resettingId === u.id ? <RefreshCw size={11} className="animate-spin" /> : <Key size={11} />}
                           Password
@@ -743,7 +831,7 @@ function TabManajemenUser() {
                         <button
                           onClick={() => toggleExpand(u.id)}
                           title="Lihat & kelola device"
-                          className="inline-flex items-center gap-1 px-2 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg text-xs font-medium transition"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-sky-500/15 text-sky-300 hover:bg-sky-500/25 rounded-lg text-xs font-medium transition-all"
                         >
                           <Smartphone size={11} />
                           Device
@@ -751,20 +839,20 @@ function TabManajemenUser() {
                       </div>
                     </td>
                   </tr>
-                  
+
                   {expandedUser === u.id && (
-                    <tr key={u.id + "-devices"} className="bg-gray-50 dark:bg-slate-800/30">
+                    <tr key={u.id + "-devices"} className="bg-white/[0.03]">
                       <td colSpan={5} className="px-4 py-4">
                         <div className="space-y-2">
-                          <div className="flex items-center justify-between mb-3">
-                            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                              <Smartphone size={14} className="text-violet-500" />
+                          <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
+                            <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                              <Smartphone size={14} className="text-violet-300" />
                               Device Terdaftar untuk {u.full_name}
                             </h4>
                             <button
                               onClick={() => handleResetDevice(u)}
                               disabled={resettingDeviceId === u.id}
-                              className="text-xs px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition disabled:opacity-50 flex items-center gap-1"
+                              className="text-xs px-3 py-1.5 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 rounded-lg transition-all disabled:opacity-50 flex items-center gap-1.5"
                             >
                               {resettingDeviceId === u.id ? <RefreshCw size={11} className="animate-spin" /> : <Trash2 size={11} />}
                               Reset Semua Device
@@ -772,13 +860,13 @@ function TabManajemenUser() {
                           </div>
 
                           {!userDevices[u.id] ? (
-                            <div className="text-center py-4 text-gray-400 text-sm">
-                              <RefreshCw size={20} className="animate-spin mx-auto mb-2" />
+                            <div className="text-center py-4 text-violet-300/50 text-sm flex flex-col items-center gap-2">
+                              <RefreshCw size={20} className="animate-spin" />
                               Memuat device...
                             </div>
                           ) : userDevices[u.id].length === 0 ? (
-                            <div className="text-center py-4 text-gray-400 text-sm">
-                              <Smartphone size={32} className="mx-auto mb-2 opacity-30" />
+                            <div className="text-center py-4 text-violet-300/40 text-sm flex flex-col items-center gap-2">
+                              <Smartphone size={28} className="opacity-40" />
                               Belum ada device terdaftar. User belum pernah login.
                             </div>
                           ) : (
@@ -786,28 +874,28 @@ function TabManajemenUser() {
                               {userDevices[u.id].map((device, idx) => (
                                 <div
                                   key={device.id}
-                                  className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700"
+                                  className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10 gap-3"
                                 >
-                                  <div className="flex items-center gap-3">
-                                    <div className={`p-2 rounded-lg ${device.is_trusted ? "bg-emerald-100 dark:bg-emerald-900/30" : "bg-red-100 dark:bg-red-900/30"}`}>
-                                      <Smartphone size={16} className={device.is_trusted ? "text-emerald-600" : "text-red-600"} />
+                                  <div className="flex items-center gap-3 min-w-0">
+                                    <div className={`p-2 rounded-lg ${device.is_trusted ? "bg-emerald-500/15" : "bg-rose-500/15"}`}>
+                                      <Smartphone size={16} className={device.is_trusted ? "text-emerald-300" : "text-rose-300"} />
                                     </div>
-                                    <div>
-                                      <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{device.device_name || "Unknown Device"}</p>
-                                      <p className="text-xs text-gray-400 font-mono mt-0.5">ID: {device.visitor_id.substring(0, 20)}...</p>
-                                      <p className="text-xs text-gray-400 mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
+                                    <div className="min-w-0">
+                                      <p className="text-sm font-medium text-white truncate">{device.device_name || "Unknown Device"}</p>
+                                      <p className="text-xs text-violet-300/50 font-mono mt-0.5 truncate">ID: {device.visitor_id?.substring(0, 20)}…</p>
+                                      <p className="text-xs text-violet-300/40 mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
                                     </div>
                                   </div>
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2 shrink-0">
                                     {device.is_trusted ? (
-                                      <span className="text-xs px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full font-medium">Trusted</span>
+                                      <span className="text-xs px-2 py-1 bg-emerald-500/15 text-emerald-300 rounded-full font-medium">Trusted</span>
                                     ) : (
-                                      <span className="text-xs px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full font-medium">Blocked</span>
+                                      <span className="text-xs px-2 py-1 bg-rose-500/15 text-rose-300 rounded-full font-medium">Blocked</span>
                                     )}
                                     <button
                                       onClick={() => handleResetDevice(u, device.visitor_id)}
                                       disabled={resettingDeviceId === device.visitor_id}
-                                      className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition disabled:opacity-50"
+                                      className="p-1.5 text-rose-300 hover:bg-rose-500/15 rounded-lg transition-all disabled:opacity-50"
                                       title="Hapus device ini"
                                     >
                                       {resettingDeviceId === device.visitor_id ? <RefreshCw size={13} className="animate-spin" /> : <Trash2 size={13} />}
@@ -827,9 +915,11 @@ function TabManajemenUser() {
           </table>
         </div>
         {filtered.length === 0 && (
-          <div className="text-center py-12 text-gray-400">
-            <Users size={40} className="mx-auto mb-3 opacity-30" />
-            <p>Tidak ada user ditemukan</p>
+          <div className="text-center py-12 flex flex-col items-center gap-3">
+            <div className="p-4 rounded-2xl bg-white/5">
+              <Users size={32} className="text-violet-300/40" />
+            </div>
+            <p className="text-violet-200/60">Tidak ada user ditemukan</p>
           </div>
         )}
       </div>
@@ -837,9 +927,9 @@ function TabManajemenUser() {
   );
 }
 
-// ============================================================
-// TAB 4: APPROVAL DEVICE (BARU)
-// ============================================================
+/* ============================================================
+   TAB 4: APPROVAL DEVICE (BARU)
+   ============================================================ */
 function TabApprovalDevice() {
   const [loading, setLoading] = useState(true);
   const [requests, setRequests] = useState([]);
@@ -864,7 +954,7 @@ function TabApprovalDevice() {
 
   const handleApprove = async (requestId, userName) => {
     if (!window.confirm(`Approve device request dari ${userName}?`)) return;
-    
+
     setProcessingId(requestId);
     try {
       const { error } = await supabase.rpc("approve_device_request", {
@@ -903,78 +993,81 @@ function TabApprovalDevice() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-violet-500" />
+        <RefreshCw size={28} className="animate-spin text-violet-400" />
       </div>
     );
   }
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white">Approval Device Baru</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <h2 className={sectionTitle}>Approval Device Baru</h2>
+          <p className={sectionSub}>
             {requests.length} request menunggu approval
           </p>
         </div>
         <button
           onClick={fetchRequests}
-          className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 text-gray-500 hover:text-violet-600 transition"
+          className={btnGhost}
+          aria-label="Refresh"
         >
           <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
         </button>
       </div>
 
       {requests.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 p-12 text-center">
-          <CheckCircle2 size={48} className="mx-auto text-emerald-500 mb-3" />
-          <p className="text-gray-500 dark:text-gray-400">
-            Tidak ada request device yang menunggu approval
-          </p>
+        <div className={`${cardBase} p-12 text-center flex flex-col items-center gap-3`}>
+          <div className="p-4 rounded-2xl bg-emerald-500/15">
+            <CheckCircle2 size={36} className="text-emerald-300" />
+          </div>
+          <p className="text-violet-200/60 font-medium">Tidak ada request device yang menunggu approval</p>
         </div>
       ) : (
         <div className="space-y-3">
           {requests.map((req) => (
             <div
               key={req.id}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-amber-200 dark:border-amber-800 p-4"
+              className={`${cardBase} border-amber-500/30 p-4 md:p-5`}
             >
               <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-3 flex-1">
-                  <div className="p-2.5 rounded-xl bg-amber-100 dark:bg-amber-900/30">
-                    <Smartphone size={20} className="text-amber-600" />
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <div className="p-2.5 rounded-xl bg-amber-500/15 shrink-0">
+                    <Smartphone size={20} className="text-amber-300" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-semibold text-gray-800 dark:text-gray-100">{req.user_name}</p>
-                      <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-medium rounded-full">
-                        PENDING
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <p className="font-semibold text-white">{req.user_name}</p>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/15 text-amber-300 text-xs font-medium rounded-full ring-1 ring-amber-500/30">
+                        <Clock size={10} /> PENDING
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 mb-2">{req.user_email}</p>
+                    <p className="text-xs text-violet-300/50 mb-2 flex items-center gap-1">
+                      <Mail size={11} /> {req.user_email}
+                    </p>
                     <div className="space-y-1 text-xs">
-                      <p className="text-gray-600 dark:text-gray-400">
-                        <strong>Device:</strong> {req.device_name || "Unknown"}
+                      <p className="text-violet-200/70">
+                        <strong className="text-violet-100">Device:</strong> {req.device_name || "Unknown"}
                       </p>
-                      <p className="text-gray-600 dark:text-gray-400">
-                        <strong>OS:</strong> {req.device_os || "Unknown"}
+                      <p className="text-violet-200/70">
+                        <strong className="text-violet-100">OS:</strong> {req.device_os || "Unknown"}
                       </p>
-                      <p className="text-gray-400 font-mono">
-                        <strong>ID:</strong> {req.visitor_id?.substring(0, 30)}...
+                      <p className="text-violet-300/50 font-mono break-all">
+                        <strong className="text-violet-200/70">ID:</strong> {req.visitor_id?.substring(0, 30)}…
                       </p>
-                      <p className="text-gray-500 mt-2">
-                        <Clock size={11} className="inline mr-1" />
+                      <p className="text-violet-300/50 mt-2 flex items-center gap-1">
+                        <ClockIcon size={11} />
                         Request: {new Date(req.created_at).toLocaleString("id-ID")}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 shrink-0">
                   <button
                     onClick={() => handleApprove(req.id, req.user_name)}
                     disabled={processingId === req.id}
-                    className="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-medium hover:bg-emerald-700 transition disabled:opacity-50 flex items-center gap-1.5"
+                    className="px-3 py-2 bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-lg text-xs font-medium hover:shadow-lg hover:shadow-emerald-900/30 transition-all disabled:opacity-50 flex items-center gap-1.5 justify-center"
                   >
                     {processingId === req.id ? <RefreshCw size={12} className="animate-spin" /> : <CheckCircle2 size={12} />}
                     Approve
@@ -982,7 +1075,7 @@ function TabApprovalDevice() {
                   <button
                     onClick={() => setShowRejectModal(req)}
                     disabled={processingId === req.id}
-                    className="px-3 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-xs font-medium hover:bg-red-100 dark:hover:bg-red-900/30 transition flex items-center gap-1.5"
+                    className="px-3 py-2 bg-rose-500/15 text-rose-300 rounded-lg text-xs font-medium hover:bg-rose-500/25 transition-all flex items-center gap-1.5 justify-center"
                   >
                     <XCircle size={12} />
                     Reject
@@ -1017,23 +1110,23 @@ function RejectReasonModal({ request, onClose, onConfirm, processing }) {
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md">
-        <div className="flex items-center justify-between p-6 border-b dark:border-slate-700">
-          <h3 className="text-lg font-bold text-gray-800 dark:text-white">Tolak Request Device</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      <div className="bg-[#1a0a35] border border-white/10 rounded-2xl shadow-2xl shadow-violet-900/40 w-full max-w-md">
+        <div className="flex items-center justify-between p-5 md:p-6 border-b border-white/10">
+          <h3 className="text-lg font-bold text-white">Tolak Request Device</h3>
+          <button onClick={onClose} className="p-1.5 rounded-lg text-violet-300/60 hover:text-white hover:bg-white/5 transition-all"><X size={20} /></button>
         </div>
 
-        <div className="p-6 space-y-3">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Tolak request dari <strong>{request.user_name}</strong>?
+        <div className="p-5 md:p-6 space-y-3">
+          <p className="text-sm text-violet-200/70">
+            Tolak request dari <strong className="text-white">{request.user_name}</strong>?
           </p>
 
           <div className="space-y-2">
             {reasons.map((r) => (
               <label
                 key={r}
-                className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition"
+                className="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg hover:bg-white/5 transition-all"
               >
                 <input
                   type="radio"
@@ -1041,9 +1134,9 @@ function RejectReasonModal({ request, onClose, onConfirm, processing }) {
                   value={r}
                   checked={reason === r}
                   onChange={(e) => setReason(e.target.value)}
-                  className="w-4 h-4 text-red-600"
+                  className="w-4 h-4 accent-rose-500"
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300">{r}</span>
+                <span className="text-sm text-violet-100/90">{r}</span>
               </label>
             ))}
           </div>
@@ -1053,21 +1146,21 @@ function RejectReasonModal({ request, onClose, onConfirm, processing }) {
             onChange={(e) => setReason(e.target.value)}
             placeholder="Alasan penolakan (opsional)..."
             rows={2}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+            className={`${inputBase} resize-none`}
           />
         </div>
 
-        <div className="flex gap-3 p-6 border-t dark:border-slate-700">
+        <div className="flex gap-3 p-5 md:p-6 border-t border-white/10">
           <button
             onClick={onClose}
-            className="flex-1 py-2 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-slate-800 transition"
+            className="flex-1 py-2.5 border border-white/10 text-violet-200/80 rounded-xl text-sm font-medium hover:bg-white/5 transition-all"
           >
             Batal
           </button>
           <button
             onClick={() => onConfirm(reason)}
             disabled={processing}
-            className="flex-1 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 py-2.5 bg-gradient-to-r from-rose-600 to-pink-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-rose-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {processing ? <RefreshCw size={14} className="animate-spin" /> : <XCircle size={14} />}
             Tolak Request
@@ -1078,9 +1171,9 @@ function RejectReasonModal({ request, onClose, onConfirm, processing }) {
   );
 }
 
-// ============================================================
-// TAB 5: AUDIT LOG
-// ============================================================
+/* ============================================================
+   TAB 5: AUDIT LOG
+   ============================================================ */
 function TabAuditLog() {
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState([]);
@@ -1109,18 +1202,18 @@ function TabAuditLog() {
 
   const actionBadge = (action) => {
     const map = {
-      CREATE: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
-      UPDATE: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
-      DELETE: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
-      CLOCK_IN: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400",
-      CLOCK_OUT: "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400",
-      RESET_PASSWORD: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
-      UPDATE_SETTING: "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400",
-      SET_ACTIVE_LOCATION: "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400",
+      CREATE: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
+      UPDATE: "bg-sky-500/15 text-sky-300 ring-sky-500/30",
+      DELETE: "bg-rose-500/15 text-rose-300 ring-rose-500/30",
+      CLOCK_IN: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
+      CLOCK_OUT: "bg-orange-500/15 text-orange-300 ring-orange-500/30",
+      RESET_PASSWORD: "bg-amber-500/15 text-amber-300 ring-amber-500/30",
+      UPDATE_SETTING: "bg-purple-500/15 text-purple-300 ring-purple-500/30",
+      SET_ACTIVE_LOCATION: "bg-cyan-500/15 text-cyan-300 ring-cyan-500/30",
     };
-    
+
     const prefix = action?.split("_")[0];
-    return map[action] || map[prefix] || "bg-gray-100 dark:bg-gray-800 text-gray-700";
+    return map[action] || map[prefix] || "bg-white/5 text-violet-300/60 ring-white/10";
   };
 
   const filtered = logs.filter(l =>
@@ -1132,67 +1225,70 @@ function TabAuditLog() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-violet-500" />
+        <RefreshCw size={28} className="animate-spin text-violet-400" />
       </div>
     );
   }
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white">Audit Log</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <h2 className={sectionTitle}>Audit Log</h2>
+          <p className={sectionSub}>
             100 aktivitas terakhir ({logs.length} log)
           </p>
         </div>
         <button
           onClick={fetchLogs}
-          className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 text-gray-500 hover:text-violet-600 transition"
+          className={btnGhost}
+          aria-label="Refresh"
         >
           <RefreshCw size={16} />
         </button>
       </div>
 
       <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-300/40" />
         <input
           type="text"
           placeholder="Cari berdasarkan aksi, email, atau deskripsi..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 border border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+          className={`w-full pl-10 pr-4 py-2.5 ${inputBase}`}
         />
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 p-4">
+      <div className={`${cardBase} p-4`}>
         {filtered.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            <Activity size={40} className="mx-auto mb-3 opacity-30" />
-            <p>Belum ada aktivitas tercatat</p>
+          <div className="text-center py-12 flex flex-col items-center gap-3">
+            <div className="p-4 rounded-2xl bg-white/5">
+              <Activity size={32} className="text-violet-300/40" />
+            </div>
+            <p className="text-violet-200/60">Belum ada aktivitas tercatat</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {filtered.map(log => (
-              <div key={log.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition">
-                <div className="p-2 rounded-lg bg-gray-100 dark:bg-slate-800">
-                  <Activity size={14} className="text-gray-500" />
+              <div key={log.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/5 transition-all">
+                <div className="p-2 rounded-lg bg-white/5 shrink-0">
+                  <Activity size={14} className="text-violet-300/60" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${actionBadge(log.action)}`}>
+                    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ring-1 ${actionBadge(log.action)}`}>
                       {log.action}
                     </span>
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                    <span className="text-xs text-violet-300/40">
                       {new Date(log.created_at).toLocaleString("id-ID", {
                         day: "numeric", month: "short", year: "numeric",
                         hour: "2-digit", minute: "2-digit"
                       })}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">{log.description || "-"}</p>
+                  <p className="text-sm text-violet-100/90">{log.description || "-"}</p>
                   {log.user_email && (
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">oleh: {log.user_email}</p>
+                    <p className="text-xs text-violet-300/40 mt-0.5">oleh: {log.user_email}</p>
                   )}
                 </div>
               </div>
@@ -1204,9 +1300,9 @@ function TabAuditLog() {
   );
 }
 
-// ============================================================
-// MAIN PAGE
-// ============================================================
+/* ============================================================
+   MAIN PAGE
+   ============================================================ */
 export default function PengaturanPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("profil");
@@ -1214,10 +1310,12 @@ export default function PengaturanPage() {
   // Cek role (double safety)
   if (user?.role !== "super_admin") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
-        <Shield size={48} className="text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Akses Ditolak</h2>
-        <p className="text-gray-500 dark:text-gray-400">Halaman ini hanya untuk Super Admin.</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8 animate-fade-in">
+        <div className="p-5 rounded-3xl bg-rose-500/10 mb-4">
+          <Shield size={48} className="text-rose-300" />
+        </div>
+        <h2 className="text-2xl font-bold text-white mb-2">Akses Ditolak</h2>
+        <p className="text-violet-300/60">Halaman ini hanya untuk Super Admin.</p>
       </div>
     );
   }
@@ -1231,25 +1329,27 @@ export default function PengaturanPage() {
   ];
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-4 md:p-6 pb-20 md:pb-6 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Pengaturan Sistem</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
+        <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Pengaturan Sistem</h1>
+        <p className="text-violet-300/60 mt-1.5 text-sm">
           Kelola konfigurasi aplikasi, lokasi, user, dan audit log
         </p>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 p-2 inline-flex flex-wrap gap-1">
+      {/* Tab nav — horizontal scroll on mobile */}
+      <div className={`${cardBase} p-1.5 flex gap-1 overflow-x-auto`}>
         {tabs.map(tab => {
           const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                activeTab === tab.id
-                  ? "bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-lg"
-                  : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800"
+              className={`flex items-center gap-2 px-3 md:px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+                isActive
+                  ? "bg-gradient-to-r from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-900/30"
+                  : "text-violet-300/60 hover:text-white hover:bg-white/5"
               }`}
             >
               <Icon size={16} />

@@ -5,7 +5,7 @@ import {
   Search, Filter, Download, Calendar,
   ChevronLeft, ChevronRight, Loader2,
   CheckCircle2, XCircle, Clock, AlertTriangle,
-  Users, RefreshCw,
+  Users, RefreshCw, Inbox,
 } from "lucide-react";
 
 // ── Konstanta ────────────────────────────────────────────────────────────────
@@ -19,14 +19,20 @@ const STATUS_OPTIONS = [
 ];
 
 const STATUS_STYLE = {
-  hadir: { bg: "bg-emerald-100 dark:bg-emerald-900/40", text: "text-emerald-700 dark:text-emerald-300", icon: <CheckCircle2 size={12} /> },
-  izin:  { bg: "bg-amber-100 dark:bg-amber-900/40",    text: "text-amber-700 dark:text-amber-300",   icon: <Clock size={12} /> },
-  sakit: { bg: "bg-orange-100 dark:bg-orange-900/40",  text: "text-orange-700 dark:text-orange-300", icon: <AlertTriangle size={12} /> },
-  cuti:  { bg: "bg-sky-100 dark:bg-sky-900/40",        text: "text-sky-700 dark:text-sky-300",       icon: <Calendar size={12} /> },
-  alpha: { bg: "bg-red-100 dark:bg-red-900/40",        text: "text-red-700 dark:text-red-300",       icon: <XCircle size={12} /> },
+  hadir:  { bg: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30", icon: <CheckCircle2 size={11} /> },
+  izin:   { bg: "bg-amber-500/15 text-amber-300 ring-amber-500/30",       icon: <Clock size={11} />         },
+  sakit:  { bg: "bg-orange-500/15 text-orange-300 ring-orange-500/30",    icon: <AlertTriangle size={11} /> },
+  cuti:   { bg: "bg-sky-500/15 text-sky-300 ring-sky-500/30",             icon: <Calendar size={11} />      },
+  alpha:  { bg: "bg-rose-500/15 text-rose-300 ring-rose-500/30",           icon: <XCircle size={11} />       },
 };
 
 const PAGE_SIZE = 10;
+
+const cardBase =
+  "bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl transition-all";
+
+const inputBase =
+  "px-3 py-2 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-violet-300/30 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all";
 
 // ── Helper ───────────────────────────────────────────────────────────────────
 const fmtTime = (iso) =>
@@ -39,26 +45,47 @@ const fmtDate = (dateStr) =>
       })
     : "–";
 
+const initials = (name) => {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+};
+
+const avatarGradient = (name = "") => {
+  const grads = [
+    "from-violet-500 to-purple-700",
+    "from-sky-500 to-blue-700",
+    "from-emerald-500 to-teal-700",
+    "from-amber-500 to-orange-700",
+    "from-rose-500 to-pink-700",
+    "from-fuchsia-500 to-purple-700",
+  ];
+  let sum = 0;
+  for (let i = 0; i < name.length; i++) sum += name.charCodeAt(i);
+  return grads[sum % grads.length];
+};
+
 // ── Sub-komponen ─────────────────────────────────────────────────────────────
 function StatusBadge({ status }) {
-  const s = STATUS_STYLE[status] ?? { bg: "bg-gray-100", text: "text-gray-600", icon: null };
+  const s = STATUS_STYLE[status] ?? { bg: "bg-white/5 text-violet-300/60 ring-white/10", icon: null };
   return (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${s.bg} ${s.text}`}>
+    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ring-1 ${s.bg}`}>
       {s.icon}
       {status?.toUpperCase() ?? "–"}
     </span>
   );
 }
 
-function SummaryCard({ label, value, color, icon: Icon }) {
+function SummaryCard({ label, value, accent, icon: Icon }) {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 p-4 flex items-center gap-3">
-      <div className={`p-2.5 rounded-xl ${color} text-white`}>
+    <div className={`${cardBase} p-4 flex items-center gap-3 hover:scale-[1.02]`}>
+      <div className={`p-2.5 rounded-xl bg-gradient-to-br ${accent} text-white shadow-lg shrink-0`}>
         <Icon size={18} />
       </div>
-      <div>
-        <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{value}</p>
-        <p className="text-xs text-gray-500">{label}</p>
+      <div className="min-w-0">
+        <p className="text-2xl md:text-3xl font-bold text-white tabular-nums leading-none">{value}</p>
+        <p className="text-xs text-violet-300/60 uppercase tracking-wider mt-1.5 truncate">{label}</p>
       </div>
     </div>
   );
@@ -178,174 +205,233 @@ export default function AttendanceHistoryPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-5 p-6">
+    <div className="space-y-5 p-4 md:p-6 pb-20 md:pb-6 animate-fade-in">
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Riwayat Absensi</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Data absensi seluruh pegawai</p>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Riwayat Absensi</h1>
+          <p className="text-sm text-violet-300/60 mt-1">Data absensi seluruh pegawai</p>
         </div>
         <button
           onClick={exportCSV}
-          className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-xl transition"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-sm font-medium rounded-xl hover:shadow-lg hover:shadow-emerald-900/30 hover:scale-105 transition-all shrink-0"
         >
           <Download size={15} />
-          Export CSV
+          <span className="hidden sm:inline">Export CSV</span>
+          <span className="sm:hidden">Export</span>
         </button>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <SummaryCard label="Hadir"  value={summary.hadir}  color="bg-emerald-500" icon={CheckCircle2} />
-        <SummaryCard label="Izin"   value={summary.izin}   color="bg-amber-500"   icon={Clock}        />
-        <SummaryCard label="Sakit"  value={summary.sakit}  color="bg-orange-500"  icon={AlertTriangle}/>
-        <SummaryCard label="Alpha"  value={summary.alpha}  color="bg-red-500"     icon={XCircle}      />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <SummaryCard label="Hadir"  value={summary.hadir}  accent="from-emerald-500 to-teal-700"  icon={CheckCircle2}   />
+        <SummaryCard label="Izin"   value={summary.izin}   accent="from-amber-500 to-orange-700" icon={Clock}          />
+        <SummaryCard label="Sakit"  value={summary.sakit}  accent="from-orange-500 to-rose-700"  icon={AlertTriangle}  />
+        <SummaryCard label="Alpha"  value={summary.alpha}  accent="from-rose-500 to-pink-700"    icon={XCircle}        />
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 p-4">
+      <div className={`${cardBase} p-4`}>
         <div className="flex flex-wrap gap-3">
-
           {/* Search */}
-          <div className="relative flex-1 min-w-[180px]">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <div className="relative flex-1 min-w-[200px]">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-300/40" />
             <input
               type="text"
               placeholder="Cari nama / departemen..."
               value={search}
               onChange={e => { setSearch(e.target.value); fetchRecords(true); }}
-              className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400"
+              className={`w-full pl-10 pr-4 py-2 ${inputBase}`}
             />
           </div>
 
           {/* Status filter */}
           <div className="relative">
-            <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-300/40 pointer-events-none" />
             <select
               value={statusFilter}
               onChange={e => setStatus(e.target.value)}
-              className="pl-8 pr-4 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400"
+              className={`pl-9 pr-4 py-2 ${inputBase} appearance-none min-w-[140px]`}
             >
               {STATUS_OPTIONS.map(o => (
-                <option key={o.value} value={o.value}>{o.label}</option>
+                <option key={o.value} value={o.value} className="bg-[#1a0a35]">{o.label}</option>
               ))}
             </select>
           </div>
 
           {/* Date From */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400">Dari</span>
+            <span className="text-xs text-violet-300/60 uppercase tracking-wider">Dari</span>
             <input
               type="date"
               value={dateFrom}
               onChange={e => setDateFrom(e.target.value)}
-              className="px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400"
+              className={`${inputBase} [color-scheme:dark]`}
             />
           </div>
 
           {/* Date To */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400">Sampai</span>
+            <span className="text-xs text-violet-300/60 uppercase tracking-wider">Sampai</span>
             <input
               type="date"
               value={dateTo}
               onChange={e => setDateTo(e.target.value)}
-              className="px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400"
+              className={`${inputBase} [color-scheme:dark]`}
             />
           </div>
 
           {/* Refresh */}
           <button
             onClick={() => fetchRecords(true)}
-            className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 text-gray-500 hover:text-violet-600 hover:border-violet-300 transition"
+            className="p-2.5 rounded-xl border border-white/10 bg-white/5 text-violet-300/70 hover:text-violet-200 hover:bg-white/10 hover:scale-105 transition-all"
+            aria-label="Refresh"
           >
             <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
           </button>
         </div>
       </div>
 
-      {/* Tabel */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 overflow-hidden">
+      {/* Tabel / Cards */}
+      <div className={`${cardBase} overflow-hidden`}>
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 size={28} className="animate-spin text-violet-500" />
+            <Loader2 size={28} className="animate-spin text-violet-400" />
           </div>
         ) : records.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
-            <Users size={40} className="mx-auto mb-3 opacity-30" />
-            <p className="text-sm">Tidak ada data pada rentang tanggal ini</p>
+          <div className="text-center py-16 flex flex-col items-center gap-3">
+            <div className="p-4 rounded-2xl bg-white/5">
+              <Inbox size={32} className="text-violet-300/40" />
+            </div>
+            <div>
+              <p className="text-violet-200/60 font-medium">Tidak ada data pada rentang tanggal ini</p>
+              <p className="text-violet-300/40 text-xs mt-1">Coba ubah filter tanggal atau status</p>
+            </div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50">
-                  <th className="text-left py-3 px-4 font-semibold text-gray-500 dark:text-gray-400">Tanggal</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-500 dark:text-gray-400">Nama</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-500 dark:text-gray-400">Departemen</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-500 dark:text-gray-400">Clock In</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-500 dark:text-gray-400">Clock Out</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-500 dark:text-gray-400">Status</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-500 dark:text-gray-400">Terlambat</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
-                {records.map(r => (
-                  <tr key={r.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition">
-                    <td className="py-3 px-4 text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                      {fmtDate(r.date)}
-                    </td>
-                    <td className="py-3 px-4 font-medium text-gray-800 dark:text-gray-200 whitespace-nowrap">
-                      {r.profiles?.full_name ?? "–"}
-                    </td>
-                    <td className="py-3 px-4 text-gray-500 whitespace-nowrap">
-                      {r.profiles?.department ?? "–"}
-                    </td>
-                    <td className="py-3 px-4 font-mono text-emerald-600 dark:text-emerald-400">
-                      {fmtTime(r.clock_in_time)}
-                    </td>
-                    <td className="py-3 px-4 font-mono text-rose-500 dark:text-rose-400">
-                      {fmtTime(r.clock_out_time)}
-                    </td>
-                    <td className="py-3 px-4">
-                      <StatusBadge status={r.attendance_status} />
-                    </td>
-                    <td className="py-3 px-4">
-                      {r.is_late ? (
-                        <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
-                          +{r.late_minutes} menit
-                        </span>
-                      ) : (
-                        <span className="text-xs text-gray-300 dark:text-gray-600">–</span>
-                      )}
-                    </td>
+          <>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/10 bg-white/5">
+                    <th className="text-left py-3 px-4 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Tanggal</th>
+                    <th className="text-left py-3 px-4 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Nama</th>
+                    <th className="text-left py-3 px-4 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Departemen</th>
+                    <th className="text-left py-3 px-4 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Clock In</th>
+                    <th className="text-left py-3 px-4 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Clock Out</th>
+                    <th className="text-left py-3 px-4 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Status</th>
+                    <th className="text-left py-3 px-4 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Terlambat</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {records.map(r => (
+                    <tr key={r.id} className="hover:bg-white/5 transition-all">
+                      <td className="py-3 px-4 text-violet-200/70 whitespace-nowrap">
+                        {fmtDate(r.date)}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2.5">
+                          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${avatarGradient(r.profiles?.full_name)} flex items-center justify-center text-white text-xs font-bold shadow shrink-0`}>
+                            {initials(r.profiles?.full_name)}
+                          </div>
+                          <span className="font-medium text-white whitespace-nowrap">
+                            {r.profiles?.full_name ?? "–"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-violet-200/60 whitespace-nowrap">
+                        {r.profiles?.department ?? "–"}
+                      </td>
+                      <td className="py-3 px-4 font-mono text-emerald-300 tabular-nums">
+                        {fmtTime(r.clock_in_time)}
+                      </td>
+                      <td className="py-3 px-4 font-mono text-rose-300 tabular-nums">
+                        {fmtTime(r.clock_out_time)}
+                      </td>
+                      <td className="py-3 px-4">
+                        <StatusBadge status={r.attendance_status} />
+                      </td>
+                      <td className="py-3 px-4">
+                        {r.is_late ? (
+                          <span className="text-xs text-amber-300 font-medium">
+                            +{r.late_minutes} menit
+                          </span>
+                        ) : (
+                          <span className="text-xs text-violet-300/30">–</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-white/5">
+              {records.map(r => (
+                <div key={r.id} className="p-4 hover:bg-white/5 transition-all">
+                  <div className="flex items-start gap-3">
+                    <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${avatarGradient(r.profiles?.full_name)} flex items-center justify-center text-white text-xs font-bold shadow shrink-0`}>
+                      {initials(r.profiles?.full_name)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-semibold text-white truncate">{r.profiles?.full_name ?? "–"}</p>
+                          <p className="text-xs text-violet-300/50">{r.profiles?.department ?? "–"}</p>
+                        </div>
+                        <StatusBadge status={r.attendance_status} />
+                      </div>
+                      <div className="flex items-center gap-2 mt-2 text-xs text-violet-300/50">
+                        <Calendar size={11} />
+                        {fmtDate(r.date)}
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
+                        <div className="bg-white/5 rounded-lg p-2">
+                          <p className="text-violet-300/40 uppercase tracking-wider text-[10px]">Check In</p>
+                          <p className="text-emerald-300 font-mono tabular-nums mt-0.5">{fmtTime(r.clock_in_time)}</p>
+                        </div>
+                        <div className="bg-white/5 rounded-lg p-2">
+                          <p className="text-violet-300/40 uppercase tracking-wider text-[10px]">Check Out</p>
+                          <p className="text-rose-300 font-mono tabular-nums mt-0.5">{fmtTime(r.clock_out_time)}</p>
+                        </div>
+                      </div>
+                      {r.is_late && (
+                        <p className="text-xs text-amber-300 mt-2 font-medium">
+                          ⚠ Terlambat +{r.late_minutes} menit
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* Pagination */}
         {!loading && totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 dark:border-slate-800">
-            <p className="text-xs text-gray-400">
-              Halaman {page} dari {totalPages} · {total} data
+          <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 gap-2">
+            <p className="text-xs text-violet-300/60">
+              Halaman <span className="text-white font-medium">{page}</span> dari {totalPages} · {total} data
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-1.5 rounded-lg border border-gray-200 dark:border-slate-700 text-gray-500 hover:text-violet-600 disabled:opacity-30 disabled:cursor-not-allowed transition"
+                className="p-2 rounded-lg border border-white/10 bg-white/5 text-violet-200/80 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                aria-label="Halaman sebelumnya"
               >
                 <ChevronLeft size={15} />
               </button>
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-1.5 rounded-lg border border-gray-200 dark:border-slate-700 text-gray-500 hover:text-violet-600 disabled:opacity-30 disabled:cursor-not-allowed transition"
+                className="p-2 rounded-lg border border-white/10 bg-white/5 text-violet-200/80 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                aria-label="Halaman berikutnya"
               >
                 <ChevronRight size={15} />
               </button>

@@ -3,24 +3,34 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import {
   Users, UserCheck, UserMinus, UserX,
-  TrendingUp, Clock, Calendar, Bell, RefreshCw
+  TrendingUp, Clock, Calendar, Bell, RefreshCw, BellOff, Inbox,
 } from "lucide-react";
 
-function StatCard({ title, value, subtitle, icon: Icon, color = "bg-violet-600", loading }) {
+/* ----------------------------------------------------------------
+   Helper: glass card
+----------------------------------------------------------------- */
+const cardBase =
+  "bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-5 md:p-6 transition-all";
+
+function StatCard({ title, value, subtitle, icon: Icon, accent = "from-violet-500 to-purple-700", loading }) {
   return (
-    <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow border hover:shadow-md transition">
-      <div className="flex justify-between">
-        <div>
-          <p className="text-gray-500 text-sm">{title}</p>
+    <div className={`${cardBase} hover:scale-[1.02] hover:shadow-violet-900/20 hover:shadow-lg animate-fade-in`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs text-violet-300/60 uppercase tracking-wider truncate">
+            {title}
+          </p>
           {loading ? (
-            <div className="h-10 w-16 bg-gray-200 animate-pulse rounded-lg mt-2" />
+            <div className="h-10 w-20 bg-white/10 animate-pulse rounded-lg mt-2" />
           ) : (
-            <h3 className="text-4xl font-bold mt-2">{value}</h3>
+            <h3 className="text-3xl md:text-4xl font-bold text-white mt-2 tabular-nums">
+              {value}
+            </h3>
           )}
-          <p className="text-sm text-gray-500 mt-2">{subtitle}</p>
+          <p className="text-xs text-violet-200/40 mt-2 truncate">{subtitle}</p>
         </div>
-        <div className={`p-4 rounded-2xl ${color} text-white h-fit`}>
-          <Icon size={24} />
+        <div className={`p-3 rounded-xl bg-gradient-to-br ${accent} text-white shadow-lg shadow-violet-900/30 shrink-0`}>
+          <Icon size={20} />
         </div>
       </div>
     </div>
@@ -29,14 +39,18 @@ function StatCard({ title, value, subtitle, icon: Icon, color = "bg-violet-600",
 
 function AttendanceBadge({ status }) {
   const map = {
-    hadir: "bg-green-100 text-green-700",
-    izin: "bg-yellow-100 text-yellow-700",
-    sakit: "bg-orange-100 text-orange-700",
-    cuti: "bg-blue-100 text-blue-700",
-    alpha: "bg-red-100 text-red-700",
+    hadir:  "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
+    izin:   "bg-amber-500/15 text-amber-300 ring-amber-500/30",
+    sakit:  "bg-orange-500/15 text-orange-300 ring-orange-500/30",
+    cuti:   "bg-sky-500/15 text-sky-300 ring-sky-500/30",
+    alpha:  "bg-rose-500/15 text-rose-300 ring-rose-500/30",
   };
   return (
-    <span className={`px-2 py-1 rounded-full text-xs font-medium ${map[status] || "bg-gray-100 text-gray-600"}`}>
+    <span
+      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${
+        map[status] || "bg-white/5 text-violet-300/60 ring-white/10"
+      }`}
+    >
       {status?.toUpperCase() || "-"}
     </span>
   );
@@ -136,38 +150,41 @@ export default function DashboardPage() {
       : "-";
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-5 md:space-y-6 p-4 md:p-6 pb-20 md:pb-6 animate-fade-in">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
             Dashboard
           </h1>
-          <p className="text-gray-500 flex items-center gap-2 mt-1 text-sm">
-            <Clock size={16} />
+          <p className="text-violet-300/60 flex items-center gap-2 mt-1.5 text-sm">
+            <Clock size={14} />
             {todayLabel}
           </p>
-          <p className="text-gray-400 text-xs mt-1">
-            Selamat datang, <span className="font-semibold text-violet-600">{user?.full_name || user?.email}</span>
+          <p className="text-violet-200/40 text-xs mt-1">
+            Selamat datang,{" "}
+            <span className="font-semibold text-violet-300">
+              {user?.full_name || user?.email}
+            </span>
           </p>
         </div>
         <button
           onClick={fetchDashboardData}
-          className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-xl text-sm hover:bg-violet-700 transition"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 hover:scale-105 transition-all shrink-0"
         >
           <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
-          Refresh
+          <span className="hidden sm:inline">Refresh</span>
         </button>
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <StatCard
           title="Total Pegawai"
           value={stats.totalPegawai}
           subtitle="Seluruh status kepegawaian"
           icon={Users}
-          color="bg-violet-600"
+          accent="from-violet-500 to-purple-700"
           loading={loading}
         />
         <StatCard
@@ -175,7 +192,7 @@ export default function DashboardPage() {
           value={stats.hadirHariIni}
           subtitle="Sudah check-in"
           icon={UserCheck}
-          color="bg-green-500"
+          accent="from-emerald-500 to-teal-700"
           loading={loading}
         />
         <StatCard
@@ -183,7 +200,7 @@ export default function DashboardPage() {
           value={stats.izinSakit}
           subtitle="Hari ini"
           icon={UserMinus}
-          color="bg-yellow-500"
+          accent="from-amber-500 to-orange-700"
           loading={loading}
         />
         <StatCard
@@ -191,35 +208,55 @@ export default function DashboardPage() {
           value={stats.cuti}
           subtitle="Hari ini"
           icon={UserX}
-          color="bg-blue-500"
+          accent="from-sky-500 to-blue-700"
           loading={loading}
         />
       </div>
 
       {/* Grafik + Pengumuman */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Grafik Mingguan */}
-        <div className="xl:col-span-2 bg-white dark:bg-slate-900 rounded-3xl p-6 shadow border">
+        <div className={`${cardBase} lg:col-span-2`}>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-bold text-gray-800 dark:text-white">Grafik Presensi 7 Hari</h2>
-            <div className="flex items-center gap-2 text-xs text-gray-400">
+            <h2 className="text-base md:text-lg font-bold text-white">
+              Grafik Presensi 7 Hari
+            </h2>
+            <div className="flex items-center gap-2 text-xs text-violet-300/60">
               <TrendingUp size={14} />
               Kehadiran harian
             </div>
           </div>
-          <div className="flex items-end gap-2 h-48">
+          <div className="flex items-end gap-1.5 md:gap-2 h-48">
             {weeklyData.map((val, i) => {
               const d = new Date();
               d.setDate(d.getDate() - (6 - i));
               const isToday = i === 6;
               return (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-xs text-gray-500 font-medium">{val}</span>
+                <div
+                  key={i}
+                  className="flex-1 flex flex-col items-center gap-1.5 group"
+                >
+                  <span className="text-xs text-violet-300/80 font-semibold tabular-nums">
+                    {val}
+                  </span>
                   <div
-                    className={`w-full rounded-t-xl transition-all ${isToday ? "bg-violet-600" : "bg-violet-200"}`}
-                    style={{ height: `${(val / maxWeekly) * 100}%`, minHeight: val > 0 ? "4px" : "0" }}
+                    className={`w-full rounded-t-lg md:rounded-t-xl transition-all duration-300 group-hover:scale-105 ${
+                      isToday
+                        ? "bg-gradient-to-t from-violet-500 to-purple-400 shadow-lg shadow-violet-900/40"
+                        : "bg-gradient-to-t from-violet-700/60 to-purple-500/40 group-hover:from-violet-600 group-hover:to-purple-400"
+                    }`}
+                    style={{
+                      height: `${(val / maxWeekly) * 100}%`,
+                      minHeight: val > 0 ? "6px" : "0",
+                    }}
                   />
-                  <span className={`text-xs ${isToday ? "font-bold text-violet-600" : "text-gray-400"}`}>
+                  <span
+                    className={`text-xs ${
+                      isToday
+                        ? "font-bold text-violet-300"
+                        : "text-violet-300/40"
+                    }`}
+                  >
                     {DAYS[d.getDay()]}
                   </span>
                 </div>
@@ -229,28 +266,45 @@ export default function DashboardPage() {
         </div>
 
         {/* Pengumuman */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow border">
+        <div className={cardBase}>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-gray-800 dark:text-white">Pengumuman</h2>
-            <Bell size={18} className="text-violet-600" />
+            <h2 className="text-base md:text-lg font-bold text-white">
+              Pengumuman
+            </h2>
+            <div className="p-1.5 rounded-lg bg-violet-500/15">
+              <Bell size={16} className="text-violet-300" />
+            </div>
           </div>
           {loading ? (
             <div className="space-y-3">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="h-16 bg-gray-100 dark:bg-gray-800 animate-pulse rounded-xl" />
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-16 bg-white/5 animate-pulse rounded-xl"
+                />
               ))}
             </div>
           ) : announcements.length === 0 ? (
-            <div className="text-center py-8 text-gray-400 text-sm">
-              Belum ada pengumuman
+            <div className="text-center py-8 flex flex-col items-center gap-2">
+              <div className="p-3 rounded-2xl bg-white/5">
+                <BellOff size={24} className="text-violet-300/40" />
+              </div>
+              <p className="text-violet-300/40 text-sm">Belum ada pengumuman</p>
             </div>
           ) : (
             <div className="space-y-3">
-              {announcements.map(a => (
-                <div key={a.id} className="p-3 bg-violet-50 dark:bg-violet-900/20 rounded-xl border border-violet-100 dark:border-violet-800">
-                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 line-clamp-1">{a.title}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{a.content}</p>
-                  <p className="text-xs text-violet-400 mt-1">
+              {announcements.map((a) => (
+                <div
+                  key={a.id}
+                  className="p-3 bg-violet-500/10 rounded-xl border border-violet-500/20 hover:scale-[1.02] transition-all"
+                >
+                  <p className="text-sm font-semibold text-white line-clamp-1">
+                    {a.title}
+                  </p>
+                  <p className="text-xs text-violet-200/50 mt-1 line-clamp-2">
+                    {a.content}
+                  </p>
+                  <p className="text-xs text-violet-400 mt-1.5 font-medium">
                     {new Date(a.created_at).toLocaleDateString("id-ID")}
                   </p>
                 </div>
@@ -261,10 +315,12 @@ export default function DashboardPage() {
       </div>
 
       {/* Tabel Absensi Terkini */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow border">
+      <div className={cardBase}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-800 dark:text-white">Absensi Terkini Hari Ini</h2>
-          <div className="flex items-center gap-2 text-xs text-gray-400">
+          <h2 className="text-base md:text-lg font-bold text-white">
+            Absensi Terkini Hari Ini
+          </h2>
+          <div className="flex items-center gap-2 text-xs text-violet-300/60">
             <Calendar size={14} />
             {lastUpdated && `Update: ${lastUpdated}`}
           </div>
@@ -272,44 +328,57 @@ export default function DashboardPage() {
 
         {loading ? (
           <div className="space-y-3">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-12 bg-gray-100 dark:bg-gray-800 animate-pulse rounded-xl" />
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="h-12 bg-white/5 animate-pulse rounded-xl"
+              />
             ))}
           </div>
         ) : recentAttendance.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            <UserCheck size={40} className="mx-auto mb-3 opacity-30" />
-            <p>Belum ada absensi hari ini</p>
+          <div className="text-center py-12 flex flex-col items-center gap-3">
+            <div className="p-4 rounded-2xl bg-white/5">
+              <Inbox size={32} className="text-violet-300/40" />
+            </div>
+            <div>
+              <p className="text-violet-200/60 font-medium">Belum ada absensi hari ini</p>
+              <p className="text-violet-300/40 text-xs mt-1">
+                Data akan muncul setelah pegawai melakukan check-in
+              </p>
+            </div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto -mx-2 md:-mx-3">
+            <table className="w-full text-sm min-w-[640px]">
               <thead>
-                <tr className="border-b border-gray-100 dark:border-slate-700">
-                  <th className="text-left py-3 px-2 font-semibold text-gray-600 dark:text-gray-400">Nama</th>
-                  <th className="text-left py-3 px-2 font-semibold text-gray-600 dark:text-gray-400">Departemen</th>
-                  <th className="text-left py-3 px-2 font-semibold text-gray-600 dark:text-gray-400">Check In</th>
-                  <th className="text-left py-3 px-2 font-semibold text-gray-600 dark:text-gray-400">Check Out</th>
-                  <th className="text-left py-3 px-2 font-semibold text-gray-600 dark:text-gray-400">Status</th>
+                <tr className="bg-white/5 border-b border-white/10">
+                  <th className="text-left py-3 px-3 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Nama</th>
+                  <th className="text-left py-3 px-3 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Departemen</th>
+                  <th className="text-left py-3 px-3 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Check In</th>
+                  <th className="text-left py-3 px-3 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Check Out</th>
+                  <th className="text-left py-3 px-3 font-semibold text-violet-300/60 text-xs uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
-                {recentAttendance.map(a => (
-                  <tr key={a.id} className="hover:bg-gray-50 dark:hover:bg-slate-800 transition">
-                    <td className="py-3 px-2 font-medium text-gray-800 dark:text-gray-200">
+              <tbody className="divide-y divide-white/5">
+                {recentAttendance.map((a) => (
+                  <tr
+                    key={a.id}
+                    className="hover:bg-white/5 transition-all"
+                  >
+                    <td className="py-3 px-3 font-medium text-white">
                       {a.profiles?.full_name || "-"}
                     </td>
-                    <td className="py-3 px-2 text-gray-500 dark:text-gray-400">
+                    <td className="py-3 px-3 text-violet-200/60">
                       {a.profiles?.department || "-"}
                     </td>
                     {/* ✅ FIX: pakai ISO string langsung, bukan digabung string */}
-                    <td className="py-3 px-2 text-gray-500 dark:text-gray-400 font-mono">
+                    <td className="py-3 px-3 text-emerald-300 font-mono tabular-nums">
                       {fmtTime(a.clock_in_time)}
                     </td>
-                    <td className="py-3 px-2 text-gray-500 dark:text-gray-400 font-mono">
+                    <td className="py-3 px-3 text-rose-300 font-mono tabular-nums">
                       {fmtTime(a.clock_out_time)}
                     </td>
-                    <td className="py-3 px-2">
+                    <td className="py-3 px-3">
                       <AttendanceBadge status={a.attendance_status} />
                     </td>
                   </tr>
