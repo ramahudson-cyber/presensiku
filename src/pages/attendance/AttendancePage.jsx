@@ -8,11 +8,11 @@ import {
 import * as faceapi from "face-api.js";
 
 // ============================================================
-// KONFIGURASI LOKASI PUSKESMAS (VERIFIED via Google Maps)
+// KONFIGURASI LOKASI PUSKESMAS
 // Puskesmas Perawatan Ampenan, Jl. Saleh Sungkar No.14
 // ============================================================
 const PUSKESMAS_LOCATION = { latitude: -8.5699, longitude: 116.0770 };
-const RADIUS_METER = 300;
+const RADIUS_METER = 50000; // ⚠️ TEST MODE: 50km — ubah ke 300 sebelum produksi
 const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -106,7 +106,7 @@ export default function AttendancePage() {
   };
 
   // ============================================================
-  // FIX: Camera function dengan proper video element waiting
+  // FIX CAMERA BLACK BOX: gunakan onloadedmetadata + play() catch
   // ============================================================
   const startCamera = async () => {
     if (!modelsLoaded) {
@@ -118,34 +118,39 @@ export default function AttendancePage() {
     setFaceMessage("Mengaktifkan kamera...");
 
     try {
-      // 1. Dapatkan stream kamera DULU sebelum render video element
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 480 }, height: { ideal: 480 } },
+        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
         audio: false
       });
 
-      // 2. Set state untuk render video element
       setCameraActive(true);
       streamRef.current = stream;
 
-      // 3. TUNGGU React render video element (critical fix)
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Tunggu React render video element
+      await new Promise(resolve => setTimeout(resolve, 200));
 
-      // 4. Sekarang videoRef.current harusnya sudah ada
       if (!videoRef.current) {
-        throw new Error("Video element tidak ter-render. Coba lagi.");
+        throw new Error("Video element tidak ter-render.");
       }
 
-      // 5. Set srcObject dan play
-      videoRef.current.srcObject = stream;
-      await new Promise(r => {
-        if (videoRef.current.readyState >= 2) {
-          r();
-        } else {
-          videoRef.current.onloadeddata = r;
-        }
+      const video = videoRef.current;
+      video.srcObject = stream;
+
+      // FIX: tunggu metadata load dulu sebelum play
+      await new Promise((resolve, reject) => {
+        video.onloadedmetadata = resolve;
+        video.onerror = reject;
+        setTimeout(reject, 5000);
       });
-      await videoRef.current.play();
+
+      // FIX: play() dengan catch error (Safari iOS sering reject)
+      try {
+        await video.play();
+      } catch (playErr) {
+        console.warn("Autoplay issue, trying again:", playErr);
+        video.muted = true;
+        await video.play().catch(() => {});
+      }
 
       setFaceStatus("scanning");
       setFaceMessage("Posisikan wajah di lingkaran");
@@ -153,13 +158,12 @@ export default function AttendancePage() {
     } catch (err) {
       console.error("Camera error:", err);
       setCameraError(
-        err.name === "NotAllowedError" ? "Izin kamera ditolak. Buka Settings → Safari → Camera → Allow." :
+        err.name === "NotAllowedError" ? "Izin kamera ditolak. Buka Settings → Browser → Camera → Allow." :
         err.name === "NotFoundError" ? "Kamera tidak ditemukan." :
         "Gagal akses kamera: " + err.message
       );
       setFaceStatus("idle");
       setFaceMessage("");
-      // Cleanup stream kalau error
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(t => t.stop());
         streamRef.current = null;
@@ -241,7 +245,6 @@ export default function AttendancePage() {
 
   return (
     <div className="space-y-3 animate-fade-in">
-      {/* Time Card */}
       <div className="relative bg-gradient-to-br from-violet-600 to-purple-800 rounded-2xl p-5 text-white shadow-xl shadow-purple-900/30 overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
         <div className="relative">
@@ -250,7 +253,6 @@ export default function AttendancePage() {
         </div>
       </div>
 
-      {/* Status Absensi */}
       <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
         {todayAttendance ? (
           <div className="flex items-center gap-3">
@@ -272,7 +274,6 @@ export default function AttendancePage() {
         )}
       </div>
 
-      {/* GPS */}
       <div className={`rounded-2xl border p-4 backdrop-blur-sm ${
         locationStatus === "valid" ? "bg-emerald-500/5 border-emerald-500/20" :
         locationStatus === "invalid" ? "bg-red-500/5 border-red-500/20" :
@@ -294,18 +295,18 @@ export default function AttendancePage() {
           </div>
         )}
         {locationStatus === "checking" && <p className="text-xs text-slate-400">Mendeteksi...</p>}
-        {locationStatus === "valid" && <p className="text-xs text-emerald-400">✅ Dalam radius ({distance}m)</p>}
+        {locationStatus === "valid" && <p className="text-xs text-emerald-400">✅ Dalam radius ({distance}m) — TEST MODE</p>}
         {locationStatus === "invalid" && !isFakeGPS && (
-          <p className="text-xs text-red-400">❌ Di luar radius ({distance}m) — Radius max: {RADIUS_METER}m</p>
+          <p className="text-xs text-red-400">❌ Di luar radius ({distance}m)</p>
         )}
-        {locationStatus === "error" && <p className="text-xs text-red-400">GPS tidak aktif / ditolak.</p>}
+        {locationStatus === "error" && <p className="text-xs text-red-400">GPS tidak aktif.</p>}
         {currentCoords && (
           <div className="mt-3 pt-3 border-t border-white/10 space-y-1">
             <p className="text-[10px] text-slate-500 font-mono">
               📍 Anda: {currentCoords.latitude.toFixed(6)}, {currentCoords.longitude.toFixed(6)}
             </p>
             <p className="text-[10px] text-slate-500 font-mono">
-              🏥 Puskesmas: {PUSKESMAS_LOCATION.latitude.toFixed(6)}, {PUSKESMAS_LOCATION.longitude.toFixed(6)}
+              🏥 Puskesmas: {PUSKESMAS_LOCATION.latitude}, {PUSKESMAS_LOCATION.longitude}
             </p>
             <p className="text-[10px] text-slate-500 font-mono">
               📏 Akurasi GPS: ±{gpsAccuracy}m
@@ -314,7 +315,6 @@ export default function AttendancePage() {
         )}
       </div>
 
-      {/* Face Verification */}
       {!todayAttendance && (
         <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
           <div className="flex items-center justify-between mb-3">
@@ -326,7 +326,6 @@ export default function AttendancePage() {
             )}
           </div>
 
-          {/* AI Model Status */}
           {!modelsLoaded && (
             <div className="mb-3 p-3 bg-violet-500/10 rounded-lg flex items-center gap-2">
               <Loader2 size={14} className="animate-spin text-violet-400" />
@@ -334,7 +333,6 @@ export default function AttendancePage() {
             </div>
           )}
 
-          {/* Error Message */}
           {cameraError && (
             <div className="mb-3 p-3 bg-red-500/10 rounded-lg">
               <p className="text-xs text-red-300">{cameraError}</p>
@@ -351,8 +349,18 @@ export default function AttendancePage() {
             </button>
           ) : (
             <div className="space-y-3">
+              {/* FIX: video pakai width/height attribute + muted + playsInline */}
               <div className="relative rounded-xl overflow-hidden bg-black aspect-square">
-                <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover transform scaleX(-1)" />
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  width={480}
+                  height={480}
+                  className="w-full h-full object-cover"
+                  style={{ transform: "scaleX(-1)" }}
+                />
                 <canvas ref={canvasRef} className="hidden" />
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className={`w-3/4 h-3/4 border-4 rounded-2xl transition-all ${
