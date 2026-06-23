@@ -48,6 +48,11 @@ function AttendanceBadge({ status }) {
 
 const DAYS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 
+const getWitaDateString = (date = new Date()) => {
+  const witaMs = date.getTime() + (8 * 60 * 60 * 1000);
+  return new Date(witaMs).toISOString().split("T")[0];
+};
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -85,13 +90,14 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       // ⏰ Pakai server time untuk "today" (anti-cheat)
-      let today;
+      let serverDate;
       try {
         const { data: serverNow } = await supabase.rpc("get_server_time");
-        today = new Date(serverNow).toISOString().split("T")[0];
+        serverDate = new Date(serverNow);
       } catch {
-        today = new Date().toISOString().split("T")[0];
+        serverDate = new Date();
       }
+      const today = getWitaDateString(serverDate);
 
       // 1. Total pegawai
       const { count: totalPegawai } = await supabase
@@ -105,7 +111,9 @@ export default function DashboardPage() {
         .eq("date", today)
         .order("clock_in_time", { ascending: false });
 
-      const hadir = attendanceToday?.filter(a => a.attendance_status === "hadir").length || 0;
+      const hadir = attendanceToday?.filter(a =>
+        a.attendance_status === "hadir" || a.attendance_status === "terlambat"
+      ).length || 0;
       const izinSakit = attendanceToday?.filter(a =>
         a.attendance_status === "izin" || a.attendance_status === "sakit"
       ).length || 0;
@@ -114,14 +122,14 @@ export default function DashboardPage() {
       // 3. Data mingguan (7 hari terakhir) — pakai server time
       const weekly = [];
       for (let i = 6; i >= 0; i--) {
-        const d = new Date(serverNow);
+        const d = new Date(serverDate);
         d.setDate(d.getDate() - i);
-        const dateStr = d.toISOString().split("T")[0];
+        const dateStr = getWitaDateString(d);
         const { count } = await supabase
           .from("attendance")
           .select("*", { count: "exact", head: true })
           .eq("date", dateStr)
-          .eq("attendance_status", "hadir");
+          .in("attendance_status", ["hadir", "terlambat"]);
         weekly.push(count || 0);
       }
 

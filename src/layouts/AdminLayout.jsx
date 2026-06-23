@@ -15,6 +15,8 @@ function AdminLayout() {
       {/* Floating Orbs */}
       <div className="fixed top-[-10%] left-[5%] w-[400px] h-[400px] bg-purple-700 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-orb pointer-events-none"></div>
       <div className="fixed bottom-[-10%] right-[5%] w-[400px] h-[400px] bg-violet-800 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-orb animate-orb-delay pointer-events-none"></div>
+      <div className="fixed inset-0 professional-ambient-bg pointer-events-none"></div>
+      <div className="fixed inset-0 professional-grid-bg pointer-events-none"></div>
 
       <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 

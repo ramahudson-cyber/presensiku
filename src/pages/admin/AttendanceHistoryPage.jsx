@@ -12,6 +12,7 @@ import {
 const STATUS_OPTIONS = [
   { value: "", label: "Semua Status" },
   { value: "hadir",  label: "Hadir"  },
+  { value: "terlambat", label: "Terlambat" },
   { value: "izin",   label: "Izin"   },
   { value: "sakit",  label: "Sakit"  },
   { value: "cuti",   label: "Cuti"   },
@@ -20,6 +21,7 @@ const STATUS_OPTIONS = [
 
 const STATUS_STYLE = {
   hadir:  { bg: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30", icon: <CheckCircle2 size={11} /> },
+  terlambat: { bg: "bg-amber-500/15 text-amber-300 ring-amber-500/30", icon: <Clock size={11} /> },
   izin:   { bg: "bg-amber-500/15 text-amber-300 ring-amber-500/30",       icon: <Clock size={11} />         },
   sakit:  { bg: "bg-orange-500/15 text-orange-300 ring-orange-500/30",    icon: <AlertTriangle size={11} /> },
   cuti:   { bg: "bg-sky-500/15 text-sky-300 ring-sky-500/30",             icon: <Calendar size={11} />      },
@@ -27,6 +29,11 @@ const STATUS_STYLE = {
 };
 
 const PAGE_SIZE = 10;
+
+const getWitaDateString = (date = new Date()) => {
+  const witaMs = date.getTime() + (8 * 60 * 60 * 1000);
+  return new Date(witaMs).toISOString().split("T")[0];
+};
 
 const cardBase =
   "bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl transition-all";
@@ -105,9 +112,9 @@ export default function AttendanceHistoryPage() {
   const [dateFrom, setDateFrom]   = useState(() => {
     const d = new Date();
     d.setDate(d.getDate() - 6);
-    return d.toISOString().split("T")[0];
+    return getWitaDateString(d);
   });
-  const [dateTo, setDateTo]       = useState(new Date().toISOString().split("T")[0]);
+  const [dateTo, setDateTo]       = useState(getWitaDateString());
 
   // ── Fetch ─────────────────────────────────────────────────────────────────
   const fetchRecords = async (resetPage = false) => {
@@ -148,15 +155,19 @@ export default function AttendanceHistoryPage() {
       // Summary: ambil count per status di rentang tanggal
       const statuses = ["hadir", "izin", "sakit", "alpha"];
       const counts = await Promise.all(
-        statuses.map(s =>
-          supabase
+        statuses.map(s => {
+          let query = supabase
             .from("attendance")
             .select("*", { count: "exact", head: true })
             .gte("date", dateFrom)
-            .lte("date", dateTo)
-            .eq("attendance_status", s)
-            .then(({ count }) => count || 0)
-        )
+            .lte("date", dateTo);
+
+          query = s === "hadir"
+            ? query.in("attendance_status", ["hadir", "terlambat"])
+            : query.eq("attendance_status", s);
+
+          return query.then(({ count }) => count || 0);
+        })
       );
       setSummary({ hadir: counts[0], izin: counts[1], sakit: counts[2], alpha: counts[3] });
     } catch (err) {
