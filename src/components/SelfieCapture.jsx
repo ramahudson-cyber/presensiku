@@ -1,5 +1,5 @@
 // src/components/SelfieCapture.jsx
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { Camera, Upload, X, CheckCircle, AlertCircle } from 'lucide-react'
 import { useSelfie } from '../hooks/useSelfie'
 
@@ -12,17 +12,75 @@ export default function SelfieCapture({ userId, onSuccess }) {
   const [status, setStatus] = useState(null) // 'success' | 'error'
   const { uploadSelfie, uploading, error } = useSelfie()
 
+  // Cleanup stream on unmount
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop())
+      }
+    }
+  }, [stream])
+
   // Buka kamera
   const openCamera = async () => {
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: 640, height: 480 }
-      })
-      videoRef.current.srcObject = mediaStream
+      // Check if mediaDevices is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Kamera tidak didukung di browser ini')
+      }
+
+      // Request camera with fallback constraints
+      const constraints = {
+        video: {
+          facingMode: 'user',
+          width: { ideal: 640, max: 1280 },
+          height: { ideal: 480, max: 720 }
+        },
+        audio: false
+      }
+
+      let mediaStream
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
+      } catch (err) {
+        // Fallback: try without constraints
+        mediaStream = await navigator.mediaDevices.getUserMedia({ video: true })
+      }
+
+      // Wait for video element to be ready
+      const video = videoRef.current
+      if (!video) {
+        throw new Error('Video element tidak ditemukan')
+      }
+
+      video.srcObject = mediaStream
+      
+      // Important for iOS Safari
+      video.setAttribute('playsinline', 'true')
+      video.setAttribute('autoplay', 'true')
+      video.setAttribute('muted', 'true')
+      
+      await video.play()
+
       setStream(mediaStream)
       setCameraOpen(true)
-    } catch {
-      alert('Tidak dapat mengakses kamera')
+    } catch (err) {
+      console.error('Camera error:', err)
+      let message = 'Tidak dapat mengakses kamera'
+      
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        message = 'Izin kamera ditolak. Silakan izinkan akses kamera di pengaturan browser.'
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        message = 'Kamera tidak ditemukan di perangkat ini.'
+      } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+        message = 'Kamera sedang digunakan oleh aplikasi lain.'
+      } else if (err.name === 'OverconstrainedError') {
+        message = 'Resolusi kamera tidak didukung.'
+      } else if (err.name === 'NotSupportedError') {
+        message = 'Browser tidak mendukung akses kamera. Pastikan menggunakan HTTPS.'
+      }
+      
+      alert(message)
     }
   }
 
@@ -69,7 +127,14 @@ export default function SelfieCapture({ userId, onSuccess }) {
       {/* Video stream */}
       {cameraOpen && (
         <div className="relative rounded-xl overflow-hidden border-4 border-blue-500">
-          <video ref={videoRef} autoPlay playsInline className="w-72 h-56 object-cover" />
+          <video 
+            ref={videoRef} 
+            autoPlay 
+            playsInline 
+            muted 
+            controls={false}
+            className="w-72 h-56 object-cover bg-black"
+          />
           <button
             onClick={capture}
             className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white text-blue-600 rounded-full px-6 py-2 font-bold shadow-lg hover:scale-105 transition"
