@@ -9,7 +9,7 @@ import * as faceapi from "face-api.js";
 
 const PUSKESMAS_LOCATION = { latitude: -8.5699, longitude: 116.0770 };
 const RADIUS_METER = 50000; // TEST MODE — ubah ke 300 untuk produksi
-const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
+const MODEL_URL = "/models";
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371000;
@@ -97,6 +97,22 @@ export default function AttendancePage() {
     return () => clearInterval(t);
   }, [serverOffset]);
 
+  // Warm-up model supaya inference pertama tidak lambat
+  const warmUpFaceModels = async () => {
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = 160;
+      canvas.height = 160;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, 160, 160);
+      await faceapi.detectSingleFace(
+        canvas,
+        new faceapi.TinyFaceDetectorOptions({ inputSize: 160 })
+      );
+    } catch { /* warmup not critical */ }
+  };
+
   useEffect(() => {
     syncServerTime();
     const t = setInterval(syncServerTime, 5 * 60 * 1000);
@@ -121,6 +137,7 @@ export default function AttendancePage() {
           ]);
         }
         setModelsLoaded(true);
+        warmUpFaceModels();
       } catch (err) { console.error("Gagal load model:", err); }
     };
     loadModels();
@@ -192,7 +209,6 @@ export default function AttendancePage() {
       const { data: serverNow, error: timeErr } = await supabase.rpc("get_server_time");
       if (timeErr) throw timeErr;
       const now = new Date(serverNow);
-      const today = now.toISOString().split("T")[0];
 
       // Hitung keterlambatan berdasarkan SERVER TIME dalam WITA (UTC+8)
       // Puskesmas di Mataram, jam masuk 08:00 WITA
@@ -262,7 +278,7 @@ export default function AttendancePage() {
   };
 
   // ============================================================
-  // 📷 CAMERA — AGGRESSIVE OPTIMIZATION FOR SAFARI PWA
+  // 📷 CAMERA — OPTIMIZED
   // ============================================================
   const openCameraModal = async () => {
     if (!modelsLoaded) {
@@ -271,42 +287,22 @@ export default function AttendancePage() {
     }
     setCameraError("");
     setFaceStatus("loading");
-    setFaceMessage("Memulai kamera...");
+    setFaceMessage("Meminta izin kamera...");
     setCameraOpen(true);
 
     try {
-      await new Promise(resolve => requestAnimationFrame(resolve));
-
-      setFaceMessage("Meminta izin kamera...");
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
         audio: false
       });
       streamRef.current = stream;
 
-      setFaceMessage("Menyiapkan tampilan...");
-      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
       if (!videoRef.current) throw new Error("Video element tidak ter-render.");
 
       const video = videoRef.current;
       video.srcObject = stream;
 
-      setFaceMessage("Menyalakan kamera...");
-      await new Promise((resolve, reject) => {
-        let resolved = false;
-        const done = () => { if (!resolved) { resolved = true; resolve(); } };
-        const fail = (err) => { if (!resolved) { resolved = true; reject(err); } };
-
-        video.onloadedmetadata = () => {
-          video.play().then(done).catch(() => {
-            video.muted = true;
-            video.play().then(done).catch(fail);
-          });
-        };
-        video.onerror = fail;
-        setTimeout(() => fail(new Error("Timeout")), 10000);
-      });
+      await video.play();
 
       setFaceStatus("scanning");
       setFaceMessage("Posisikan wajah di dalam lingkaran");
@@ -314,9 +310,9 @@ export default function AttendancePage() {
     } catch (err) {
       console.error("Camera error:", err);
       setCameraError(
-        err.name === "NotAllowedError" ? "Izin kamera ditolak. Settings → Safari → Camera → Allow." :
+        err.name === "NotAllowedError" ? "Izin kamera ditolak." :
         err.name === "NotFoundError" ? "Kamera tidak ditemukan." :
-        err.name === "NotReadableError" ? "Kamera sedang dipakai app lain. Tutup app lain." :
+        err.name === "NotReadableError" ? "Kamera sedang dipakai app lain." :
         "Gagal akses kamera: " + err.message
       );
       setFaceStatus("idle");
@@ -346,7 +342,7 @@ export default function AttendancePage() {
     try {
       const detection = await faceapi.detectSingleFace(
         videoRef.current,
-        new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.3 })
+        new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.3 })
       ).withFaceLandmarks().withFaceExpressions();
 
       if (!detection) {
