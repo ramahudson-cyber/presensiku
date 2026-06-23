@@ -24,9 +24,11 @@ function AdminLayout() {
 
       <div className="relative z-10 w-full md:ml-[260px] min-h-screen flex flex-col">
         <Header onMenuClick={() => setMenuOpen(true)} />
-        {/* FIX: hapus max-w-2xl, pakai w-full. Padding hanya di sini, tidak di pages. */}
-        <main className="flex-1 w-full p-3 sm:p-4 md:p-5 lg:p-6 pb-24 md:pb-6">
-          <Outlet />
+        {/* Responsive Container: max-width prevents content stretch on large screens */}
+        <main className="flex-1 w-full p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8 pb-24 md:pb-6">
+          <div className="mx-auto max-w-[1600px] w-full">
+            <Outlet />
+          </div>
         </main>
       </div>
 

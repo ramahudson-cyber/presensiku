@@ -187,16 +187,16 @@ export default function DashboardPage() {
         </button>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+      {/* Stat Cards - Responsive Grid: 1 col mobile, 2 cols tablet, 4 cols desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
         <StatCard title="Total Pegawai" value={stats.totalPegawai} subtitle="Seluruh status kepegawaian" icon={Users} accent="from-violet-500 to-purple-700" loading={loading} />
         <StatCard title="Hadir Hari Ini" value={stats.hadirHariIni} subtitle="Sudah check-in" icon={UserCheck} accent="from-emerald-500 to-teal-700" loading={loading} />
         <StatCard title="Izin / Sakit" value={stats.izinSakit} subtitle="Hari ini" icon={UserMinus} accent="from-amber-500 to-orange-700" loading={loading} />
         <StatCard title="Cuti" value={stats.cuti} subtitle="Hari ini" icon={UserX} accent="from-sky-500 to-blue-700" loading={loading} />
       </div>
 
-      {/* Grafik + Pengumuman */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      {/* Grafik + Pengumuman - Responsive: stacked mobile, side-by-side tablet, 2:1 layout desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
         <div className={`${cardBase} lg:col-span-2`}>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-base md:text-lg font-bold text-white">Grafik Presensi 7 Hari</h2>

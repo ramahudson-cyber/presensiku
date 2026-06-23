@@ -38,7 +38,7 @@ export default function EmployeeDashboard() {
       <div className="space-y-3">
         <div className="bg-[#6B4BA3] rounded-2xl p-5 h-20 animate-pulse"></div>
         <div className="bg-[#6B4BA3] rounded-2xl p-4 h-16 animate-pulse"></div>
-        <div className="grid grid-cols-4 gap-2">{[1,2,3,4].map(i => <div key={i} className="bg-[#6B4BA3] rounded-xl p-3 h-16 animate-pulse"></div>)}</div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{[1,2,3,4].map(i => <div key={i} className="bg-[#6B4BA3] rounded-xl p-3 h-16 animate-pulse"></div>)}</div>
       </div>
     );
   }
@@ -78,10 +78,10 @@ export default function EmployeeDashboard() {
         </div>
       </Link>
 
-      {/* Stats */}
+      {/* Stats - Responsive: 2 cols mobile, 4 cols tablet+ */}
       <div>
         <p className="text-[10px] font-bold text-violet-200/60 uppercase tracking-widest mb-2 px-1">Bulan Ini</p>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {[
             { label: "Hadir", value: stats.hadir, icon: CheckCircle, color: "text-emerald-300" },
             { label: "Izin", value: stats.izin, icon: AlertCircle, color: "text-amber-300" },
