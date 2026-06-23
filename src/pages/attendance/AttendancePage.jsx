@@ -289,13 +289,12 @@ export default function AttendancePage() {
       return;
     }
     cameraStartingRef.current = true;
-    setCameraError("");
-    setFaceStatus("loading");
-    setFaceMessage("Mengakses kamera...");
 
     try {
-      // ✅ SAFARI PWA: panggil getUserMedia SEBELUM render modal
-      // biar user gesture chain tidak putus (Safari PWA butuh ini)
+      // 🚨 KRITIS UNTUK SAFARI PWA:
+      // getUserMedia HARUS dipanggil di event loop yg sama dengan klik tombol.
+      // DILARANG ada state update (setState) SEBELUM getUserMedia,
+      // karena React state update bisa putuskan user gesture chain di Safari.
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "user",
@@ -304,11 +303,13 @@ export default function AttendancePage() {
         },
         audio: false
       });
-      streamRef.current = stream;
 
-      // Baru render modal setelah stream didapat
-      setCameraOpen(true);
+      // ✅ Stream didapat — baru aman render modal & update state
+      streamRef.current = stream;
+      setCameraError("");
+      setFaceStatus("loading");
       setFaceMessage("Menyiapkan kamera...");
+      setCameraOpen(true);
 
       // Tunggu video element muncul di DOM
       let video = videoRef.current;
@@ -346,7 +347,7 @@ export default function AttendancePage() {
     } catch (err) {
       console.error("Camera error:", err);
       setCameraError(
-        err.name === "NotAllowedError" ? "Izin kamera ditolak. Settings → Safari → Camera → Allow." :
+        err.name === "NotAllowedError" ? "Izin kamera ditolak. Setting → Safari → Camera → Allow, lalu hapus data situs & reload." :
         err.name === "NotFoundError" ? "Kamera tidak ditemukan." :
         err.name === "NotReadableError" ? "Kamera sedang dipakai app lain." :
         "Gagal akses kamera: " + err.message
@@ -564,7 +565,7 @@ export default function AttendancePage() {
           <div className="relative w-full max-w-md aspect-square">
             <div className="absolute -inset-4 bg-gradient-to-br from-violet-600/20 to-purple-800/20 rounded-[2rem] blur-2xl"></div>
             <div className="relative w-full h-full rounded-[2rem] overflow-hidden bg-slate-900 shadow-2xl border border-white/10">
-              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
+              <video ref={videoRef} playsInline muted className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
               <canvas ref={canvasRef} className="hidden" />
 
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
