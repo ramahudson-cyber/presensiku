@@ -52,6 +52,7 @@ function Header() {
         {/* LEFT: Date & Time */}
         <div className="flex items-center min-w-0 flex-1">
           <div className="flex flex-col min-w-0">
+            <span className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Hai, {userName}</span>
             <h1 className="text-sm sm:text-base md:text-lg font-semibold text-slate-800 dark:text-slate-100 truncate tracking-tight">
               {todayLabel}
             </h1>
