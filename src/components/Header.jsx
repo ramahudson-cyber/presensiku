@@ -1,6 +1,7 @@
 import { Bell, LogOut, Moon, Sun, Search } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 import { signOut } from "../services/authService";
 
 const TITLES = {
@@ -18,9 +19,11 @@ const TITLES = {
 
 function Header() {
   const { darkMode, setDarkMode } = useTheme();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const title = TITLES[location.pathname] || "SIAP";
+  const userName = user?.full_name || user?.username || "User";
 
   const handleLogout = async () => {
     await signOut();
@@ -33,11 +36,16 @@ function Header() {
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="flex items-center justify-between h-16 md:h-[72px] px-5 md:px-10">
-        {/* LEFT: Page title */}
+        {/* LEFT: Greeting */}
         <div className="flex items-center min-w-0 flex-1">
-          <h1 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-100 truncate tracking-tight">
-            {title}
-          </h1>
+          <div className="flex flex-col min-w-0">
+            <h1 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-100 truncate tracking-tight">
+              Hai, {userName}
+            </h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 truncate -mt-0.5">
+              {title}
+            </p>
+          </div>
         </div>
 
         {/* MIDDLE: Search (desktop only) */}

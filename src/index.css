@@ -12,7 +12,7 @@ html, body, #root {
 
 html:not(.dark) body,
 html:not(.dark) #root {
-  background: #f8fafc;
+  background: #f1f5f9;
 }
 
 /* === ANIMATIONS === */
@@ -51,50 +51,50 @@ html:not(.dark) #root {
 .animate-fade-in { animation: fadeInUp 0.4s ease-out; }
 
 @keyframes ambientSweep {
-  0%, 100% { transform: translate3d(-2%, -1%, 0) scale(1); opacity: 0.55; }
-  50%      { transform: translate3d(2%, 1%, 0) scale(1.03); opacity: 0.8; }
+  0%, 100% { transform: translate3d(-2%, -1%, 0) scale(1); opacity: 0.45; }
+  50%      { transform: translate3d(2%, 1%, 0) scale(1.03); opacity: 0.7; }
 }
 @keyframes gridDrift {
   from { background-position: 0 0; }
   to   { background-position: 48px 48px; }
 }
 
-/* Dark mode backgrounds */
+/* === DARK MODE BACKGROUNDS === */
 .dark .professional-ambient-bg {
   background:
-    radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.14), transparent 32%),
-    radial-gradient(circle at 78% 10%, rgba(14, 165, 233, 0.09), transparent 28%),
-    radial-gradient(circle at 55% 86%, rgba(168, 85, 247, 0.12), transparent 34%);
+    radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.12), transparent 32%),
+    radial-gradient(circle at 78% 10%, rgba(14, 165, 233, 0.08), transparent 28%),
+    radial-gradient(circle at 55% 86%, rgba(168, 85, 247, 0.1), transparent 34%);
   animation: ambientSweep 18s ease-in-out infinite;
 }
 .dark .professional-grid-bg {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.55), transparent 72%);
   animation: gridDrift 28s linear infinite;
-  opacity: 0.32;
+  opacity: 0.3;
 }
 
-/* Light mode backgrounds - clean & subtle */
+/* === LIGHT MODE BACKGROUNDS - clean & minimal === */
 html:not(.dark) .professional-ambient-bg {
   background:
-    radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.04), transparent 36%),
-    radial-gradient(circle at 78% 10%, rgba(14, 165, 233, 0.03), transparent 32%),
-    radial-gradient(circle at 55% 86%, rgba(139, 92, 246, 0.03), transparent 34%);
+    radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.035), transparent 36%),
+    radial-gradient(circle at 78% 10%, rgba(14, 165, 233, 0.025), transparent 32%),
+    radial-gradient(circle at 55% 86%, rgba(139, 92, 246, 0.025), transparent 34%);
   animation: ambientSweep 18s ease-in-out infinite;
 }
 html:not(.dark) .professional-grid-bg {
   background-image:
-    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+    linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
   background-size: 48px 48px;
-  mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.32), transparent 72%);
-  opacity: 0.5;
+  mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.25), transparent 72%);
+  opacity: 0.4;
 }
 
-/* Sidebar - dark mode stays purple */
+/* === SIDEBAR === */
 .dark .sidebar-gradient {
   background:
     radial-gradient(circle at 22% 0%, rgba(168, 85, 247, 0.42), transparent 34%),
@@ -102,83 +102,81 @@ html:not(.dark) .professional-grid-bg {
   backdrop-filter: blur(22px);
 }
 
-/* Sidebar - light mode clean white */
 html:not(.dark) .sidebar-gradient {
   background: #ffffff;
-  backdrop-filter: blur(22px);
+  border-right-color: #e2e8f0;
 }
 
-/* Light mode text overrides - clean slate palette */
+/* === LIGHT MODE CARD SYSTEM === */
+html:not(.dark) .bg-white\/5,
+html:not(.dark) .bg-white\/\[0\.03\],
+html:not(.dark) .bg-white\/\[0\.04\],
+html:not(.dark) .bg-white\/\[0\.05\] {
+  background-color: #ffffff;
+}
+
+html:not(.dark) .border-white\/10,
+html:not(.dark) .border-white\/5,
+html:not(.dark) .border-white\/\[0\.06\],
+html:not(.dark) .border-white\/\[0\.08\],
+html:not(.dark) .border-white\/\[0\.15\] {
+  border-color: #e2e8f0;
+}
+
+html:not(.dark) .bg-slate-100\/80 {
+  background-color: #f1f5f9;
+}
+
+html:not(.dark) .hover\:bg-white\/10:hover,
+html:not(.dark) .hover\:bg-white\/\[0\.06\]:hover {
+  background-color: #f1f5f9;
+}
+
+html:not(.dark) .hover\:bg-red-500\/10:hover {
+  background-color: #fef2f2;
+}
+
+/* === LIGHT MODE TEXT COLORS === */
 html:not(.dark) .text-violet-200\/60,
 html:not(.dark) .text-violet-200\/70,
 html:not(.dark) .text-violet-200\/80,
 html:not(.dark) .text-violet-100\/90,
 html:not(.dark) .text-violet-100\/70,
 html:not(.dark) .text-violet-100\/60,
-html:not(.dark) .text-violet-100\/40 {
+html:not(.dark) .text-violet-100\/40,
+html:not(.dark) .text-violet-200 {
   color: #475569;
 }
 
 html:not(.dark) .text-violet-300\/60,
 html:not(.dark) .text-violet-300\/50,
 html:not(.dark) .text-violet-300\/40,
-html:not(.dark) .text-violet-300\/30 {
+html:not(.dark) .text-violet-300\/30,
+html:not(.dark) .text-violet-300 {
   color: #64748b;
 }
 
-html:not(.dark) .text-red-400\/80 {
-  color: #ef4444;
+html:not(.dark) .text-violet-300\/70 {
+  color: #475569;
 }
 
+/* Sidebar specific text */
 html:not(.dark) .sidebar-gradient .text-violet-100\/70,
 html:not(.dark) .sidebar-gradient .text-violet-100\/60,
 html:not(.dark) .sidebar-gradient .text-violet-100\/40 {
   color: #64748b;
 }
 
-html:not(.dark) .sidebar-gradient .text-red-400\/80 {
-  color: #ef4444;
-}
-
-html:not(.dark) .sidebar-gradient .text-red-400\/80:hover {
-  color: #dc2626;
-}
-
-/* Sidebar border overrides for light mode */
-html:not(.dark) .sidebar-gradient .border-white\/10 {
-  border-color: #e2e8f0;
-}
-
-html:not(.dark) .sidebar-gradient .border-white\/15 {
-  border-color: #e2e8f0;
-}
-
-html:not(.dark) .sidebar-gradient .bg-white\/\[0\.03\] {
-  background-color: #f8fafc;
-}
-
-html:not(.dark) .sidebar-gradient .hover\:bg-white\/10:hover {
-  background-color: #f1f5f9;
-}
-
-html:not(.dark) .sidebar-gradient .hover\:bg-red-500\/10:hover {
-  background-color: #fef2f2;
-}
-
-/* Active nav link - light mode */
-html:not(.dark) .sidebar-gradient a.bg-gradient-to-r.from-violet-600.to-purple-700 {
-  background: linear-gradient(to right, #6366f1, #8b5cf6);
-}
-html:not(.dark) .sidebar-gradient a.bg-gradient-to-r.from-violet-600.to-purple-700.text-white {
-  color: #ffffff;
-}
-
-/* Inactive nav link - light mode */
 html:not(.dark) .sidebar-gradient .text-violet-100\/65 {
   color: #64748b;
 }
+
 html:not(.dark) .sidebar-gradient .hover\:text-white:hover {
   color: #0f172a;
+}
+
+html:not(.dark) .sidebar-gradient .text-red-400\/80 {
+  color: #ef4444;
 }
 
 html:not(.dark) .sidebar-gradient .text-violet-300 {
@@ -188,6 +186,28 @@ html:not(.dark) .sidebar-gradient .hover\:text-white:hover.text-violet-300 {
   color: #0f172a;
 }
 
+html:not(.dark) .sidebar-gradient h1 {
+  color: #0f172a;
+}
+
+html:not(.dark) .sidebar-gradient .border-white\/10,
+html:not(.dark) .sidebar-gradient .border-white\/15 {
+  border-color: #e2e8f0;
+}
+
+html:not(.dark) .sidebar-gradient .bg-white\/\[0\.03\] {
+  background-color: #f8fafc;
+}
+
+/* Active nav link - light mode */
+html:not(.dark) a.bg-gradient-to-r.from-violet-600.to-purple-700 {
+  background: linear-gradient(to right, #6366f1, #8b5cf6);
+}
+html:not(.dark) a.bg-gradient-to-r.from-violet-600.to-purple-700.text-white {
+  color: #ffffff;
+}
+
+/* Shadows */
 html:not(.dark) .shadow-violet-950\/20 {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
 }
@@ -196,19 +216,25 @@ html:not(.dark) .shadow-violet-900\/30 {
   box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.15), 0 2px 4px -2px rgba(99, 102, 241, 0.1);
 }
 
-html:not(.dark) .sidebar-gradient h1 {
-  color: #0f172a;
+/* Ring overrides for light mode */
+html:not(.dark) .ring-white {
+  --tw-ring-color: #ffffff;
 }
 
-/* Light mode card adjustments */
-html:not(.dark) .bg-white\/5,
-html:not(.dark) .bg-white\/\[0\.03\] {
-  background-color: #ffffff;
+/* === DROP ZONE LIGHT MODE === */
+html:not(.dark) .border-violet-500\/20 {
+  border-color: #c7d2fe;
 }
 
-html:not(.dark) .border-white\/10,
-html:not(.dark) .border-white\/5 {
-  border-color: #e2e8f0;
+html:not(.dark) .hover\:border-violet-500\/40:hover {
+  border-color: #a5b4fc;
+}
+
+/* Input base light mode */
+html:not(.dark) input,
+html:not(.dark) select,
+html:not(.dark) textarea {
+  color-scheme: light;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -219,9 +245,9 @@ html:not(.dark) .border-white\/5 {
 }
 
 /* === CUSTOM SCROLLBAR === */
-::-webkit-scrollbar         { width: 4px; }
-::-webkit-scrollbar-track   { background: transparent; }
-::-webkit-scrollbar-thumb   { background: rgba(139, 92, 246, 0.3); border-radius: 4px; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.3); border-radius: 4px; }
 
 /* === SAFARI MOBILE 100vh FIX === */
 @supports (height: 100dvh) {
