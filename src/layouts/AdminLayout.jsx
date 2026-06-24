@@ -1,12 +1,9 @@
-import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import BottomNav from "../components/BottomNav";
 import { Outlet } from "react-router-dom";
 
 function AdminLayout() {
-  const [menuOpen, setMenuOpen] = useState(false);
-
   return (
     <div className="min-h-screen relative overflow-x-hidden bg-slate-50 dark:bg-[#0f0524] transition-colors duration-500">
       {/* Animated Gradient Background */}
@@ -18,15 +15,10 @@ function AdminLayout() {
       <div className="fixed inset-0 professional-ambient-bg pointer-events-none"></div>
       <div className="fixed inset-0 professional-grid-bg pointer-events-none"></div>
 
-      <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-
-      {menuOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 xl:hidden" onClick={() => setMenuOpen(false)} />
-      )}
+      <Sidebar menuOpen={false} />
 
       <div className="relative z-10 w-full xl:w-[calc(100%-260px)] xl:ml-[260px] min-h-screen flex flex-col min-w-0">
-        <Header onMenuClick={() => setMenuOpen(true)} />
-        {/* Responsive Container: max-width prevents content stretch on large screens */}
+        <Header />
         <main className="flex-1 w-full min-w-0 overflow-x-hidden p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8 pb-24 md:pb-6">
           <div className="mx-auto max-w-[2000px] w-full">
             <Outlet />

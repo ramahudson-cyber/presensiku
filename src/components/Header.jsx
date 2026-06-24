@@ -1,4 +1,4 @@
-import { Bell, LogOut, Menu, Moon, Sun, Search, Stethoscope } from "lucide-react";
+import { Bell, LogOut, Moon, Sun, Search, Stethoscope } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { signOut } from "../services/authService";
@@ -16,7 +16,7 @@ const TITLES = {
   "/employee/attendance": "Absensi",
 };
 
-function Header({ onMenuClick }) {
+function Header() {
   const { darkMode, setDarkMode } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,26 +33,15 @@ function Header({ onMenuClick }) {
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="flex items-center justify-between h-[60px] md:h-16 px-3 md:px-6">
-        {/* LEFT: Logo (mobile) + Hamburger (mobile) + Title */}
+        {/* LEFT: Logo (mobile) + Title */}
         <div className="flex items-center gap-2 min-w-0 flex-1 xl:flex-none">
-          {/* Mobile logo (no hamburger on small screens → logo acts as home indicator) */}
+          {/* Mobile logo */}
           <div className="xl:hidden flex items-center gap-1.5 shrink-0">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shadow-lg shadow-violet-900/40">
               <Stethoscope size={16} className="text-white" />
             </div>
             <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">SIAP</span>
           </div>
-
-          {/* Mobile hamburger (kept for safety — but layout above is logo+title) */}
-          {onMenuClick && (
-            <button
-              onClick={onMenuClick}
-              aria-label="Open menu"
-              className="xl:hidden p-2 -ml-1 rounded-lg text-slate-600 dark:text-violet-200 hover:bg-slate-100 dark:hover:bg-white/10 transition shrink-0"
-            >
-              <Menu size={22} />
-            </button>
-          )}
 
           {/* Desktop title */}
           <h1 className="hidden xl:block text-xl font-bold text-slate-900 dark:text-white truncate">
