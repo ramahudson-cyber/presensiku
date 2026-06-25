@@ -5,9 +5,9 @@ import { Outlet } from "react-router-dom";
 
 function AdminLayout() {
   return (
-    <div className="min-h-screen relative overflow-x-hidden bg-slate-50 dark:bg-[#0f0524] transition-colors duration-500">
-      {/* Animated Gradient Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-violet-50 via-white to-slate-100 dark:from-[#1a0533] dark:via-[#0f0524] dark:to-[#2d0a4e] animate-gradient-bg pointer-events-none"></div>
+    <div className="min-h-screen relative overflow-x-hidden bg-[#05000a] transition-colors duration-500">
+      {/* Deep Black & Purple Gradient Background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-[#1a0533] via-[#05000a] to-[#2d0a4e] animate-gradient-bg pointer-events-none"></div>
 
       {/* Floating Orbs */}
       <div className="fixed top-[-10%] left-[5%] w-[400px] h-[400px] bg-violet-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[120px] opacity-25 dark:opacity-20 animate-orb pointer-events-none"></div>
