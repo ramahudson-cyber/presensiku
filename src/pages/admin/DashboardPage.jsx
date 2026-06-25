@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 
 const cardBase =
-  "bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 sm:p-5 md:p-6 transition-all";
+  "bg-white/5 rounded-2xl p-4 sm:p-5 md:p-6 transition-all";
 
 function StatCard({ title, value, subtitle, icon: Icon, accent = "from-violet-500 to-purple-700", loading }) {
   return (

@@ -8,13 +8,13 @@ html, body, #root {
   padding: 0;
   min-height: 100%;
   height: 100%;
-  background: #f8fafc; /* Latar putih keabuan */
+  background: #f8fafc;
   color: #0f172a;
 }
 
 /* Dark Mode override */
 html.dark, html.dark body, html.dark #root {
-  background: #05000a; /* Latar ungu/hitam pekat */
+  background: #05000a;
   color: #f8fafc;
 }
 
@@ -45,70 +45,100 @@ html.dark, html.dark body, html.dark #root {
   opacity: 0.3;
 }
 
+/* Light mode: subtle ambient bg */
 html:not(.dark) .professional-ambient-bg {
-  background: radial-gradient(circle at 20% 20%,rgba(99,102,241,0.03),transparent 36%),radial-gradient(circle at 78% 10%,rgba(14,165,233,0.02),transparent 32%),radial-gradient(circle at 55% 86%,rgba(139,92,246,0.02),transparent 34%);
-  animation: ambientSweep 18s ease-in-out infinite;
+  background:
+    radial-gradient(ellipse at 15% 50%, rgba(99,102,241,0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 30%, rgba(14,165,233,0.02) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(139,92,246,0.015) 0%, transparent 50%);
 }
 html:not(.dark) .professional-grid-bg {
-  background-image: linear-gradient(rgba(148,163,184,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,0.06) 1px,transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(circle at center,rgba(0,0,0,0.2),transparent 72%);
-  opacity: 0.4;
+  background-image: linear-gradient(rgba(148,163,184,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, transparent 70%);
+  opacity: 1;
 }
 
-/* === SIDEBAR === */
-.dark .sidebar-gradient {
-  background: radial-gradient(circle at 22% 0%,rgba(168,85,247,0.42),transparent 34%),linear-gradient(160deg,rgba(3,7,18,0.98) 0%,rgba(34,12,65,0.96) 48%,rgba(88,28,135,0.94) 100%);
-  backdrop-filter: blur(22px);
-}
-html:not(.dark) .sidebar-gradient {
-  background: #ffffff;
-  border-right-color: #e2e8f0;
-}
-html:not(.dark) .sidebar-gradient h1 { color: #0f172a; }
-
-/* REFINED LIGHT MODE - Clean & Professional */
+/* ============================================================
+   LIGHT MODE — CLEAN, ELEGANT, PROFESSIONAL
+   ============================================================ */
 html:not(.dark) {
-  --bg-primary: #f8fafc;
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-header: rgba(255,255,255,0.85);
+  --bg-input: #f1f5f9;
   --text-primary: #0f172a;
   --text-secondary: #475569;
-  --text-tertiary: #64748b;
-  --card-bg: #ffffff;
+  --text-muted: #94a3b8;
   --border-color: #e2e8f0;
+  --border-light: #f1f5f9;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.03);
 }
 
-/* Light mode: text hierarchy */
-html:not(.dark) .text-slate-200 { color: var(--text-secondary); }
-html:not(.dark) .text-slate-300 { color: var(--text-tertiary); }
-
-html:not(.dark) body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-}
-
+/* Cards */
 html:not(.dark) .bg-white\/5,
-html:not(.dark) .bg-white\/\[0\.05\] { 
-  background-color: var(--card-bg);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+html:not(.dark) .bg-white\/\[0\.05\] {
+  background-color: var(--bg-card);
+  box-shadow: var(--shadow-md);
 }
 
+html:not(.dark) .bg-white\/10,
+html:not(.dark) .bg-white\/\[0\.1\] {
+  background-color: #f1f5f9;
+}
+
+/* Text overrides for light mode */
 html:not(.dark) .text-white { color: var(--text-primary) !important; }
-html:not(.dark) .text-violet-300\/60,
-html:not(.dark) .text-violet-300\/40,
-html:not(.dark) .text-violet-300\/70 { color: var(--text-secondary) !important; }
-html:not(.dark) .text-violet-200\/60,
+html:not(.dark) .text-slate-100 { color: var(--text-primary); }
+html:not(.dark) .text-slate-200 { color: var(--text-secondary); }
+html:not(.dark) .text-slate-300 { color: var(--text-muted); }
+html:not(.dark) .text-slate-400 { color: #94a3b8; }
+html:not(.dark) .text-slate-500 { color: #94a3b8; }
+
+/* Override ALL violet tinted text variants */
+html:not(.dark) .text-violet-100,
+html:not(.dark) .text-violet-100\/90,
+html:not(.dark) .text-violet-100\/80,
+html:not(.dark) .text-violet-100\/70,
+html:not(.dark) .text-violet-100\/60,
+html:not(.dark) .text-violet-100\/65,
+html:not(.dark) .text-violet-100\/50,
+html:not(.dark) .text-violet-100\/40 { color: var(--text-secondary) !important; }
+
+html:not(.dark) .text-violet-200,
+html:not(.dark) .text-violet-200\/90,
+html:not(.dark) .text-violet-200\/80,
 html:not(.dark) .text-violet-200\/70,
-html:not(.dark) .text-violet-200\/80 { color: var(--text-secondary) !important; }
+html:not(.dark) .text-violet-200\/60,
+html:not(.dark) .text-violet-200\/50,
+html:not(.dark) .text-violet-200\/40 { color: var(--text-muted) !important; }
 
-/* Elegant Buttons in Light Mode */
-html:not(.dark) .bg-gradient-to-r.from-violet-600.to-purple-700 {
-  background: #4f46e5; /* Professional Indigo */
-  color: #ffffff !important;
-}
+html:not(.dark) .text-violet-300,
+html:not(.dark) .text-violet-300\/90,
+html:not(.dark) .text-violet-300\/80,
+html:not(.dark) .text-violet-300\/70,
+html:not(.dark) .text-violet-300\/60,
+html:not(.dark) .text-violet-300\/50,
+html:not(.dark) .text-violet-300\/40 { color: #64748b !important; }
 
-html:not(.dark) .border-white\/10 { border-color: var(--border-color); }
+html:not(.dark) .text-violet-400 { color: var(--accent); }
+html:not(.dark) .text-violet-500 { color: var(--accent-hover); }
 
-/* Override for tag/status label backgrounds in light mode */
+/* Status colors in light mode */
+html:not(.dark) .text-emerald-300 { color: #059669; }
+html:not(.dark) .text-emerald-400\/70 { color: #059669; }
+html:not(.dark) .text-amber-300 { color: #d97706; }
+html:not(.dark) .text-orange-300 { color: #ea580c; }
+html:not(.dark) .text-sky-300 { color: #0284c7; }
+html:not(.dark) .text-rose-300 { color: #dc2626; }
+html:not(.dark) .text-purple-300 { color: #7c3aed; }
+
+/* Status backgrounds in light mode */
 html:not(.dark) .bg-violet-500\/10 { background-color: #eef2ff; }
 html:not(.dark) .bg-violet-500\/15 { background-color: #eef2ff; }
 html:not(.dark) .bg-emerald-500\/15 { background-color: #ecfdf5; }
@@ -118,16 +148,7 @@ html:not(.dark) .bg-sky-500\/15 { background-color: #f0f9ff; }
 html:not(.dark) .bg-rose-500\/15 { background-color: #fef2f2; }
 html:not(.dark) .bg-purple-500\/15 { background-color: #f5f3ff; }
 
-/* Tag/status text light mode */
-html:not(.dark) .text-emerald-300 { color: #059669; }
-html:not(.dark) .text-amber-300 { color: #d97706; }
-html:not(.dark) .text-orange-300 { color: #ea580c; }
-html:not(.dark) .text-sky-300 { color: #0284c7; }
-html:not(.dark) .text-rose-300 { color: #dc2626; }
-html:not(.dark) .text-purple-300 { color: #7c3aed; }
-html:not(.dark) .text-violet-300 { color: #6d28d9; }
-
-/* Tag/status ring light mode */
+/* Status rings in light mode */
 html:not(.dark) .ring-emerald-500\/30 { --tw-ring-color: #a7f3d0; }
 html:not(.dark) .ring-amber-500\/30 { --tw-ring-color: #fde68a; }
 html:not(.dark) .ring-orange-500\/30 { --tw-ring-color: #fed7aa; }
@@ -135,153 +156,272 @@ html:not(.dark) .ring-sky-500\/30 { --tw-ring-color: #bae6fd; }
 html:not(.dark) .ring-rose-500\/30 { --tw-ring-color: #fecaca; }
 html:not(.dark) .ring-purple-500\/30 { --tw-ring-color: #ddd6fe; }
 
-/* Primary text */
-html:not(.dark) .text-white { color: #0f172a; }
-html:not(.dark) h1.text-white,
-html:not(.dark) h2.text-white,
-html:not(.dark) h3.text-white { color: #0f172a; }
+/* Borders in light mode */
+html:not(.dark) .border-white\/5,
+html:not(.dark) .border-white\/10,
+html:not(.dark) .border-white\/15,
+html:not(.dark) .border-white\/20,
+html:not(.dark) .border-white\/\[0\.05\],
+html:not(.dark) .border-white\/\[0\.08\],
+html:not(.dark) .border-white\/\[0\.1\],
+html:not(.dark) .border-white\/\[0\.15\],
+html:not(.dark) .border-white\/\[0\.2\] { border-color: var(--border-color) !important; }
 
-/* Secondary/violet tinted text */
-html:not(.dark) .text-violet-200\/60,
-html:not(.dark) .text-violet-200\/70,
-html:not(.dark) .text-violet-200\/80,
-html:not(.dark) .text-violet-100\/90,
-html:not(.dark) .text-violet-100\/70,
-html:not(.dark) .text-violet-100\/60,
-html:not(.dark) .text-violet-100\/40,
-html:not(.dark) .text-violet-200 { color: #475569; }
+html:not(.dark) .divide-white\/5 { border-color: var(--border-color); }
 
-html:not(.dark) .text-violet-300\/60,
-html:not(.dark) .text-violet-300\/50,
-html:not(.dark) .text-violet-300\/40,
-html:not(.dark) .text-violet-300\/30,
-html:not(.dark) .text-violet-300\/70 { color: #64748b; }
-
-html:not(.dark) .text-violet-200\/50,
-html:not(.dark) .text-violet-200\/40 { color: #64748b; }
-
-/* Remove purple glow buttons in light mode */
-html:not(.dark) .text-violet-400 { color: #6d28d9; }
-html:not(.dark) .text-violet-500 { color: #6d28d9; }
-
-html:not(.dark) .text-emerald-400\/70 { color: #059669; }
-html:not(.dark) .text-emerald-300 { color: #059669; }
-html:not(.dark) .text-rose-300 { color: #dc2626; }
-html:not(.dark) .text-sky-300 { color: #0284c7; }
-
-/* Sidebar specific */
-html:not(.dark) .sidebar-gradient .text-violet-100\/70,
-html:not(.dark) .sidebar-gradient .text-violet-100\/60,
-html:not(.dark) .sidebar-gradient .text-violet-100\/40 { color: #64748b; }
-html:not(.dark) .sidebar-gradient .text-violet-100\/65 { color: #64748b; }
-html:not(.dark) .sidebar-gradient .hover\:text-white:hover { color: #0f172a; }
-html:not(.dark) .sidebar-gradient .text-red-400\/80 { color: #ef4444; }
-html:not(.dark) .sidebar-gradient .text-violet-300 { color: #64748b; }
-html:not(.dark) .sidebar-gradient .hover\:text-white:hover.text-violet-300 { color: #0f172a; }
-html:not(.dark) .sidebar-gradient .border-white\/10,
-html:not(.dark) .sidebar-gradient .border-white\/15 { border-color: #e2e8f0; }
-html:not(.dark) .sidebar-gradient .bg-white\/\[0\.03\] { background-color: #f8fafc; }
-
-/* Active nav link */
-html:not(.dark) a.bg-gradient-to-r.from-violet-600.to-purple-700.text-white { color: #ffffff; }
-
-html:not(.dark) .sidebar-gradient a.bg-gradient-to-r.from-violet-600.to-purple-700 {
-  background: linear-gradient(to right, #6366f1, #8b5cf6);
-}
-
-/* Hover states for sidebar links */
-html:not(.dark) .sidebar-gradient a.hover\:bg-white\/10:hover {
-  background-color: #f1f5f9;
-}
-
-/* Shadows */
-html:not(.dark) .shadow-violet-950\/20 {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-}
-html:not(.dark) .shadow-violet-900\/30,
-html:not(.dark) .shadow-violet-900\/20 {
-  box-shadow: 0 4px 6px -1px rgba(99,102,241,0.1), 0 2px 4px -2px rgba(99,102,241,0.06);
-}
-
-/* Fix ring-white in light mode */
-html:not(.dark) .ring-white { --tw-ring-color: #ffffff; }
-
-/* Gradient buttons — ensure text stays white */
+/* Button gradient - keep text white */
 html:not(.dark) button.bg-gradient-to-r.from-violet-600.to-purple-700,
 html:not(.dark) .bg-gradient-to-r.from-violet-600.to-purple-700 {
   color: #ffffff !important;
 }
 
-/* Date inputs */
-html:not(.dark) input[type="date"] { color-scheme: light; }
-
-/* Light mode: loading skeletons */
-html:not(.dark) .animate-pulse.bg-white\/5,
-html:not(.dark) .animate-pulse.bg-white\/10 {
-  background-color: #e2e8f0 !important;
+html:not(.dark) .bg-gradient-to-r.from-violet-600.to-purple-700 {
+  background: linear-gradient(to right, var(--accent), #8b5cf6);
 }
 
-/* Light mode: modal & overlay backgrounds */
+/* ============================================================
+   SIDEBAR — LIGHT MODE
+   ============================================================ */
+.dark .sidebar-gradient {
+  background: radial-gradient(circle at 22% 0%, rgba(168,85,247,0.42), transparent 34%), linear-gradient(160deg, rgba(3,7,18,0.98) 0%, rgba(34,12,65,0.96) 48%, rgba(88,28,135,0.94) 100%);
+  backdrop-filter: blur(22px);
+}
+
+html:not(.dark) .sidebar-gradient {
+  background: #ffffff;
+  border-right: 1px solid var(--border-color);
+  box-shadow: 1px 0 3px rgba(0,0,0,0.03);
+}
+
+html:not(.dark) .sidebar-gradient h1 { color: #0f172a; }
+html:not(.dark) .sidebar-gradient p { color: #64748b; }
+html:not(.dark) .sidebar-gradient .text-violet-100\/70,
+html:not(.dark) .sidebar-gradient .text-violet-100\/60,
+html:not(.dark) .sidebar-gradient .text-violet-100\/40,
+html:not(.dark) .sidebar-gradient .text-violet-100\/65 { color: #64748b !important; }
+html:not(.dark) .sidebar-gradient .text-violet-300 { color: #64748b; }
+html:not(.dark) .sidebar-gradient .hover\:text-white:hover { color: #0f172a; }
+html:not(.dark) .sidebar-gradient .text-red-400\/80 { color: #ef4444; }
+
+html:not(.dark) .sidebar-gradient .border-white\/10,
+html:not(.dark) .sidebar-gradient .border-white\/15 { border-color: var(--border-color); }
+html:not(.dark) .sidebar-gradient .bg-white\/\[0\.03\] { background-color: #f8fafc; }
+
+/* Sidebar nav links */
+html:not(.dark) .sidebar-gradient a.hover\:bg-white\/10:hover {
+  background-color: #f1f5f9;
+}
+
+html:not(.dark) .sidebar-gradient a.bg-gradient-to-r.from-violet-600.to-purple-700 {
+  background: linear-gradient(to right, #6366f1, #8b5cf6);
+}
+
+html:not(.dark) .sidebar-gradient .text-violet-100\/65 {
+  color: #64748b;
+}
+
+html:not(.dark) .sidebar-gradient a {
+  color: #475569;
+}
+
+html:not(.dark) .sidebar-gradient a:hover {
+  color: #0f172a;
+  background-color: #f1f5f9;
+}
+
+html:not(.dark) .sidebar-gradient a span {
+  color: inherit;
+}
+
+/* ============================================================
+   HEADER — LIGHT MODE
+   ============================================================ */
+html:not(.dark) .bg-white\/80 {
+  background-color: var(--bg-header);
+  border-bottom-color: var(--border-color);
+}
+
+html:not(.dark) .bg-slate-100 {
+  background-color: var(--bg-input);
+}
+
+html:not(.dark) .bg-slate-100\/80 {
+  background-color: var(--bg-input);
+}
+
+html:not(.dark) button.hover\:bg-slate-100:hover {
+  background-color: #f1f5f9;
+}
+
+html:not(.dark) .hover\:bg-rose-50:hover {
+  background-color: #fef2f2;
+}
+
+/* Remove purple glow buttons */
+html:not(.dark) .text-violet-400 { color: var(--accent); }
+html:not(.dark) .text-violet-500 { color: var(--accent-hover); }
+
+/* ============================================================
+   DASHBOARD CARDS — LIGHT MODE
+   ============================================================ */
+html:not(.dark) .bg-white\/5 {
+  background-color: var(--bg-card);
+  box-shadow: var(--shadow-md);
+}
+
+html:not(.dark) .hover\:shadow-violet-900\/20:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+/* ============================================================
+   BOTTOM NAV — LIGHT MODE
+   ============================================================ */
+html:not(.dark) .bg-\[\#160a29\]\/95 {
+  background-color: rgba(255,255,255,0.95) !important;
+  border-top-color: var(--border-color) !important;
+}
+
+html:not(.dark) .bg-\[\#1a0d2e\] {
+  background-color: #ffffff !important;
+  border-top-color: var(--border-color) !important;
+}
+
+html:not(.dark) .bg-\[\#0f0524\]\/90 {
+  background-color: rgba(255,255,255,0.92) !important;
+}
+
+html:not(.dark) .bg-white\/5 {
+  background-color: var(--bg-card);
+}
+
+/* Bottom nav text */
+html:not(.dark) nav a.text-violet-400 {
+  color: var(--accent);
+}
+
+html:not(.dark) nav .text-slate-500 {
+  color: #94a3b8;
+}
+
+/* Bottom nav more sheet */
+html:not(.dark) .bg-\[\#1a0d2e\] .text-white { color: var(--text-primary); }
+html:not(.dark) .bg-\[\#1a0d2e\] .text-slate-300 { color: var(--text-secondary); }
+html:not(.dark) .bg-\[\#1a0d2e\] .text-slate-400 { color: var(--text-muted); }
+html:not(.dark) .bg-\[\#1a0d2e\] .bg-white\/5 { background-color: #f8fafc; }
+html:not(.dark) .bg-\[\#1a0d2e\] .bg-white\/20 { background-color: #e2e8f0; }
+html:not(.dark) .bg-\[\#1a0d2e\] .hover\:bg-white\/10:hover { background-color: #f1f5f9; }
+html:not(.dark) .bg-\[\#1a0d2e\] .border-white\/10 { border-color: var(--border-color); }
+
+/* ============================================================
+   OVERLAYS & MODALS — LIGHT MODE
+   ============================================================ */
 html:not(.dark) .bg-\[\#1a0a35\] {
   background-color: #ffffff !important;
 }
 html:not(.dark) .bg-\[\#1a0a35\]\/95 {
-  background-color: rgba(255, 255, 255, 0.95) !important;
+  background-color: rgba(255,255,255,0.95) !important;
 }
 html:not(.dark) .bg-\[\#1a0a35\]\/90 {
-  background-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255,255,255,0.9) !important;
 }
 html:not(.dark) select option {
   background-color: #ffffff;
   color: #0f172a;
 }
 
-/* Light mode: bottom nav */
-html:not(.dark) .bg-\[\#160a29\]\/95 {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  border-top-color: #e2e8f0 !important;
-}
-html:not(.dark) .bg-\[\#1a0d2e\] {
-  background-color: #ffffff !important;
-}
-
-/* Light mode: missing border variants */
-html:not(.dark) .border-white\/5 {
-  border-color: #e2e8f0 !important;
-}
-html:not(.dark) .border-white\/15 {
-  border-color: #e2e8f0 !important;
-}
-html:not(.dark) .border-white\/20 {
-  border-color: #e2e8f0 !important;
+/* ============================================================
+   SKELETON LOADING — LIGHT MODE
+   ============================================================ */
+html:not(.dark) .animate-pulse.bg-white\/5,
+html:not(.dark) .animate-pulse.bg-white\/10 {
+  background-color: #e2e8f0 !important;
 }
 
-/* Light mode: info box (sky/blue tones) */
-html:not(.dark) .bg-sky-500\/10 {
-  background-color: #f0f9ff;
-}
-html:not(.dark) .border-sky-500\/20 {
-  border-color: #bae6fd;
-}
-html:not(.dark) .text-sky-200\/90 {
-  color: #0369a1;
-}
-html:not(.dark) .text-sky-300\/70 {
-  color: #0284c7;
+/* ============================================================
+   FORMS & INPUTS — LIGHT MODE
+   ============================================================ */
+html:not(.dark) input[type="date"] { color-scheme: light; }
+html:not(.dark) [color-scheme="dark"] { color-scheme: light; }
+
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder {
+  color: #94a3b8;
 }
 
-/* Light mode: additional text variants */
-html:not(.dark) .text-violet-100\/80 { color: #475569; }
-html:not(.dark) .text-violet-200\/90 { color: #334155; }
-
-@media (prefers-reduced-motion: reduce) {
-  .professional-ambient-bg, .professional-grid-bg { animation: none }
+/* Inputs inside dark-mode-styled containers */
+html:not(.dark) .bg-black\/50 {
+  background-color: #f1f5f9;
+  border-color: var(--border-color);
+  color: var(--text-primary);
 }
 
+html:not(.dark) .bg-black\/50:focus {
+  border-color: var(--accent);
+}
+
+html:not(.dark) .bg-black\/50::placeholder {
+  color: #94a3b8;
+}
+
+/* ============================================================
+   MISC FIXES — LIGHT MODE
+   ============================================================ */
+html:not(.dark) .shadow-violet-950\/20 {
+  box-shadow: var(--shadow-md);
+}
+
+html:not(.dark) .shadow-violet-900\/30,
+html:not(.dark) .shadow-violet-900\/20 {
+  box-shadow: var(--shadow-sm);
+}
+
+html:not(.dark) .shadow-2xl.shadow-purple-950\/50 {
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.04);
+}
+
+html:not(.dark) .ring-white { --tw-ring-color: #ffffff; }
+
+/* Info box */
+html:not(.dark) .bg-sky-500\/10 { background-color: #f0f9ff; }
+html:not(.dark) .border-sky-500\/20 { border-color: #bae6fd; }
+html:not(.dark) .text-sky-200\/90 { color: #0369a1; }
+html:not(.dark) .text-sky-300\/70 { color: #0284c7; }
+
+/* Scrollbar */
 ::-webkit-scrollbar { width: 4px }
 ::-webkit-scrollbar-track { background: transparent }
 ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 4px }
+html:not(.dark) ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.2); }
+
+/* Table styling in light mode */
+html:not(.dark) .bg-white\/5 thead tr,
+html:not(.dark) [class*="bg-white/5"] thead tr {
+  background-color: #f8fafc;
+}
+
+html:not(.dark) .divide-white\/5 > * + * {
+  border-color: var(--border-color);
+}
+
+/* Purple glow text cleanup */
+html:not(.dark) .text-emerald-300 { color: #059669; }
+html:not(.dark) .text-rose-300 { color: #dc2626; }
+html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+/* Notification badge ring */
+html:not(.dark) .ring-white.dark\:ring-\[\#0f0524\] {
+  --tw-ring-color: #ffffff;
+}
+
+/* Purple border variants */
+html:not(.dark) .border-violet-500\/20 {
+  border-color: #c7d2fe;
+}
 
 @supports (height: 100dvh) {
   html, body, #root { height: 100dvh }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .professional-ambient-bg, .professional-grid-bg { animation: none }
 }
