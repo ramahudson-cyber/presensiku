@@ -676,22 +676,28 @@ function TabManajemenUser() {
   };
 
   const handleResetPassword = async (user) => {
-    if (!window.confirm(`Reset password ${user.full_name} (${user.username}) ke default?`)) return;
+    const newPassword = window.prompt(`Masukkan password baru untuk ${user.full_name} (${user.username}):`, "Puskesmas@123");
+    
+    if (newPassword === null) return; // User membatalkan
+    if (newPassword.length < 6) {
+      toast.error("Password minimal 6 karakter");
+      return;
+    }
 
     setResettingId(user.id);
     try {
       const { error } = await supabase.rpc("reset_user_password", {
         user_email: user.email,
-        new_password: "Puskesmas@123",
+        new_password: newPassword,
       });
 
       if (error) throw error;
 
-      toast.success(`✅ Password ${user.full_name} direset ke Puskesmas@123`);
+      toast.success(`✅ Password ${user.full_name} berhasil diubah`);
 
       await supabase.rpc("log_audit", {
         p_action: "RESET_PASSWORD",
-        p_description: `Reset password user: ${user.full_name} (${user.email})`,
+        p_description: `Reset password user: ${user.full_name} (${user.email}) oleh admin`,
         p_entity_type: "profiles",
         p_entity_id: user.id,
       });
