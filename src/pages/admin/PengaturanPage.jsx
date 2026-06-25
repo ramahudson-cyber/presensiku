@@ -675,10 +675,14 @@ function TabManajemenUser() {
     }
   };
 
+  const [resetModal, setResetModal] = useState({ show: false, user: null, password: "" });
+
   const handleResetPassword = async (user) => {
-    const newPassword = window.prompt(`Masukkan password baru untuk ${user.full_name} (${user.username}):`, "Puskesmas@123");
-    
-    if (newPassword === null) return; // User membatalkan
+    setResetModal({ show: true, user, password: "" });
+  };
+
+  const confirmResetPassword = async () => {
+    const { user, password: newPassword } = resetModal;
     if (newPassword.length < 6) {
       toast.error("Password minimal 6 karakter");
       return;
@@ -692,7 +696,6 @@ function TabManajemenUser() {
       });
 
       if (error) throw error;
-
       toast.success(`✅ Password ${user.full_name} berhasil diubah`);
 
       await supabase.rpc("log_audit", {
@@ -701,8 +704,8 @@ function TabManajemenUser() {
         p_entity_type: "profiles",
         p_entity_id: user.id,
       });
+      setResetModal({ show: false, user: null, password: "" });
     } catch (err) {
-      console.error("❌ Reset password:", err);
       toast.error("Gagal reset: " + err.message);
     } finally {
       setResettingId(null);
@@ -787,6 +790,34 @@ function TabManajemenUser() {
           className={`w-full pl-10 pr-4 py-2.5 ${inputBase}`}
         />
       </div>
+
+      {resetModal.show && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-[#1a0a35] border border-white/10 rounded-2xl shadow-2xl w-full max-w-sm p-6">
+            <h3 className="text-lg font-bold text-white mb-4">Reset Password</h3>
+            <p className="text-sm text-slate-300 mb-4">
+              Masukkan password baru untuk <strong className="text-white">{resetModal.user?.full_name}</strong>
+            </p>
+            <input
+              type="text"
+              value={resetModal.password}
+              onChange={(e) => setResetModal({ ...resetModal, password: e.target.value })}
+              placeholder="Masukkan password baru..."
+              className={inputBase + " mb-4"}
+            />
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setResetModal({ show: false, user: null, password: "" })}
+                className="flex-1 py-2.5 rounded-xl border border-white/10 text-white text-sm hover:bg-white/5 transition-all"
+              >Batal</button>
+              <button 
+                onClick={confirmResetPassword}
+                className="flex-1 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-all"
+              >Konfirmasi</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className={`${cardBase} overflow-hidden`}>
         <div className="overflow-x-auto">
