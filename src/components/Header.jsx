@@ -49,21 +49,22 @@ function Header() {
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="flex items-center justify-between h-[72px] md:h-20 px-4 md:px-10">
-        {/* LEFT: Date & Time */}
+        {/* LEFT: Greeting */}
         <div className="flex items-center min-w-0 flex-1">
           <div className="flex flex-col min-w-0">
-            {/* Greeting - Bigger */}
             <h1 className="text-base sm:text-lg md:text-xl font-bold text-slate-800 dark:text-slate-100 truncate tracking-tight">
               Hai, {userName}
             </h1>
-            {/* Date/Time - Below */}
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              <span>{todayLabel}</span>
-              <span className="text-slate-300 dark:text-slate-600">·</span>
-              <Clock size={12} />
-              <span className="font-mono tabular-nums">{timeStr} WITA</span>
-            </div>
+            <span className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate uppercase tracking-widest font-medium opacity-80">
+              {todayLabel}
+            </span>
           </div>
+        </div>
+
+        {/* MIDDLE: Clock (mobile: right side of date) */}
+        <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.05] px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/[0.05] mr-4">
+          <Clock size={12} />
+          <span className="font-mono tabular-nums font-semibold">{timeStr} WITA</span>
         </div>
 
         {/* MIDDLE: Search (desktop only) */}
