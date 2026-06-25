@@ -1375,27 +1375,26 @@ export default function PengaturanPage() {
       </div>
 
       {/* Tab nav — elegant mobile-first design */}
-      <div className="sticky top-0 z-20 bg-[#0f0524]/90 backdrop-blur-xl -mx-4 px-4 py-3 border-b border-white/10">
-        <div className="flex overflow-x-auto gap-2 scrollbar-hide">
-          {tabs.map(tab => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
-                  isActive
-                    ? "bg-gradient-to-r from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-900/30"
-                    : "bg-white/5 text-violet-100/70 hover:bg-white/10"
-                }`}
-              >
-                <Icon size={16} />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+        {tabs.map(tab => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all ${
+                isActive
+                  ? "bg-violet-600/20 border-violet-500/50 text-white shadow-lg shadow-violet-900/20"
+                  : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
+              }`}
+            >
+              <Icon size={24} className={isActive ? "text-violet-400" : "text-slate-400"} />
+              <span className="text-[11px] font-semibold text-center leading-tight">{tab.label.split(" &")[0]}</span>
+            </button>
+          );
+        })}
+      </div>
       </div>
 
       <div>
