@@ -72,9 +72,14 @@ html:not(.dark) {
   --bg-primary: #f8fafc;
   --text-primary: #0f172a;
   --text-secondary: #475569;
+  --text-tertiary: #64748b;
   --card-bg: #ffffff;
   --border-color: #e2e8f0;
 }
+
+/* Light mode: text hierarchy */
+html:not(.dark) .text-slate-200 { color: var(--text-secondary); }
+html:not(.dark) .text-slate-300 { color: var(--text-tertiary); }
 
 html:not(.dark) body {
   background-color: var(--bg-primary);
@@ -84,7 +89,6 @@ html:not(.dark) body {
 html:not(.dark) .bg-white\/5,
 html:not(.dark) .bg-white\/\[0\.05\] { 
   background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
@@ -210,6 +214,65 @@ html:not(.dark) .bg-gradient-to-r.from-violet-600.to-purple-700 {
 
 /* Date inputs */
 html:not(.dark) input[type="date"] { color-scheme: light; }
+
+/* Light mode: loading skeletons */
+html:not(.dark) .animate-pulse.bg-white\/5,
+html:not(.dark) .animate-pulse.bg-white\/10 {
+  background-color: #e2e8f0 !important;
+}
+
+/* Light mode: modal & overlay backgrounds */
+html:not(.dark) .bg-\[\#1a0a35\] {
+  background-color: #ffffff !important;
+}
+html:not(.dark) .bg-\[\#1a0a35\]\/95 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+html:not(.dark) .bg-\[\#1a0a35\]\/90 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+html:not(.dark) select option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+/* Light mode: bottom nav */
+html:not(.dark) .bg-\[\#160a29\]\/95 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-top-color: #e2e8f0 !important;
+}
+html:not(.dark) .bg-\[\#1a0d2e\] {
+  background-color: #ffffff !important;
+}
+
+/* Light mode: missing border variants */
+html:not(.dark) .border-white\/5 {
+  border-color: #e2e8f0 !important;
+}
+html:not(.dark) .border-white\/15 {
+  border-color: #e2e8f0 !important;
+}
+html:not(.dark) .border-white\/20 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Light mode: info box (sky/blue tones) */
+html:not(.dark) .bg-sky-500\/10 {
+  background-color: #f0f9ff;
+}
+html:not(.dark) .border-sky-500\/20 {
+  border-color: #bae6fd;
+}
+html:not(.dark) .text-sky-200\/90 {
+  color: #0369a1;
+}
+html:not(.dark) .text-sky-300\/70 {
+  color: #0284c7;
+}
+
+/* Light mode: additional text variants */
+html:not(.dark) .text-violet-100\/80 { color: #475569; }
+html:not(.dark) .text-violet-200\/90 { color: #334155; }
 
 @media (prefers-reduced-motion: reduce) {
   .professional-ambient-bg, .professional-grid-bg { animation: none }
