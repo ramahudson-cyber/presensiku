@@ -1329,7 +1329,7 @@ export default function PengaturanPage() {
   ];
 
   return (
-    <div className="space-y-6 p-4 md:p-6 pb-20 md:pb-6 animate-fade-in min-w-0">
+    <div className="space-y-6 pb-20 animate-fade-in min-w-0">
       <div className="min-w-0">
         <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Pengaturan Sistem</h1>
         <p className="text-violet-300/60 mt-1.5 text-sm">
@@ -1337,27 +1337,28 @@ export default function PengaturanPage() {
         </p>
       </div>
 
-      {/* Tab nav — horizontal scroll on mobile */}
-      <div className={`${cardBase} p-1.5 flex gap-1 overflow-x-auto max-w-full`}>
-        {tabs.map(tab => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-3 md:px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
-                isActive
-                  ? "bg-gradient-to-r from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-900/30"
-                  : "text-violet-300/60 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <Icon size={16} />
-              <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden">{tab.label.split(" ")[0]}</span>
-            </button>
-          );
-        })}
+      {/* Tab nav — elegant mobile-first design */}
+      <div className="sticky top-0 z-20 bg-[#0f0524]/90 backdrop-blur-xl -mx-4 px-4 py-3 border-b border-white/10">
+        <div className="flex overflow-x-auto gap-2 scrollbar-hide">
+          {tabs.map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+                  isActive
+                    ? "bg-gradient-to-r from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-900/30"
+                    : "bg-white/5 text-violet-300/70 hover:bg-white/10"
+                }`}
+              >
+                <Icon size={16} />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div>

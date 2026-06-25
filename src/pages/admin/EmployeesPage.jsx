@@ -179,9 +179,9 @@ const EmployeesPage = () => {
   };
 
   return (
-    <div className="space-y-5 animate-fade-in">
+    <div className="space-y-5 animate-fade-in pb-10">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3 mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
         <div className="min-w-0">
           <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
             Manajemen Pegawai
@@ -193,11 +193,10 @@ const EmployeesPage = () => {
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 hover:scale-105 transition-all shrink-0"
+          className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 active:scale-95 transition-all w-full sm:w-auto"
         >
           <UserPlus size={16} />
-          <span className="hidden sm:inline">Tambah Pegawai</span>
-          <span className="sm:hidden">Tambah</span>
+          Tambah Pegawai
         </button>
       </div>
 

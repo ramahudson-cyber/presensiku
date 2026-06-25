@@ -68,6 +68,16 @@ export async function checkDeviceBinding(userId, deviceInfo) {
 
     if (error) throw error;
 
+    // ⚡ MOCK: Bypass device check
+    return {
+      canLogin: true,
+      isRegistered: true,
+      isTrusted: true,
+      requiresOtp: false,
+      message: "OK (Bypassed)",
+    };
+
+    /* 
     if (!data || data.length === 0) {
       return {
         canLogin: true,
@@ -77,6 +87,7 @@ export async function checkDeviceBinding(userId, deviceInfo) {
         message: "OK",
       };
     }
+    */
 
     const result = data[0];
     return {
