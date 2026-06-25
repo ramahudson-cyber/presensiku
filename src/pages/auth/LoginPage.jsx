@@ -13,12 +13,13 @@ import {
 } from "../../services/deviceService";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import {
-  AlertCircle, Mail, Clock, RefreshCw, ArrowLeft, Loader2
+  AlertCircle, Mail, Clock, RefreshCw, ArrowLeft, Loader2, Eye, EyeOff, Lock
 } from "lucide-react";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("");
@@ -308,15 +309,31 @@ export default function LoginPage() {
                   disabled={loading}
                   className="w-full px-4 py-3 bg-black/50 border border-violet-500/20 rounded-xl text-white text-sm placeholder-slate-500 focus:outline-none focus:border-violet-500/50 transition disabled:opacity-50"
                 />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  required
-                  disabled={loading}
-                  className="w-full px-4 py-3 bg-black/50 border border-violet-500/20 rounded-xl text-white text-sm placeholder-slate-500 focus:outline-none focus:border-violet-500/50 transition disabled:opacity-50"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password"
+                    required
+                    disabled={loading}
+                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white text-sm placeholder-slate-500 focus:outline-none focus:border-violet-500/50 transition disabled:opacity-50 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => alert("Silahkan hubungi Admin untuk reset password.")}
+                  className="text-xs text-violet-300 hover:text-white block w-full text-right"
+                >
+                  Lupa password?
+                </button>
                 <button
                   type="submit"
                   disabled={loading}
