@@ -474,121 +474,95 @@ function TabProfilPuskesmas() {
 /* ============================================================
    TAB 2: JAM KERJA & SETTINGS
    ============================================================ */
+const DEFAULT_SETTINGS = {
+  work_start_time: "07:30",
+  work_end_time: "14:00",
+  late_tolerance_minutes: "5",
+  default_radius_meter: "200",
+  selfie_retention_days: "30",
+  annual_leave_quota_asn: "12",
+  annual_leave_quota_pppk: "12",
+  annual_leave_quota_tpk: "12",
+  default_password: "puskesmas123",
+  password_min_length: "6",
+};
+
+const SETTING_KEYS = [
+  { key: "work_start_time", label: "Jam Mulai Kerja", type: "time", category: "attendance", icon: Clock, desc: "Waktu mulai jam kerja" },
+  { key: "work_end_time", label: "Jam Selesai Kerja", type: "time", category: "attendance", icon: Clock, desc: "Waktu selesai jam kerja" },
+  { key: "late_tolerance_minutes", label: "Toleransi Terlambat (menit)", type: "number", category: "attendance", icon: AlertTriangle, desc: "Batas toleransi keterlambatan" },
+  { key: "default_radius_meter", label: "Radius Default (meter)", type: "number", category: "attendance", icon: MapPin, desc: "Radius GPS default untuk absensi" },
+  { key: "selfie_retention_days", label: "Retensi Foto Selfie (hari)", type: "number", category: "attendance", icon: FileText, desc: "Lama penyimpanan foto selfie" },
+  { key: "annual_leave_quota_asn", label: "Kuota Cuti ASN (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan ASN" },
+  { key: "annual_leave_quota_pppk", label: "Kuota Cuti PPPK (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan PPPK" },
+  { key: "annual_leave_quota_tpk", label: "Kuota Cuti TPK (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan TPK" },
+  { key: "default_password", label: "Password Default Pegawai Baru", type: "text", category: "security", icon: Key, desc: "Password awal pegawai baru" },
+  { key: "password_min_length", label: "Panjang Minimal Password", type: "number", category: "security", icon: Shield, desc: "Jumlah karakter minimal password" },
+];
+
 function TabJamKerja() {
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState({});
-  const [setupError, setSetupError] = useState(null);
-
-  const settingKeys = [
-    { key: "work_start_time", label: "Jam Mulai Kerja", type: "time", category: "attendance", icon: Clock, desc: "Waktu mulai jam kerja" },
-    { key: "work_end_time", label: "Jam Selesai Kerja", type: "time", category: "attendance", icon: Clock, desc: "Waktu selesai jam kerja" },
-    { key: "late_tolerance_minutes", label: "Toleransi Terlambat (menit)", type: "number", category: "attendance", icon: AlertTriangle, desc: "Batas toleransi keterlambatan" },
-    { key: "default_radius_meter", label: "Radius Default (meter)", type: "number", category: "attendance", icon: MapPin, desc: "Radius GPS default untuk absensi" },
-    { key: "selfie_retention_days", label: "Retensi Foto Selfie (hari)", type: "number", category: "attendance", icon: FileText, desc: "Lama penyimpanan foto selfie" },
-    { key: "annual_leave_quota_asn", label: "Kuota Cuti ASN (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan ASN" },
-    { key: "annual_leave_quota_pppk", label: "Kuota Cuti PPPK (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan PPPK" },
-    { key: "annual_leave_quota_tpk", label: "Kuota Cuti TPK (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan TPK" },
-    { key: "default_password", label: "Password Default Pegawai Baru", type: "text", category: "security", icon: Key, desc: "Password awal pegawai baru" },
-    { key: "password_min_length", label: "Panjang Minimal Password", type: "number", category: "security", icon: Shield, desc: "Jumlah karakter minimal password" },
-  ];
-
-  const fetchSettings = async () => {
-    setLoading(true);
-    setSetupError(null);
+  const [dbReady, setDbReady] = useState(true);
+  const [settings, setSettings] = useState(() => {
     try {
-      const { data, error } = await supabase
-        .from("system_settings")
-        .select("*")
-        .in("setting_key", settingKeys.map(s => s.key));
+      const saved = localStorage.getItem("siap_jam_kerja");
+      return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
+    } catch { return DEFAULT_SETTINGS; }
+  });
 
-      if (error) {
-        if (error.code === "PGRST116" || error.message?.includes("relation") || error.message?.includes("does not exist")) {
-          setSetupError("Tabel system_settings belum tersedia. Jalankan script SQL di scripts/create-system-settings.sql");
-          return;
-        }
-        throw error;
-      }
-
-      const map = {};
-      data.forEach(s => { map[s.setting_key] = s.value; });
-      setSettings(map);
-    } catch (err) {
-      console.error("Fetch settings:", err);
-      setSetupError("Gagal memuat settings: " + err.message);
-    } finally {
-      setLoading(false);
-    }
+  const saveToLocal = (vals) => {
+    try { localStorage.setItem("siap_jam_kerja", JSON.stringify(vals)); } catch {}
   };
 
-  useEffect(() => { fetchSettings(); }, []);
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from("system_settings")
+          .select("*")
+          .in("setting_key", SETTING_KEYS.map(s => s.key));
+        if (!error && data) {
+          const map = {};
+          data.forEach(s => { map[s.setting_key] = s.value; });
+          if (Object.keys(map).length > 0) {
+            setSettings(prev => ({ ...prev, ...map }));
+            saveToLocal({ ...DEFAULT_SETTINGS, ...map });
+          }
+        }
+      } catch (e) {
+        console.warn("Jam kerja DB not available, using local defaults:", e);
+        setDbReady(false);
+      }
+    })();
+  }, []);
 
   const handleSave = async () => {
+    saveToLocal(settings);
     setSaving(true);
     try {
-      for (const item of settingKeys) {
-        const value = settings[item.key];
-        if (value === undefined || value === "") continue;
-
-        const { error } = await supabase.rpc("set_system_setting", {
-          p_setting_key: item.key,
-          p_value: String(value),
-          p_category: item.category,
-        });
-
-        if (error) {
-          if (error.message?.includes("function") && error.message?.includes("does not exist")) {
-            setSetupError("Function set_system_setting belum tersedia. Jalankan script SQL di scripts/create-system-settings.sql");
-            return;
-          }
-          throw error;
+      if (dbReady) {
+        for (const item of SETTING_KEYS) {
+          const value = settings[item.key];
+          if (value === undefined || value === "") continue;
+          await supabase.rpc("set_system_setting", {
+            p_setting_key: item.key,
+            p_value: String(value),
+            p_category: item.category,
+          });
         }
+        toast.success("Semua settings berhasil disimpan");
+      } else {
+        toast.success("Disimpan secara lokal (DB tidak tersedia)");
       }
-
-      toast.success("Semua settings berhasil disimpan");
     } catch (err) {
-      console.error("Save settings:", err);
-      toast.error("Gagal simpan: " + err.message);
+      console.error("Save error:", err);
+      toast.warn("Disimpan lokal, gagal sync ke DB: " + err.message);
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-violet-400" />
-      </div>
-    );
-  }
-
-  if (setupError) {
-    return (
-      <div className="space-y-5">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div>
-            <h2 className={sectionTitle}>Jam Kerja & Konfigurasi</h2>
-            <p className={sectionSub}>Atur jam kerja, radius, kuota cuti, dll</p>
-          </div>
-        </div>
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 text-center flex flex-col items-center gap-4">
-          <AlertTriangle size={36} className="text-amber-400" />
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-1">Database Belum Siap</h3>
-            <p className="text-sm text-amber-200/80 max-w-md">{setupError}</p>
-          </div>
-          <div className="flex gap-3">
-            <button onClick={fetchSettings}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 transition-all">
-              <RefreshCw size={16} /> Coba Lagi
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const categories = [...new Set(settingKeys.map(s => s.category))];
+  const categories = [...new Set(SETTING_KEYS.map(s => s.category))];
   const categoryLabels = {
     attendance: "Pengaturan Absensi",
     leave: "Pengaturan Cuti",
@@ -616,6 +590,13 @@ function TabJamKerja() {
         </button>
       </div>
 
+      {!dbReady && (
+        <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
+          <AlertTriangle size={13} className="shrink-0" />
+          Database belum siap. Pengaturan disimpan lokal. Jalankan <code className="px-1 py-0.5 bg-black/30 rounded font-mono">scripts/create-system-settings.sql</code> di Supabase.
+        </div>
+      )}
+
       {categories.map(cat => {
         const CatIcon = categoryIcons[cat];
         return (
@@ -629,7 +610,7 @@ function TabJamKerja() {
               </h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {settingKeys.filter(s => s.category === cat).map(item => {
+              {SETTING_KEYS.filter(s => s.category === cat).map(item => {
                 const Icon = item.icon;
                 return (
                   <div key={item.key} className="p-3 rounded-xl bg-white/5 border border-white/5">
@@ -640,7 +621,7 @@ function TabJamKerja() {
                     <p className="text-xs text-slate-400 mb-2">{item.desc}</p>
                     <input
                       type={item.type}
-                      value={settings[item.key] || ""}
+                      value={settings[item.key] ?? DEFAULT_SETTINGS[item.key] || ""}
                       onChange={(e) => setSettings({ ...settings, [item.key]: e.target.value })}
                       className={inputBase + (item.type === "time" || item.type === "date" ? " [color-scheme:dark]" : "")}
                     />
@@ -663,10 +644,6 @@ function TabJamKerja() {
         </button>
       </div>
 
-      <ConfirmSheet open={!!confirmDeleteLoc} onClose={() => setConfirmDeleteLoc(null)}
-        title="Hapus Lokasi"
-        message={`Yakin hapus lokasi "${confirmDeleteLoc?.name}"?`}
-        confirmText="Ya, Hapus" onConfirm={confirmDeleteLocation} />
     </div>
   );
 }
