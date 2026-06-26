@@ -140,14 +140,13 @@ export default function SchedulingPage() {
       let success = 0, errors = 0;
 
       for (const row of rows) {
-        const nip = String(row.NIP || row.nip || "").trim();
+        const nama = String(row.Nama || row.nama || row.NAMA || "").trim();
         const tglRaw = row.Tanggal || row.tanggal || "";
         const shiftCode = String(row.Shift || row.shift || "").toUpperCase();
 
-        if (!nip || !tglRaw || !shiftCode) { errors++; continue; }
+        if (!nama || !tglRaw || !shiftCode) { errors++; continue; }
         if (!SHIFT_MAP[shiftCode]) { errors++; continue; }
 
-        // Parse date (many formats)
         let parsedDate;
         if (/^\d{4}-\d{2}-\d{2}$/.test(tglRaw)) parsedDate = tglRaw;
         else if (/^\d{2}\/\d{2}\/\d{4}$/.test(tglRaw)) {
@@ -158,11 +157,10 @@ export default function SchedulingPage() {
           parsedDate = `${y}-${m}-${d}`;
         } else { errors++; continue; }
 
-        // Find user by NIP
         const { data: profile } = await supabase
           .from("profiles")
           .select("id")
-          .eq("id", nip)
+          .ilike("full_name", nama)
           .maybeSingle();
 
         if (!profile) { errors++; continue; }
@@ -185,13 +183,15 @@ export default function SchedulingPage() {
   const downloadTemplate = () => {
     const wb = XLSX.utils.book_new();
     const data = [
-      ["NIP", "Tanggal", "Shift"],
-      ["198804122015031002", "01/06/2026", "PG"],
-      ["198804122015031002", "02/06/2026", "SI"],
-      ["198804122015031002", "03/06/2026", "ML"],
-      ["199012052018012003", "01/06/2026", "SR"],
+      ["Nama Pegawai", "Tanggal", "Shift"],
+      ["dr. H. Ahmad Fauzi", "01/07/2026", "PG"],
+      ["Ns. Baiq Elma, S.Kep", "01/07/2026", "SI"],
+      ["Apt. Riza Lestari, S.Farm", "02/07/2026", "ML"],
+      ["drg. Nyoman Triadi", "01/07/2026", "SR"],
+      ["Siti Rahmawati, Amd.Keb", "01/07/2026", "PG"],
     ];
     const ws = XLSX.utils.aoa_to_sheet(data);
+    ws["!cols"] = [{ wch: 30 }, { wch: 14 }, { wch: 8 }];
     XLSX.utils.book_append_sheet(wb, ws, "Jadwal");
     XLSX.writeFile(wb, "template-jadwal-shift.xlsx");
   };
