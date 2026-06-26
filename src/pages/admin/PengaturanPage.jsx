@@ -10,6 +10,7 @@ import {
   Briefcase, User, IdCard, Calendar, Bell, Sun,
 } from "lucide-react";
 import TabShift from "./ShiftManagement";
+import BottomSheet from "../../components/BottomSheet";
 
 /* ──────────────────────────────────────────────────────────────────────────
    SHARED THEME TOKENS
@@ -792,33 +793,20 @@ function TabManajemenUser() {
         />
       </div>
 
-      {resetModal.show && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-[#1a0a35] border border-white/10 rounded-2xl shadow-2xl w-full max-w-sm p-6">
-            <h3 className="text-lg font-bold text-white mb-4">Reset Password</h3>
-            <p className="text-sm text-slate-300 mb-4">
-              Masukkan password baru untuk <strong className="text-white">{resetModal.user?.full_name}</strong>
-            </p>
-            <input
-              type="text"
-              value={resetModal.password}
-              onChange={(e) => setResetModal({ ...resetModal, password: e.target.value })}
-              placeholder="Masukkan password baru..."
-              className={inputBase + " mb-4"}
-            />
-            <div className="flex gap-3">
-              <button 
-                onClick={() => setResetModal({ show: false, user: null, password: "" })}
-                className="flex-1 py-2.5 rounded-xl border border-white/10 text-white text-sm hover:bg-white/5 transition-all"
-              >Batal</button>
-              <button 
-                onClick={confirmResetPassword}
-                className="flex-1 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-all"
-              >Konfirmasi</button>
-            </div>
-          </div>
+      <BottomSheet open={resetModal.show} onClose={() => setResetModal({ show: false, user: null, password: "" })}
+        title="Reset Password" subtitle={resetModal.user?.full_name}>
+        <p className="text-sm text-slate-300 mb-4">Masukkan password baru</p>
+        <input type="text" value={resetModal.password}
+          onChange={(e) => setResetModal({ ...resetModal, password: e.target.value })}
+          placeholder="Masukkan password baru..."
+          className={inputBase + " mb-4"} autoFocus />
+        <div className="flex gap-3">
+          <button onClick={() => setResetModal({ show: false, user: null, password: "" })}
+            className="flex-1 py-2.5 rounded-xl border border-white/10 text-white text-sm hover:bg-white/5 transition-all">Batal</button>
+          <button onClick={confirmResetPassword}
+            className="flex-1 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-all">Konfirmasi</button>
         </div>
-      )}
+      </BottomSheet>
 
       <div className={`${cardBase} overflow-hidden`}>
         <div className="overflow-x-auto">
