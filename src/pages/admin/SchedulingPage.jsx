@@ -6,8 +6,9 @@ import {
   ChevronLeft, ChevronRight, RefreshCw, Upload,
   Download, Calendar, Users, Sun, Moon, Sunset, CloudSun,
   Loader2, X, CheckCircle2, Layers, Trash2, Copy,
-  Search, Filter, CalendarRange, Clock, UserCheck
+  Search, CalendarRange, Clock, UserCheck
 } from "lucide-react";
+import BottomSheet from "../../components/BottomSheet";
 
 const SHIFTS = [
   { code: "PG", name: "Pagi", icon: Sun, color: "text-amber-400", bg: "bg-amber-500/15", ring: "ring-amber-500/30" },
@@ -234,42 +235,33 @@ export default function SchedulingPage() {
         </div>
       )}
 
-      {/* SHIFT PICKER MODAL */}
-      {showShiftPicker && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in" onClick={() => setShowShiftPicker(null)}>
-          <div className="bg-gradient-to-br from-[#1a0533] to-[#2d0a4e] border border-white/10 rounded-2xl p-5 w-full max-w-[280px] shadow-2xl shadow-violet-900/40 animate-fade-in" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
-              <h3 className="text-sm font-bold text-white">Atur Shift</h3>
-              <span className="text-[10px] px-2 py-1 rounded-lg bg-white/5 text-slate-400 font-mono">{showShiftPicker}</span>
-            </div>
-            <div className="space-y-1.5">
-              {SHIFTS.map(s => {
-                const Icon = s.icon;
-                const isActive = schedules[showShiftPicker]?.shift_code === s.code;
-                return (
-                  <button key={s.code} onClick={() => assignShift(s.code)}
-                    className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm
-                      ${isActive ? "bg-violet-600/30 border border-violet-500/50 text-white shadow-lg shadow-violet-900/20" : "bg-white/[0.04] border border-transparent text-slate-300 hover:bg-white/10 hover:border-white/10"}`}>
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${s.bg}`}>
-                      <Icon size={16} className={s.color} />
-                    </div>
-                    <span className="flex-1 text-left font-medium">{s.name}</span>
-                    {isActive && <CheckCircle2 size={16} className="text-emerald-400" />}
-                  </button>
-                );
-              })}
-            </div>
-            {schedules[showShiftPicker] && (
-              <button onClick={() => assignShift(schedules[showShiftPicker].shift_code)}
-                className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs font-medium hover:bg-red-500/20 transition-all active:scale-95">
-                <Trash2 size={13} /> Hapus Jadwal
+      {/* SHIFT PICKER — Bottom Sheet */}
+      <BottomSheet open={!!showShiftPicker} onClose={() => setShowShiftPicker(null)}
+        title="Atur Shift" subtitle={showShiftPicker}>
+        <div className="space-y-1.5">
+          {SHIFTS.map(s => {
+            const Icon = s.icon;
+            const isActive = schedules[showShiftPicker]?.shift_code === s.code;
+            return (
+              <button key={s.code} onClick={() => assignShift(s.code)}
+                className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm
+                  ${isActive ? "bg-violet-600/30 border border-violet-500/50 text-white shadow-lg shadow-violet-900/20" : "bg-white/[0.04] border border-transparent text-slate-300 hover:bg-white/10 hover:border-white/10"}`}>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${s.bg}`}>
+                  <Icon size={16} className={s.color} />
+                </div>
+                <span className="flex-1 text-left font-medium">{s.name}</span>
+                {isActive && <CheckCircle2 size={16} className="text-emerald-400" />}
               </button>
-            )}
-            <button onClick={() => setShowShiftPicker(null)}
-              className="w-full mt-2 py-2.5 rounded-xl bg-white/5 text-slate-400 text-sm hover:bg-white/10 transition-all">Tutup</button>
-          </div>
+            );
+          })}
         </div>
-      )}
+        {schedules[showShiftPicker] && (
+          <button onClick={() => assignShift(schedules[showShiftPicker].shift_code)}
+            className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs font-medium hover:bg-red-500/20 transition-all active:scale-95">
+            <Trash2 size={13} /> Hapus Jadwal
+          </button>
+        )}
+      </BottomSheet>
 
       {/* BULK ASSIGN */}
       {showBulkAssign && (
@@ -281,12 +273,13 @@ export default function SchedulingPage() {
         />
       )}
 
-      {/* EMPLOYEE SEARCH MODAL */}
-      {showSearchModal && (
-        <EmployeeSearchModal
-          employees={employees} value={selectedUser} onChange={(id) => { setSelectedUser(id); setShowSearchModal(false); }}
-          onClose={() => setShowSearchModal(false)} />
-      )}
+      {/* EMPLOYEE SEARCH — Bottom Sheet */}
+      <BottomSheet open={showSearchModal} onClose={() => setShowSearchModal(false)}
+        title="Cari Pegawai" subtitle={employees.length + " pegawai terdaftar"}>
+        <EmployeeSearchContent
+          employees={employees} value={selectedUser}
+          onSelect={(id) => { setSelectedUser(id); setShowSearchModal(false); }} />
+      </BottomSheet>
 
       {/* FOOTER INFO */}
       <div className="flex items-center gap-2 p-3.5 rounded-xl bg-gradient-to-r from-sky-500/5 to-violet-500/5 border border-sky-500/10 text-[11px] text-slate-400">
@@ -403,46 +396,39 @@ export default function SchedulingPage() {
 }
 
 /* ============================================================
-   EMPLOYEE SEARCH MODAL
+   EMPLOYEE SEARCH CONTENT
    ============================================================ */
-function EmployeeSearchModal({ employees, value, onChange, onClose }) {
+function EmployeeSearchContent({ employees, value, onSelect }) {
   const [q, setQ] = useState("");
   const inputRef = useRef(null);
 
-  useEffect(() => { setTimeout(() => inputRef.current?.focus(), 100); }, []);
+  useEffect(() => { setTimeout(() => inputRef.current?.focus(), 200); }, []);
 
   const filtered = q ? employees.filter(e => e.full_name.toLowerCase().includes(q.toLowerCase())) : employees;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-      <div className="bg-gradient-to-br from-[#1a0533] to-[#2d0a4e] border border-white/10 rounded-2xl w-full max-w-md shadow-2xl shadow-violet-900/40 animate-fade-in overflow-hidden" onClick={e => e.stopPropagation()}>
-        <div className="p-4 border-b border-white/10">
-          <div className="relative">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input ref={inputRef} value={q} onChange={e => setQ(e.target.value)}
-              placeholder="Cari nama pegawai..."
-              className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all" />
-          </div>
-        </div>
-        <div className="max-h-72 overflow-y-auto p-2 space-y-0.5">
-          {filtered.map(emp => (
-            <button key={emp.id} onClick={() => onChange(emp.id)}
-              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm text-left transition-all hover:bg-white/[0.06] ${emp.id === value ? "bg-violet-600/20 text-violet-200 ring-1 ring-violet-500/30" : "text-slate-300"}`}>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                {emp.full_name.charAt(0)}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{emp.full_name}</p>
-                <p className="text-[10px] text-slate-500">{emp.role}</p>
-              </div>
-              {emp.id === value && <CheckCircle2 size={16} className="text-violet-400 shrink-0" />}
-            </button>
-          ))}
-          {!filtered.length && <p className="text-xs text-slate-500 text-center py-8">Tidak ditemukan</p>}
-        </div>
-        <div className="p-3 border-t border-white/10 flex justify-end">
-          <button onClick={onClose} className="px-4 py-2 rounded-xl bg-white/5 text-slate-400 text-xs hover:bg-white/10 transition-all">Tutup</button>
-        </div>
+    <div className="space-y-2">
+      <div className="relative">
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <input ref={inputRef} value={q} onChange={e => setQ(e.target.value)}
+          placeholder="Ketik nama pegawai..."
+          className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all" />
+      </div>
+      <div className="max-h-56 overflow-y-auto space-y-0.5 -mx-1 px-1">
+        {filtered.map(emp => (
+          <button key={emp.id} onClick={() => onSelect(emp.id)}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-all hover:bg-white/[0.06] ${emp.id === value ? "bg-violet-600/20 text-violet-200 ring-1 ring-violet-500/30" : "text-slate-300"}`}>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center text-xs font-bold text-white shrink-0">
+              {emp.full_name.charAt(0)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium truncate">{emp.full_name}</p>
+              <p className="text-[10px] text-slate-500">{emp.role}</p>
+            </div>
+            {emp.id === value && <CheckCircle2 size={16} className="text-violet-400 shrink-0" />}
+          </button>
+        ))}
+        {!filtered.length && <p className="text-xs text-slate-500 text-center py-6">Tidak ditemukan</p>}
       </div>
     </div>
   );

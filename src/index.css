@@ -30,6 +30,8 @@ html.dark, html.dark body, html.dark #root {
 .animation-delay-4000 { animation-delay:4s }
 @keyframes fadeInUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 .animate-fade-in { animation:fadeInUp 0.4s ease-out }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.animate-slide-up { animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1) }
 @keyframes ambientSweep { 0%,100%{transform:translate3d(-2%,-1%,0) scale(1);opacity:0.45} 50%{transform:translate3d(2%,1%,0) scale(1.03);opacity:0.7} }
 @keyframes gridDrift { from{background-position:0 0} to{background-position:48px 48px} }
 
