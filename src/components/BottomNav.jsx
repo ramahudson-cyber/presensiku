@@ -5,7 +5,7 @@ import {
   CalendarDays, FileText, Megaphone, Settings, MoreHorizontal
 } from "lucide-react";
 import { useState } from "react";
-import { X } from "lucide-react";
+import BottomSheet from "./BottomSheet";
 
 export default function BottomNav() {
   const { user } = useAuth();
@@ -84,59 +84,25 @@ export default function BottomNav() {
         </div>
       </nav>
 
-      {/* More Sheet — slide up from bottom */}
-      {moreOpen && (
-        <div
-          className="md:hidden fixed inset-0 z-50 flex items-end animate-fade-in"
-          onClick={() => setMoreOpen(false)}
-        >
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-
-          {/* Sheet */}
-              <div
-                className="relative w-full bg-[#1a0d2e] rounded-t-3xl border-t border-white/10 p-5 pb-8"
-                style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 2rem)" }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Handle bar */}
-                <div className="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-5"></div>
-
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-base">Menu Lainnya</h3>
-                  <button
-                    onClick={() => setMoreOpen(false)}
-                    className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 flex items-center justify-center"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  {moreMenus.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <NavLink
-                        key={item.path}
-                        to={item.path}
-                        onClick={() => setMoreOpen(false)}
-                        className={({ isActive }) =>
-                          `flex flex-col items-center gap-2 p-4 rounded-2xl transition-all ${
-                            isActive
-                              ? "bg-gradient-to-br from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-900/30"
-                              : "bg-white/5 hover:bg-white/10"
-                          }`
-                        }
-                      >
-                        <Icon size={24} />
-                        <span className="text-[10px] font-medium text-center leading-tight">{item.label}</span>
-                      </NavLink>
-                    );
-                  })}
-                </div>
-              </div>
+      {/* More Sheet */}
+      <BottomSheet open={moreOpen} onClose={() => setMoreOpen(false)} title="Menu Lainnya">
+        <div className="grid grid-cols-3 gap-3">
+          {moreMenus.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink key={item.path} to={item.path} onClick={() => setMoreOpen(false)}
+                className={({ isActive }) =>
+                  `flex flex-col items-center gap-2 p-4 rounded-2xl transition-all ${isActive
+                    ? "bg-gradient-to-br from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-900/30"
+                    : "bg-white/5 hover:bg-white/10"}`
+                }>
+                <Icon size={24} />
+                <span className="text-[10px] font-medium text-center leading-tight">{item.label}</span>
+              </NavLink>
+            );
+          })}
         </div>
-      )}
+      </BottomSheet>
     </>
   );
 }

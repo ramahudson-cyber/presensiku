@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import TabShift from "./ShiftManagement";
 import BottomSheet from "../../components/BottomSheet";
+import ConfirmSheet from "../../components/ConfirmSheet";
 
 /* ──────────────────────────────────────────────────────────────────────────
    SHARED THEME TOKENS
@@ -73,6 +74,8 @@ function TabProfilPuskesmas() {
     radius_meter: 200,
     is_active: true,
   });
+
+  const [confirmDeleteLoc, setConfirmDeleteLoc] = useState(null);
 
   const fetchLocations = async () => {
     setLoading(true);
@@ -191,8 +194,14 @@ function TabProfilPuskesmas() {
     }
   };
 
-  const handleDelete = async (id, name) => {
-    if (!window.confirm(`Yakin hapus lokasi "${name}"?`)) return;
+  const handleDelete = (id, name) => {
+    setConfirmDeleteLoc({ id, name });
+  };
+
+  const confirmDeleteLocation = async () => {
+    if (!confirmDeleteLoc) return;
+    const { id, name } = confirmDeleteLoc;
+    setConfirmDeleteLoc(null);
     try {
       const { error } = await supabase
         .from("attendance_locations")
@@ -613,6 +622,11 @@ function TabJamKerja() {
           Simpan Semua Perubahan
         </button>
       </div>
+
+      <ConfirmSheet open={!!confirmDeleteLoc} onClose={() => setConfirmDeleteLoc(null)}
+        title="Hapus Lokasi"
+        message={`Yakin hapus lokasi "${confirmDeleteLoc?.name}"?`}
+        confirmText="Ya, Hapus" onConfirm={confirmDeleteLocation} />
     </div>
   );
 }
@@ -628,6 +642,7 @@ function TabManajemenUser() {
   const [resettingDeviceId, setResettingDeviceId] = useState(null);
   const [expandedUser, setExpandedUser] = useState(null);
   const [userDevices, setUserDevices] = useState({});
+  const [confirmResetDevice, setConfirmResetDevice] = useState(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -715,12 +730,13 @@ function TabManajemenUser() {
   };
 
   const handleResetDevice = async (user, visitorId = null) => {
-    const confirmMsg = visitorId
-      ? `Hapus device ini dari ${user.full_name}? Pegawai perlu login ulang di device tersebut.`
-      : `Hapus SEMUA device terdaftar dari ${user.full_name}? Pegawai perlu login ulang di semua device.`;
+    setConfirmResetDevice({ user, visitorId });
+  };
 
-    if (!window.confirm(confirmMsg)) return;
-
+  const confirmResetDeviceAction = async () => {
+    if (!confirmResetDevice) return;
+    const { user, visitorId } = confirmResetDevice;
+    setConfirmResetDevice(null);
     setResettingDeviceId(visitorId || user.id);
     try {
       const { data, error } = await supabase.rpc("reset_user_device", {
@@ -949,6 +965,13 @@ function TabManajemenUser() {
           </div>
         )}
       </div>
+
+      <ConfirmSheet open={!!confirmResetDevice} onClose={() => setConfirmResetDevice(null)}
+        title="Reset Device"
+        message={confirmResetDevice?.visitorId
+          ? `Hapus device ini dari ${confirmResetDevice?.user?.full_name}? Pegawai perlu login ulang di device tersebut.`
+          : `Hapus SEMUA device terdaftar dari ${confirmResetDevice?.user?.full_name}? Pegawai perlu login ulang di semua device.`}
+        confirmText="Ya, Reset" onConfirm={confirmResetDeviceAction} />
     </div>
   );
 }
@@ -961,6 +984,7 @@ function TabApprovalDevice() {
   const [requests, setRequests] = useState([]);
   const [processingId, setProcessingId] = useState(null);
   const [showRejectModal, setShowRejectModal] = useState(null);
+  const [confirmApprove, setConfirmApprove] = useState(null);
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -978,9 +1002,14 @@ function TabApprovalDevice() {
 
   useEffect(() => { fetchRequests(); }, []);
 
-  const handleApprove = async (requestId, userName) => {
-    if (!window.confirm(`Approve device request dari ${userName}?`)) return;
+  const handleApprove = (requestId, userName) => {
+    setConfirmApprove({ requestId, userName });
+  };
 
+  const confirmApproveAction = async () => {
+    if (!confirmApprove) return;
+    const { requestId, userName } = confirmApprove;
+    setConfirmApprove(null);
     setProcessingId(requestId);
     try {
       const { error } = await supabase.rpc("approve_device_request", {
@@ -1322,6 +1351,11 @@ function TabAuditLog() {
           </div>
         )}
       </div>
+
+      <ConfirmSheet open={!!confirmApprove} onClose={() => setConfirmApprove(null)}
+        title="Approve Device Request"
+        message={`Approve device request dari ${confirmApprove?.userName}?`}
+        confirmText="Ya, Setujui" onConfirm={confirmApproveAction} variant="primary" />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import {
   Search, CalendarRange, Clock, UserCheck
 } from "lucide-react";
 import BottomSheet from "../../components/BottomSheet";
+import ConfirmSheet from "../../components/ConfirmSheet";
 
 const SHIFTS = [
   { code: "PG", name: "Pagi", icon: Sun, color: "text-amber-400", bg: "bg-amber-500/15", ring: "ring-amber-500/30" },
@@ -43,6 +44,7 @@ export default function SchedulingPage() {
   const [showShiftPicker, setShowShiftPicker] = useState(null);
   const [showBulkAssign, setShowBulkAssign] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(null);
   const fileInputRef = useRef(null);
 
   const days = getDaysInMonth(year, month);
@@ -281,6 +283,12 @@ export default function SchedulingPage() {
           onSelect={(id) => { setSelectedUser(id); setShowSearchModal(false); }} />
       </BottomSheet>
 
+      {/* CONFIRM CLEAR */}
+      <ConfirmSheet open={!!confirmClear} onClose={() => setConfirmClear(null)}
+        title="Hapus Jadwal Bulan Ini"
+        message={`Hapus semua jadwal ${confirmClear?.name} bulan ${MONTHS[month]} ${year}?`}
+        confirmText="Ya, Hapus" onConfirm={confirmClearMonth} />
+
       {/* FOOTER INFO */}
       <div className="flex items-center gap-2 p-3.5 rounded-xl bg-gradient-to-r from-sky-500/5 to-violet-500/5 border border-sky-500/10 text-[11px] text-slate-400">
         <div className="w-6 h-6 rounded-lg bg-sky-500/10 flex items-center justify-center shrink-0">
@@ -383,14 +391,19 @@ export default function SchedulingPage() {
     setLoading(false);
   }
 
-  async function handleClearMonth() {
+  function handleClearMonth() {
     if (!selectedUser) return;
     const name = employees.find(e => e.id === selectedUser)?.full_name;
-    if (!confirm(`Hapus semua jadwal ${name} bulan ${MONTHS[month]} ${year}?`)) return;
+    setConfirmClear({ name });
+  }
+
+  async function confirmClearMonth() {
+    if (!selectedUser) return;
     const s = `${year}-${String(month + 1).padStart(2,"0")}-01`;
     const e = `${year}-${String(month + 1).padStart(2,"0")}-${String(lastDay).padStart(2,"0")}`;
     await supabase.from("employee_schedules").delete().eq("user_id", selectedUser).gte("date", s).lte("date", e);
     setSchedules({});
+    setConfirmClear(null);
     toast.success("Jadwal dibersihkan");
   }
 }

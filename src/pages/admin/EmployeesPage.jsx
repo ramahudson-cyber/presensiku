@@ -5,6 +5,7 @@ import {
   UserPlus, Pencil, Trash2, X, Search, Users, Mail,
   Briefcase, Building2, User, IdCard,
 } from 'lucide-react';
+import ConfirmSheet from '../../components/ConfirmSheet';
 
 const cardBase =
   'bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl transition-all';
@@ -20,6 +21,7 @@ const EmployeesPage = () => {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(null);
   const [formData, setFormData] = useState({
     id: '',
     username: '',
@@ -67,8 +69,14 @@ const EmployeesPage = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Yakin hapus pegawai ini?')) return;
+  const handleDelete = (id) => {
+    setConfirmDelete(id);
+  };
+
+  const confirmDeleteAction = async () => {
+    if (!confirmDelete) return;
+    const id = confirmDelete;
+    setConfirmDelete(null);
     const { error } = await supabase.from('profiles').delete().eq('id', id);
     if (error) {
       toast.error('Gagal menghapus pegawai');
@@ -179,6 +187,7 @@ const EmployeesPage = () => {
   };
 
   return (
+    <>
     <div className="space-y-5 animate-fade-in pb-10">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
@@ -480,6 +489,11 @@ const EmployeesPage = () => {
         )}
       </div>
     </div>
+
+    <ConfirmSheet open={!!confirmDelete} onClose={() => setConfirmDelete(null)}
+      title="Hapus Pegawai" message="Yakin hapus pegawai ini?"
+      confirmText="Ya, Hapus" onConfirm={confirmDeleteAction} />
+    </>
   );
 };
 
