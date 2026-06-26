@@ -7,6 +7,7 @@ import AttendanceHistoryPage from "../pages/admin/AttendanceHistoryPage";
 import PengaturanPage from "../pages/admin/PengaturanPage";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import SchedulingPage from "../pages/admin/SchedulingPage";
+import ComingSoonPage from "../pages/admin/ComingSoonPage";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
 import NotFoundPage from "../pages/NotFoundPage";
 
