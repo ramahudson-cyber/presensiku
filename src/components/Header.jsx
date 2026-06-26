@@ -1,4 +1,4 @@
-import { Bell, LogOut, Search, Clock } from "lucide-react";
+import { Bell, LogOut, Clock } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { signOut } from "../services/authService";
@@ -33,7 +33,7 @@ function Header() {
 
   const todayLabel = now.toLocaleDateString("id-ID", {
     weekday: "long", year: "numeric", month: "long", day: "numeric",
-  });
+  }).replace(/\b\w/g, c => c.toUpperCase());
   const timeStr = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
 
   const handleLogout = async () => {
@@ -47,33 +47,19 @@ function Header() {
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="flex items-center justify-between h-[72px] md:h-20 px-4 md:px-10">
-        {/* LEFT: Greeting */}
+        {/* LEFT: Greeting + Date + Clock */}
         <div className="flex items-center min-w-0 flex-1">
           <div className="flex flex-col min-w-0">
             <h1 className="text-base sm:text-lg md:text-xl font-bold text-slate-800 dark:text-slate-100 truncate tracking-tight">
               Hai, {userName}
             </h1>
-            <span className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate uppercase tracking-widest font-medium opacity-80">
+            <span className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate font-medium">
               {todayLabel}
             </span>
-          </div>
-        </div>
-
-        {/* MIDDLE: Clock (mobile: right side of date) */}
-        <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.05] px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/[0.05] mr-4">
-          <Clock size={12} />
-          <span className="font-mono tabular-nums font-semibold">{timeStr} WITA</span>
-        </div>
-
-        {/* MIDDLE: Search (desktop only) */}
-        <div className="hidden xl:flex items-center flex-1 max-w-md mx-6">
-          <div className="relative w-full">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-            <input
-              type="text"
-              placeholder="Cari pegawai, riwayat..."
-              className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl bg-slate-100/80 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-slate-300 dark:focus:border-slate-600 transition-colors"
-            />
+            <span className="flex items-center gap-1 text-[10px] md:text-xs text-slate-400 dark:text-slate-500 mt-0.5 font-mono tabular-nums">
+              <Clock size={10} />
+              {timeStr} WITA
+            </span>
           </div>
         </div>
 
