@@ -1,6 +1,5 @@
-import { Bell, LogOut, Moon, Sun, Search, Clock } from "lucide-react";
+import { Bell, LogOut, Search, Clock } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { signOut } from "../services/authService";
 import { useState, useEffect } from "react";
@@ -19,7 +18,6 @@ const TITLES = {
 };
 
 function Header() {
-  const { darkMode, setDarkMode } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -81,13 +79,13 @@ function Header() {
 
         {/* RIGHT: Actions */}
         <div className="flex items-center gap-1 md:gap-1.5 shrink-0">
-          <button
+          {/* <button
             onClick={() => setDarkMode(!darkMode)}
             className="p-2.5 md:p-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
             aria-label="Toggle theme"
           >
             {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
+          </button> */}
           <button className="p-2.5 md:p-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] relative transition-colors" aria-label="Notifications">
             <Bell size={18} />
             <span className="absolute top-2 right-2 md:top-2.5 md:right-2.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white dark:ring-[#0f0524]"></span>
