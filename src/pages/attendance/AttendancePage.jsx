@@ -558,29 +558,45 @@ export default function AttendancePage() {
                 <p className="text-sm font-semibold text-white">
                   Sudah Absen {todayAttendance.is_late && <span className="text-amber-400 text-[10px]">(Terlambat {todayAttendance.late_minutes}m)</span>}
                 </p>
-                <p className="text-[11px] text-slate-400">
-                  Masuk: {new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}
-                  {todayAttendance.shift_code && <span className="ml-2 px-1.5 py-0.5 rounded text-[9px] bg-white/10 text-violet-300">Shift: {todayAttendance.shift_code}</span>}
-                </p>
+                <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                  <span className="text-[11px] text-slate-400">
+                    {new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}
+                  </span>
+                  {todayAttendance.shift_code && (
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold
+                      ${todayAttendance.shift_code === "PG" ? "bg-amber-500/15 text-amber-300" : ""}
+                      ${todayAttendance.shift_code === "SR" ? "bg-orange-500/15 text-orange-300" : ""}
+                      ${todayAttendance.shift_code === "SI" ? "bg-sky-500/15 text-sky-300" : ""}
+                      ${todayAttendance.shift_code === "ML" ? "bg-violet-500/15 text-violet-300" : ""}
+                    `}>
+                      {todayAttendance.shift_code}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
-            <div className="space-y-2">
-              {todaySchedule && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-500/10 border border-violet-500/20">
-                  <span className="text-[10px] font-semibold text-violet-300">Jadwal: {todaySchedule.name} ({todaySchedule.code})</span>
-                </div>
-              )}
-              {!todaySchedule && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                  <span className="text-[10px] font-semibold text-amber-300">Tidak ada jadwal shift hari ini</span>
-                </div>
-              )}
-              <div className="flex items-center gap-3 text-slate-400">
-                <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
-                  <Clock size={18} className="text-violet-400" />
-                </div>
-                <p className="text-sm">Belum absen hari ini</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
+                <Clock size={18} className="text-violet-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-white">Belum absen hari ini</p>
+                {todaySchedule ? (
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold
+                      ${todaySchedule.code === "PG" ? "bg-amber-500/15 text-amber-300" : ""}
+                      ${todaySchedule.code === "SR" ? "bg-orange-500/15 text-orange-300" : ""}
+                      ${todaySchedule.code === "SI" ? "bg-sky-500/15 text-sky-300" : ""}
+                      ${todaySchedule.code === "ML" ? "bg-violet-500/15 text-violet-300" : ""}
+                    `}>
+                      {todaySchedule.name}
+                    </span>
+                    <span className="text-[10px] text-slate-500">Jadwal hari ini</span>
+                  </div>
+                ) : (
+                  <p className="text-[10px] text-amber-300/70 mt-1">Tidak ada jadwal shift hari ini</p>
+                )}
               </div>
             </div>
           )}

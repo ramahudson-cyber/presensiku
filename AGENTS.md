@@ -34,7 +34,8 @@
 - 2 record terpisah
 
 ## Aturan Absensi
-- Toleransi terlambat: 5 menit
+- Toleransi terlambat: 5 menit (latest_check_in = start_time + 5m)
+- Terlambat > 1 jam: tidak bisa absen (blokir), hubungi admin
 - Pegawai absen tanpa pilih shift (jadwal otomatis terbaca)
 - Admin input jadwal per bulan (manual atau upload Excel)
 - Perubahan shift: admin edit manual di aplikasi

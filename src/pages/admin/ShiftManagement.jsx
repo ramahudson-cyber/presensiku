@@ -3,87 +3,24 @@ import { supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
 import {
   Clock, Save, RefreshCw, Sun, Moon, CloudSun,
-  Sunset, CheckCircle2, XCircle, Edit3
+  Sunset, CheckCircle2, XCircle, Info
 } from "lucide-react";
 
 const DAY_NAMES = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 
-const SHIFT_ICONS = {
-  PG: { icon: Sun, color: "text-amber-400" },
-  SR: { icon: Sunset, color: "text-orange-400" },
-  SI: { icon: CloudSun, color: "text-sky-400" },
-  ML: { icon: Moon, color: "text-violet-400" },
+const SHIFT_META = {
+  PG: { icon: Sun, color: "text-amber-400", bg: "bg-amber-500/15", ring: "ring-amber-500/30" },
+  SR: { icon: Sunset, color: "text-orange-400", bg: "bg-orange-500/15", ring: "ring-orange-500/30" },
+  SI: { icon: CloudSun, color: "text-sky-400", bg: "bg-sky-500/15", ring: "ring-sky-500/30" },
+  ML: { icon: Moon, color: "text-violet-400", bg: "bg-violet-500/15", ring: "ring-violet-500/30" },
 };
-
-const cardBase = "bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl transition-all";
-const inputBase = "w-full px-3 py-2 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all";
-const labelBase = "block text-xs font-medium text-violet-100/70 mb-1.5 uppercase tracking-wider";
-const btnPrimary = "flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed";
-
-function ShiftScheduleRow({ dayIndex, schedule, onChange }) {
-  const isWorking = schedule?.is_working_day;
-  return (
-    <div className={`grid grid-cols-[80px_1fr_1fr_auto] gap-2 items-center p-2.5 rounded-xl transition-all ${isWorking ? "bg-white/[0.04]" : "bg-white/[0.02] opacity-60"}`}>
-      <span className="text-xs font-semibold text-slate-300">{DAY_NAMES[dayIndex]}</span>
-      {isWorking ? (
-        <>
-          <input type="time" value={schedule.start_time || ""}
-            onChange={e => onChange(dayIndex, "start_time", e.target.value)}
-            className="text-xs bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50" />
-          <input type="time" value={schedule.end_time || ""}
-            onChange={e => onChange(dayIndex, "end_time", e.target.value)}
-            className="text-xs bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50" />
-          <button onClick={() => onChange(dayIndex, "is_working_day", false)}
-            className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all">
-            <XCircle size={14} />
-          </button>
-        </>
-      ) : (
-        <>
-          <span className="text-[11px] text-slate-500 italic col-span-2">Libur</span>
-          <button onClick={() => onChange(dayIndex, "is_working_day", true)}
-            className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all">
-            <CheckCircle2 size={14} />
-          </button>
-        </>
-      )}
-    </div>
-  );
-}
-
-function ShiftCard({ shift, schedules, onUpdateSchedule }) {
-  const Icon = SHIFT_ICONS[shift.code]?.icon || Clock;
-  const iconColor = SHIFT_ICONS[shift.code]?.color || "text-violet-400";
-
-  return (
-    <div className={`${cardBase} p-4 md:p-5 space-y-3`}>
-      <div className="flex items-center gap-3 pb-3 border-b border-white/10">
-        <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center ${iconColor}`}>
-          <Icon size={20} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-bold text-white truncate">{shift.name}</h3>
-          <p className="text-[10px] text-slate-400">Kode: {shift.code}</p>
-        </div>
-      </div>
-      <div className="space-y-1">
-        {DAY_NAMES.map((_, i) => {
-          const sched = schedules?.find(s => s.day_of_week === i);
-          return (
-            <ShiftScheduleRow key={i} dayIndex={i} schedule={sched}
-              onChange={(dayIndex, field, value) => onUpdateSchedule(shift.code, dayIndex, field, value)} />
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 export default function TabShift() {
   const [shifts, setShifts] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -94,56 +31,48 @@ export default function TabShift() {
       ]);
       setShifts(s || []);
       setSchedules(sc || []);
-    } catch (err) {
-      toast.error("Gagal memuat data shift");
-    } finally {
-      setLoading(false);
-    }
+    } catch { toast.error("Gagal muat data"); }
+    finally { setLoading(false); }
   };
 
   useEffect(() => { fetchData(); }, []);
 
-  const handleUpdateSchedule = async (shiftCode, dayIndex, field, value) => {
-    // Optimistic update
+  const update = (code, day, field, value) => {
+    setDirty(true);
     setSchedules(prev => prev.map(s => {
-      if (s.shift_code === shiftCode && s.day_of_week === dayIndex) {
-        return { ...s, [field]: value };
+      if (s.shift_code === code && s.day_of_week === day) {
+        const updated = { ...s, [field]: value };
+        if (field === "is_working_day" && value === true) {
+          updated.start_time = "08:00";
+          updated.end_time = "17:00";
+          updated.latest_check_in = "08:05";
+        }
+        return updated;
       }
       return s;
     }));
-    // If toggling to working day, set default times
-    if (field === "is_working_day" && value === true) {
-      setSchedules(prev => prev.map(s => {
-        if (s.shift_code === shiftCode && s.day_of_week === dayIndex) {
-          return { ...s, start_time: "08:00", end_time: "17:00", latest_check_in: "08:05" };
-        }
-        return s;
-      }));
-    }
   };
 
   const saveAll = async () => {
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("shift_schedules")
-        .upsert(schedules.map(s => ({
+      const { error } = await supabase.from("shift_schedules").upsert(
+        schedules.map(s => ({
           shift_code: s.shift_code,
           day_of_week: s.day_of_week,
-          start_time: s.is_working_day ? s.start_time : null,
-          end_time: s.is_working_day ? s.end_time : null,
+          start_time: s.is_working_day ? s.start_time : "00:00",
+          end_time: s.is_working_day ? s.end_time : "00:00",
           latest_check_in: s.is_working_day ? (s.latest_check_in || "00:00") : "00:00",
           crosses_midnight: s.crosses_midnight || false,
           is_working_day: s.is_working_day,
-        })), { onConflict: "shift_code,day_of_week" });
-
+        })),
+        { onConflict: "shift_code,day_of_week" }
+      );
       if (error) throw error;
-      toast.success("Jadwal shift berhasil disimpan");
-    } catch (err) {
-      toast.error("Gagal menyimpan: " + err.message);
-    } finally {
-      setSaving(false);
-    }
+      toast.success("Jadwal shift disimpan");
+      setDirty(false);
+    } catch (err) { toast.error("Gagal: " + err.message); }
+    setSaving(false);
   };
 
   if (loading) {
@@ -155,33 +84,94 @@ export default function TabShift() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in min-w-0">
+    <div className="space-y-5 animate-fade-in min-w-0">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold text-white">Kelola Shift</h2>
-          <p className="text-sm text-slate-400">Atur jam kerja setiap shift per hari</p>
+          <p className="text-sm text-slate-400 mt-0.5">Atur jam kerja setiap shift per hari</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <button onClick={fetchData} className="p-2.5 rounded-xl border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all">
             <RefreshCw size={16} />
           </button>
-          <button onClick={saveAll} disabled={saving} className={btnPrimary}>
-            <Save size={16} /> {saving ? "Menyimpan..." : "Simpan Semua"}
+          <button onClick={saveAll} disabled={saving || !dirty}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95
+              ${dirty
+                ? "bg-gradient-to-r from-violet-600 to-purple-700 text-white hover:shadow-lg hover:shadow-violet-900/30"
+                : "bg-white/5 text-slate-500 cursor-not-allowed"}`}>
+            <Save size={15} /> {saving ? "Menyimpan..." : dirty ? "Simpan Perubahan" : "Tersimpan"}
           </button>
         </div>
       </div>
 
+      {/* Shift Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {shifts.map(shift => (
-          <ShiftCard key={shift.code} shift={shift}
-            schedules={schedules.filter(s => s.shift_code === shift.code)}
-            onUpdateSchedule={handleUpdateSchedule} />
-        ))}
+        {shifts.map(shift => {
+          const meta = SHIFT_META[shift.code];
+          const Icon = meta?.icon || Clock;
+          const shiftScheds = schedules.filter(s => s.shift_code === shift.code);
+
+          return (
+            <div key={shift.code} className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-violet-900/10 transition-all">
+              {/* Card Header */}
+              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10 bg-gradient-to-r from-white/[0.03] to-transparent">
+                <div className={`w-10 h-10 rounded-xl ${meta?.bg || "bg-white/5"} flex items-center justify-center ring-1 ${meta?.ring || "ring-white/10"}`}>
+                  <Icon size={20} className={meta?.color || "text-violet-400"} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-bold text-white">{shift.name}</h3>
+                  <p className="text-[10px] text-slate-500 font-mono">{shift.code}</p>
+                </div>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${meta?.bg || "bg-white/5"} ${meta?.color || "text-slate-400"}`}>
+                  {shiftScheds.filter(s => s.is_working_day).length}/7 hari
+                </span>
+              </div>
+
+              {/* Schedule Rows */}
+              <div className="p-3 space-y-1">
+                {DAY_NAMES.map((name, i) => {
+                  const sched = shiftScheds.find(s => s.day_of_week === i);
+                  const working = sched?.is_working_day;
+                  return (
+                    <div key={i} className={`flex items-center gap-2 p-2 rounded-xl transition-all ${working ? "bg-white/[0.03] hover:bg-white/[0.06]" : "opacity-50"}`}>
+                      <span className="w-14 text-[10px] font-semibold text-slate-400 shrink-0">{name}</span>
+                      {working ? (
+                        <>
+                          <input type="time" value={sched?.start_time || ""}
+                            onChange={e => update(shift.code, i, "start_time", e.target.value)}
+                            className="flex-1 text-[11px] bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50" />
+                          <span className="text-[10px] text-slate-500 shrink-0">—</span>
+                          <input type="time" value={sched?.end_time || ""}
+                            onChange={e => update(shift.code, i, "end_time", e.target.value)}
+                            className="flex-1 text-[11px] bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50" />
+                          <button onClick={() => update(shift.code, i, "is_working_day", false)}
+                            className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all shrink-0">
+                            <XCircle size={13} />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <span className="flex-1 text-[10px] text-slate-600 italic">Libur</span>
+                          <button onClick={() => update(shift.code, i, "is_working_day", true)}
+                            className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all shrink-0">
+                            <CheckCircle2 size={13} />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 text-xs text-slate-300">
-        <p className="font-semibold text-amber-300 mb-1"> informasi</p>
-        <p>Klik ikon <XCircle size={12} className="inline text-red-400" /> untuk menandai hari libur. Klik <CheckCircle2 size={12} className="inline text-emerald-400" /> untuk mengaktifkan kembali. Jangan lupa klik <strong>Simpan Semua</strong> setelah perubahan.</p>
+      {/* Info */}
+      <div className="flex items-center gap-2 p-3.5 rounded-xl bg-violet-500/5 border border-violet-500/10 text-[11px] text-slate-400">
+        <Info size={13} className="text-violet-400 shrink-0" />
+        <p>Klik <XCircle size={11} className="inline text-red-400" /> untuk libur, <CheckCircle2 size={11} className="inline text-emerald-400" /> untuk aktifkan. Jangan lupa <strong className="text-violet-300">Simpan Perubahan</strong> setelah edit.</p>
       </div>
     </div>
   );
