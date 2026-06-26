@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 
 function AdminLayout() {
   return (
-    <div className="min-h-screen relative overflow-x-hidden bg-[#f8fafc] dark:bg-[#05000a] transition-colors duration-500">
+    <div className="min-h-screen relative overflow-x-hidden bg-white dark:bg-[#05000a] transition-colors duration-500">
       {/* Deep Purple Gradient Background — dark mode only */}
       <div className="fixed inset-0 bg-gradient-to-br from-[#1a0533] via-[#05000a] to-[#2d0a4e] animate-gradient-bg pointer-events-none hidden dark:block"></div>
 

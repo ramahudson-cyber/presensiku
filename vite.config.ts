@@ -9,6 +9,8 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      skipWaiting: true,
+      clientsClaim: true,
       includeAssets: ['favicon.svg'],
       filename: 'manifest.json',
       manifest: {

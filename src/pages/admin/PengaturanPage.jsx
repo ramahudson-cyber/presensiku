@@ -1395,7 +1395,6 @@ export default function PengaturanPage() {
           );
         })}
       </div>
-      </div>
 
       <div>
         {activeTab === "profil" && <TabProfilPuskesmas />}
