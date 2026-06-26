@@ -157,12 +157,13 @@ export default function SchedulingPage() {
           parsedDate = `${y}-${m}-${d}`;
         } else { errors++; continue; }
 
-        const { data: profile } = await supabase
+        const { data: profiles } = await supabase
           .from("profiles")
-          .select("id")
-          .ilike("full_name", nama)
-          .maybeSingle();
+          .select("id, full_name")
+          .ilike("full_name", `%${nama}%`)
+          .limit(1);
 
+        const profile = profiles?.[0];
         if (!profile) { errors++; continue; }
 
         const { error } = await supabase.from("employee_schedules").upsert({
