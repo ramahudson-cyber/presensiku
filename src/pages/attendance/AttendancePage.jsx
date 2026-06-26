@@ -303,6 +303,15 @@ export default function AttendancePage() {
         isLate = totalWitaMinutes > lateThreshold;
         lateMinutes = isLate ? totalWitaMinutes - shiftStartMinutes : 0;
         status = isLate ? "terlambat" : "hadir";
+
+        // ⛔ Blokir jika terlambat lebih dari 1 jam
+        if (lateMinutes > 60) {
+          setFaceStatus("idle");
+          setFaceMessage("");
+          setCameraError("Anda terlambat " + lateMinutes + " menit (maksimal 1 jam). Tidak dapat absen. Hubungi admin.");
+          setSavingAttendance(false);
+          return false;
+        }
       }
 
       const payload = {
