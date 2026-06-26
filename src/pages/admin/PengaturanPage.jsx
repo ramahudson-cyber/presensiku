@@ -7,8 +7,9 @@ import {
   Plus, Pencil, Trash2, X, Search, Key, Shield,
   CheckCircle2, AlertTriangle, Activity, Eye, Smartphone,
   Mail, Clock as ClockIcon, XCircle, Inbox, MapPinned,
-  Briefcase, User, IdCard, Calendar, Bell,
+  Briefcase, User, IdCard, Calendar, Bell, Sun,
 } from "lucide-react";
+import TabShift from "./ShiftManagement";
 
 /* ──────────────────────────────────────────────────────────────────────────
    SHARED THEME TOKENS
@@ -1360,6 +1361,7 @@ export default function PengaturanPage() {
   const tabs = [
     { id: "profil", label: "Profil & Lokasi", icon: MapPin },
     { id: "jam-kerja", label: "Jam Kerja & Settings", icon: Clock },
+    { id: "shift", label: "Kelola Shift", icon: Sun },
     { id: "user", label: "Manajemen User", icon: Users },
     { id: "approval", label: "Approval Device", icon: Smartphone },
     { id: "audit", label: "Audit Log", icon: Activity },
@@ -1375,7 +1377,7 @@ export default function PengaturanPage() {
       </div>
 
       {/* Tab nav — elegant mobile-first design */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-2">
         {tabs.map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -1399,6 +1401,7 @@ export default function PengaturanPage() {
       <div>
         {activeTab === "profil" && <TabProfilPuskesmas />}
         {activeTab === "jam-kerja" && <TabJamKerja />}
+        {activeTab === "shift" && <TabShift />}
         {activeTab === "user" && <TabManajemenUser />}
         {activeTab === "approval" && <TabApprovalDevice />}
         {activeTab === "audit" && <TabAuditLog />}

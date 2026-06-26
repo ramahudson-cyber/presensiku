@@ -51,6 +51,7 @@ export default function AttendancePage() {
   const streamRef = useRef(null);
 
   const [todayAttendance, setTodayAttendance] = useState(null);
+  const [todaySchedule, setTodaySchedule] = useState(null);
   const [locationStatus, setLocationStatus] = useState("checking");
   const [distance, setDistance] = useState(null);
   const [gpsAccuracy, setGpsAccuracy] = useState(null);
@@ -144,6 +145,7 @@ export default function AttendancePage() {
     loadModels();
     getLocation();
     fetchTodayAttendance();
+    fetchTodaySchedule();
     getDeviceVisitorId();
     return () => cleanupCamera();
   }, []);
@@ -161,7 +163,6 @@ export default function AttendancePage() {
 
   const fetchTodayAttendance = async () => {
     try {
-      // Pakai WITA date supaya konsisten dengan save (UTC+8)
       const witaMs = Date.now() + serverOffset + (8 * 60 * 60 * 1000);
       const today = new Date(witaMs).toISOString().split("T")[0];
       const { data } = await supabase
@@ -171,6 +172,33 @@ export default function AttendancePage() {
         .eq("date", today)
         .maybeSingle();
       setTodayAttendance(data);
+    } catch (e) { console.error(e); }
+  };
+
+  const fetchTodaySchedule = async () => {
+    try {
+      const witaMs = Date.now() + serverOffset + (8 * 60 * 60 * 1000);
+      const witaDate = new Date(witaMs);
+      const today = witaDate.toISOString().split("T")[0];
+      const pgDayOfWeek = (witaDate.getUTCDay() + 6) % 7;
+
+      const { data: sched } = await supabase
+        .from("employee_schedules")
+        .select("shift_code")
+        .eq("user_id", user.id)
+        .eq("date", today)
+        .maybeSingle();
+
+      if (sched) {
+        const { data: shiftInfo } = await supabase
+          .from("shifts")
+          .select("name")
+          .eq("code", sched.shift_code)
+          .single();
+        setTodaySchedule({ code: sched.shift_code, name: shiftInfo?.name || sched.shift_code });
+      } else {
+        setTodaySchedule(null);
+      }
     } catch (e) { console.error(e); }
   };
 
@@ -200,7 +228,34 @@ export default function AttendancePage() {
   };
 
   // ============================================================
-  // 💾 SAVE ABSENSI — DIRECT UPSERT (bukan RPC, lebih reliable)
+  // 📋 Ambil jadwal shift pegawai hari ini
+  // ============================================================
+  const getTodaySchedule = async (witaDate, userId) => {
+    const today = witaDate.toISOString().split("T")[0];
+    const { data } = await supabase
+      .from("employee_schedules")
+      .select("shift_code")
+      .eq("user_id", userId)
+      .eq("date", today)
+      .maybeSingle();
+    return data;
+  };
+
+  // ============================================================
+  // 📋 Ambil jadwal shift (start_time, latest_check_in, dll)
+  // ============================================================
+  const getShiftSchedule = async (shiftCode, dayOfWeek) => {
+    const { data } = await supabase
+      .from("shift_schedules")
+      .select("start_time, latest_check_in, crosses_midnight, is_working_day")
+      .eq("shift_code", shiftCode)
+      .eq("day_of_week", dayOfWeek)
+      .single();
+    return data;
+  };
+
+  // ============================================================
+  // 💾 SAVE ABSENSI — dengan deteksi shift otomatis
   // ============================================================
   const saveAttendanceToSupabase = async (photoData, location) => {
     try {
@@ -212,18 +267,43 @@ export default function AttendancePage() {
       if (timeErr) throw timeErr;
       const now = new Date(serverNow);
 
-      // Hitung keterlambatan berdasarkan SERVER TIME dalam WITA (UTC+8)
-      // Puskesmas di Mataram, jam masuk 08:00 WITA
-      const witaMs = now.getTime() + (8 * 60 * 60 * 1000); // konversi UTC → WITA
+      // WITA (UTC+8)
+      const witaMs = now.getTime() + (8 * 60 * 60 * 1000);
       const witaDate = new Date(witaMs);
+      const today = witaDate.toISOString().split("T")[0];
+
+      // ✅ Cari jadwal shift pegawai hari ini
+      const schedule = await getTodaySchedule(witaDate, user.id);
+      const shiftCode = schedule?.shift_code || "PG";
+
+      // ✅ Konversi JS getUTCDay (0=Minggu) → day_of_week (0=Senin)
+      const pgDayOfWeek = (witaDate.getUTCDay() + 6) % 7;
+
+      // ✅ Ambil jadwal shift (start_time, tolerance, crosses_midnight)
+      const shiftSchedule = await getShiftSchedule(shiftCode, pgDayOfWeek);
+
+      // ⏰ Hitung keterlambatan
       const witaHour = witaDate.getUTCHours();
       const witaMinute = witaDate.getUTCMinutes();
       const totalWitaMinutes = witaHour * 60 + witaMinute;
-      const standardMinutes = 8 * 60; // 08:00 WITA
-      const isLate = totalWitaMinutes > standardMinutes;
-      const lateMinutes = isLate ? totalWitaMinutes - standardMinutes : 0;
-      const status = isLate ? "terlambat" : "hadir";
-      const today = witaDate.toISOString().split("T")[0]; // tanggal WITA, bukan UTC
+
+      let isLate = false;
+      let lateMinutes = 0;
+      let status = "hadir";
+      let scheduleMatch = !!schedule;
+
+      if (shiftSchedule?.is_working_day && shiftSchedule?.start_time) {
+        const [sh, sm] = shiftSchedule.start_time.split(":").map(Number);
+        const shiftStartMinutes = sh * 60 + sm;
+
+        // latest_check_in = start_time + 5 menit (toleransi)
+        const [lh, lm] = (shiftSchedule.latest_check_in || shiftSchedule.start_time).split(":").map(Number);
+        const lateThreshold = lh * 60 + lm;
+
+        isLate = totalWitaMinutes > lateThreshold;
+        lateMinutes = isLate ? totalWitaMinutes - shiftStartMinutes : 0;
+        status = isLate ? "terlambat" : "hadir";
+      }
 
       const payload = {
         user_id: user.id,
@@ -241,7 +321,8 @@ export default function AttendancePage() {
         selfie_in_url: photoData,
         selfie_out_url: null,
         attendance_status: status,
-        shift_code: "PG",
+        shift_code: shiftCode,
+        schedule_match: scheduleMatch,
         is_late: isLate,
         late_minutes: lateMinutes,
         notes: null,
@@ -249,24 +330,20 @@ export default function AttendancePage() {
         device_name: deviceName,
       };
 
-      console.log("🔍 Payload yang akan di-insert (selfie truncated):", {
+      console.log("🔍 Payload:", {
         ...payload,
         selfie_in_url: photoData.substring(0, 50) + "...[truncated]"
       });
 
-      // ⚡ DIRECT UPSERT (bukan RPC) — lebih reliable
       const { data, error } = await supabase
         .from("attendance")
         .upsert(payload, { onConflict: "user_id,date" })
         .select()
         .single();
 
-      if (error) {
-        console.error("❌ Insert error details:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log("✅ Attendance saved (server timestamp):", data);
+      console.log("✅ Attendance saved:", data);
       await fetchTodayAttendance();
       return true;
     } catch (err) {
@@ -468,19 +545,34 @@ export default function AttendancePage() {
               <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
                 <CheckCircle2 size={18} className="text-emerald-400" />
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-white">
                   Sudah Absen {todayAttendance.is_late && <span className="text-amber-400 text-[10px]">(Terlambat {todayAttendance.late_minutes}m)</span>}
                 </p>
-                <p className="text-[11px] text-slate-400">Masuk: {new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}</p>
+                <p className="text-[11px] text-slate-400">
+                  Masuk: {new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}
+                  {todayAttendance.shift_code && <span className="ml-2 px-1.5 py-0.5 rounded text-[9px] bg-white/10 text-violet-300">Shift: {todayAttendance.shift_code}</span>}
+                </p>
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-3 text-slate-400">
-              <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
-                <Clock size={18} className="text-violet-400" />
+            <div className="space-y-2">
+              {todaySchedule && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-500/10 border border-violet-500/20">
+                  <span className="text-[10px] font-semibold text-violet-300">Jadwal: {todaySchedule.name} ({todaySchedule.code})</span>
+                </div>
+              )}
+              {!todaySchedule && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                  <span className="text-[10px] font-semibold text-amber-300">Tidak ada jadwal shift hari ini</span>
+                </div>
+              )}
+              <div className="flex items-center gap-3 text-slate-400">
+                <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
+                  <Clock size={18} className="text-violet-400" />
+                </div>
+                <p className="text-sm">Belum absen hari ini</p>
               </div>
-              <p className="text-sm">Belum absen hari ini</p>
             </div>
           )}
         </div>

@@ -6,7 +6,7 @@ import AttendancePage from "../pages/attendance/AttendancePage";
 import AttendanceHistoryPage from "../pages/admin/AttendanceHistoryPage";
 import PengaturanPage from "../pages/admin/PengaturanPage";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
-import ComingSoonPage from "../pages/admin/ComingSoonPage";
+import SchedulingPage from "../pages/admin/SchedulingPage";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
 import NotFoundPage from "../pages/NotFoundPage";
 
@@ -33,7 +33,7 @@ function AppRoutes() {
         <Route path="employees" element={<EmployeesPage />} />
         <Route path="attendance" element={<AttendancePage />} />
         <Route path="attendance-history" element={<AttendanceHistoryPage />} />
-        <Route path="schedules" element={<ComingSoonPage />} />
+        <Route path="schedules" element={<SchedulingPage />} />
         <Route path="leave" element={<ComingSoonPage />} />
         <Route path="announcements" element={<ComingSoonPage />} />
         <Route path="settings" element={<PengaturanPage />} />
