@@ -1,6 +1,7 @@
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import BottomNav from "../components/BottomNav";
+import UpdateDialog from "../components/UpdateDialog";
 import { Outlet } from "react-router-dom";
 
 function AdminLayout() {
@@ -27,6 +28,7 @@ function AdminLayout() {
       </div>
 
       <BottomNav />
+      <UpdateDialog />
     </div>
   );
 }
