@@ -71,6 +71,7 @@ export default function AttendancePage() {
   const [faceStatus, setFaceStatus] = useState("idle");
   const [faceMessage, setFaceMessage] = useState("");
   const [cameraError, setCameraError] = useState("");
+  const [persistentError, setPersistentError] = useState("");
   const [isFakeGPS, setIsFakeGPS] = useState(false);
   const [savingAttendance, setSavingAttendance] = useState(false);
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
@@ -511,37 +512,27 @@ export default function AttendancePage() {
   const openCameraModal = async () => {
     if (cameraStartingRef.current) return;
     if (!modelsLoaded && !modelsFailed) {
-      setCameraError("AI model belum siap. Tunggu beberapa detik.");
+      setPersistentError("AI model belum siap. Tunggu beberapa detik.");
       return;
     }
     cameraStartingRef.current = true;
+    setPersistentError("");
 
     try {
       // 🚨 KRITIS UNTUK SAFARI PWA:
       // getUserMedia HARUS dipanggil di event loop yg sama dengan klik tombol.
       // DILARANG ada state update (setState) SEBELUM getUserMedia.
-      // Safari iOS juga butuh constraint sederhana — hindari width/height ideal.
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
         audio: false,
       });
 
-      // ✅ Stream didapat — baru aman render modal & update state
       streamRef.current = stream;
       setCameraError("");
+      setPersistentError("");
       setFaceStatus("loading");
       setFaceMessage("Menyiapkan kamera...");
       setCameraOpen(true);
-
-      // 🛡 Pantau track ended — Safari suka nutup stream tiba2
-      stream.getVideoTracks().forEach(t => {
-        t.addEventListener("ended", () => {
-          if (cameraOpen) {
-            setCameraError("Kamera terputus. Coba buka lagi.");
-            cleanupCamera();
-          }
-        });
-      });
 
       // Tunggu video element muncul di DOM
       let video = videoRef.current;
@@ -569,7 +560,7 @@ export default function AttendancePage() {
             });
           };
           video.onerror = fail;
-          setTimeout(() => fail(new Error("Timeout kamera")), 15000);
+          setTimeout(() => fail(new Error("Timeout kamera")), 10000);
         }
       });
 
@@ -578,25 +569,32 @@ export default function AttendancePage() {
       scheduleDetection();
     } catch (err) {
       console.error("Camera error:", err);
-      if (err.name === "NotAllowedError") {
-        setCameraError(isIOS
+      const errorMsg = err.name === "NotAllowedError"
+        ? (isIOS
           ? "Izin kamera ditolak.\n\nCara perbaiki:\n1. Buka Settings iPhone → Safari → Camera → Allow\n2. Hapus Safari dari App Switcher (geser ke atas)\n3. Buka Safari lagi & coba absen"
-          : "Izin kamera ditolak. Setting → Camera → Allow, lalu reload.");
-      } else if (err.name === "NotFoundError") {
-        setCameraError("Kamera tidak ditemukan.");
-      } else if (err.name === "NotReadableError") {
-        setCameraError("Kamera sedang dipakai app lain. Tutup app kamera lain.");
+          : "Izin kamera ditolak. Setting → Camera → Allow, lalu reload.")
+        : err.name === "NotFoundError"
+          ? "Kamera tidak ditemukan."
+          : err.name === "NotReadableError"
+            ? "Kamera sedang dipakai app lain. Tutup app kamera lain."
+            : "Gagal akses kamera: " + err.message;
+
+      // Jika modal belum sempat terbuka (gagal di getUserMedia), tampilkan error di halaman utama
+      if (!cameraOpen) {
+        setPersistentError(errorMsg);
+        cleanupCamera();
       } else {
-        setCameraError("Gagal akses kamera: " + err.message);
+        // Jika modal sudah terbuka (gagal di video playback), tampilkan error di dalam modal
+        setCameraError(errorMsg);
+        cleanupCamera();
+        // Modal tetap terbuka — user bisa baca error & tekan tombol retry/close
       }
-      setFaceStatus("idle");
-      setFaceMessage("");
-      cleanupCamera();
-      setCameraOpen(false);
     } finally {
       cameraStartingRef.current = false;
     }
   };
+
+
 
   const cleanupCamera = () => {
     if (detectionTimer) {
@@ -756,6 +754,18 @@ export default function AttendancePage() {
             ⏳ Menunggu sinkronisasi server time untuk mencegah manipulasi waktu
           </p>
         )}
+
+        {persistentError && (
+          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30">
+            <p className="text-xs text-red-300 whitespace-pre-line">{persistentError}</p>
+            <div className="flex gap-2 mt-3">
+              <button onClick={() => setPersistentError("")}
+                className="flex-1 py-2 rounded-xl bg-white/10 text-white text-xs font-medium">Tutup</button>
+              <button onClick={openCameraModal}
+                className="flex-1 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-purple-700 text-white text-xs font-medium">Coba Lagi</button>
+            </div>
+          </div>
+        )}
       </div>
 
       {cameraOpen && (
@@ -780,7 +790,13 @@ export default function AttendancePage() {
 
           {cameraError && (
             <div className="relative w-full max-w-md mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-2xl">
-              <p className="text-xs text-red-300 text-center break-words">{cameraError}</p>
+              <p className="text-xs text-red-300 text-center break-words whitespace-pre-line">{cameraError}</p>
+              <div className="flex gap-2 mt-3">
+                <button onClick={closeCameraModal}
+                  className="flex-1 py-2.5 rounded-xl bg-white/10 text-white text-xs font-medium">Tutup</button>
+                <button onClick={openCameraModal}
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-700 text-white text-xs font-medium shadow-lg">Coba Lagi</button>
+              </div>
             </div>
           )}
 
