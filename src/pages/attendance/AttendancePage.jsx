@@ -368,6 +368,87 @@ export default function AttendancePage() {
   // ============================================================
   // 📷 CAMERA — SAFARI PWA OPTIMIZED
   // ============================================================
+
+  // 🔒 Track apakah stream camera masih hidup
+  const streamAlive = () => {
+    return streamRef.current && streamRef.current.getVideoTracks().some(t => t.readyState === "live");
+  };
+
+  // ⏱ Throttle detection — jangan overload Safari
+  const DETECTION_INTERVAL = 300;
+  let detectionTimer = null;
+
+  const runDetection = async () => {
+    if (!videoRef.current || !streamAlive()) return false;
+    try {
+      const detection = await faceapi.detectSingleFace(
+        videoRef.current,
+        new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.3 })
+      ).withFaceLandmarks().withFaceExpressions();
+
+      if (!detection) {
+        setFaceStatus("scanning");
+        setFaceMessage("Wajah belum terdeteksi");
+        return true;
+      }
+
+      const box = detection.detection.box;
+      const vw = videoRef.current.videoWidth;
+      const vh = videoRef.current.videoHeight;
+      const margin = 20;
+      const isCropped = box.x < margin || box.y < margin || box.x + box.width > vw - margin || box.y + box.height > vh - margin;
+      const isTooSmall = box.width < vw * 0.35 || box.height < vh * 0.35;
+
+      if (isCropped || isTooSmall) {
+        setFaceStatus("scanning");
+        setFaceMessage(isCropped ? "Wajah terpotong" : "Mendekatlah ke kamera");
+        return true;
+      }
+
+      if (detection.expressions.happy > 0.7) {
+        setFaceStatus("scanning");
+        setFaceMessage("Senyum terdeteksi! Menyimpan...");
+
+        const canvas = canvasRef.current;
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        const photoData = canvas.toDataURL("image/jpeg", 0.8);
+        cleanupCamera();
+
+        const saved = await saveAttendanceToSupabase(photoData, currentCoords);
+        if (saved) {
+          setFaceStatus("success");
+          setFaceMessage("Absensi tersimpan!");
+          setTimeout(() => closeCameraModal(), 1800);
+        } else {
+          setFaceStatus("idle");
+          setFaceMessage("");
+        }
+        return false;
+      }
+
+      setFaceStatus("smiling");
+      setFaceMessage("Senyum ke kamera!");
+      return true;
+    } catch {
+      return streamAlive();
+    }
+  };
+
+  const scheduleDetection = () => {
+    if (detectionTimer) clearTimeout(detectionTimer);
+    if (!streamAlive() || !cameraOpen) return;
+    detectionTimer = setTimeout(async () => {
+      const next = await runDetection();
+      if (next && streamAlive()) scheduleDetection();
+    }, DETECTION_INTERVAL);
+  };
+
   const openCameraModal = async () => {
     if (cameraStartingRef.current) return;
     if (!modelsLoaded) {
@@ -379,15 +460,11 @@ export default function AttendancePage() {
     try {
       // 🚨 KRITIS UNTUK SAFARI PWA:
       // getUserMedia HARUS dipanggil di event loop yg sama dengan klik tombol.
-      // DILARANG ada state update (setState) SEBELUM getUserMedia,
-      // karena React state update bisa putuskan user gesture chain di Safari.
+      // DILARANG ada state update (setState) SEBELUM getUserMedia.
+      // Safari iOS juga butuh constraint sederhana — hindari width/height ideal.
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "user",
-          width: { ideal: 480 },
-          height: { ideal: 640 }
-        },
-        audio: false
+        video: { facingMode: "user" },
+        audio: false,
       });
 
       // ✅ Stream didapat — baru aman render modal & update state
@@ -397,10 +474,20 @@ export default function AttendancePage() {
       setFaceMessage("Menyiapkan kamera...");
       setCameraOpen(true);
 
+      // 🛡 Pantau track ended — Safari suka nutup stream tiba2
+      stream.getVideoTracks().forEach(t => {
+        t.addEventListener("ended", () => {
+          if (cameraOpen) {
+            setCameraError("Kamera terputus. Coba buka lagi.");
+            cleanupCamera();
+          }
+        });
+      });
+
       // Tunggu video element muncul di DOM
       let video = videoRef.current;
       if (!video) {
-        await new Promise(resolve => requestAnimationFrame(resolve));
+        await new Promise(resolve => setTimeout(resolve, 100));
         video = videoRef.current;
         if (!video) throw new Error("Video element tidak ter-render.");
       }
@@ -429,15 +516,20 @@ export default function AttendancePage() {
 
       setFaceStatus("scanning");
       setFaceMessage("Posisikan wajah di dalam lingkaran");
-      detectionLoop();
+      scheduleDetection();
     } catch (err) {
       console.error("Camera error:", err);
-      setCameraError(
-        err.name === "NotAllowedError" ? "Izin kamera ditolak. Setting → Safari → Camera → Allow, lalu hapus data situs & reload." :
-        err.name === "NotFoundError" ? "Kamera tidak ditemukan." :
-        err.name === "NotReadableError" ? "Kamera sedang dipakai app lain." :
-        "Gagal akses kamera: " + err.message
-      );
+      if (err.name === "NotAllowedError") {
+        setCameraError(
+          "Izin kamera ditolak.\n\nUntuk Safari:\n1. Buka Settings → Safari → Camera → Allow\n2. Tutup & buka ulang halaman ini"
+        );
+      } else if (err.name === "NotFoundError") {
+        setCameraError("Kamera tidak ditemukan.");
+      } else if (err.name === "NotReadableError") {
+        setCameraError("Kamera sedang dipakai app lain. Tutup app kamera lain.");
+      } else {
+        setCameraError("Gagal akses kamera: " + err.message);
+      }
       setFaceStatus("idle");
       setFaceMessage("");
       cleanupCamera();
@@ -448,8 +540,15 @@ export default function AttendancePage() {
   };
 
   const cleanupCamera = () => {
+    if (detectionTimer) {
+      clearTimeout(detectionTimer);
+      detectionTimer = null;
+    }
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current.getTracks().forEach(t => {
+        t.removeEventListener("ended", cleanupCamera);
+        t.stop();
+      });
       streamRef.current = null;
     }
   };
@@ -460,66 +559,6 @@ export default function AttendancePage() {
     setFaceStatus("idle");
     setFaceMessage("");
     setCameraError("");
-  };
-
-  const detectionLoop = async () => {
-    if (!videoRef.current || !streamRef.current) return;
-    try {
-      const detection = await faceapi.detectSingleFace(
-        videoRef.current,
-        new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.3 })
-      ).withFaceLandmarks().withFaceExpressions();
-
-      if (!detection) {
-        setFaceStatus("scanning");
-        setFaceMessage("Wajah belum terdeteksi");
-        if (streamRef.current) requestAnimationFrame(detectionLoop);
-        return;
-      }
-      const box = detection.detection.box;
-      const vw = videoRef.current.videoWidth;
-      const vh = videoRef.current.videoHeight;
-      const margin = 20;
-      const isCropped = box.x < margin || box.y < margin || box.x + box.width > vw - margin || box.y + box.height > vh - margin;
-      const isTooSmall = box.width < vw * 0.35 || box.height < vh * 0.35;
-      if (isCropped || isTooSmall) {
-        setFaceStatus("scanning");
-        setFaceMessage(isCropped ? "Wajah terpotong" : "Mendekatlah ke kamera");
-        if (streamRef.current) requestAnimationFrame(detectionLoop);
-        return;
-      }
-      if (detection.expressions.happy > 0.7) {
-        setFaceStatus("scanning");
-        setFaceMessage("Senyum terdeteksi! Menyimpan...");
-
-        const canvas = canvasRef.current;
-        canvas.width = videoRef.current.videoWidth;
-        canvas.height = videoRef.current.videoHeight;
-        const ctx = canvas.getContext("2d");
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        const photoData = canvas.toDataURL("image/jpeg", 0.8);
-        cleanupCamera();
-
-        const saved = await saveAttendanceToSupabase(photoData, currentCoords);
-        if (saved) {
-          setFaceStatus("success");
-          setFaceMessage("Absensi tersimpan!");
-          setTimeout(() => closeCameraModal(), 1800);
-        } else {
-          setFaceStatus("idle");
-          setFaceMessage("");
-        }
-        return;
-      }
-      setFaceStatus("smiling");
-      setFaceMessage("😊 Senyum ke kamera!");
-      if (streamRef.current) requestAnimationFrame(detectionLoop);
-    } catch (err) {
-      if (streamRef.current) requestAnimationFrame(detectionLoop);
-    }
   };
 
   const timeStr = displayTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
