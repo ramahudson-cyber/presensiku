@@ -11,7 +11,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       skipWaiting: true,
       clientsClaim: true,
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'],
       filename: 'manifest.json',
       manifest: {
         name: 'SIAP Puskesmas',
@@ -26,10 +26,22 @@ export default defineConfig({
         permissions: ['camera'],
         icons: [
           {
+            src: '/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
+            src: '/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
             src: '/favicon.svg',
             sizes: 'any',
             type: 'image/svg+xml',
-            purpose: 'any maskable'
+            purpose: 'any'
           }
         ]
       },
