@@ -21,6 +21,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
   const pegawaiMenus = [
     { path: "/employee", label: "Dashboard", icon: LayoutDashboard, end: true },
     { path: "/employee/attendance", label: "Absensi", icon: CalendarCheck },
+    { path: "/employee/schedule", label: "Jadwal Shift", icon: CalendarDays },
   ];
 
   const adminMenus = [
