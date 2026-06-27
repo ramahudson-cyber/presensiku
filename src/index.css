@@ -2,7 +2,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Default theme: Light Mode (Clean & Elegant) */
+/* --- BASE --- */
 html, body, #root {
   margin: 0;
   padding: 0;
@@ -10,15 +10,15 @@ html, body, #root {
   height: 100%;
   background: #f8fafc;
   color: #0f172a;
+  transition: background 0.4s, color 0.4s;
 }
 
-/* Dark Mode override */
 html.dark, html.dark body, html.dark #root {
   background: #05000a;
   color: #f8fafc;
 }
 
-/* === ANIMATIONS === */
+/* --- ANIMATIONS --- */
 @keyframes gradientShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 .animate-gradient-bg { background-size:200% 200%; animation:gradientShift 12s ease infinite }
 @keyframes floatOrb { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(30px,-40px) scale(1.05)} 66%{transform:translate(-20px,20px) scale(0.95)} }
@@ -35,6 +35,7 @@ html.dark, html.dark body, html.dark #root {
 @keyframes ambientSweep { 0%,100%{transform:translate3d(-2%,-1%,0) scale(1);opacity:0.45} 50%{transform:translate3d(2%,1%,0) scale(1.03);opacity:0.7} }
 @keyframes gridDrift { from{background-position:0 0} to{background-position:48px 48px} }
 
+/* --- DARK AMBIENT BG --- */
 .dark .professional-ambient-bg {
   background: radial-gradient(circle at 20% 20%,rgba(139,92,246,0.12),transparent 32%),radial-gradient(circle at 78% 10%,rgba(14,165,233,0.08),transparent 28%),radial-gradient(circle at 55% 86%,rgba(168,85,247,0.1),transparent 34%);
   animation: ambientSweep 18s ease-in-out infinite;
@@ -47,23 +48,33 @@ html.dark, html.dark body, html.dark #root {
   opacity: 0.3;
 }
 
-/* Light mode: subtle ambient bg */
+/* --- LIGHT AMBIENT BG --- */
+@keyframes lightAmbientSweep {
+  0%, 100% { transform: translate3d(-1.5%, -0.5%, 0) scale(1); opacity: 0.6; }
+  50% { transform: translate3d(1.5%, 0.5%, 0) scale(1.02); opacity: 0.85; }
+}
+@keyframes lightGridDrift {
+  from { background-position: 0 0; }
+  to { background-position: 48px 48px; }
+}
 html:not(.dark) .professional-ambient-bg {
   background:
-    radial-gradient(ellipse at 15% 50%, rgba(99,102,241,0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 30%, rgba(14,165,233,0.02) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(139,92,246,0.015) 0%, transparent 50%);
+    radial-gradient(ellipse at 15% 50%, rgba(99,102,241,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 30%, rgba(14,165,233,0.025) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(139,92,246,0.02) 0%, transparent 50%);
+  animation: lightAmbientSweep 22s ease-in-out infinite;
 }
 html:not(.dark) .professional-grid-bg {
-  background-image: linear-gradient(rgba(148,163,184,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.04) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(148,163,184,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.05) 1px, transparent 1px);
   background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, transparent 70%);
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.12) 0%, transparent 70%);
   opacity: 1;
+  animation: lightGridDrift 35s linear infinite;
 }
 
-/* ============================================================
-   LIGHT MODE — CLEAN, ELEGANT, PROFESSIONAL
-   ============================================================ */
+/* ===================================================================
+   LIGHT MODE — CLEAN, PROFESSIONAL, ELEGANT
+   =================================================================== */
 html:not(.dark) {
   --bg-page: #f8fafc;
   --bg-card: #ffffff;
@@ -82,27 +93,34 @@ html:not(.dark) {
   --shadow-lg: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.03);
 }
 
-/* Cards */
+/* Cards & containers */
 html:not(.dark) .bg-white\/5,
 html:not(.dark) .bg-white\/\[0\.05\] {
-  background-color: var(--bg-card);
+  background-color: var(--bg-card) !important;
   box-shadow: var(--shadow-md);
 }
-
 html:not(.dark) .bg-white\/10,
 html:not(.dark) .bg-white\/\[0\.1\] {
-  background-color: #f1f5f9;
+  background-color: #f1f5f9 !important;
 }
+html:not(.dark) .bg-black\/50 {
+  background-color: var(--bg-input);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+html:not(.dark) .bg-black\/50:focus { border-color: var(--accent); }
+html:not(.dark) .bg-black\/50::placeholder { color: var(--text-muted); }
 
-/* Text overrides for light mode */
+/* TEXT — full hierarchy */
 html:not(.dark) .text-white { color: var(--text-primary) !important; }
 html:not(.dark) .text-slate-100 { color: var(--text-primary); }
 html:not(.dark) .text-slate-200 { color: var(--text-secondary); }
 html:not(.dark) .text-slate-300 { color: var(--text-muted); }
 html:not(.dark) .text-slate-400 { color: #94a3b8; }
 html:not(.dark) .text-slate-500 { color: #94a3b8; }
+html:not(.dark) .text-slate-800 { color: var(--text-primary); }
 
-/* Override ALL violet tinted text variants */
+/* Violet text overrides */
 html:not(.dark) .text-violet-100,
 html:not(.dark) .text-violet-100\/90,
 html:not(.dark) .text-violet-100\/80,
@@ -131,7 +149,7 @@ html:not(.dark) .text-violet-300\/40 { color: #64748b !important; }
 html:not(.dark) .text-violet-400 { color: var(--accent); }
 html:not(.dark) .text-violet-500 { color: var(--accent-hover); }
 
-/* Status colors in light mode */
+/* Status colors */
 html:not(.dark) .text-emerald-300 { color: #059669; }
 html:not(.dark) .text-emerald-400\/70 { color: #059669; }
 html:not(.dark) .text-amber-300 { color: #d97706; }
@@ -139,8 +157,9 @@ html:not(.dark) .text-orange-300 { color: #ea580c; }
 html:not(.dark) .text-sky-300 { color: #0284c7; }
 html:not(.dark) .text-rose-300 { color: #dc2626; }
 html:not(.dark) .text-purple-300 { color: #7c3aed; }
+html:not(.dark) .text-rose-400 { color: #e11d48; }
 
-/* Status backgrounds in light mode */
+/* Status backgrounds */
 html:not(.dark) .bg-violet-500\/10 { background-color: #eef2ff; }
 html:not(.dark) .bg-violet-500\/15 { background-color: #eef2ff; }
 html:not(.dark) .bg-emerald-500\/15 { background-color: #ecfdf5; }
@@ -149,16 +168,9 @@ html:not(.dark) .bg-orange-500\/15 { background-color: #fff7ed; }
 html:not(.dark) .bg-sky-500\/15 { background-color: #f0f9ff; }
 html:not(.dark) .bg-rose-500\/15 { background-color: #fef2f2; }
 html:not(.dark) .bg-purple-500\/15 { background-color: #f5f3ff; }
+html:not(.dark) .bg-rose-500\/10 { background-color: #fef2f2; }
 
-/* Status rings in light mode */
-html:not(.dark) .ring-emerald-500\/30 { --tw-ring-color: #a7f3d0; }
-html:not(.dark) .ring-amber-500\/30 { --tw-ring-color: #fde68a; }
-html:not(.dark) .ring-orange-500\/30 { --tw-ring-color: #fed7aa; }
-html:not(.dark) .ring-sky-500\/30 { --tw-ring-color: #bae6fd; }
-html:not(.dark) .ring-rose-500\/30 { --tw-ring-color: #fecaca; }
-html:not(.dark) .ring-purple-500\/30 { --tw-ring-color: #ddd6fe; }
-
-/* Borders in light mode */
+/* Borders */
 html:not(.dark) .border-white\/5,
 html:not(.dark) .border-white\/10,
 html:not(.dark) .border-white\/15,
@@ -168,22 +180,35 @@ html:not(.dark) .border-white\/\[0\.08\],
 html:not(.dark) .border-white\/\[0\.1\],
 html:not(.dark) .border-white\/\[0\.15\],
 html:not(.dark) .border-white\/\[0\.2\] { border-color: var(--border-color) !important; }
-
 html:not(.dark) .divide-white\/5 { border-color: var(--border-color); }
 
-/* Button gradient - keep text white */
+/* Purple border variants */
+html:not(.dark) .border-violet-500\/20 { border-color: #c7d2fe; }
+html:not(.dark) .border-violet-500\/50 { border-color: #a5b4fc; }
+
+/* Gradient buttons keep white text */
 html:not(.dark) button.bg-gradient-to-r.from-violet-600.to-purple-700,
 html:not(.dark) .bg-gradient-to-r.from-violet-600.to-purple-700 {
   color: #ffffff !important;
-}
-
-html:not(.dark) .bg-gradient-to-r.from-violet-600.to-purple-700 {
   background: linear-gradient(to right, var(--accent), #8b5cf6);
 }
 
-/* ============================================================
-   SIDEBAR — LIGHT MODE
-   ============================================================ */
+/* Shadows */
+html:not(.dark) .shadow-violet-950\/20 { box-shadow: var(--shadow-md); }
+html:not(.dark) .shadow-violet-900\/30,
+html:not(.dark) .shadow-violet-900\/20 { box-shadow: var(--shadow-sm); }
+html:not(.dark) .shadow-2xl.shadow-purple-950\/50 { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.04); }
+html:not(.dark) .ring-white { --tw-ring-color: #ffffff; }
+
+/* Info box */
+html:not(.dark) .bg-sky-500\/10 { background-color: #f0f9ff; }
+html:not(.dark) .border-sky-500\/20 { border-color: #bae6fd; }
+html:not(.dark) .text-sky-200\/90 { color: #0369a1; }
+html:not(.dark) .text-sky-300\/70 { color: #0284c7; }
+
+/* ===================================================================
+   SIDEBAR
+   =================================================================== */
 .dark .sidebar-gradient {
   background: radial-gradient(circle at 22% 0%, rgba(168,85,247,0.42), transparent 34%), linear-gradient(160deg, rgba(3,7,18,0.98) 0%, rgba(34,12,65,0.96) 48%, rgba(88,28,135,0.94) 100%);
   backdrop-filter: blur(22px);
@@ -204,105 +229,89 @@ html:not(.dark) .sidebar-gradient .text-violet-100\/65 { color: #64748b !importa
 html:not(.dark) .sidebar-gradient .text-violet-300 { color: #64748b; }
 html:not(.dark) .sidebar-gradient .hover\:text-white:hover { color: #0f172a; }
 html:not(.dark) .sidebar-gradient .text-red-400\/80 { color: #ef4444; }
-
+html:not(.dark) .sidebar-gradient .text-red-400\/80:hover { color: #dc2626; }
 html:not(.dark) .sidebar-gradient .border-white\/10,
 html:not(.dark) .sidebar-gradient .border-white\/15 { border-color: var(--border-color); }
 html:not(.dark) .sidebar-gradient .bg-white\/\[0\.03\] { background-color: #f8fafc; }
 
-/* Sidebar nav links */
-html:not(.dark) .sidebar-gradient a.hover\:bg-white\/10:hover {
-  background-color: #f1f5f9;
-}
-
-html:not(.dark) .sidebar-gradient a.bg-gradient-to-r.from-violet-600.to-purple-700 {
-  background: linear-gradient(to right, #6366f1, #8b5cf6);
-}
-
-html:not(.dark) .sidebar-gradient .text-violet-100\/65 {
-  color: #64748b;
-}
-
+/* Sidebar nav */
 html:not(.dark) .sidebar-gradient a {
   color: #475569;
 }
-
 html:not(.dark) .sidebar-gradient a:hover {
   color: #0f172a;
   background-color: #f1f5f9;
 }
-
+html:not(.dark) .sidebar-gradient a.hover\:bg-white\/10:hover {
+  background-color: #f1f5f9;
+}
 html:not(.dark) .sidebar-gradient a span {
   color: inherit;
 }
+html:not(.dark) .sidebar-gradient a.bg-gradient-to-r.from-violet-600.to-purple-700 {
+  background: linear-gradient(to right, #6366f1, #8b5cf6);
+}
 
-/* ============================================================
-   HEADER — LIGHT MODE
-   ============================================================ */
+/* ===================================================================
+   HEADER
+   =================================================================== */
 html:not(.dark) .bg-white\/80 {
-  background-color: var(--bg-header);
-  border-bottom-color: var(--border-color);
+  background-color: var(--bg-header) !important;
+  border-bottom-color: var(--border-color) !important;
 }
+html:not(.dark) .bg-slate-100 { background-color: var(--bg-input); }
+html:not(.dark) .bg-slate-100\/80 { background-color: var(--bg-input); }
+html:not(.dark) button.hover\:bg-slate-100:hover { background-color: #f1f5f9; }
+html:not(.dark) .hover\:bg-rose-50:hover { background-color: #fef2f2; }
 
-html:not(.dark) .bg-slate-100 {
+/* Search bar in header */
+html:not(.dark) .bg-slate-100\/80.dark\:bg-white\/\[0\.05\] {
   background-color: var(--bg-input);
 }
 
-html:not(.dark) .bg-slate-100\/80 {
-  background-color: var(--bg-input);
-}
-
-html:not(.dark) button.hover\:bg-slate-100:hover {
-  background-color: #f1f5f9;
-}
-
-html:not(.dark) .hover\:bg-rose-50:hover {
-  background-color: #fef2f2;
-}
-
-/* Remove purple glow buttons */
-html:not(.dark) .text-violet-400 { color: var(--accent); }
-html:not(.dark) .text-violet-500 { color: var(--accent-hover); }
-
-/* ============================================================
-   DASHBOARD CARDS — LIGHT MODE
-   ============================================================ */
-html:not(.dark) .bg-white\/5 {
+/* ===================================================================
+   DASHBOARD CARDS
+   =================================================================== */
+html:not(.dark) .bg-white\/5.backdrop-blur-sm {
   background-color: var(--bg-card);
   box-shadow: var(--shadow-md);
 }
-
 html:not(.dark) .hover\:shadow-violet-900\/20:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg) !important;
 }
 
-/* ============================================================
-   BOTTOM NAV — LIGHT MODE
-   ============================================================ */
+/* Card stat numbers */
+html:not(.dark) .text-2xl.font-bold.text-white.tabular-nums {
+  color: var(--text-primary);
+}
+
+/* Chart area */
+html:not(.dark) .bg-gradient-to-t.from-violet-700\/60.to-purple-500\/40 {
+  background: linear-gradient(to top, rgba(99,102,241,0.4), rgba(139,92,246,0.25));
+}
+html:not(.dark) .bg-gradient-to-t.from-violet-500.to-purple-400 {
+  background: linear-gradient(to top, #6366f1, #a78bfa);
+}
+
+/* ===================================================================
+   BOTTOM NAV
+   =================================================================== */
 html:not(.dark) .bg-\[\#160a29\]\/95 {
   background-color: rgba(255,255,255,0.95) !important;
   border-top-color: var(--border-color) !important;
 }
-
 html:not(.dark) .bg-\[\#1a0d2e\] {
   background-color: #ffffff !important;
   border-top-color: var(--border-color) !important;
 }
-
 html:not(.dark) .bg-\[\#0f0524\]\/90 {
   background-color: rgba(255,255,255,0.92) !important;
 }
-
-html:not(.dark) .bg-white\/5 {
-  background-color: var(--bg-card);
-}
-
-/* Bottom nav text */
-html:not(.dark) nav a.text-violet-400 {
-  color: var(--accent);
-}
-
 html:not(.dark) nav .text-slate-500 {
   color: #94a3b8;
+}
+html:not(.dark) nav a.text-violet-400 {
+  color: var(--accent);
 }
 
 /* Bottom nav more sheet */
@@ -314,80 +323,31 @@ html:not(.dark) .bg-\[\#1a0d2e\] .bg-white\/20 { background-color: #e2e8f0; }
 html:not(.dark) .bg-\[\#1a0d2e\] .hover\:bg-white\/10:hover { background-color: #f1f5f9; }
 html:not(.dark) .bg-\[\#1a0d2e\] .border-white\/10 { border-color: var(--border-color); }
 
-/* ============================================================
-   OVERLAYS & MODALS — LIGHT MODE
-   ============================================================ */
-html:not(.dark) .bg-\[\#1a0a35\] {
-  background-color: #ffffff !important;
-}
-html:not(.dark) .bg-\[\#1a0a35\]\/95 {
-  background-color: rgba(255,255,255,0.95) !important;
-}
-html:not(.dark) .bg-\[\#1a0a35\]\/90 {
-  background-color: rgba(255,255,255,0.9) !important;
-}
-html:not(.dark) select option {
-  background-color: #ffffff;
-  color: #0f172a;
-}
-
-/* ============================================================
-   SKELETON LOADING — LIGHT MODE
-   ============================================================ */
-html:not(.dark) .animate-pulse.bg-white\/5,
-html:not(.dark) .animate-pulse.bg-white\/10 {
-  background-color: #e2e8f0 !important;
-}
-
-/* ============================================================
-   FORMS & INPUTS — LIGHT MODE
-   ============================================================ */
+/* ===================================================================
+   OVERLAYS & MODALS
+   =================================================================== */
+html:not(.dark) .bg-\[\#1a0a35\] { background-color: #ffffff !important; }
+html:not(.dark) .bg-\[\#1a0a35\]\/95 { background-color: rgba(255,255,255,0.95) !important; }
+html:not(.dark) .bg-\[\#1a0a35\]\/90 { background-color: rgba(255,255,255,0.9) !important; }
+html:not(.dark) select option { background-color: #ffffff; color: #0f172a; }
 html:not(.dark) input[type="date"] { color-scheme: light; }
 html:not(.dark) [color-scheme="dark"] { color-scheme: light; }
-
 html:not(.dark) input::placeholder,
-html:not(.dark) textarea::placeholder {
-  color: #94a3b8;
-}
+html:not(.dark) textarea::placeholder { color: #94a3b8; }
 
-/* Inputs inside dark-mode-styled containers */
-html:not(.dark) .bg-black\/50 {
-  background-color: #f1f5f9;
-  border-color: var(--border-color);
-  color: var(--text-primary);
-}
+/* ===================================================================
+   SKELETON LOADING
+   =================================================================== */
+html:not(.dark) .animate-pulse.bg-white\/5,
+html:not(.dark) .animate-pulse.bg-white\/10 { background-color: #e2e8f0 !important; }
 
-html:not(.dark) .bg-black\/50:focus {
-  border-color: var(--accent);
-}
+/* ===================================================================
+   MISC
+   =================================================================== */
+html:not(.dark) .bg-black\/40 { background-color: rgba(241,245,249,0.8); }
 
-html:not(.dark) .bg-black\/50::placeholder {
-  color: #94a3b8;
-}
-
-/* ============================================================
-   MISC FIXES — LIGHT MODE
-   ============================================================ */
-html:not(.dark) .shadow-violet-950\/20 {
-  box-shadow: var(--shadow-md);
-}
-
-html:not(.dark) .shadow-violet-900\/30,
-html:not(.dark) .shadow-violet-900\/20 {
-  box-shadow: var(--shadow-sm);
-}
-
-html:not(.dark) .shadow-2xl.shadow-purple-950\/50 {
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.04);
-}
-
-html:not(.dark) .ring-white { --tw-ring-color: #ffffff; }
-
-/* Info box */
-html:not(.dark) .bg-sky-500\/10 { background-color: #f0f9ff; }
-html:not(.dark) .border-sky-500\/20 { border-color: #bae6fd; }
-html:not(.dark) .text-sky-200\/90 { color: #0369a1; }
-html:not(.dark) .text-sky-300\/70 { color: #0284c7; }
+/* Toast close button */
+html:not(.dark) .Toastify__close-button { color: #64748b; }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px }
@@ -395,35 +355,17 @@ html:not(.dark) .text-sky-300\/70 { color: #0284c7; }
 ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 4px }
 html:not(.dark) ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.2); }
 
-/* Table styling in light mode */
+/* Table */
 html:not(.dark) .bg-white\/5 thead tr,
-html:not(.dark) [class*="bg-white/5"] thead tr {
-  background-color: #f8fafc;
-}
-
-html:not(.dark) .divide-white\/5 > * + * {
-  border-color: var(--border-color);
-}
-
-/* Purple glow text cleanup */
-html:not(.dark) .text-emerald-300 { color: #059669; }
-html:not(.dark) .text-rose-300 { color: #dc2626; }
-html:not(.dark) .text-sky-300 { color: #0284c7; }
+html:not(.dark) [class*="bg-white/5"] thead tr { background-color: #f8fafc; }
+html:not(.dark) .divide-white\/5 > * + * { border-color: var(--border-color); }
 
 /* Notification badge ring */
-html:not(.dark) .ring-white.dark\:ring-\[\#0f0524\] {
-  --tw-ring-color: #ffffff;
-}
-
-/* Purple border variants */
-html:not(.dark) .border-violet-500\/20 {
-  border-color: #c7d2fe;
-}
+html:not(.dark) .ring-white.dark\:ring-\[\#0f0524\] { --tw-ring-color: #ffffff; }
 
 @supports (height: 100dvh) {
   html, body, #root { height: 100dvh }
 }
-
 @media (prefers-reduced-motion: reduce) {
   .professional-ambient-bg, .professional-grid-bg { animation: none }
 }

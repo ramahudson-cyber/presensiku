@@ -12,10 +12,11 @@ export default function BottomNav() {
   const [moreOpen, setMoreOpen] = useState(false);
   const userRole = user?.role || "pegawai";
 
-  // Menu untuk Pegawai (cuma 2, simple)
+  // Menu untuk Pegawai
   const pegawaiMenus = [
     { path: "/employee", label: "Home", icon: LayoutDashboard, end: true },
     { path: "/employee/attendance", label: "Absensi", icon: CalendarCheck },
+    { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
   ];
 
   // Menu untuk Admin — 4 main + 4 di "More"

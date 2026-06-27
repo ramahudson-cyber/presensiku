@@ -1406,6 +1406,17 @@ export default function PengaturanPage() {
     { id: "audit", label: "Audit Log", icon: Activity },
   ];
 
+  const renderTab = () => {
+    switch (activeTab) {
+      case "profil": return <TabProfilPuskesmas />;
+      case "jam-kerja": return <TabJamKerja />;
+      case "user": return <TabManajemenUser />;
+      case "approval": return <TabApprovalDevice />;
+      case "audit": return <TabAuditLog />;
+      default: return null;
+    }
+  };
+
   return (
     <div className="space-y-6 pb-20 animate-fade-in min-w-0">
       <div className="min-w-0">

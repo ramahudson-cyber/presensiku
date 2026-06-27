@@ -6,6 +6,7 @@ import AttendancePage from "../pages/attendance/AttendancePage";
 import AttendanceHistoryPage from "../pages/admin/AttendanceHistoryPage";
 import PengaturanPage from "../pages/admin/PengaturanPage";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
+import EmployeeSchedule from "../pages/employee/EmployeeSchedule";
 import SchedulingPage from "../pages/admin/SchedulingPage";
 import ComingSoonPage from "../pages/admin/ComingSoonPage";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
@@ -51,6 +52,7 @@ function AppRoutes() {
       >
         <Route index element={<EmployeeDashboard />} />
         <Route path="attendance" element={<AttendancePage />} />
+        <Route path="schedule" element={<EmployeeSchedule />} />
       </Route>
 
       {/* REDIRECT */}

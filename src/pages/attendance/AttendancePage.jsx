@@ -528,20 +528,20 @@ export default function AttendancePage() {
   return (
     <>
       <div className="space-y-3 animate-fade-in">
-        <div className="relative bg-gradient-to-br from-violet-600 to-purple-800 rounded-2xl p-5 text-white shadow-xl shadow-purple-900/30 overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+        <div className="relative bg-white dark:bg-[#1a0d2e] rounded-2xl p-5 text-slate-900 dark:text-white shadow-lg border border-slate-200 dark:border-white/10 overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 dark:bg-white/10 rounded-full -mr-16 -mt-16"></div>
           <div className="relative">
             <div className="flex items-center justify-between">
-              <p className="text-[10px] opacity-70 uppercase tracking-wider">{dateStr}</p>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">{dateStr}</p>
               {serverTime && (
-                <div className="flex items-center gap-1 text-[9px] bg-white/10 px-2 py-1 rounded-full">
+                <div className="flex items-center gap-1 text-[9px] bg-violet-100 dark:bg-white/10 text-violet-700 dark:text-white px-2 py-1 rounded-full">
                   <ShieldCheck size={10} /> <span>Server Time</span>
                 </div>
               )}
             </div>
             <p className="text-2xl font-bold mt-1 font-mono tabular-nums">{timeStr}</p>
             {!serverTime && (
-              <p className="text-[10px] text-amber-200 mt-1 flex items-center gap-1">
+              <p className="text-[10px] text-amber-600 dark:text-amber-200 mt-1 flex items-center gap-1">
                 <Loader2 size={10} className="animate-spin" /> Sinkron server...
               </p>
             )}
