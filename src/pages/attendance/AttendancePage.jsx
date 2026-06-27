@@ -44,6 +44,9 @@ function getDeviceInfoLite() {
   return deviceName;
 }
 
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 export default function AttendancePage() {
   const { user } = useAuth();
   const videoRef = useRef(null);
@@ -63,6 +66,7 @@ export default function AttendancePage() {
   const [displayTime, setDisplayTime] = useState(new Date());
 
   const [modelsLoaded, setModelsLoaded] = useState(false);
+  const [modelsFailed, setModelsFailed] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [faceStatus, setFaceStatus] = useState("idle");
   const [faceMessage, setFaceMessage] = useState("");
@@ -115,6 +119,19 @@ export default function AttendancePage() {
     } catch { /* warmup not critical */ }
   };
 
+  // 🔄 iOS Safari BFCACHE FIX: reload page when restored from back/forward cache
+  // Tanpa ini, kamera tidak bisa diakses karena permission context hilang
+  useEffect(() => {
+    const onPageShow = (e) => {
+      if (e.persisted && !sessionStorage.getItem("siap_bfcache_reloaded")) {
+        sessionStorage.setItem("siap_bfcache_reloaded", "1");
+        window.location.reload();
+      }
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
   useEffect(() => {
     syncServerTime();
     const t = setInterval(syncServerTime, 5 * 60 * 1000);
@@ -140,7 +157,10 @@ export default function AttendancePage() {
         }
         setModelsLoaded(true);
         warmUpFaceModels();
-      } catch (err) { console.error("Gagal load model:", err); }
+      } catch (err) {
+        console.error("Gagal load model:", err);
+        setModelsFailed(true);
+      }
     };
     loadModels();
     getLocation();
@@ -378,8 +398,44 @@ export default function AttendancePage() {
   const DETECTION_INTERVAL = 300;
   let detectionTimer = null;
 
+  const capturePhoto = async () => {
+    if (!videoRef.current || !streamAlive()) return;
+    try {
+      const canvas = canvasRef.current;
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      const photoData = canvas.toDataURL("image/jpeg", 0.8);
+      cleanupCamera();
+      const saved = await saveAttendanceToSupabase(photoData, currentCoords);
+      if (saved) {
+        setFaceStatus("success");
+        setFaceMessage("Absensi tersimpan!");
+        setTimeout(() => closeCameraModal(), 1800);
+      } else {
+        setFaceStatus("idle");
+        setFaceMessage("");
+      }
+    } catch {
+      setFaceStatus("idle");
+      setFaceMessage("Gagal mengambil foto");
+    }
+  };
+
   const runDetection = async () => {
     if (!videoRef.current || !streamAlive()) return false;
+
+    // Mode sederhana: tanpa face-api, user tap tombol untuk capture
+    if (modelsFailed) {
+      setFaceStatus("scanning");
+      setFaceMessage("Tap tombol untuk mengambil foto");
+      return true;
+    }
+
     try {
       const detection = await faceapi.detectSingleFace(
         videoRef.current,
@@ -406,29 +462,7 @@ export default function AttendancePage() {
       }
 
       if (detection.expressions.happy > 0.7) {
-        setFaceStatus("scanning");
-        setFaceMessage("Senyum terdeteksi! Menyimpan...");
-
-        const canvas = canvasRef.current;
-        canvas.width = videoRef.current.videoWidth;
-        canvas.height = videoRef.current.videoHeight;
-        const ctx = canvas.getContext("2d");
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        const photoData = canvas.toDataURL("image/jpeg", 0.8);
-        cleanupCamera();
-
-        const saved = await saveAttendanceToSupabase(photoData, currentCoords);
-        if (saved) {
-          setFaceStatus("success");
-          setFaceMessage("Absensi tersimpan!");
-          setTimeout(() => closeCameraModal(), 1800);
-        } else {
-          setFaceStatus("idle");
-          setFaceMessage("");
-        }
+        await capturePhoto();
         return false;
       }
 
@@ -451,7 +485,7 @@ export default function AttendancePage() {
 
   const openCameraModal = async () => {
     if (cameraStartingRef.current) return;
-    if (!modelsLoaded) {
+    if (!modelsLoaded && !modelsFailed) {
       setCameraError("AI model belum siap. Tunggu beberapa detik.");
       return;
     }
@@ -520,9 +554,9 @@ export default function AttendancePage() {
     } catch (err) {
       console.error("Camera error:", err);
       if (err.name === "NotAllowedError") {
-        setCameraError(
-          "Izin kamera ditolak.\n\nUntuk Safari:\n1. Buka Settings → Safari → Camera → Allow\n2. Tutup & buka ulang halaman ini"
-        );
+        setCameraError(isIOS
+          ? "Izin kamera ditolak.\n\nCara perbaiki:\n1. Buka Settings iPhone → Safari → Camera → Allow\n2. Hapus Safari dari App Switcher (geser ke atas)\n3. Buka Safari lagi & coba absen"
+          : "Izin kamera ditolak. Setting → Camera → Allow, lalu reload.");
       } else if (err.name === "NotFoundError") {
         setCameraError("Kamera tidak ditemukan.");
       } else if (err.name === "NotReadableError") {
@@ -667,10 +701,15 @@ export default function AttendancePage() {
           {locationStatus === "error" && <p className="text-xs text-red-400">GPS tidak aktif.</p>}
         </div>
 
+        {!todayAttendance && modelsFailed && (
+          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 mb-2">
+            Mode AI tidak tersedia di perangkat ini. Gunakan mode foto manual.
+          </div>
+        )}
         {!todayAttendance && (
           <button
             onClick={openCameraModal}
-            disabled={locationStatus !== "valid" || isFakeGPS || !modelsLoaded || savingAttendance || !serverTime}
+            disabled={locationStatus !== "valid" || isFakeGPS || (!modelsLoaded && !modelsFailed) || savingAttendance || !serverTime}
             className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-2xl font-semibold transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-xl shadow-purple-900/30"
           >
             {savingAttendance ? (
@@ -679,6 +718,8 @@ export default function AttendancePage() {
               <><Loader2 size={20} className="animate-spin" /> Sinkron server...</>
             ) : modelsLoaded ? (
               <><Camera size={20} /> Verifikasi Wajah</>
+            ) : modelsFailed ? (
+              <><Camera size={20} /> Ambil Foto</>
             ) : (
               <><Loader2 size={20} className="animate-spin" /> Memuat AI...</>
             )}
@@ -757,7 +798,7 @@ export default function AttendancePage() {
             </div>
           </div>
 
-          <div className="relative w-full max-w-md mt-6">
+          <div className="relative w-full max-w-md mt-6 space-y-3">
             <div className={`text-center p-3.5 rounded-2xl text-sm font-medium transition-all ${
               faceStatus === "success" ? "bg-violet-500/15 text-violet-200 border border-violet-500/30" :
               faceStatus === "smiling" ? "bg-violet-400/10 text-violet-200 border border-violet-400/20" :
@@ -766,6 +807,12 @@ export default function AttendancePage() {
             }`}>
               {faceMessage || "Menyiapkan kamera..."}
             </div>
+            {modelsFailed && faceStatus === "scanning" && (
+              <button onClick={capturePhoto}
+                className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-2xl font-semibold transition active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-purple-900/30">
+                <Camera size={20} /> Ambil Foto
+              </button>
+            )}
           </div>
         </div>
       )}
