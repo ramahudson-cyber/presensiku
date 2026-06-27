@@ -46,12 +46,14 @@ function getDeviceInfoLite() {
 
 const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isStandalonePwa = window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
 
 export default function AttendancePage() {
   const { user } = useAuth();
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [todaySchedule, setTodaySchedule] = useState(null);
@@ -452,6 +454,39 @@ export default function AttendancePage() {
     }
   };
 
+  // 📱 Native Camera via file input (fallback untuk PWA Home Screen)
+  const handleNativePhoto = async (e) => {
+    const file = e.target?.files?.[0];
+    if (!file) return;
+    try {
+      setFaceStatus("loading");
+      setFaceMessage("Memproses foto...");
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const photoData = ev.target.result;
+        const saved = await saveAttendanceToSupabase(photoData, currentCoords);
+        if (saved) {
+          setFaceStatus("success");
+          setFaceMessage("Absensi tersimpan!");
+          setTimeout(() => closeCameraModal(), 1800);
+        } else {
+          setFaceStatus("idle");
+          setFaceMessage("");
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      setFaceStatus("idle");
+      setFaceMessage("Gagal memproses foto");
+    }
+    // Reset input agar bisa pilih file yg sama lagi
+    e.target.value = "";
+  };
+
+  const openNativeCamera = () => {
+    fileInputRef.current?.click();
+  };
+
   const runDetection = async () => {
     if (!videoRef.current || !streamAlive()) return false;
 
@@ -570,9 +605,11 @@ export default function AttendancePage() {
     } catch (err) {
       console.error("Camera error:", err);
       const errorMsg = err.name === "NotAllowedError"
-        ? (isIOS
-          ? "Izin kamera ditolak.\n\nCara perbaiki:\n1. Buka Settings iPhone → Safari → Camera → Allow\n2. Hapus Safari dari App Switcher (geser ke atas)\n3. Buka Safari lagi & coba absen"
-          : "Izin kamera ditolak. Setting → Camera → Allow, lalu reload.")
+        ? (isStandalonePwa
+          ? "Izin kamera ditolak (PWA Home Screen).\n\nCoba:\n1. Buka Settings iPhone → cari \"SIAP Puskesmas\" → Camera → Allow\n2. Atau gunakan tombol Kamera Native di bawah"
+          : isIOS
+            ? "Izin kamera ditolak.\n\nCara perbaiki:\n1. Buka Settings iPhone → Safari → Camera → Allow\n2. Hapus Safari dari App Switcher (geser ke atas)\n3. Buka Safari lagi & coba absen"
+            : "Izin kamera ditolak. Setting → Camera → Allow, lalu reload.")
         : err.name === "NotFoundError"
           ? "Kamera tidak ditemukan."
           : err.name === "NotReadableError"
@@ -730,23 +767,32 @@ export default function AttendancePage() {
           </div>
         )}
         {!todayAttendance && (
-          <button
-            onClick={openCameraModal}
-            disabled={locationStatus !== "valid" || isFakeGPS || (!modelsLoaded && !modelsFailed) || savingAttendance || !serverTime}
-            className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-2xl font-semibold transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-xl shadow-purple-900/30"
-          >
-            {savingAttendance ? (
-              <><Loader2 size={20} className="animate-spin" /> Menyimpan...</>
-            ) : !serverTime ? (
-              <><Loader2 size={20} className="animate-spin" /> Sinkron server...</>
-            ) : modelsLoaded ? (
-              <><Camera size={20} /> Verifikasi Wajah</>
-            ) : modelsFailed ? (
-              <><Camera size={20} /> Ambil Foto</>
-            ) : (
-              <><Loader2 size={20} className="animate-spin" /> Memuat AI...</>
+          <>
+            <button
+              onClick={openCameraModal}
+              disabled={locationStatus !== "valid" || isFakeGPS || (!modelsLoaded && !modelsFailed) || savingAttendance || !serverTime}
+              className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-2xl font-semibold transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-xl shadow-purple-900/30"
+            >
+              {savingAttendance ? (
+                <><Loader2 size={20} className="animate-spin" /> Menyimpan...</>
+              ) : !serverTime ? (
+                <><Loader2 size={20} className="animate-spin" /> Sinkron server...</>
+              ) : modelsLoaded ? (
+                <><Camera size={20} /> Verifikasi Wajah</>
+              ) : modelsFailed ? (
+                <><Camera size={20} /> Ambil Foto</>
+              ) : (
+                <><Loader2 size={20} className="animate-spin" /> Memuat AI...</>
+              )}
+            </button>
+            {isStandalonePwa && (
+              <button onClick={openNativeCamera}
+                disabled={locationStatus !== "valid" || isFakeGPS || savingAttendance || !serverTime}
+                className="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-2xl font-semibold transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg">
+                <Camera size={20} /> Kamera Native (PWA)
+              </button>
             )}
-          </button>
+          </>
         )}
 
         {!serverTime && (
@@ -758,11 +804,20 @@ export default function AttendancePage() {
         {persistentError && (
           <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30">
             <p className="text-xs text-red-300 whitespace-pre-line">{persistentError}</p>
+            {isStandalonePwa && (
+              <p className="text-xs text-amber-300 mt-2">
+                💡 Tips: PWA Home Screen butuh izin kamera terpisah. 
+                Buka Settings → cari "SIAP Puskesmas" → Camera → Allow.
+                Atau gunakan tombol Kamera Native di bawah.
+              </p>
+            )}
             <div className="flex gap-2 mt-3">
               <button onClick={() => setPersistentError("")}
                 className="flex-1 py-2 rounded-xl bg-white/10 text-white text-xs font-medium">Tutup</button>
-              <button onClick={openCameraModal}
-                className="flex-1 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-purple-700 text-white text-xs font-medium">Coba Lagi</button>
+              <button onClick={openNativeCamera}
+                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-medium shadow-lg flex items-center justify-center gap-1.5">
+                <Camera size={14} /> Kamera Native
+              </button>
             </div>
           </div>
         )}
@@ -796,6 +851,9 @@ export default function AttendancePage() {
                   className="flex-1 py-2.5 rounded-xl bg-white/10 text-white text-xs font-medium">Tutup</button>
                 <button onClick={openCameraModal}
                   className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-700 text-white text-xs font-medium shadow-lg">Coba Lagi</button>
+                <button onClick={openNativeCamera}
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-medium shadow-lg flex items-center justify-center gap-1.5">
+                  <Camera size={14} /> Native</button>
               </div>
             </div>
           )}
@@ -857,6 +915,8 @@ export default function AttendancePage() {
           </div>
         </div>
       )}
+
+      <input ref={fileInputRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handleNativePhoto} />
     </>
   );
 }
