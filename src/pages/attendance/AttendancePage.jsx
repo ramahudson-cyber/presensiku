@@ -518,16 +518,36 @@ export default function AttendancePage() {
     }
   };
 
-  // 📱 PWA iOS fallback: native camera via file input (tanpa tombol tambahan)
+  // 📱 PWA iOS: native camera via file input + selfie verification
   const handleNativePhoto = async (e) => {
     const file = e.target?.files?.[0];
     if (!file) return;
+    e.target.value = "";
     try {
       setFaceStatus("loading");
-      setFaceMessage("Memproses foto...");
+      setFaceMessage("Memverifikasi wajah...");
       const reader = new FileReader();
       reader.onload = async (ev) => {
-        const saved = await saveAttendanceToSupabase(ev.target.result, currentCoords);
+        const dataUrl = ev.target.result;
+
+        // 🔍 Verifikasi selfie: deteksi wajah di foto hasil native camera
+        if (modelsReadyRef.current) {
+          const img = new Image();
+          img.src = dataUrl;
+          await img.decode();
+          const detection = await faceapi.detectSingleFace(
+            img,
+            new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.3 })
+          );
+          if (!detection) {
+            closeCameraModal();
+            setPersistentError("Wajah tidak terdeteksi. Foto harus selfie dengan wajah jelas.");
+            return;
+          }
+        }
+
+        setFaceMessage("Menyimpan absensi...");
+        const saved = await saveAttendanceToSupabase(dataUrl, currentCoords);
         if (saved) {
           setFaceStatus("success");
           setFaceMessage("Absensi tersimpan!");
@@ -542,11 +562,13 @@ export default function AttendancePage() {
       setFaceStatus("idle");
       setFaceMessage("Gagal memproses foto");
     }
-    e.target.value = "";
   };
 
   const triggerNativeCamera = () => {
-    closeCameraModal();
+    cleanupCamera();
+    setCameraOpen(true);
+    setFaceStatus("loading");
+    setFaceMessage("Membuka kamera...");
     setTimeout(() => fileInputRef.current?.click(), 100);
   };
 
@@ -585,61 +607,74 @@ export default function AttendancePage() {
     }
   };
 
+  const startStreamCapture = async (stream) => {
+    setPersistentError("");
+    streamRef.current = stream;
+    setCameraError("");
+    setPersistentError("");
+    setFaceStatus("loading");
+    setFaceMessage("Menyiapkan kamera...");
+    setCameraOpen(true);
+
+    let video = videoRef.current;
+    if (!video) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      video = videoRef.current;
+      if (!video) throw new Error("Video element tidak ter-render.");
+    }
+
+    video.srcObject = stream;
+
+    await new Promise((resolve, reject) => {
+      let resolved = false;
+      const done = () => { if (!resolved) { resolved = true; resolve(); } };
+      const fail = (err) => { if (!resolved) { resolved = true; reject(err); } };
+
+      if (video.readyState >= 2) {
+        video.play().then(done).catch(fail);
+      } else {
+        video.onloadedmetadata = () => {
+          video.play().then(done).catch(() => {
+            video.muted = true;
+            video.play().then(done).catch(fail);
+          });
+        };
+        video.onerror = fail;
+        setTimeout(() => fail(new Error("Timeout kamera")), 10000);
+      }
+    });
+
+    setFaceStatus("scanning");
+    setFaceMessage("Posisikan wajah di dalam lingkaran");
+    scheduleDetection();
+  };
+
   const openCameraModal = async () => {
     if (cameraStartingRef.current) return;
     cameraStartingRef.current = true;
 
-    // 📱 iOS PWA: getUserMedia TIDAK RELIABLE setelah hard reset (bug WebKit).
-    // Langsung buka kamera native via file input — 100% works, 0 delay.
+    // 📱 iOS PWA: hybrid approach
+    // 1) Coba getUserMedia dengan timeout singkat (2 detik)
+    //    - Jika berhasil → face detection + senyum auto-capture
+    //    - Jika timeout/hang → native camera + selfie verification
     if (isStandalonePwa) {
-      cameraStartingRef.current = false;
-      triggerNativeCamera();
-      return;
+      try { await navigator.mediaDevices.enumerateDevices(); } catch {}
+      try {
+        const stream = await getUserMediaWithTimeout({ video: true, audio: false }, 2000);
+        await startStreamCapture(stream);
+        cameraStartingRef.current = false;
+        return;
+      } catch {
+        // getUserMedia gagal/timeout di PWA → native camera
+        cameraStartingRef.current = false;
+        triggerNativeCamera();
+        return;
+      }
     }
 
     try {
       const stream = await getUserMediaWithFallback();
-
-      setPersistentError("");
-
-      streamRef.current = stream;
-      setCameraError("");
-      setPersistentError("");
-      setFaceStatus("loading");
-      setFaceMessage("Menyiapkan kamera...");
-      setCameraOpen(true);
-
-      let video = videoRef.current;
-      if (!video) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        video = videoRef.current;
-        if (!video) throw new Error("Video element tidak ter-render.");
-      }
-
-      video.srcObject = stream;
-
-      await new Promise((resolve, reject) => {
-        let resolved = false;
-        const done = () => { if (!resolved) { resolved = true; resolve(); } };
-        const fail = (err) => { if (!resolved) { resolved = true; reject(err); } };
-
-        if (video.readyState >= 2) {
-          video.play().then(done).catch(fail);
-        } else {
-          video.onloadedmetadata = () => {
-            video.play().then(done).catch(() => {
-              video.muted = true;
-              video.play().then(done).catch(fail);
-            });
-          };
-          video.onerror = fail;
-          setTimeout(() => fail(new Error("Timeout kamera")), 10000);
-        }
-      });
-
-      setFaceStatus("scanning");
-      setFaceMessage("Posisikan wajah di dalam lingkaran");
-      scheduleDetection();
+      await startStreamCapture(stream);
     } catch (err) {
       console.error("Camera error:", err);
       cleanupCamera();
