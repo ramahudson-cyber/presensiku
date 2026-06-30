@@ -205,7 +205,7 @@ export default function AttendancePage() {
 
     // ✅ Saat model selesai load & kamera sedang terbuka, mulai deteksi otomatis
     const modelsReadyCheck = setInterval(() => {
-      if (modelsReadyRef.current && cameraOpen && streamAlive()) {
+      if (modelsReadyRef.current && cameraStartingRef.current && streamAlive()) {
         setFaceStatus("scanning");
         setFaceMessage("Posisikan wajah di dalam lingkaran");
         scheduleDetection();
@@ -598,7 +598,7 @@ export default function AttendancePage() {
 
   const scheduleDetection = () => {
     if (detectionTimer) clearTimeout(detectionTimer);
-    if (!streamAlive() || !cameraOpen) return;
+    if (!streamAlive()) return;
     detectionTimer = setTimeout(async () => {
       const next = await runDetection();
       if (next && streamAlive()) scheduleDetection();
