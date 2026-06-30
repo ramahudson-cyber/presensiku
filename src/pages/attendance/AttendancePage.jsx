@@ -3,8 +3,9 @@ import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import {
   MapPin, Camera, Clock, CheckCircle2,
-  RefreshCw, Loader2, ShieldAlert, X, Sparkles, ShieldCheck
+  RefreshCw, Loader2, ShieldAlert, X, Sparkles, ShieldCheck, Navigation
 } from "lucide-react";
+import LocationMap from "../../components/LocationMap";
 import * as faceapi from "face-api.js";
 
 const PUSKESMAS_LOCATION = { latitude: -8.5699, longitude: 116.0770 };
@@ -824,30 +825,62 @@ export default function AttendancePage() {
           )}
         </div>
 
-        <div className={`rounded-2xl border p-4 backdrop-blur-sm ${
-          locationStatus === "valid" ? "bg-emerald-500/5 border-emerald-500/20" :
-          locationStatus === "invalid" ? "bg-red-500/5 border-red-500/20" :
-          "bg-white/5 border-white/10"
-        }`}>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-white flex items-center gap-2">
-              <MapPin size={16} className={locationStatus === "valid" ? "text-emerald-400" : "text-red-400"} />
-              Lokasi GPS
-            </span>
-            <button onClick={getLocation} className="text-xs text-violet-400 flex items-center gap-1">
-              <RefreshCw size={12} /> Refresh
+        <div className="rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 overflow-hidden">
+          <div className="flex items-center justify-between px-4 pt-4 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                locationStatus === "valid" ? "bg-emerald-500/20" :
+                locationStatus === "invalid" ? "bg-red-500/20" :
+                "bg-slate-500/20"
+              }`}>
+                <MapPin size={15} className={
+                  locationStatus === "valid" ? "text-emerald-400" :
+                  locationStatus === "invalid" ? "text-red-400" :
+                  "text-slate-400"
+                } />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">Lokasi</p>
+                <p className="text-[10px] text-slate-400">
+                  {locationStatus === "valid" ? `${distance}m dari Puskesmas` :
+                   locationStatus === "checking" ? "Mendeteksi..." :
+                   locationStatus === "error" ? "GPS tidak aktif" :
+                   "Di luar radius"}
+                </p>
+              </div>
+            </div>
+            <button onClick={getLocation}
+              className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-white flex items-center justify-center transition active:scale-90">
+              <RefreshCw size={14} className={locationStatus === "checking" ? "animate-spin" : ""} />
             </button>
           </div>
-          {isFakeGPS && (
-            <div className="mb-2 p-2 bg-red-500/10 rounded-lg flex items-center gap-2">
-              <ShieldAlert size={14} className="text-red-400" />
-              <p className="text-xs text-red-300 font-medium">Terdeteksi Fake GPS!</p>
+
+          {currentCoords && (
+            <div className="px-4 pb-4">
+              <LocationMap
+                userLocation={{ latitude: currentCoords.latitude, longitude: currentCoords.longitude }}
+                puskesmasLocation={PUSKESMAS_LOCATION}
+                distance={distance}
+                status={locationStatus}
+              />
             </div>
           )}
-          {locationStatus === "checking" && <p className="text-xs text-slate-400">Mendeteksi...</p>}
-          {locationStatus === "valid" && <p className="text-xs text-emerald-400">✅ Dalam radius ({distance}m)</p>}
-          {locationStatus === "invalid" && !isFakeGPS && <p className="text-xs text-red-400">❌ Di luar radius ({distance}m)</p>}
-          {locationStatus === "error" && <p className="text-xs text-red-400">GPS tidak aktif.</p>}
+
+          {!currentCoords && (
+            <div className="px-4 pb-4">
+              <div className="rounded-2xl bg-slate-800/50 border border-white/5 flex flex-col items-center justify-center" style={{ height: 200 }}>
+                <Loader2 size={24} className="animate-spin text-violet-400 mb-2" />
+                <p className="text-xs text-slate-400">Mendapatkan lokasi...</p>
+              </div>
+            </div>
+          )}
+
+          {isFakeGPS && (
+            <div className="mx-4 mb-4 p-3 bg-red-500/10 rounded-xl flex items-center gap-2.5 border border-red-500/20">
+              <ShieldAlert size={16} className="text-red-400 shrink-0" />
+              <p className="text-xs text-red-300 font-medium">Terdeteksi Fake GPS! Absen ditolak.</p>
+            </div>
+          )}
         </div>
 
         {!todayAttendance && modelsFailed && (
