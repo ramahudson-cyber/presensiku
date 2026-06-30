@@ -197,7 +197,7 @@ export default function SchedulingPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-violet-400/[0.12] backdrop-blur-sm border border-white/10 rounded-2xl p-3 md:p-5 overflow-x-auto">
+        <div className="bg-fuchsia-500/[0.12] backdrop-blur-sm border border-white/10 rounded-2xl p-3 md:p-5 overflow-x-auto">
           <div className="min-w-[620px]">
             <div className="grid grid-cols-7 gap-2 mb-2">
               {DAY_SHORT.map(d => (

@@ -113,7 +113,7 @@ export default function TabShift() {
           const shiftScheds = schedules.filter(s => s.shift_code === shift.code);
 
           return (
-            <div key={shift.code} className="bg-violet-400/[0.12] backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-violet-900/10 transition-all">
+            <div key={shift.code} className="bg-fuchsia-500/[0.12] backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-fuchsia-900/20 transition-all">
               {/* Card Header */}
               <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10 bg-gradient-to-r from-white/[0.03] to-transparent">
                 <div className={`w-10 h-10 rounded-xl ${meta?.bg || "bg-white/5"} flex items-center justify-center ring-1 ${meta?.ring || "ring-white/10"}`}>

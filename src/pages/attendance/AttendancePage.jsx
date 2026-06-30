@@ -818,7 +818,7 @@ export default function AttendancePage() {
           </div>
         </div>
 
-        <div className="bg-violet-400/20 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+        <div className="bg-fuchsia-500/20 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
           {todayAttendance ? (
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
@@ -872,7 +872,7 @@ export default function AttendancePage() {
           )}
         </div>
 
-        <div className="rounded-2xl bg-violet-400/20 backdrop-blur-sm border border-white/10 overflow-hidden">
+        <div className="rounded-2xl bg-fuchsia-500/20 backdrop-blur-sm border border-white/10 overflow-hidden">
           <div className="flex items-center justify-between px-4 pt-4 pb-3">
             <div className="flex items-center gap-2.5">
               <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${

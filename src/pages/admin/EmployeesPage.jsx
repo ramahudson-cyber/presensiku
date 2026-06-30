@@ -8,7 +8,7 @@ import {
 import ConfirmSheet from '../../components/ConfirmSheet';
 
 const cardBase =
-  'bg-violet-400/20 backdrop-blur-sm border border-white/10 rounded-2xl transition-all';
+  'bg-fuchsia-500/20 backdrop-blur-sm border border-white/10 rounded-2xl transition-all';
 
 const inputBase =
   'w-full px-3 py-2.5 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all';
