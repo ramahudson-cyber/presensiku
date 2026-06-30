@@ -9,7 +9,7 @@ import LocationMap from "../../components/LocationMap";
 import * as faceapi from "face-api.js";
 
 const PUSKESMAS_LOCATION = { latitude: -8.5699, longitude: 116.0770 };
-const RADIUS_METER = 50000; // TEST MODE — ubah ke 300 untuk produksi
+const RADIUS_METER = 999999; // TEST MODE — ubah ke 300 untuk produksi
 const MODEL_URL = "/models";
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -379,11 +379,11 @@ export default function AttendancePage() {
         lateMinutes = isLate ? totalWitaMinutes - shiftStartMinutes : 0;
         status = isLate ? "terlambat" : "hadir";
 
-        // ⛔ Blokir jika terlambat lebih dari 1 jam
-        if (lateMinutes > 60) {
+        // ⛔ Blokir jika terlambat lebih dari 10 jam (mode testing)
+        if (lateMinutes > 600) {
           setFaceStatus("idle");
           setFaceMessage("");
-          setCameraError("Anda terlambat " + lateMinutes + " menit (maksimal 1 jam). Tidak dapat absen. Hubungi admin.");
+          setCameraError("Anda terlambat " + lateMinutes + " menit (maksimal 10 jam). Tidak dapat absen. Hubungi admin.");
           setSavingAttendance(false);
           return false;
         }
