@@ -36,9 +36,9 @@ export default function EmployeeDashboard() {
   if (loading) {
     return (
       <div className="space-y-3">
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-5 h-20 animate-pulse"></div>
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 h-16 animate-pulse"></div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{[1,2,3,4].map(i => <div key={i} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-3 h-16 animate-pulse"></div>)}</div>
+        <div className="bg-violet-500/10 backdrop-blur-sm border border-white/10 rounded-2xl p-5 h-20 animate-pulse"></div>
+        <div className="bg-violet-500/10 backdrop-blur-sm border border-white/10 rounded-2xl p-4 h-16 animate-pulse"></div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{[1,2,3,4].map(i => <div key={i} className="bg-violet-500/10 backdrop-blur-sm border border-white/10 rounded-xl p-3 h-16 animate-pulse"></div>)}</div>
       </div>
     );
   }
@@ -50,7 +50,7 @@ export default function EmployeeDashboard() {
   return (
     <div className="space-y-3 animate-fade-in">
       {/* Hero - Glassmorphism Card */}
-      <div className="bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-lg shadow-violet-900/10">
+      <div className="bg-violet-500/[0.08] backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-lg shadow-violet-900/10">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">{dateStr}</p>
@@ -64,7 +64,7 @@ export default function EmployeeDashboard() {
 
       {/* Status */}
       <Link to="/employee/attendance" className="block">
-        <div className="bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-lg shadow-violet-900/10 flex items-center justify-between hover:bg-white/[0.06] transition">
+        <div className="bg-violet-500/[0.08] backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-lg shadow-violet-900/10 flex items-center justify-between hover:bg-white/[0.06] transition">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
               {todayAttendance ? <CheckCircle size={18} className="text-emerald-300" /> : <Calendar size={18} className="text-violet-300" />}
@@ -88,7 +88,7 @@ export default function EmployeeDashboard() {
             { label: "Sakit", value: stats.sakit, icon: AlertCircle, color: "text-orange-300" },
             { label: "Alpha", value: stats.alpha, icon: XCircle, color: "text-red-300" },
           ].map((s) => (
-            <div key={s.label} className="bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-xl p-3 text-center shadow-lg shadow-violet-900/10">
+            <div key={s.label} className="bg-violet-500/[0.08] backdrop-blur-md border border-white/10 rounded-xl p-3 text-center shadow-lg shadow-violet-900/10">
               <s.icon size={14} className={`mx-auto mb-1 ${s.color}`} />
               <p className="text-base font-bold text-white">{s.value}</p>
               <p className="text-[9px] text-slate-400">{s.label}</p>
@@ -100,7 +100,7 @@ export default function EmployeeDashboard() {
       {/* Pengumuman - Glassmorphism */}
       <div>
         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Pengumuman</p>
-        <div className="bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-lg shadow-violet-900/10">
+        <div className="bg-violet-500/[0.08] backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-lg shadow-violet-900/10">
           {announcements.length === 0 ? (
             <div className="text-center py-4">
               <Bell size={20} className="mx-auto text-slate-500 mb-1" />

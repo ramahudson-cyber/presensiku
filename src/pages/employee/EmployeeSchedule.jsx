@@ -147,7 +147,7 @@ export default function EmployeeSchedule() {
           </div>
         </div>
       ) : (
-        <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-3 md:p-5 overflow-x-auto">
+        <div className="bg-violet-500/[0.06] backdrop-blur-sm border border-white/10 rounded-2xl p-3 md:p-5 overflow-x-auto">
           <div className="min-w-[600px]">
             <div className="grid grid-cols-7 gap-2 mb-2">
               {DAY_SHORT.map(d => (
@@ -183,7 +183,7 @@ export default function EmployeeSchedule() {
                     {shiftInfo && (
                       <div className={`flex items-center gap-0.5 mt-0.5 ${shiftInfo.color}`}>
                         <shiftInfo.icon size={9} />
-                        <span className="text-[7px] font-bold tracking-wider">{shiftInfo.code}</span>
+                        <span className="text-[7px] font-bold tracking-wider">{shiftInfo.name}</span>
                       </div>
                     )}
                     {!shiftInfo && isWeekend && (

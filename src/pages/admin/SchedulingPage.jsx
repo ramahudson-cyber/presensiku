@@ -197,7 +197,7 @@ export default function SchedulingPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-3 md:p-5 overflow-x-auto">
+        <div className="bg-violet-500/[0.06] backdrop-blur-sm border border-white/10 rounded-2xl p-3 md:p-5 overflow-x-auto">
           <div className="min-w-[620px]">
             <div className="grid grid-cols-7 gap-2 mb-2">
               {DAY_SHORT.map(d => (
@@ -225,7 +225,7 @@ export default function SchedulingPage() {
                     {shiftInfo && (
                       <div className={`flex items-center gap-0.5 mt-0.5 ${shiftInfo.color}`}>
                         <shiftInfo.icon size={9} />
-                        <span className="text-[7px] font-bold tracking-wider">{shiftInfo.code}</span>
+                        <span className="text-[7px] font-bold tracking-wider">{shiftInfo.name}</span>
                       </div>
                     )}
                     <div className={`absolute inset-0 rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100 bg-gradient-to-t from-white/[0.06] to-transparent pointer-events-none`} />
@@ -294,7 +294,7 @@ export default function SchedulingPage() {
         <div className="w-6 h-6 rounded-lg bg-sky-500/10 flex items-center justify-center shrink-0">
           <UserCheck size={13} className="text-sky-400" />
         </div>
-        <p>Klik tanggal untuk atur shift. Gunakan <strong className="text-sky-300 font-semibold">Isi Cepat</strong> untuk批量, <strong className="text-sky-300 font-semibold">Upload</strong> via Excel, atau <strong className="text-sky-300 font-semibold">Copy Bulan Lalu</strong> untuk duplikasi.</p>
+        <p>Klik tanggal untuk atur shift. Gunakan <strong className="text-sky-300 font-semibold">Isi Cepat</strong> untuk mengisi banyak jadwal sekaligus, <strong className="text-sky-300 font-semibold">Upload</strong> via Excel, atau <strong className="text-sky-300 font-semibold">Copy Bulan Lalu</strong> untuk duplikasi.</p>
       </div>
     </div>
   );

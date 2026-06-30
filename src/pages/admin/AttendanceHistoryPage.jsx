@@ -36,7 +36,7 @@ const getWitaDateString = (date = new Date()) => {
 };
 
 const cardBase =
-  "bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl transition-all";
+  "bg-violet-500/10 backdrop-blur-sm border border-white/10 rounded-2xl transition-all";
 
 const inputBase =
   "px-3 py-2 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all";
@@ -191,7 +191,7 @@ export default function AttendanceHistoryPage() {
 
     if (error || !data) return;
 
-    const header = ["Tanggal", "Nama", "Departemen", "Clock In", "Clock Out", "Status", "Terlambat (menit)"];
+    const header = ["Tanggal", "Nama", "Departemen", "Absen Masuk", "Absen Pulang", "Status", "Terlambat (menit)"];
     const rows = data.map(r => [
       r.date,
       r.profiles?.full_name ?? "-",
@@ -330,8 +330,8 @@ export default function AttendanceHistoryPage() {
                     <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Tanggal</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Nama</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Departemen</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Clock In</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Clock Out</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Absen Masuk</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Absen Pulang</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Status</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Terlambat</th>
                   </tr>
