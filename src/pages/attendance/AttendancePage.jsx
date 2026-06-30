@@ -80,6 +80,7 @@ export default function AttendancePage() {
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
   const cameraStartingRef = useRef(false);
   const fileInputRef = useRef(null);
+  const [showNativeFallback, setShowNativeFallback] = useState(false);
 
   // ============================================================
   // ⏰ SYNC SERVER TIME — anti-cheat timestamp
@@ -584,14 +585,6 @@ export default function AttendancePage() {
     }
   };
 
-  const triggerNativeCamera = () => {
-    cleanupCamera();
-    setCameraOpen(true);
-    setFaceStatus("loading");
-    setFaceMessage("Membuka kamera...");
-    setTimeout(() => fileInputRef.current?.click(), 100);
-  };
-
   const scheduleDetection = () => {
     if (detectionTimer) clearTimeout(detectionTimer);
     if (!streamAlive() || !cameraOpen) return;
@@ -676,7 +669,7 @@ export default function AttendancePage() {
     // 2) Tunggu video element benar-benar di DOM
     // 3) Baru panggil getUserMedia (stream langsung di-attach)
     //    - Jika berhasil → face detection + senyum auto-capture
-    //    - Jika timeout/hang → native camera + selfie verification
+    //    - Jika timeout/hang → retry 1x, lalu fallback ke visible native button
     if (isStandalonePwa) {
       try { await navigator.mediaDevices.enumerateDevices(); } catch {}
       setCameraOpen(true);
@@ -684,16 +677,26 @@ export default function AttendancePage() {
       setFaceMessage("Menyiapkan kamera...");
       try {
         await waitForVideoElement(videoRef);
-        const stream = await getUserMediaWithTimeout({ video: true, audio: false }, 2000);
+        const stream = await getUserMediaWithTimeout({ video: true, audio: false }, 5000);
         await startStreamCapture(stream);
         cameraStartingRef.current = false;
         return;
       } catch {
-        // getUserMedia gagal/timeout di PWA → native camera
-        setCameraOpen(false);
-        cameraStartingRef.current = false;
-        triggerNativeCamera();
-        return;
+        // Retry 1x — iOS PWA kadang butuh 2x percobaan setelah hard reset
+        try {
+          const stream = await getUserMediaWithTimeout({ video: true, audio: false }, 5000);
+          await startStreamCapture(stream);
+          cameraStartingRef.current = false;
+          return;
+        } catch {
+          // getUserMedia gagal/timeout di PWA → visible native camera button
+          cleanupCamera();
+          setShowNativeFallback(true);
+          setFaceStatus("idle");
+          setFaceMessage("");
+          cameraStartingRef.current = false;
+          return;
+        }
       }
     }
 
@@ -747,6 +750,7 @@ export default function AttendancePage() {
     setFaceStatus("idle");
     setFaceMessage("");
     setCameraError("");
+    setShowNativeFallback(false);
   };
 
   const timeStr = displayTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -987,9 +991,21 @@ export default function AttendancePage() {
               </button>
             )}
           </div>
-        </div>
 
-        <input ref={fileInputRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handleNativePhoto} />
+          {showNativeFallback && (
+            <div className="relative w-full max-w-md p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-center">
+              <p className="text-xs text-amber-200 mb-3">Kamera tidak merespon. Gunakan mode foto manual:</p>
+              <label className="block w-full py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-2xl font-semibold text-center cursor-pointer active:scale-95 transition">
+                <Camera size={20} className="inline mr-2" /> Ambil Foto Manual
+                <input ref={fileInputRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handleNativePhoto} />
+              </label>
+              <button onClick={() => { setShowNativeFallback(false); closeCameraModal(); }}
+                className="mt-3 w-full py-2.5 rounded-xl bg-white/10 text-white text-xs font-medium">
+                Tutup
+              </button>
+            </div>
+          )}
+        </div>
     </>
   );
 }
