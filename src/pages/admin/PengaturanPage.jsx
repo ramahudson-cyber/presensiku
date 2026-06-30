@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import {
   MapPin, Clock, Users, FileText, Save, RefreshCw,
-  Plus, Pencil, Trash2, X, Search, Key, Shield,
+  Plus, Pencil, Trash2, Search, Key, Shield,
   CheckCircle2, AlertTriangle, Activity, Eye, Smartphone,
   Mail, Clock as ClockIcon, XCircle, Inbox, MapPinned,
   Briefcase, User, IdCard, Calendar, Bell, Sun,
@@ -274,114 +274,102 @@ function TabProfilPuskesmas() {
         </button>
       </div>
 
-      {showForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-[#1a0a35] border border-white/10 rounded-2xl shadow-2xl shadow-violet-900/40 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-5 md:p-6 border-b border-white/10 sticky top-0 bg-[#1a0a35]/95 backdrop-blur-md z-10">
-              <h3 className="text-lg font-bold text-white">
-                {editingId ? "Edit Lokasi" : "Tambah Lokasi Baru"}
-              </h3>
-              <button onClick={resetForm} className="p-1.5 rounded-lg text-slate-200 hover:text-white hover:bg-white/5 transition-all">
-                <X size={20} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-5 md:p-6 space-y-4">
-              <div>
-                <label className={labelBase}>
-                  <MapPin size={11} className="inline mr-1" />
-                  Nama Lokasi *
-                </label>
-                <input
-                  type="text" required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Contoh: Puskesmas Ampenan"
-                  className={inputBase}
-                />
-              </div>
-
-              <div>
-                <label className={labelBase}>
-                  <MapPinned size={11} className="inline mr-1" />
-                  Alamat
-                </label>
-                <input
-                  type="text"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  placeholder="Jl. ..."
-                  className={inputBase}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className={labelBase}>Latitude *</label>
-                  <input
-                    type="number" step="any" required
-                    value={formData.latitude}
-                    onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
-                    placeholder="-8.5697"
-                    className={`${inputBase} font-mono`}
-                  />
-                </div>
-                <div>
-                  <label className={labelBase}>Longitude *</label>
-                  <input
-                    type="number" step="any" required
-                    value={formData.longitude}
-                    onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
-                    placeholder="116.0821"
-                    className={`${inputBase} font-mono`}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className={labelBase}>
-                  <MapPin size={11} className="inline mr-1" />
-                  Radius Absensi (meter) *
-                </label>
-                <input
-                  type="number" required min="10" max="2000"
-                  value={formData.radius_meter}
-                  onChange={(e) => setFormData({ ...formData, radius_meter: e.target.value })}
-                  className={inputBase}
-                />
-              </div>
-
-              <label className="flex items-center gap-3 cursor-pointer p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
-                <input
-                  type="checkbox"
-                  checked={formData.is_active}
-                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                  className="w-4 h-4 rounded accent-violet-500"
-                />
-                <span className="text-sm text-violet-100/90">
-                  Jadikan lokasi aktif (untuk absensi)
-                </span>
-              </label>
-
-              <div className="flex gap-3 pt-2 sticky bottom-0 bg-[#1a0a35]/95 backdrop-blur-md -mx-5 md:-mx-6 px-5 md:px-6 pb-2 -mb-2">
-                <button
-                  type="button" onClick={resetForm}
-                  className="flex-1 py-2.5 border border-white/10 text-violet-200/80 rounded-xl text-sm font-medium hover:bg-white/5 transition-all"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit" disabled={saving}
-                  className="flex-1 py-2.5 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  {saving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
-                  {editingId ? "Update" : "Simpan"}
-                </button>
-              </div>
-            </form>
+      <BottomSheet open={showForm} onClose={resetForm}
+        title={editingId ? "Edit Lokasi" : "Tambah Lokasi Baru"}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className={labelBase}>
+              <MapPin size={11} className="inline mr-1" />
+              Nama Lokasi *
+            </label>
+            <input
+              type="text" required
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Contoh: Puskesmas Ampenan"
+              className={inputBase}
+            />
           </div>
-        </div>
-      )}
+
+          <div>
+            <label className={labelBase}>
+              <MapPinned size={11} className="inline mr-1" />
+              Alamat
+            </label>
+            <input
+              type="text"
+              value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              placeholder="Jl. ..."
+              className={inputBase}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className={labelBase}>Latitude *</label>
+              <input
+                type="number" step="any" required
+                value={formData.latitude}
+                onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                placeholder="-8.5697"
+                className={`${inputBase} font-mono`}
+              />
+            </div>
+            <div>
+              <label className={labelBase}>Longitude *</label>
+              <input
+                type="number" step="any" required
+                value={formData.longitude}
+                onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                placeholder="116.0821"
+                className={`${inputBase} font-mono`}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className={labelBase}>
+              <MapPin size={11} className="inline mr-1" />
+              Radius Absensi (meter) *
+            </label>
+            <input
+              type="number" required min="10" max="2000"
+              value={formData.radius_meter}
+              onChange={(e) => setFormData({ ...formData, radius_meter: e.target.value })}
+              className={inputBase}
+            />
+          </div>
+
+          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
+            <input
+              type="checkbox"
+              checked={formData.is_active}
+              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+              className="w-4 h-4 rounded accent-violet-500"
+            />
+            <span className="text-sm text-violet-100/90">
+              Jadikan lokasi aktif (untuk absensi)
+            </span>
+          </label>
+
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button" onClick={resetForm}
+              className="flex-1 py-2.5 border border-white/10 text-violet-200/80 rounded-xl text-sm font-medium hover:bg-white/5 transition-all"
+            >
+              Batal
+            </button>
+            <button
+              type="submit" disabled={saving}
+              className="flex-1 py-2.5 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {saving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
+              {editingId ? "Update" : "Simpan"}
+            </button>
+          </div>
+        </form>
+      </BottomSheet>
 
       <div className={`${cardBase} overflow-hidden`}>
         {locations.length === 0 ? (
@@ -658,6 +646,7 @@ function TabManajemenUser() {
   const [resettingId, setResettingId] = useState(null);
   const [resettingDeviceId, setResettingDeviceId] = useState(null);
   const [expandedUser, setExpandedUser] = useState(null);
+  const [deviceSheetUser, setDeviceSheetUser] = useState(null);
   const [userDevices, setUserDevices] = useState({});
   const [confirmResetDevice, setConfirmResetDevice] = useState(null);
 
@@ -706,6 +695,13 @@ function TabManajemenUser() {
       if (!userDevices[userId]) {
         fetchUserDevices(userId);
       }
+    }
+  };
+
+  const openDeviceSheet = (user) => {
+    setDeviceSheetUser(user);
+    if (!userDevices[user.id]) {
+      fetchUserDevices(user.id);
     }
   };
 
@@ -860,7 +856,7 @@ function TabManajemenUser() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
                         <button
-                          onClick={() => toggleExpand(u.id)}
+                          onClick={() => { if (window.innerWidth < 768) openDeviceSheet(u); else toggleExpand(u.id); }}
                           className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarGradient(u.full_name)} flex items-center justify-center text-white text-xs font-bold shadow-lg shrink-0 hover:scale-110 transition-all`}
                         >
                           {initials(u.full_name)}
@@ -888,7 +884,7 @@ function TabManajemenUser() {
                           Password
                         </button>
                         <button
-                          onClick={() => toggleExpand(u.id)}
+                          onClick={() => { if (window.innerWidth < 768) openDeviceSheet(u); else toggleExpand(u.id); }}
                           title="Lihat & kelola device"
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-sky-500/15 text-sky-300 hover:bg-sky-500/25 rounded-lg text-xs font-medium transition-all"
                         >
@@ -982,6 +978,66 @@ function TabManajemenUser() {
           </div>
         )}
       </div>
+
+      <BottomSheet open={!!deviceSheetUser} onClose={() => setDeviceSheetUser(null)}
+        title="Device Terdaftar" subtitle={deviceSheetUser?.full_name}>
+        <div className="space-y-3">
+          <button
+            onClick={() => handleResetDevice(deviceSheetUser)}
+            disabled={resettingDeviceId === deviceSheetUser?.id}
+            className="w-full py-2.5 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 rounded-xl text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {resettingDeviceId === deviceSheetUser?.id ? <RefreshCw size={14} className="animate-spin" /> : <Trash2 size={14} />}
+            Reset Semua Device
+          </button>
+
+          {!deviceSheetUser ? null : !userDevices[deviceSheetUser.id] ? (
+            <div className="text-center py-10 text-slate-300 text-sm flex flex-col items-center gap-2">
+              <RefreshCw size={24} className="animate-spin" />
+              Memuat device...
+            </div>
+          ) : userDevices[deviceSheetUser.id].length === 0 ? (
+            <div className="text-center py-10 text-slate-400 text-sm flex flex-col items-center gap-2">
+              <Smartphone size={36} className="opacity-40" />
+              Belum ada device terdaftar
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {userDevices[deviceSheetUser.id].map((device) => (
+                <div key={device.id}
+                  className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10 gap-3"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`p-2 rounded-lg ${device.is_trusted ? "bg-emerald-500/15" : "bg-rose-500/15"}`}>
+                      <Smartphone size={16} className={device.is_trusted ? "text-emerald-300" : "text-rose-300"} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-white truncate">{device.device_name || "Unknown Device"}</p>
+                      <p className="text-xs text-slate-300 font-mono mt-0.5 truncate">ID: {device.visitor_id?.substring(0, 20)}…</p>
+                      <p className="text-xs text-slate-400 mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {device.is_trusted ? (
+                      <span className="text-xs px-2 py-1 bg-emerald-500/15 text-emerald-300 rounded-full font-medium">Trusted</span>
+                    ) : (
+                      <span className="text-xs px-2 py-1 bg-rose-500/15 text-rose-300 rounded-full font-medium">Blocked</span>
+                    )}
+                    <button
+                      onClick={() => handleResetDevice(deviceSheetUser, device.visitor_id)}
+                      disabled={resettingDeviceId === device.visitor_id}
+                      className="p-1.5 text-rose-300 hover:bg-rose-500/15 rounded-lg transition-all disabled:opacity-50"
+                      title="Hapus device ini"
+                    >
+                      {resettingDeviceId === device.visitor_id ? <RefreshCw size={13} className="animate-spin" /> : <Trash2 size={13} />}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </BottomSheet>
 
       <ConfirmSheet open={!!confirmResetDevice} onClose={() => setConfirmResetDevice(null)}
         title="Reset Device"
@@ -1182,64 +1238,51 @@ function RejectReasonModal({ request, onClose, onConfirm, processing }) {
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-[#1a0a35] border border-white/10 rounded-2xl shadow-2xl shadow-violet-900/40 w-full max-w-md">
-        <div className="flex items-center justify-between p-5 md:p-6 border-b border-white/10">
-          <h3 className="text-lg font-bold text-white">Tolak Request Device</h3>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-slate-200 hover:text-white hover:bg-white/5 transition-all"><X size={20} /></button>
-        </div>
+    <BottomSheet open={!!request} onClose={onClose}
+      title="Tolak Request Device" subtitle={request?.user_name}>
+      <p className="text-sm text-violet-200/70 mb-4">
+        Tolak request dari <strong className="text-white">{request?.user_name}</strong>?
+      </p>
 
-        <div className="p-5 md:p-6 space-y-3">
-          <p className="text-sm text-violet-200/70">
-            Tolak request dari <strong className="text-white">{request.user_name}</strong>?
-          </p>
-
-          <div className="space-y-2">
-            {reasons.map((r) => (
-              <label
-                key={r}
-                className="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg hover:bg-white/5 transition-all"
-              >
-                <input
-                  type="radio"
-                  name="reason"
-                  value={r}
-                  checked={reason === r}
-                  onChange={(e) => setReason(e.target.value)}
-                  className="w-4 h-4 accent-rose-500"
-                />
-                <span className="text-sm text-violet-100/90">{r}</span>
-              </label>
-            ))}
-          </div>
-
-          <textarea
-            value={reason === "Lainnya (isi di bawah)" ? "" : reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="Alasan penolakan (opsional)..."
-            rows={2}
-            className={`${inputBase} resize-none`}
-          />
-        </div>
-
-        <div className="flex gap-3 p-5 md:p-6 border-t border-white/10">
-          <button
-            onClick={onClose}
-            className="flex-1 py-2.5 border border-white/10 text-violet-200/80 rounded-xl text-sm font-medium hover:bg-white/5 transition-all"
+      <div className="space-y-2 mb-4">
+        {reasons.map((r) => (
+          <label
+            key={r}
+            className="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg hover:bg-white/5 transition-all"
           >
-            Batal
-          </button>
-          <button
-            onClick={() => onConfirm(reason)}
-            disabled={processing}
-            className="flex-1 py-2.5 bg-gradient-to-r from-rose-600 to-pink-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-rose-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {processing ? <RefreshCw size={14} className="animate-spin" /> : <XCircle size={14} />}
-            Tolak Request
-          </button>
-        </div>
+            <input
+              type="radio"
+              name="reason"
+              value={r}
+              checked={reason === r}
+              onChange={(e) => setReason(e.target.value)}
+              className="w-4 h-4 accent-rose-500"
+            />
+            <span className="text-sm text-violet-100/90">{r}</span>
+          </label>
+        ))}
       </div>
-    </div>
+
+      <textarea
+        value={reason === "Lainnya (isi di bawah)" ? "" : reason}
+        onChange={(e) => setReason(e.target.value)}
+        placeholder="Alasan penolakan (opsional)..."
+        rows={2}
+        className={`${inputBase} resize-none mb-4`}
+      />
+
+      <div className="flex gap-3">
+        <button onClick={onClose}
+          className="flex-1 py-2.5 border border-white/10 text-violet-200/80 rounded-xl text-sm font-medium hover:bg-white/5 transition-all">
+          Batal
+        </button>
+        <button onClick={() => onConfirm(reason)} disabled={processing}
+          className="flex-1 py-2.5 bg-gradient-to-r from-rose-600 to-pink-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-rose-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+          {processing ? <RefreshCw size={14} className="animate-spin" /> : <XCircle size={14} />}
+          Tolak Request
+        </button>
+      </div>
+    </BottomSheet>
   );
 }
 
