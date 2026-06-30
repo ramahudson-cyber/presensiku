@@ -23,7 +23,6 @@ export default defineConfig({
         orientation: 'portrait',
         background_color: '#5B3A8E',
         theme_color: '#5B3A8E',
-        permissions: ['camera'],
         icons: [
           {
             src: '/icon-192.png',

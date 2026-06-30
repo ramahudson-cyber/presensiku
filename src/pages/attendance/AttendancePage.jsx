@@ -211,6 +211,13 @@ export default function AttendancePage() {
     getDeviceVisitorId();
     // 🔥 Warm-up media devices — iOS PWA butuh ini agar getUserMedia() cepat
     try { navigator.mediaDevices.enumerateDevices(); } catch {}
+    // 🔥 Pre-warm getUserMedia sekali di awal agar izin kamera tercache di iOS PWA
+    (async () => {
+      try {
+        const warmStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        warmStream.getTracks().forEach(t => t.stop());
+      } catch { /* pre-warm tidak critical */ }
+    })();
     return () => cleanupCamera();
   }, []);
 
@@ -438,6 +445,19 @@ export default function AttendancePage() {
     return streamRef.current && streamRef.current.getVideoTracks().some(t => t.readyState === "live");
   };
 
+  // ⏱ Tunggu video element benar-benar ter-render di DOM
+  const waitForVideoElement = (ref, timeout = 3000) => {
+    return new Promise((resolve, reject) => {
+      const start = Date.now();
+      const check = () => {
+        if (ref.current && document.contains(ref.current)) return resolve(ref.current);
+        if (Date.now() - start > timeout) return reject(new Error("Timeout video element"));
+        requestAnimationFrame(check);
+      };
+      check();
+    });
+  };
+
   // ⏱ Throttle detection — jangan overload Safari
   const DETECTION_INTERVAL = 300;
   let detectionTimer = null;
@@ -618,9 +638,7 @@ export default function AttendancePage() {
 
     let video = videoRef.current;
     if (!video) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-      video = videoRef.current;
-      if (!video) throw new Error("Video element tidak ter-render.");
+      video = await waitForVideoElement(videoRef);
     }
 
     video.srcObject = stream;
@@ -654,18 +672,25 @@ export default function AttendancePage() {
     cameraStartingRef.current = true;
 
     // 📱 iOS PWA: hybrid approach
-    // 1) Coba getUserMedia dengan timeout singkat (2 detik)
+    // 1) Render video element DULU (set cameraOpen = true)
+    // 2) Tunggu video element benar-benar di DOM
+    // 3) Baru panggil getUserMedia (stream langsung di-attach)
     //    - Jika berhasil → face detection + senyum auto-capture
     //    - Jika timeout/hang → native camera + selfie verification
     if (isStandalonePwa) {
       try { await navigator.mediaDevices.enumerateDevices(); } catch {}
+      setCameraOpen(true);
+      setFaceStatus("loading");
+      setFaceMessage("Menyiapkan kamera...");
       try {
+        await waitForVideoElement(videoRef);
         const stream = await getUserMediaWithTimeout({ video: true, audio: false }, 2000);
         await startStreamCapture(stream);
         cameraStartingRef.current = false;
         return;
       } catch {
         // getUserMedia gagal/timeout di PWA → native camera
+        setCameraOpen(false);
         cameraStartingRef.current = false;
         triggerNativeCamera();
         return;
@@ -876,8 +901,7 @@ export default function AttendancePage() {
         )}
       </div>
 
-      {cameraOpen && (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black p-4 animate-fade-in">
+      <div className={`fixed inset-0 z-[100] flex-col items-center justify-center bg-black p-4 ${cameraOpen ? 'flex animate-fade-in' : 'hidden'}`}>
           <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-violet-900/40 via-violet-900/10 to-transparent pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-purple-900/30 to-transparent pointer-events-none"></div>
 
@@ -964,9 +988,9 @@ export default function AttendancePage() {
             )}
           </div>
         </div>
-      )}
 
-      <input ref={fileInputRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handleNativePhoto} />
+        <input ref={fileInputRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handleNativePhoto} />
     </>
   );
 }
+
