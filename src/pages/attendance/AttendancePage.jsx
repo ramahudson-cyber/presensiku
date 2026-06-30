@@ -454,8 +454,8 @@ export default function AttendancePage() {
     });
   };
 
-  // ⏱ Throttle detection — jangan overload Safari
-  const DETECTION_INTERVAL = 300;
+  // ⏱ Deteksi cepat — interval kecil untuk respons senyum real-time
+  const DETECTION_INTERVAL = 150;
   let detectionTimer = null;
 
   const capturePhoto = async () => {
@@ -505,7 +505,7 @@ export default function AttendancePage() {
     try {
       const detection = await faceapi.detectSingleFace(
         videoRef.current,
-        new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.3 })
+        new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.2 })
       ).withFaceLandmarks().withFaceExpressions();
 
       if (!detection) {
@@ -519,7 +519,7 @@ export default function AttendancePage() {
       const vh = videoRef.current.videoHeight;
       const margin = 20;
       const isCropped = box.x < margin || box.y < margin || box.x + box.width > vw - margin || box.y + box.height > vh - margin;
-      const isTooSmall = box.width < vw * 0.35 || box.height < vh * 0.35;
+      const isTooSmall = box.width < vw * 0.25 || box.height < vh * 0.25;
 
       if (isCropped || isTooSmall) {
         setFaceStatus("scanning");
@@ -527,7 +527,7 @@ export default function AttendancePage() {
         return true;
       }
 
-      if (detection.expressions.happy > 0.7) {
+      if (detection.expressions.happy > 0.4) {
         await capturePhoto();
         return false;
       }
