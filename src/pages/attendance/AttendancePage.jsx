@@ -505,7 +505,7 @@ export default function AttendancePage() {
     try {
       const detection = await faceapi.detectSingleFace(
         videoRef.current,
-        new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.2 })
+        new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.3 })
       ).withFaceLandmarks().withFaceExpressions();
 
       if (!detection) {
@@ -648,6 +648,20 @@ export default function AttendancePage() {
       video.addEventListener("loadedmetadata", cb, { once: true });
       setTimeout(() => { if (!done) { done = true; resolve(); } }, 3000);
     });
+
+    // Tunggu video punya dimensi (videoWidth > 0) max 2 detik
+    if (!video.videoWidth || !video.videoHeight) {
+      await new Promise((resolve) => {
+        let done = false;
+        const check = () => {
+          if (video.videoWidth > 0 && video.videoHeight > 0) { done = true; resolve(); return; }
+          if (done) return;
+          requestAnimationFrame(check);
+        };
+        setTimeout(() => { if (!done) { done = true; resolve(); } }, 2000);
+        requestAnimationFrame(check);
+      });
+    }
 
     setFaceStatus("scanning");
     setFaceMessage("Posisikan wajah di dalam lingkaran");
