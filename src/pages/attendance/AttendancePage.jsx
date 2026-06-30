@@ -896,106 +896,110 @@ export default function AttendancePage() {
         )}
       </div>
 
-      <div className={`fixed inset-0 z-[100] flex-col items-center justify-center bg-black p-4 ${cameraOpen ? 'flex animate-fade-in' : 'hidden'}`}>
+      <div className={`fixed inset-0 z-[100] flex-col bg-black ${cameraOpen ? 'flex animate-fade-in' : 'hidden'}`}>
           <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-violet-900/40 via-violet-900/10 to-transparent pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-purple-900/30 to-transparent pointer-events-none"></div>
 
-          <div className="relative w-full max-w-md flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-700 rounded-xl flex items-center justify-center shadow-lg">
-                <Sparkles size={18} className="text-white" />
-              </div>
-              <div>
-                <h2 className="text-white font-bold text-base">Verifikasi Wajah</h2>
-                <p className="text-slate-200 text-[11px]">Posisikan wajah & senyum</p>
-              </div>
-            </div>
-            <button onClick={closeCameraModal} className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 text-white flex items-center justify-center transition active:scale-95">
-              <X size={20} />
-            </button>
-          </div>
-
-          {cameraError && (
-            <div className="relative w-full max-w-md mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-2xl">
-              <p className="text-xs text-red-300 text-center break-words whitespace-pre-line">{cameraError}</p>
-              <div className="flex gap-2 mt-3">
-                <button onClick={closeCameraModal}
-                  className="flex-1 py-2.5 rounded-xl bg-white/10 text-white text-xs font-medium">Tutup</button>
-                <button onClick={openCameraModal}
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-700 text-white text-xs font-medium shadow-lg">Coba Lagi</button>
-              </div>
-            </div>
-          )}
-
-          <div className="relative w-full max-w-md aspect-square">
-            <div className="absolute -inset-4 bg-gradient-to-br from-violet-600/20 to-purple-800/20 rounded-[2rem] blur-2xl"></div>
-            <div className="relative w-full h-full rounded-[2rem] overflow-hidden bg-slate-900 shadow-2xl border border-white/10">
-              <video ref={videoRef} playsInline webkit-playsinline autoPlay muted className="w-full h-full object-cover" style={{ transform: "scaleX(-1) translate3d(0,0,0)" }} />
-              <canvas ref={canvasRef} className="hidden" />
-
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className={`w-3/5 h-4/5 border-4 rounded-[50%] transition-all duration-300 ${
-                  faceStatus === "success" ? "border-violet-400 shadow-[0_0_50px_rgba(167,139,250,0.6)]" :
-                  faceStatus === "smiling" ? "border-violet-300 shadow-[0_0_40px_rgba(196,181,253,0.4)]" :
-                  faceStatus === "scanning" ? "border-violet-200/60" : "border-violet-300/30"
-                }`} style={{ borderStyle: faceStatus === "scanning" || faceStatus === "idle" ? "dashed" : "solid" }}></div>
-              </div>
-
-              <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-white/40 rounded-tl-lg"></div>
-              <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-white/40 rounded-tr-lg"></div>
-              <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-white/40 rounded-bl-lg"></div>
-              <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-white/40 rounded-br-lg"></div>
-
-              {(faceStatus === "loading" || faceStatus === "idle") && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
-                  <Loader2 size={36} className="animate-spin text-violet-400 mb-3" />
-                  <p className="text-white text-sm font-medium">{faceMessage || "Menyiapkan..."}</p>
-                  <p className="text-slate-300 text-[10px] mt-1">Mohon tunggu sebentar</p>
-                </div>
-              )}
-
-              {faceStatus === "success" && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-violet-600/30 backdrop-blur-sm">
-                  <div className="w-24 h-24 bg-gradient-to-br from-violet-500 to-purple-700 rounded-full flex items-center justify-center shadow-2xl shadow-violet-900/50 mb-4">
-                    <CheckCircle2 size={48} className="text-white" />
+          <div className="flex-1 overflow-y-auto px-4 pt-[env(safe-area-inset-top,16px)] pb-[env(safe-area-inset-bottom,16px)]">
+            <div className="max-w-md mx-auto flex flex-col items-center min-h-full">
+              <div className="relative w-full flex items-center justify-between mb-3 sm:mb-5 mt-2">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-violet-500 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shrink-0">
+                    <Sparkles size={16} className="sm:size-[18] text-white" />
                   </div>
-                  <p className="text-white font-bold text-lg">Absensi Berhasil!</p>
-                  <p className="text-violet-200 text-xs mt-1">{faceMessage}</p>
+                  <div className="min-w-0">
+                    <h2 className="text-white font-bold text-sm sm:text-base truncate">Verifikasi Wajah</h2>
+                    <p className="text-slate-200 text-[10px] sm:text-[11px] truncate">Posisikan wajah & senyum</p>
+                  </div>
+                </div>
+                <button onClick={closeCameraModal} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 hover:bg-white/10 text-white flex items-center justify-center transition active:scale-95 shrink-0">
+                  <X size={18} className="sm:size-[20]" />
+                </button>
+              </div>
+
+              {cameraError && (
+                <div className="relative w-full mb-3 sm:mb-4 p-3 sm:p-4 bg-red-500/10 border border-red-500/30 rounded-2xl">
+                  <p className="text-[11px] sm:text-xs text-red-300 text-center break-words whitespace-pre-line">{cameraError}</p>
+                  <div className="flex gap-2 mt-2 sm:mt-3">
+                    <button onClick={closeCameraModal}
+                      className="flex-1 py-2 sm:py-2.5 rounded-xl bg-white/10 text-white text-[11px] sm:text-xs font-medium">Tutup</button>
+                    <button onClick={openCameraModal}
+                      className="flex-1 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-700 text-white text-[11px] sm:text-xs font-medium shadow-lg">Coba Lagi</button>
+                  </div>
+                </div>
+              )}
+
+              <div className="relative w-full max-w-md aspect-square shrink-0">
+                <div className="absolute -inset-3 sm:-inset-4 bg-gradient-to-br from-violet-600/20 to-purple-800/20 rounded-[1.5rem] sm:rounded-[2rem] blur-2xl"></div>
+                <div className="relative w-full h-full rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden bg-slate-900 shadow-2xl border border-white/10">
+                  <video ref={videoRef} playsInline webkit-playsinline autoPlay muted className="w-full h-full object-cover" style={{ transform: "scaleX(-1) translate3d(0,0,0)" }} />
+                  <canvas ref={canvasRef} className="hidden" />
+
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className={`w-3/5 h-4/5 border-4 rounded-[50%] transition-all duration-300 ${
+                      faceStatus === "success" ? "border-violet-400 shadow-[0_0_50px_rgba(167,139,250,0.6)]" :
+                      faceStatus === "smiling" ? "border-violet-300 shadow-[0_0_40px_rgba(196,181,253,0.4)]" :
+                      faceStatus === "scanning" ? "border-violet-200/60" : "border-violet-300/30"
+                    }`} style={{ borderStyle: faceStatus === "scanning" || faceStatus === "idle" ? "dashed" : "solid" }}></div>
+                  </div>
+
+                  <div className="absolute top-3 sm:top-4 left-3 sm:left-4 w-5 h-5 sm:w-6 sm:h-6 border-l-2 border-t-2 border-white/40 rounded-tl-lg"></div>
+                  <div className="absolute top-3 sm:top-4 right-3 sm:right-4 w-5 h-5 sm:w-6 sm:h-6 border-r-2 border-t-2 border-white/40 rounded-tr-lg"></div>
+                  <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 w-5 h-5 sm:w-6 sm:h-6 border-l-2 border-b-2 border-white/40 rounded-bl-lg"></div>
+                  <div className="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 w-5 h-5 sm:w-6 sm:h-6 border-r-2 border-b-2 border-white/40 rounded-br-lg"></div>
+
+                  {(faceStatus === "loading" || faceStatus === "idle") && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
+                      <Loader2 size={28} className="sm:size-[36] animate-spin text-violet-400 mb-2 sm:mb-3" />
+                      <p className="text-white text-xs sm:text-sm font-medium px-4 text-center">{faceMessage || "Menyiapkan..."}</p>
+                      <p className="text-slate-300 text-[9px] sm:text-[10px] mt-1">Mohon tunggu sebentar</p>
+                    </div>
+                  )}
+
+                  {faceStatus === "success" && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-violet-600/30 backdrop-blur-sm">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-violet-500 to-purple-700 rounded-full flex items-center justify-center shadow-2xl shadow-violet-900/50 mb-3 sm:mb-4">
+                        <CheckCircle2 size={40} className="sm:size-[48] text-white" />
+                      </div>
+                      <p className="text-white font-bold text-base sm:text-lg">Absensi Berhasil!</p>
+                      <p className="text-violet-200 text-[11px] sm:text-xs mt-1">{faceMessage}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="relative w-full mt-4 sm:mt-5 space-y-2 sm:space-y-3">
+                <div className={`text-center p-3 sm:p-3.5 rounded-2xl text-xs sm:text-sm font-medium transition-all ${
+                  faceStatus === "success" ? "bg-violet-500/15 text-violet-200 border border-violet-500/30" :
+                  faceStatus === "smiling" ? "bg-violet-400/10 text-violet-200 border border-violet-400/20" :
+                  faceStatus === "scanning" ? "bg-violet-500/5 text-white border border-violet-500/10" :
+                  "bg-white/5 text-slate-400 border border-white/10"
+                }`}>
+                  {faceMessage || "Menyiapkan kamera..."}
+                </div>
+                {faceStatus !== "loading" && faceStatus !== "success" && (
+                  <button onClick={capturePhoto}
+                    className="w-full py-3 sm:py-4 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-2xl font-semibold transition active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-purple-900/30">
+                    <Camera size={18} className="sm:size-[20]" /> Ambil Foto
+                  </button>
+                )}
+              </div>
+
+              {showNativeFallback && (
+                <div className="relative w-full mt-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-center">
+                  <p className="text-xs text-amber-200 mb-3">Kamera tidak merespon. Gunakan mode foto manual:</p>
+                  <label className="block w-full py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-2xl font-semibold text-center cursor-pointer active:scale-95 transition">
+                    <Camera size={20} className="inline mr-2" /> Ambil Foto Manual
+                    <input ref={fileInputRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handleNativePhoto} />
+                  </label>
+                  <button onClick={() => { setShowNativeFallback(false); closeCameraModal(); }}
+                    className="mt-3 w-full py-2.5 rounded-xl bg-white/10 text-white text-xs font-medium">
+                    Tutup
+                  </button>
                 </div>
               )}
             </div>
           </div>
-
-          <div className="relative w-full max-w-md mt-6 space-y-3">
-            <div className={`text-center p-3.5 rounded-2xl text-sm font-medium transition-all ${
-              faceStatus === "success" ? "bg-violet-500/15 text-violet-200 border border-violet-500/30" :
-              faceStatus === "smiling" ? "bg-violet-400/10 text-violet-200 border border-violet-400/20" :
-              faceStatus === "scanning" ? "bg-violet-500/5 text-white border border-violet-500/10" :
-              "bg-white/5 text-slate-400 border border-white/10"
-            }`}>
-              {faceMessage || "Menyiapkan kamera..."}
-            </div>
-            {faceStatus !== "loading" && faceStatus !== "success" && (
-              <button onClick={capturePhoto}
-                className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-2xl font-semibold transition active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-purple-900/30">
-                <Camera size={20} /> Ambil Foto
-              </button>
-            )}
-          </div>
-
-          {showNativeFallback && (
-            <div className="relative w-full max-w-md p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-center">
-              <p className="text-xs text-amber-200 mb-3">Kamera tidak merespon. Gunakan mode foto manual:</p>
-              <label className="block w-full py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-2xl font-semibold text-center cursor-pointer active:scale-95 transition">
-                <Camera size={20} className="inline mr-2" /> Ambil Foto Manual
-                <input ref={fileInputRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handleNativePhoto} />
-              </label>
-              <button onClick={() => { setShowNativeFallback(false); closeCameraModal(); }}
-                className="mt-3 w-full py-2.5 rounded-xl bg-white/10 text-white text-xs font-medium">
-                Tutup
-              </button>
-            </div>
-          )}
         </div>
     </>
   );
