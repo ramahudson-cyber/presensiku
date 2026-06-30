@@ -526,13 +526,18 @@ export default function AttendancePage() {
       const box = detection.detection.box;
       const vw = videoRef.current.videoWidth || 640;
       const vh = videoRef.current.videoHeight || 480;
-      const margin = 10;
+      const margin = Math.round(vw * 0.1);
       const isCropped = box.x < margin || box.y < margin || box.x + box.width > vw - margin || box.y + box.height > vh - margin;
-      const isTooSmall = box.width < vw * 0.15 || box.height < vh * 0.15;
+      const isTooSmall = box.width < vw * 0.2 || box.height < vh * 0.25;
 
-      if (isCropped || isTooSmall) {
+      if (isCropped) {
         setFaceStatus("scanning");
-        setFaceMessage(isCropped ? "Wajah terpotong" : "Mendekatlah ke kamera");
+        setFaceMessage("Posisikan wajah di tengah");
+        return true;
+      }
+      if (isTooSmall) {
+        setFaceStatus("scanning");
+        setFaceMessage("Mendekatlah ke kamera");
         return true;
       }
 
