@@ -199,6 +199,24 @@ html:not(.dark) .border-gradient {
   color: #ffffff !important;
 }
 
+/* Login dark bg — force light colors in light mode */
+html:not(.dark) .login-dark-bg .text-white,
+html:not(.dark) .login-dark-bg.text-white { color: #fff !important; }
+html:not(.dark) .login-dark-bg .text-slate-300 { color: #cbd5e1 !important; }
+html:not(.dark) .login-dark-bg .text-slate-500 { color: #64748b !important; }
+html:not(.dark) .login-dark-bg .text-violet-300 { color: #a78bfa !important; }
+html:not(.dark) .login-dark-bg .text-violet-400 { color: #a78bfa !important; }
+html:not(.dark) .login-dark-bg .text-violet-100 { color: #ddd6fe !important; }
+html:not(.dark) .login-dark-bg .text-red-300 { color: #fca5a5 !important; }
+html:not(.dark) .login-dark-bg .text-amber-200 { color: #fde68a !important; }
+html:not(.dark) .login-dark-bg .text-amber-300 { color: #fcd34d !important; }
+html:not(.dark) .login-dark-bg .bg-black\/50 {
+  background-color: rgba(0,0,0,0.5) !important;
+  border-color: rgba(139,92,246,0.2) !important;
+  color: #fff !important;
+}
+html:not(.dark) .login-dark-bg .bg-black\/80 { background-color: rgba(0,0,0,0.8) !important; }
+
 /* Gradient buttons keep white text */
 html:not(.dark) button.bg-gradient-to-r.from-violet-600.to-purple-700,
 html:not(.dark) .bg-gradient-to-r.from-violet-600.to-purple-700 {

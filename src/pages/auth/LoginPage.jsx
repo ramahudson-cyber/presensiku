@@ -263,7 +263,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-[#0f0214] via-[#1a0533] to-[#2d0a4e]">
+    <div className="login-dark-bg min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-[#0f0214] via-[#1a0533] to-[#2d0a4e]">
       {/* Elegant Purple Gradient Blob Shapes */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-900/20 via-transparent to-purple-900/20"></div>
 
