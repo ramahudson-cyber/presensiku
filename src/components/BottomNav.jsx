@@ -94,7 +94,7 @@ export default function BottomNav() {
               <NavLink key={item.path} to={item.path} onClick={() => setMoreOpen(false)}
                 className={({ isActive }) =>
                   `flex flex-col items-center gap-2 p-4 rounded-2xl transition-all ${isActive
-                    ? "bg-gradient-to-br from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-900/30"
+                    ? "border-gradient bg-transparent text-white"
                     : "bg-white/5 hover:bg-white/10"}`
                 }>
                 <Icon size={24} />

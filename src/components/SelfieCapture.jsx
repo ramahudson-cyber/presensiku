@@ -137,7 +137,7 @@ export default function SelfieCapture({ userId, onSuccess }) {
           />
           <button
             onClick={capture}
-            className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white text-blue-600 rounded-full px-6 py-2 font-bold shadow-lg hover:scale-105 transition"
+            className="absolute bottom-3 left-1/2 -translate-x-1/2 border-gradient bg-transparent text-white rounded-full px-6 py-2 font-bold shadow-lg hover:scale-105 transition"
           >
             Ambil Foto
           </button>
@@ -148,7 +148,7 @@ export default function SelfieCapture({ userId, onSuccess }) {
       {preview && !cameraOpen && (
         <div className="relative">
           <img src={preview} alt="Preview" className="w-72 h-56 object-cover rounded-xl border-4 border-green-400" />
-          <button onClick={reset} className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1">
+          <button onClick={reset} className="absolute top-2 right-2 border-gradient bg-transparent p-1">
             <X size={14} />
           </button>
         </div>
@@ -173,20 +173,20 @@ export default function SelfieCapture({ userId, onSuccess }) {
         {!preview && !cameraOpen && (
           <button
             onClick={openCamera}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition"
+            className="flex items-center gap-2 border-gradient bg-transparent text-white px-5 py-2.5 rounded-xl font-medium transition"
           >
             <Camera size={18} /> Buka Kamera
           </button>
         )}
         {preview && status !== 'success' && (
           <>
-            <button onClick={openCamera} className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm transition">
+            <button onClick={openCamera} className="border-gradient bg-transparent text-white px-4 py-2 rounded-xl text-sm transition">
               Ulangi
             </button>
             <button
               onClick={handleUpload}
               disabled={uploading}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-medium transition disabled:opacity-60"
+              className="flex items-center gap-2 border-gradient bg-transparent text-white px-5 py-2.5 rounded-xl font-medium transition disabled:opacity-60"
             >
               <Upload size={18} /> {uploading ? 'Mengupload...' : 'Simpan Selfie'}
             </button>

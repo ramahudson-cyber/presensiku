@@ -31,10 +31,10 @@ const sectionTitle =
 const sectionSub = "text-sm text-slate-200 mt-1";
 
 const btnPrimary =
-  "flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed";
+  "flex items-center gap-2 px-4 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed";
 
 const btnGhost =
-  "p-2 rounded-xl border border-white/10 bg-white/5 text-violet-100/70 hover:text-violet-200 hover:bg-white/10 hover:scale-105 transition-all";
+  "p-2 rounded-xl border-gradient bg-transparent text-white hover:text-violet-200 hover:bg-white/10 hover:scale-105 transition-all";
 
 const avatarGradient = (name = "") => {
   const grads = [
@@ -356,13 +356,13 @@ function TabProfilPuskesmas() {
           <div className="flex gap-3 pt-2">
             <button
               type="button" onClick={resetForm}
-              className="flex-1 py-2.5 border border-white/10 text-violet-200/80 rounded-xl text-sm font-medium hover:bg-white/5 transition-all"
+              className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:bg-white/5 transition-all"
             >
               Batal
             </button>
             <button
               type="submit" disabled={saving}
-              className="flex-1 py-2.5 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {saving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
               {editingId ? "Update" : "Simpan"}
@@ -571,7 +571,7 @@ function TabJamKerja() {
         </div>
         <button
           onClick={handleSave} disabled={saving}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-emerald-900/30 hover:scale-105 transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-emerald-900/30 hover:scale-105 transition-all disabled:opacity-50"
         >
           {saving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
           Simpan Semua
@@ -625,7 +625,7 @@ function TabJamKerja() {
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-[#0f0524]/90 backdrop-blur-md border-t border-white/10">
         <button
           onClick={handleSave} disabled={saving}
-          className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 py-3 border-gradient bg-transparent text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50"
         >
           {saving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
           Simpan Semua Perubahan
@@ -831,9 +831,9 @@ function TabManajemenUser() {
           className={inputBase + " mb-4"} autoFocus />
         <div className="flex gap-3">
           <button onClick={() => setResetModal({ show: false, user: null, password: "" })}
-            className="flex-1 py-2.5 rounded-xl border border-white/10 text-white text-sm hover:bg-white/5 transition-all">Batal</button>
+            className="flex-1 py-2.5 rounded-xl border-gradient bg-transparent text-white text-sm hover:bg-white/5 transition-all">Batal</button>
           <button onClick={confirmResetPassword}
-            className="flex-1 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-all">Konfirmasi</button>
+            className="flex-1 py-2.5 rounded-xl border-gradient bg-transparent text-white text-sm font-semibold transition-all">Konfirmasi</button>
         </div>
       </BottomSheet>
 
@@ -1195,7 +1195,7 @@ function TabApprovalDevice() {
                   <button
                     onClick={() => handleApprove(req.id, req.user_name)}
                     disabled={processingId === req.id}
-                    className="px-3 py-2 bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-lg text-xs font-medium hover:shadow-lg hover:shadow-emerald-900/30 transition-all disabled:opacity-50 flex items-center gap-1.5 justify-center"
+                    className="px-3 py-2 border-gradient bg-transparent text-white rounded-lg text-xs font-medium hover:shadow-lg hover:shadow-emerald-900/30 transition-all disabled:opacity-50 flex items-center gap-1.5 justify-center"
                   >
                     {processingId === req.id ? <RefreshCw size={12} className="animate-spin" /> : <CheckCircle2 size={12} />}
                     Approve
@@ -1273,11 +1273,11 @@ function RejectReasonModal({ request, onClose, onConfirm, processing }) {
 
       <div className="flex gap-3">
         <button onClick={onClose}
-          className="flex-1 py-2.5 border border-white/10 text-violet-200/80 rounded-xl text-sm font-medium hover:bg-white/5 transition-all">
+          className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:bg-white/5 transition-all">
           Batal
         </button>
         <button onClick={() => onConfirm(reason)} disabled={processing}
-          className="flex-1 py-2.5 bg-gradient-to-r from-rose-600 to-pink-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-rose-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+          className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-rose-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
           {processing ? <RefreshCw size={14} className="animate-spin" /> : <XCircle size={14} />}
           Tolak Request
         </button>

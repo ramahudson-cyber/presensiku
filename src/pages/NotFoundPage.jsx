@@ -14,7 +14,7 @@ export default function NotFoundPage() {
         </p>
         <Link
           to="/"
-          className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors"
+          className="px-6 py-3 border-gradient bg-transparent text-white rounded-xl transition-colors"
         >
           Kembali ke Login
         </Link>

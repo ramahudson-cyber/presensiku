@@ -35,7 +35,7 @@ export default function UpdateDialog() {
           </div>
           {!update.forceUpdate && (
             <button onClick={() => setDismissed(true)}
-              className="p-1.5 rounded-lg bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white transition-all">
+              className="border-gradient bg-transparent text-white p-1.5 rounded-lg transition-all">
               <X size={16} />
             </button>
           )}
@@ -49,7 +49,7 @@ export default function UpdateDialog() {
           )}
           {update.apkUrl ? (
             <button onClick={handleDownload} disabled={downloading}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98] transition-all disabled:opacity-50">
+              className="border-gradient bg-transparent text-white w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98] transition-all disabled:opacity-50">
               {downloading ? <><Loader2 size={16} className="animate-spin" /> Membuka...</> : <><Download size={16} /> Download APK</>}
             </button>
           ) : (

@@ -77,7 +77,7 @@ function Header() {
           </button>
           <button
             onClick={handleLogout}
-            className="p-2.5 md:p-3 rounded-xl text-slate-400 dark:text-slate-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500 dark:hover:text-rose-400 transition-colors"
+            className="border-gradient bg-transparent text-white dark:hover:bg-rose-500/10 hover:text-rose-500 dark:hover:text-rose-400 transition-colors"
             aria-label="Logout"
           >
             <LogOut size={18} />

@@ -103,11 +103,11 @@ export default function SchedulingPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <button onClick={handleDownloadTemplate}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 text-xs transition-all active:scale-95">
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl border-gradient bg-transparent text-white hover:text-white hover:bg-white/10 text-xs transition-all active:scale-95">
               <Download size={14} /> Template
             </button>
             <button onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 text-xs transition-all active:scale-95">
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl border-gradient bg-transparent text-white hover:text-white hover:bg-white/10 text-xs transition-all active:scale-95">
               <Upload size={14} /> Upload Excel
             </button>
             <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleFileUpload} className="hidden" />
@@ -144,15 +144,15 @@ export default function SchedulingPage() {
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex flex-wrap gap-2">
             <button onClick={() => setShowBulkAssign(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-violet-600/30 to-purple-700/30 border border-violet-500/30 text-violet-200 text-xs font-medium hover:from-violet-600/40 hover:to-purple-700/40 transition-all active:scale-95 shadow-sm">
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-gradient bg-transparent text-white text-xs font-medium transition-all active:scale-95 shadow-sm">
               <Layers size={14} /> Isi Cepat
             </button>
             <button onClick={handleCopyPrevMonth}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-600/20 border border-sky-500/25 text-sky-300 text-xs font-medium hover:bg-sky-600/30 transition-all active:scale-95">
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-gradient bg-transparent text-white text-xs font-medium transition-all active:scale-95">
               <Copy size={14} /> Copy Bulan Lalu
             </button>
             <button onClick={handleClearMonth}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-600/15 border border-red-500/20 text-red-300 text-xs font-medium hover:bg-red-600/25 transition-all active:scale-95">
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-gradient bg-transparent text-white text-xs font-medium transition-all active:scale-95">
               <Trash2 size={14} /> Hapus Bulan
             </button>
           </div>
@@ -259,7 +259,7 @@ export default function SchedulingPage() {
         </div>
         {schedules[showShiftPicker] && (
           <button onClick={() => assignShift(schedules[showShiftPicker].shift_code)}
-            className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs font-medium hover:bg-red-500/20 transition-all active:scale-95">
+            className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-gradient bg-transparent text-white text-xs font-medium hover:bg-red-500/20 transition-all active:scale-95">
             <Trash2 size={13} /> Hapus Jadwal
           </button>
         )}
@@ -575,7 +575,7 @@ function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) 
 
           {/* Apply */}
           <button onClick={apply} disabled={saving}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-violet-900/20">
+            className="w-full flex items-center justify-center gap-2 py-3 border-gradient bg-transparent text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-violet-900/20">
             {saving ? <><Loader2 size={16} className="animate-spin" /> Menyimpan...</> : <><CheckCircle2 size={17} /> Terapkan Jadwal</>}
           </button>
         </div>

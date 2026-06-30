@@ -383,7 +383,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-purple-200 hover:shadow-xl hover:shadow-purple-300 transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-4"
+                  className="w-full border-gradient bg-transparent text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-purple-200 hover:shadow-xl hover:shadow-purple-300 transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-4"
                 >
                   Masuk Aplikasi
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
@@ -443,7 +443,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                   }}
                   className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                     currentPage === item.id
-                      ? 'bg-purple-600 text-white shadow-md shadow-purple-900/30 font-bold'
+                      ? 'border-gradient bg-transparent text-white font-bold'
                       : 'hover:bg-purple-800/50 text-purple-200'
                   }`}
                 >
@@ -458,7 +458,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
             <div className="p-4 border-t border-purple-800/40 space-y-2">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="w-full flex items-center justify-center p-2 rounded-lg bg-purple-950/50 hover:bg-purple-800/30 transition-all text-purple-300"
+                className="w-full flex items-center justify-center p-2 rounded-lg border-gradient bg-transparent transition-all text-purple-300"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={sidebarOpen ? "M11 19l-7-7 7-7M21 19l-7-7 7-7" : "M13 5l7 7-7 7M3 5l7 7-7 7"} />
@@ -565,7 +565,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                       <div className="flex gap-3">
                         <button
                           onClick={() => { setCurrentPage('absensi'); showToast('Membuka Kamera Selfie Presensi...', 'warning'); }}
-                          className="bg-white text-purple-900 hover:bg-purple-50 px-5 py-3 rounded-2xl text-sm font-bold shadow-md transition-all active:scale-[0.98] inline-flex items-center gap-2"
+                          className="border-gradient bg-transparent text-white px-5 py-3 rounded-2xl text-sm font-bold shadow-md transition-all active:scale-[0.98] inline-flex items-center gap-2"
                         >
                           <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-ping"></span>
                           Presensi Sekarang
@@ -698,7 +698,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
 
                       <button
                         onClick={() => { setCurrentPage('rekap'); showToast('Membuka rekap detail...', 'success'); }}
-                        className="w-full text-center text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 py-3 rounded-xl transition-all mt-4"
+                        className="w-full text-center text-xs font-bold text-white border-gradient bg-transparent py-3 rounded-xl transition-all mt-4"
                       >
                         Lihat Seluruh Aktivitas
                       </button>
@@ -762,7 +762,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                         <div>
                           <button
                             onClick={startCameraCapture}
-                            className="bg-purple-700 hover:bg-purple-800 text-white font-bold px-6 py-3 rounded-2xl text-sm transition-all shadow-md flex items-center justify-center gap-2 mx-auto active:scale-95"
+                            className="border-gradient bg-transparent text-white font-bold px-6 py-3 rounded-2xl text-sm transition-all shadow-md flex items-center justify-center gap-2 mx-auto active:scale-95"
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                             Ambil Foto Presensi (Selfie)
@@ -809,7 +809,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                         <button
                           onClick={handleRefreshGPS}
                           disabled={gpsLoading}
-                          className="w-full text-center text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 py-3 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                          className="w-full text-center text-xs font-bold text-white border-gradient bg-transparent py-3 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                         >
                           {gpsLoading ? (
                             <>
@@ -843,7 +843,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                               className={`w-full py-5 rounded-3xl font-extrabold text-sm transition-all shadow-md active:scale-95 flex flex-col items-center justify-center gap-2 text-white ${
                                 attendanceStatus.in
                                   ? 'bg-gray-200 text-gray-400 border border-gray-300 shadow-none cursor-not-allowed'
-                                  : 'bg-gradient-to-br from-green-500 to-green-600 shadow-green-100 hover:shadow-lg'
+                                  : 'border-gradient bg-transparent hover:shadow-lg'
                               }`}
                             >
                               <span className="p-2 bg-white/20 rounded-full">
@@ -864,7 +864,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                               className={`w-full py-5 rounded-3xl font-extrabold text-sm transition-all shadow-md active:scale-95 flex flex-col items-center justify-center gap-2 text-white ${
                                 attendanceStatus.out
                                   ? 'bg-gray-200 text-gray-400 border border-gray-300 shadow-none cursor-not-allowed'
-                                  : 'bg-gradient-to-br from-red-500 to-red-600 shadow-red-100 hover:shadow-lg'
+                                  : 'border-gradient bg-transparent hover:shadow-lg'
                               }`}
                             >
                               <span className="p-2 bg-white/20 rounded-full">
@@ -950,7 +950,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setShowAddEmployeeModal(true)}
-                        className="bg-purple-700 hover:bg-purple-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-md transition-all flex items-center gap-2 active:scale-95"
+                        className="border-gradient bg-transparent text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-md transition-all flex items-center gap-2 active:scale-95"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                         Tambah Pegawai
@@ -958,7 +958,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
 
                       <button
                         onClick={() => showToast('Ekspor data pegawai ke spreadsheet berhasil', 'success')}
-                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-xl text-xs transition-all flex items-center gap-2"
+                        className="border-gradient bg-transparent text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all flex items-center gap-2"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                         Excel
@@ -1015,7 +1015,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                                   <div className="flex items-center justify-end gap-2">
                                     <button
                                       onClick={() => showToast(`Edit Pegawai: ${emp.name}`, 'warning')}
-                                      className="p-1.5 hover:bg-purple-50 rounded-lg text-purple-600 transition-all"
+                                      className="p-1.5 hover:bg-purple-50 rounded-lg text-purple-600 border-gradient border transition-all"
                                       title="Edit Pegawai"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
@@ -1025,7 +1025,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                                         setEmployees(employees.filter(e => e.id !== emp.id));
                                         showToast(`Pegawai ${emp.name} dinonaktifkan`, 'error');
                                       }}
-                                      className="p-1.5 hover:bg-red-50 rounded-lg text-red-500 transition-all"
+                                      className="p-1.5 hover:bg-red-50 rounded-lg text-red-500 border-gradient border transition-all"
                                       title="Hapus Pegawai"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -1049,9 +1049,9 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                     <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-100 text-xs text-gray-500">
                       <span>Menampilkan {filteredEmployees.length} dari {employees.length} Pegawai</span>
                       <div className="flex gap-1.5">
-                        <button className="px-3 py-1.5 border rounded-lg bg-white font-bold text-gray-600 disabled:opacity-50" disabled>Sebelumnya</button>
-                        <button className="px-3 py-1.5 border rounded-lg bg-purple-600 text-white font-bold">1</button>
-                        <button className="px-3 py-1.5 border rounded-lg bg-white font-bold text-gray-600" onClick={() => showToast('Halaman berikutnya dalam demo kosong', 'warning')}>Selanjutnya</button>
+                        <button className="px-3 py-1.5 border-gradient rounded-lg bg-transparent font-bold text-white disabled:opacity-50" disabled>Sebelumnya</button>
+                        <button className="px-3 py-1.5 border-gradient rounded-lg bg-transparent text-white font-bold">1</button>
+                        <button className="px-3 py-1.5 border-gradient rounded-lg bg-transparent font-bold text-white" onClick={() => showToast('Halaman berikutnya dalam demo kosong', 'warning')}>Selanjutnya</button>
                       </div>
                     </div>
                   </div>
@@ -1135,7 +1135,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
 
                           <button
                             type="submit"
-                            className="w-full bg-purple-700 hover:bg-purple-800 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all active:scale-[0.98] text-xs flex items-center justify-center gap-2 mt-2"
+                            className="w-full border-gradient bg-transparent text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all active:scale-[0.98] text-xs flex items-center justify-center gap-2 mt-2"
                           >
                             Simpan Data Pegawai
                           </button>
@@ -1225,7 +1225,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
 
                         <button
                           type="submit"
-                          className="w-full bg-purple-700 hover:bg-purple-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all active:scale-[0.98] text-xs flex items-center justify-center gap-2 mt-2"
+                          className="w-full border-gradient bg-transparent text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all active:scale-[0.98] text-xs flex items-center justify-center gap-2 mt-2"
                         >
                           Ajukan Permohonan Cuti
                         </button>
@@ -1291,7 +1291,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                           key={tab}
                           onClick={() => showToast(`Beralih rekap ${tab}...`, 'success')}
                           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                            tab === 'Bulanan' ? 'bg-purple-700 text-white' : 'hover:bg-gray-100 text-gray-600'
+                            tab === 'Bulanan' ? 'border-gradient bg-transparent text-white' : 'hover:bg-gray-100 text-gray-600'
                           }`}
                         >
                           {tab}
@@ -1421,7 +1421,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                       <div className="grid grid-cols-2 gap-4 pt-4">
                         <button
                           onClick={() => showToast(`Cetak PDF Laporan Unit ${reportFilter.unit} periode ${reportFilter.start} - ${reportFilter.end} berhasil!`, 'success')}
-                          className="bg-purple-700 hover:bg-purple-800 text-white font-bold py-3.5 px-4 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 active:scale-95"
+                          className="border-gradient bg-transparent text-white font-bold py-3.5 px-4 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 active:scale-95"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
                           Ekspor PDF Resmi
@@ -1429,7 +1429,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
 
                         <button
                           onClick={() => showToast(`Cetak Excel Laporan Unit ${reportFilter.unit} berhasil diunduh!`, 'success')}
-                          className="bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 active:scale-95"
+                          className="border-gradient bg-transparent text-white font-bold py-3.5 px-4 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 active:scale-95"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                           Unduh format Excel
@@ -1499,13 +1499,13 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                     <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
                       <button
                         onClick={() => showToast('Ubah password dikirim ke email dinas...', 'warning')}
-                        className="px-4 py-2.5 border rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50"
+                        className="px-4 py-2.5 border-gradient rounded-xl text-xs font-bold text-white bg-transparent"
                       >
                         Ubah Password
                       </button>
                       <button
                         onClick={() => showToast('Profil berhasil disimpan!', 'success')}
-                        className="px-5 py-2.5 bg-purple-700 text-white font-bold text-xs rounded-xl hover:bg-purple-800 transition-all shadow-md"
+                        className="px-5 py-2.5 border-gradient bg-transparent text-white font-bold text-xs rounded-xl transition-all shadow-md"
                       >
                         Simpan Perubahan
                       </button>
@@ -1576,13 +1576,13 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                             setSettings({ gpsRadius: 50, startTime: '07:30', endTime: '14:30', autoApproveLeave: false, strictGps: true, strictSelfie: true });
                             showToast('Pengaturan dikembalikan ke standar awal', 'warning');
                           }}
-                          className="px-4 py-2.5 border rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50"
+                          className="px-4 py-2.5 border-gradient rounded-xl text-xs font-bold text-white bg-transparent"
                         >
                           Default
                         </button>
                         <button
                           onClick={() => showToast('Pengaturan sistem berhasil diperbarui!', 'success')}
-                          className="px-5 py-2.5 bg-purple-700 text-white font-bold text-xs rounded-xl hover:bg-purple-800 transition-all shadow-md"
+                          className="px-5 py-2.5 border-gradient bg-transparent text-white font-bold text-xs rounded-xl transition-all shadow-md"
                         >
                           Terapkan Pengaturan
                         </button>

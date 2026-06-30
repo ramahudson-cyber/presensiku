@@ -388,7 +388,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white font-semibold rounded-xl text-sm shadow-lg shadow-purple-900/30 hover:shadow-purple-900/50 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full py-3 border-gradient bg-transparent text-white font-semibold rounded-xl text-sm shadow-lg shadow-purple-900/30 hover:shadow-purple-900/50 transition disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
@@ -439,7 +439,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading || otpCode.length !== 6}
-                  className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white font-semibold rounded-xl text-sm shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full py-3 border-gradient bg-transparent text-white font-semibold rounded-xl text-sm shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
@@ -485,7 +485,7 @@ export default function LoginPage() {
               <button
                 onClick={checkApprovalStatus}
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl text-sm shadow-lg disabled:opacity-50 mb-2 flex items-center justify-center gap-2"
+                className="w-full py-3 border-gradient bg-transparent text-white font-semibold rounded-xl text-sm shadow-lg disabled:opacity-50 mb-2 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>

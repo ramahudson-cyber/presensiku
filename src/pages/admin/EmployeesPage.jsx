@@ -202,7 +202,7 @@ const EmployeesPage = () => {
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 active:scale-95 transition-all w-full sm:w-auto"
+          className="flex items-center justify-center gap-2 px-4 py-3 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 active:scale-95 transition-all w-full sm:w-auto"
         >
           <UserPlus size={16} />
           Tambah Pegawai
@@ -339,11 +339,11 @@ const EmployeesPage = () => {
 
               <div className="flex gap-3 pt-2 sticky bottom-0 bg-[#1a0a35]/95 backdrop-blur-md -mx-5 md:-mx-6 px-5 md:px-6 pb-2 -mb-2">
                 <button type="button" onClick={resetForm}
-                  className="flex-1 py-2.5 border border-white/10 text-violet-200/80 rounded-xl text-sm font-medium hover:bg-white/5 transition-all">
+                  className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:bg-white/5 transition-all">
                   Batal
                 </button>
                 <button type="submit" disabled={loading}
-                  className="flex-1 py-2.5 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                  className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                   {loading && <RefreshCwIconSpinning />}
                   {loading ? 'Menyimpan...' : formData.id ? 'Update' : 'Simpan'}
                 </button>

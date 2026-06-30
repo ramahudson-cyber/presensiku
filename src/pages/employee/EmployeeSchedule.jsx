@@ -116,7 +116,7 @@ export default function EmployeeSchedule() {
         </div>
         {!isCurrentMonth && (
           <button onClick={goToday}
-            className="px-3 py-1.5 rounded-xl bg-violet-600/20 border border-violet-500/30 text-violet-200 text-xs font-medium hover:bg-violet-600/30 transition-all active:scale-95">
+            className="px-3 py-1.5 rounded-xl border-gradient bg-transparent text-white text-xs font-medium transition-all active:scale-95">
             Hari Ini
           </button>
         )}

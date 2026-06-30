@@ -897,7 +897,7 @@ export default function AttendancePage() {
               </div>
             </div>
             <button onClick={getLocation}
-              className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-white flex items-center justify-center transition active:scale-90">
+              className="w-8 h-8 rounded-xl border-gradient bg-transparent hover:bg-white/10 text-white flex items-center justify-center transition active:scale-90">
               <RefreshCw size={14} className={locationStatus === "checking" ? "animate-spin" : ""} />
             </button>
           </div>
@@ -940,7 +940,7 @@ export default function AttendancePage() {
             <button
               onClick={openCameraModal}
               disabled={locationStatus !== "valid" || isFakeGPS || savingAttendance || !serverTime}
-              className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-2xl font-semibold transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-xl shadow-purple-900/30"
+              className="w-full py-4 border-gradient bg-transparent text-white rounded-2xl font-semibold transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-xl shadow-purple-900/30"
             >
               {savingAttendance ? (
                 <><Loader2 size={20} className="animate-spin" /> Menyimpan...</>
@@ -964,12 +964,12 @@ export default function AttendancePage() {
             <p className="text-xs text-red-300 whitespace-pre-line">{persistentError}</p>
             <div className="flex gap-2 mt-3">
               <button onClick={() => setPersistentError("")}
-                className="flex-1 py-2 rounded-xl bg-white/10 text-white text-xs font-medium">Tutup</button>
+                className="flex-1 py-2 rounded-xl border-gradient bg-transparent text-white text-xs font-medium">Tutup</button>
               <button onClick={openCameraModal}
-                className="flex-1 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-purple-700 text-white text-xs font-medium">Coba Lagi</button>
+                className="flex-1 py-2 rounded-xl border-gradient bg-transparent text-white text-xs font-medium">Coba Lagi</button>
               {isStandalonePwa && (
                 <button onClick={() => window.location.reload()}
-                  className="flex-1 py-2 rounded-xl bg-amber-500/20 text-amber-300 text-xs font-medium border border-amber-500/30">Muat Ulang</button>
+                  className="flex-1 py-2 rounded-xl border-gradient bg-transparent text-amber-300 text-xs font-medium">Muat Ulang</button>
               )}
             </div>
           </div>
@@ -992,7 +992,7 @@ export default function AttendancePage() {
                     <p className="text-slate-200 text-[10px] sm:text-[11px] truncate">Posisikan wajah & senyum</p>
                   </div>
                 </div>
-                <button onClick={closeCameraModal} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 hover:bg-white/10 text-white flex items-center justify-center transition active:scale-95 shrink-0">
+                <button onClick={closeCameraModal} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border-gradient bg-transparent hover:bg-white/10 text-white flex items-center justify-center transition active:scale-95 shrink-0">
                   <X size={18} className="sm:size-[20]" />
                 </button>
               </div>
@@ -1002,9 +1002,9 @@ export default function AttendancePage() {
                   <p className="text-[11px] sm:text-xs text-red-300 text-center break-words whitespace-pre-line">{cameraError}</p>
                   <div className="flex gap-2 mt-2 sm:mt-3">
                     <button onClick={closeCameraModal}
-                      className="flex-1 py-2 sm:py-2.5 rounded-xl bg-white/10 text-white text-[11px] sm:text-xs font-medium">Tutup</button>
+                      className="flex-1 py-2 sm:py-2.5 rounded-xl border-gradient bg-transparent text-white text-[11px] sm:text-xs font-medium">Tutup</button>
                     <button onClick={openCameraModal}
-                      className="flex-1 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-700 text-white text-[11px] sm:text-xs font-medium shadow-lg">Coba Lagi</button>
+                      className="flex-1 py-2 sm:py-2.5 rounded-xl border-gradient bg-transparent text-white text-[11px] sm:text-xs font-medium shadow-lg">Coba Lagi</button>
                   </div>
                 </div>
               )}
@@ -1062,12 +1062,12 @@ export default function AttendancePage() {
               {showNativeFallback && (
                 <div className="relative w-full mt-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-center">
                   <p className="text-xs text-amber-200 mb-3">Kamera tidak merespon. Gunakan mode foto manual:</p>
-                  <label className="block w-full py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-2xl font-semibold text-center cursor-pointer active:scale-95 transition">
+                  <label className="block w-full py-4 border-gradient bg-transparent text-white rounded-2xl font-semibold text-center cursor-pointer active:scale-95 transition">
                     <Camera size={20} className="inline mr-2" /> Ambil Foto Manual
                     <input ref={fileInputRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handleNativePhoto} />
                   </label>
                   <button onClick={() => { setShowNativeFallback(false); closeCameraModal(); }}
-                    className="mt-3 w-full py-2.5 rounded-xl bg-white/10 text-white text-xs font-medium">
+                    className="mt-3 w-full py-2.5 rounded-xl border-gradient bg-transparent text-white text-xs font-medium">
                     Tutup
                   </button>
                 </div>

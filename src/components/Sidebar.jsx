@@ -59,7 +59,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
               <p className="text-[10px] text-violet-100/70">Puskesmas Ampenan</p>
             </div>
           </div>
-          <button onClick={() => setMenuOpen(false)} className="xl:hidden p-1.5 text-violet-100 hover:text-white hover:bg-white/10 rounded-lg transition">
+          <button onClick={() => setMenuOpen(false)} className="xl:hidden border-gradient bg-transparent text-white rounded-lg transition">
             <X size={18} />
           </button>
         </div>
@@ -91,7 +91,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-3 py-3 rounded-xl transition-all text-sm ${
                     isActive
-                      ? "bg-gradient-to-r from-violet-600 to-purple-700 text-white shadow-lg shadow-violet-900/30 font-semibold"
+                      ? "border-gradient bg-transparent text-white font-semibold"
                       : "hover:bg-white/10"
                   }`
                 }

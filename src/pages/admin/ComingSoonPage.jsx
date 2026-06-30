@@ -37,7 +37,7 @@ export default function ComingSoonPage() {
       {/* Tombol kembali */}
       <button
         onClick={() => navigate("/admin")}
-        className="inline-flex items-center gap-2 px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium rounded-xl transition-colors"
+        className="inline-flex items-center gap-2 px-5 py-2.5 border-gradient bg-transparent text-white text-sm font-medium rounded-xl transition-colors"
       >
         <ArrowLeft size={16} />
         Kembali ke Dashboard
