@@ -162,7 +162,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
   };
 
   // Handle Submit Attendance
-  const handleClockIn = () => {
+  const handleAbsenMasuk = () => {
     if (!selfieImage) {
       showToast('Wajib mengambil foto selfie deteksi wajah terlebih dahulu', 'error');
       return;
@@ -172,7 +172,7 @@ const [toasts, setToasts] = useState<Toast[]>([]);
     showToast('Absen MASUK Berhasil dicatat! Selamat bekerja.', 'success');
   };
 
-  const handleClockOut = () => {
+  const handleAbsenPulang = () => {
     if (!attendanceStatus.in) {
       showToast('Anda belum melakukan absen masuk hari ini', 'error');
       return;
@@ -835,10 +835,10 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                          {/* Clock In Button */}
+                          {/* Absen Masuk Button */}
                           <div className="space-y-2">
                             <button
-                              onClick={handleClockIn}
+                              onClick={handleAbsenMasuk}
                               disabled={attendanceStatus.in !== null}
                               className={`w-full py-5 rounded-3xl font-extrabold text-sm transition-all shadow-md active:scale-95 flex flex-col items-center justify-center gap-2 text-white ${
                                 attendanceStatus.in
@@ -856,10 +856,10 @@ const [toasts, setToasts] = useState<Toast[]>([]);
                             </span>
                           </div>
 
-                          {/* Clock Out Button */}
+                          {/* Absen Pulang Button */}
                           <div className="space-y-2">
                             <button
-                              onClick={handleClockOut}
+                              onClick={handleAbsenPulang}
                               disabled={attendanceStatus.out !== null}
                               className={`w-full py-5 rounded-3xl font-extrabold text-sm transition-all shadow-md active:scale-95 flex flex-col items-center justify-center gap-2 text-white ${
                                 attendanceStatus.out
