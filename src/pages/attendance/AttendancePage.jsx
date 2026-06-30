@@ -489,10 +489,16 @@ export default function AttendancePage() {
   const runDetection = async () => {
     if (!videoRef.current || !streamAlive()) return false;
 
-    // Jika model belum siap, fallback ke mode manual
-    if (modelsFailed || !modelsReadyRef.current) {
-      setFaceStatus("scanning");
-      setFaceMessage("Tap tombol untuk mengambil foto");
+    // Jika model gagal load, langsung native camera fallback
+    if (modelsFailed) {
+      cleanupCamera();
+      setShowNativeFallback(true);
+      setFaceStatus("idle");
+      setFaceMessage("");
+      return false;
+    }
+    // Jika model belum siap, tunggu
+    if (!modelsReadyRef.current) {
       return true;
     }
 
@@ -651,6 +657,16 @@ export default function AttendancePage() {
   const openCameraModal = async () => {
     if (cameraStartingRef.current) return;
     cameraStartingRef.current = true;
+
+    // Jika model AI gagal, langsung native camera fallback
+    if (modelsFailed) {
+      setCameraOpen(true);
+      setShowNativeFallback(true);
+      setFaceStatus("idle");
+      setFaceMessage("");
+      cameraStartingRef.current = false;
+      return;
+    }
 
     // 📱 iOS PWA: hybrid approach
     // 1) Render video element DULU (set cameraOpen = true)
@@ -885,7 +901,7 @@ export default function AttendancePage() {
 
         {!todayAttendance && modelsFailed && (
           <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 mb-2">
-            Mode AI tidak tersedia di perangkat ini. Gunakan mode foto manual.
+            Mode AI tidak tersedia. Gunakan mode foto manual.
           </div>
         )}
         {!todayAttendance && (
@@ -1001,7 +1017,7 @@ export default function AttendancePage() {
                 </div>
               </div>
 
-              <div className="relative w-full mt-4 sm:mt-5 space-y-2 sm:space-y-3">
+              <div className="relative w-full mt-4 sm:mt-5">
                 <div className={`text-center p-3 sm:p-3.5 rounded-2xl text-xs sm:text-sm font-medium transition-all ${
                   faceStatus === "success" ? "bg-violet-500/15 text-violet-200 border border-violet-500/30" :
                   faceStatus === "smiling" ? "bg-violet-400/10 text-violet-200 border border-violet-400/20" :
@@ -1010,12 +1026,6 @@ export default function AttendancePage() {
                 }`}>
                   {faceMessage || "Menyiapkan kamera..."}
                 </div>
-                {faceStatus !== "loading" && faceStatus !== "success" && (
-                  <button onClick={capturePhoto}
-                    className="w-full py-3 sm:py-4 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-2xl font-semibold transition active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-purple-900/30">
-                    <Camera size={18} className="sm:size-[20]" /> Ambil Foto
-                  </button>
-                )}
               </div>
 
               {showNativeFallback && (
