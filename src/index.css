@@ -217,24 +217,19 @@ html:not(.dark) .login-dark-bg .bg-black\/50 {
 }
 html:not(.dark) .login-dark-bg .bg-black\/80 { background-color: rgba(0,0,0,0.8) !important; }
 
-/* Gradient buttons keep white text */
-html:not(.dark) button.bg-gradient-to-r.from-violet-600.to-purple-700,
-html:not(.dark) .bg-gradient-to-r.from-violet-600.to-purple-700 {
-  color: #ffffff !important;
-  background: linear-gradient(to right, var(--accent), #8b5cf6);
-}
-
-/* Solid color backgrounds keep white text */
-html:not(.dark) .bg-purple-700,
-html:not(.dark) .bg-purple-600,
-html:not(.dark) .bg-violet-600,
-html:not(.dark) .bg-red-500,
-html:not(.dark) .bg-red-600,
-html:not(.dark) .bg-green-600,
-html:not(.dark) .bg-amber-500,
-html:not(.dark) .bg-orange-600,
-html:not(.dark) .bg-green-500,
-html:not(.dark) .bg-blue-600 {
+/* Buttons with gradient/solid background keep white text */
+button.bg-gradient-to-r.from-violet-600.to-purple-700,
+.bg-gradient-to-r.from-violet-600.to-purple-700,
+.bg-purple-700,
+.bg-purple-600,
+.bg-violet-600,
+.bg-red-500,
+.bg-red-600,
+.bg-green-600,
+.bg-amber-500,
+.bg-orange-600,
+.bg-green-500,
+.bg-blue-600 {
   color: #ffffff !important;
 }
 
