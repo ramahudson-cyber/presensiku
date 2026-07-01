@@ -126,7 +126,7 @@ export default function AttendanceHistoryPage() {
       // Base query dengan join profiles
       let query = supabase
         .from("attendance")
-        .select("*, profiles(full_name, department)", { count: "exact" })
+        .select("*, profiles(full_name)", { count: "exact" })
         .gte("date", dateFrom)
         .lte("date", dateTo)
         .order("date", { ascending: false })
@@ -145,7 +145,7 @@ export default function AttendanceHistoryPage() {
       const filtered = search.trim()
         ? (data || []).filter(r =>
             r.profiles?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-            r.profiles?.department?.toLowerCase().includes(search.toLowerCase())
+
           )
         : (data || []);
 
@@ -184,18 +184,18 @@ export default function AttendanceHistoryPage() {
   const exportCSV = async () => {
     const { data, error } = await supabase
       .from("attendance")
-      .select("*, profiles(full_name, department)")
+      .select("*, profiles(full_name)")
       .gte("date", dateFrom)
       .lte("date", dateTo)
       .order("date", { ascending: false });
 
     if (error || !data) return;
 
-    const header = ["Tanggal", "Nama", "Departemen", "Absen Masuk", "Absen Pulang", "Status", "Terlambat (menit)"];
+    const header = ["Tanggal", "Nama", "Absen Masuk", "Absen Pulang", "Status", "Terlambat (menit)"];
     const rows = data.map(r => [
       r.date,
       r.profiles?.full_name ?? "-",
-      r.profiles?.department ?? "-",
+
       fmtTime(r.clock_in_time),
       fmtTime(r.clock_out_time),
       r.attendance_status ?? "-",
@@ -250,7 +250,7 @@ export default function AttendanceHistoryPage() {
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Cari nama / departemen..."
+              placeholder="Cari nama..."
               value={search}
               onChange={e => { setSearch(e.target.value); fetchRecords(true); }}
               className={`w-full pl-10 pr-4 py-2 ${inputBase}`}
@@ -329,7 +329,6 @@ export default function AttendanceHistoryPage() {
                   <tr className="border-b border-white/10 bg-white/5">
                     <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Tanggal</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Nama</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Departemen</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Absen Masuk</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Absen Pulang</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Status</th>
@@ -351,9 +350,6 @@ export default function AttendanceHistoryPage() {
                             {r.profiles?.full_name ?? "–"}
                           </span>
                         </div>
-                      </td>
-                      <td className="py-3 px-4 text-violet-200/60">
-                        {r.profiles?.department ?? "–"}
                       </td>
                       <td className="py-3 px-4 font-mono text-emerald-300 tabular-nums">
                         {fmtTime(r.clock_in_time)}
@@ -391,7 +387,6 @@ export default function AttendanceHistoryPage() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <p className="font-semibold text-white truncate">{r.profiles?.full_name ?? "–"}</p>
-                          <p className="text-xs text-slate-300">{r.profiles?.department ?? "–"}</p>
                         </div>
                         <StatusBadge status={r.attendance_status} />
                       </div>

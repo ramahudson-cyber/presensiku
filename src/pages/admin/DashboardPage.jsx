@@ -101,7 +101,7 @@ export default function DashboardPage() {
       // 2. Absensi hari ini
       const { data: attendanceToday } = await supabase
         .from("attendance")
-        .select("*, profiles(full_name, department)")
+        .select("*, profiles(full_name)")
         .eq("date", today)
         .order("clock_in_time", { ascending: false });
 
@@ -279,7 +279,6 @@ export default function DashboardPage() {
               <thead>
                 <tr className="bg-white/5 border-b border-white/10">
                   <th className="text-left py-2.5 px-3 font-semibold text-slate-200 text-[10px] sm:text-xs uppercase tracking-wider">Nama</th>
-                  <th className="text-left py-2.5 px-3 font-semibold text-slate-200 text-[10px] sm:text-xs uppercase tracking-wider hidden lg:table-cell">Departemen</th>
                   <th className="text-left py-2.5 px-3 font-semibold text-slate-200 text-[10px] sm:text-xs uppercase tracking-wider">Masuk</th>
                   <th className="text-left py-2.5 px-3 font-semibold text-slate-200 text-[10px] sm:text-xs uppercase tracking-wider hidden md:table-cell">Pulang</th>
                   <th className="text-left py-2.5 px-3 font-semibold text-slate-200 text-[10px] sm:text-xs uppercase tracking-wider">Status</th>
@@ -291,10 +290,8 @@ export default function DashboardPage() {
                     <td className="py-2.5 px-3">
                       <div>
                         <p className="font-medium text-white text-xs sm:text-sm">{a.profiles?.full_name || "-"}</p>
-                        <p className="text-[10px] sm:text-xs text-violet-200/40 lg:hidden mt-0.5">{a.profiles?.department || "-"}</p>
                       </div>
                     </td>
-                    <td className="py-2.5 px-3 text-violet-200/60 text-xs hidden lg:table-cell">{a.profiles?.department || "-"}</td>
                     <td className="py-2.5 px-3 text-emerald-300 font-mono tabular-nums text-[11px] sm:text-sm">{fmtTime(a.clock_in_time)}</td>
                     <td className="py-2.5 px-3 text-rose-300 font-mono tabular-nums text-[11px] sm:text-sm hidden md:table-cell">{fmtTime(a.clock_out_time)}</td>
                     <td className="py-2.5 px-3"><AttendanceBadge status={a.attendance_status} /></td>

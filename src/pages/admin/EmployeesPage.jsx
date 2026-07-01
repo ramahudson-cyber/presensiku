@@ -3,7 +3,7 @@ import { supabase } from '../../lib/supabase'; // ✅ FIX: path yang benar
 import { toast } from 'react-toastify';
 import {
   UserPlus, Pencil, Trash2, X, Search, Users, Mail,
-  Briefcase, Building2, User, IdCard,
+  Briefcase, User, IdCard,
 } from 'lucide-react';
 import ConfirmSheet from '../../components/ConfirmSheet';
 
@@ -29,7 +29,6 @@ const EmployeesPage = () => {
     email: '',
     role: '',
     employee_status: '',
-    department: '',
   });
 
   const fetchEmployees = async () => {
@@ -58,7 +57,7 @@ const EmployeesPage = () => {
   const resetForm = () => {
     setFormData({
       id: '', username: '', full_name: '', email: '',
-      role: '', employee_status: '', department: '',
+      role: '', employee_status: '',
     });
     setShowForm(false);
   };
@@ -99,7 +98,6 @@ const EmployeesPage = () => {
             email: formData.email,
             role: formData.role,
             employee_status: formData.employee_status,
-            department: formData.department,
           })
           .eq('id', formData.id);
 
@@ -114,7 +112,7 @@ const EmployeesPage = () => {
           p_password: 'Puskesmas@123',
           p_role: formData.role,
           p_employee_status: formData.employee_status,
-          p_department: formData.department,
+          p_department: null,
           p_position: null,
         });
 
@@ -139,7 +137,7 @@ const EmployeesPage = () => {
   const filtered = employees.filter(emp =>
     (emp.full_name || '').toLowerCase().includes(search.toLowerCase()) ||
     (emp.username || '').toLowerCase().includes(search.toLowerCase()) ||
-    (emp.department || '').toLowerCase().includes(search.toLowerCase())
+
   );
 
   const roleBadge = (role) => {
@@ -212,7 +210,7 @@ const EmployeesPage = () => {
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
         <input
           type="text"
-          placeholder="Cari nama, username, departemen..."
+          placeholder="Cari nama atau username..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all backdrop-blur-sm"
@@ -309,19 +307,6 @@ const EmployeesPage = () => {
                 </div>
               </div>
 
-              <div>
-                <label className={labelBase}>
-                  <Building2 size={11} className="inline mr-1" />
-                  Departemen
-                </label>
-                <input
-                  type="text" name="department" value={formData.department}
-                  onChange={handleInputChange}
-                  placeholder="Contoh: Poli Umum"
-                  className={inputBase}
-                />
-              </div>
-
               <div className="flex gap-3 pt-2 sticky bottom-0 bg-[#1a0a35]/95 backdrop-blur-md -mx-5 md:-mx-6 px-5 md:px-6 pb-2 -mb-2">
                 <button type="button" onClick={resetForm}
                   className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:bg-white/5 transition-all">
@@ -368,7 +353,6 @@ const EmployeesPage = () => {
                     <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden xl:table-cell">Username</th>
                     <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider">Role</th>
                     <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden lg:table-cell">Status</th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden lg:table-cell">Departemen</th>
                     <th className="text-center px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider">Aksi</th>
                   </tr>
                 </thead>
@@ -397,7 +381,6 @@ const EmployeesPage = () => {
                           {emp.employee_status || '-'}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-violet-200/60 hidden lg:table-cell">{emp.department || '-'}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2">
                           <button onClick={() => handleEdit(emp)}
@@ -453,10 +436,7 @@ const EmployeesPage = () => {
                           {emp.employee_status || '-'}
                         </span>
                       </div>
-                      <div className="mt-3 text-xs">
-                        <p className="text-slate-400 uppercase tracking-wider">Departemen</p>
-                        <p className="text-violet-200/80 mt-0.5">{emp.department || '-'}</p>
-                      </div>
+
                     </div>
                   </div>
                 </div>
