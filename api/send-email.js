@@ -52,7 +52,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "SIAP Puskesmas <onboarding@resend.dev>",
+        from: "SIAP Puskesmas <noreply@puskesmasampenan.com>",
         to: [to],
         subject: "Akun SIAP Puskesmas Ampenan",
         html,
