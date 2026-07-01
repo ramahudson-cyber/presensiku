@@ -188,19 +188,24 @@ html:not(.dark) .border-violet-500\/50 { border-color: #a5b4fc; }
 
 /* Purple gradient border utility */
 .border-gradient {
-  border: 2px solid transparent;
-  background-image: linear-gradient(to right, transparent, transparent),
-                    linear-gradient(to right, #7c3aed, #6366f1);
-  background-clip: padding-box, border-box;
-  background-origin: padding-box, border-box;
+  position: relative;
+  background: transparent;
   color: #ffffff !important;
 }
-html:not(.dark) .border-gradient {
-  background-image: linear-gradient(to right, transparent, transparent),
-                    linear-gradient(to right, var(--accent), #8b5cf6);
-  background-clip: padding-box, border-box;
-  background-origin: padding-box, border-box;
-  color: #ffffff !important;
+.border-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(to right, #7c3aed, #6366f1);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+html:not(.dark) .border-gradient::before {
+  background: linear-gradient(to right, var(--accent), #8b5cf6);
 }
 
 /* Login dark bg — force light colors in light mode */
