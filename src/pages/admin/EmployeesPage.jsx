@@ -321,20 +321,18 @@ const EmployeesPage = () => {
               <div>
                 <label className={labelBase}>
                   <Briefcase size={11} className="inline mr-1" />
-                  Jabatan
+                  Jabatan *
                 </label>
-                <input
-                  type="text" name="position" value={formData.position}
-                  onChange={handleInputChange}
-                  placeholder="Ketik atau pilih jabatan"
-                  list="position-list"
-                  className={inputBase}
-                />
-                <datalist id="position-list">
+                <select name="position" value={formData.position} onChange={handleInputChange} required
+                  className={inputBase}>
+                  <option value="" className="bg-[#1a0a35]">Pilih Jabatan</option>
                   {POSITIONS.map(p => (
-                    <option key={p} value={p} />
+                    <option key={p} value={p} className="bg-[#1a0a35]">{p}</option>
                   ))}
-                </datalist>
+                  {formData.position && !POSITIONS.includes(formData.position) && (
+                    <option value={formData.position} className="bg-[#1a0a35]">{formData.position}</option>
+                  )}
+                </select>
               </div>
 
               <div className="flex gap-3 pt-2 sticky bottom-0 bg-[#1a0a35]/95 backdrop-blur-md -mx-5 md:-mx-6 px-5 md:px-6 pb-2 -mb-2">
