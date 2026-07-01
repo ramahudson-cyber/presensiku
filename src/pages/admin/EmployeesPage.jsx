@@ -85,7 +85,7 @@ const EmployeesPage = () => {
     if (!confirmDelete) return;
     const id = confirmDelete;
     setConfirmDelete(null);
-    const { error } = await supabase.from('profiles').delete().eq('id', id);
+    const { error } = await supabase.rpc('delete_employee_with_auth', { p_user_id: id });
     if (error) {
       toast.error('Gagal menghapus pegawai');
     } else {
