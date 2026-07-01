@@ -224,6 +224,20 @@ html:not(.dark) .bg-gradient-to-r.from-violet-600.to-purple-700 {
   background: linear-gradient(to right, var(--accent), #8b5cf6);
 }
 
+/* Solid color backgrounds keep white text */
+html:not(.dark) .bg-purple-700,
+html:not(.dark) .bg-purple-600,
+html:not(.dark) .bg-violet-600,
+html:not(.dark) .bg-red-500,
+html:not(.dark) .bg-red-600,
+html:not(.dark) .bg-green-600,
+html:not(.dark) .bg-amber-500,
+html:not(.dark) .bg-orange-600,
+html:not(.dark) .bg-green-500,
+html:not(.dark) .bg-blue-600 {
+  color: #ffffff !important;
+}
+
 /* Shadows */
 html:not(.dark) .shadow-violet-950\/20 { box-shadow: var(--shadow-md); }
 html:not(.dark) .shadow-violet-900\/30,
