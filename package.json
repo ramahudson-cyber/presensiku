@@ -21,6 +21,7 @@
     "face-api.js": "^0.22.2",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.18.0",
+    "nodemailer": "^9.0.3",
     "puppeteer": "^25.2.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
