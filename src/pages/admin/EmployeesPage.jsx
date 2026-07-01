@@ -128,6 +128,21 @@ const EmployeesPage = () => {
         });
 
         if (error) throw error;
+        // Kirim notif email
+        try {
+          await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: formData.email,
+              username: formData.username,
+              full_name: formData.full_name,
+              password: 'Puskesmas@123',
+            }),
+          });
+        } catch (emailErr) {
+          console.warn('Email notif gagal:', emailErr);
+        }
         toast.success('Pegawai berhasil ditambahkan');
       }
 
