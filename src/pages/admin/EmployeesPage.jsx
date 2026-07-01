@@ -29,6 +29,7 @@ const EmployeesPage = () => {
     email: '',
     role: '',
     employee_status: '',
+    position: '',
   });
 
   const fetchEmployees = async () => {
@@ -57,7 +58,7 @@ const EmployeesPage = () => {
   const resetForm = () => {
     setFormData({
       id: '', username: '', full_name: '', email: '',
-      role: '', employee_status: '',
+      role: '', employee_status: '', position: '',
     });
     setShowForm(false);
   };
@@ -98,6 +99,7 @@ const EmployeesPage = () => {
             email: formData.email,
             role: formData.role,
             employee_status: formData.employee_status,
+            position: formData.position,
           })
           .eq('id', formData.id);
 
@@ -113,7 +115,7 @@ const EmployeesPage = () => {
           p_role: formData.role,
           p_employee_status: formData.employee_status,
           p_department: null,
-          p_position: null,
+          p_position: formData.position,
         });
 
         if (error) throw error;
@@ -136,7 +138,8 @@ const EmployeesPage = () => {
 
   const filtered = employees.filter(emp =>
     (emp.full_name || '').toLowerCase().includes(search.toLowerCase()) ||
-    (emp.username || '').toLowerCase().includes(search.toLowerCase())
+    (emp.username || '').toLowerCase().includes(search.toLowerCase()) ||
+    (emp.position || '').toLowerCase().includes(search.toLowerCase())
   );
 
   const roleBadge = (role) => {
@@ -306,6 +309,19 @@ const EmployeesPage = () => {
                 </div>
               </div>
 
+              <div>
+                <label className={labelBase}>
+                  <Briefcase size={11} className="inline mr-1" />
+                  Jabatan
+                </label>
+                <input
+                  type="text" name="position" value={formData.position}
+                  onChange={handleInputChange}
+                  placeholder="Contoh: Dokter Umum"
+                  className={inputBase}
+                />
+              </div>
+
               <div className="flex gap-3 pt-2 sticky bottom-0 bg-[#1a0a35]/95 backdrop-blur-md -mx-5 md:-mx-6 px-5 md:px-6 pb-2 -mb-2">
                 <button type="button" onClick={resetForm}
                   className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:bg-white/5 transition-all">
@@ -352,6 +368,7 @@ const EmployeesPage = () => {
                     <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden xl:table-cell">Username</th>
                     <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider">Role</th>
                     <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden lg:table-cell">Status</th>
+                    <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden xl:table-cell">Jabatan</th>
                     <th className="text-center px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider">Aksi</th>
                   </tr>
                 </thead>
@@ -380,6 +397,7 @@ const EmployeesPage = () => {
                           {emp.employee_status || '-'}
                         </span>
                       </td>
+                      <td className="px-4 py-3 text-violet-200/60 hidden xl:table-cell">{emp.position || '-'}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2">
                           <button onClick={() => handleEdit(emp)}
@@ -434,6 +452,10 @@ const EmployeesPage = () => {
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusBadge(emp.employee_status)}`}>
                           {emp.employee_status || '-'}
                         </span>
+                      </div>
+                      <div className="mt-3 text-xs">
+                        <p className="text-slate-400 uppercase tracking-wider">Jabatan</p>
+                        <p className="text-violet-200/80 mt-0.5">{emp.position || '-'}</p>
                       </div>
 
                     </div>

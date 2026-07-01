@@ -101,7 +101,7 @@ export default function DashboardPage() {
       // 2. Absensi hari ini
       const { data: attendanceToday } = await supabase
         .from("attendance")
-        .select("*, profiles(full_name)")
+        .select("*, profiles(full_name, position)")
         .eq("date", today)
         .order("clock_in_time", { ascending: false });
 

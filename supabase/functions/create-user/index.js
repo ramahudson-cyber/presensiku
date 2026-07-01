@@ -8,7 +8,7 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 export default async (req) => {
   try {
     const body = await req.json()
-    const { email, password, username, full_name, role, employee_status } = body
+    const { email, password, username, full_name, role, employee_status, position } = body
 
     // create user via admin API
     const { data: user, error: userError } = await supabase.auth.admin.createUser({
@@ -29,6 +29,7 @@ export default async (req) => {
       email,
       role,
       employee_status,
+      position: position || null,
       created_at: new Date().toISOString()
     }
 

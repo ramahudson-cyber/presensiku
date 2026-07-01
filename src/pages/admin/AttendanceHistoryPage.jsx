@@ -126,7 +126,7 @@ export default function AttendanceHistoryPage() {
       // Base query dengan join profiles
       let query = supabase
         .from("attendance")
-        .select("*, profiles(full_name)", { count: "exact" })
+        .select("*, profiles(full_name, position)", { count: "exact" })
         .gte("date", dateFrom)
         .lte("date", dateTo)
         .order("date", { ascending: false })
@@ -141,10 +141,11 @@ export default function AttendanceHistoryPage() {
       const { data, count, error } = await query;
       if (error) throw error;
 
-      // Filter search di client (nama pegawai)
+      // Filter search di client (nama pegawai / jabatan)
       const filtered = search.trim()
         ? (data || []).filter(r =>
-            r.profiles?.full_name?.toLowerCase().includes(search.toLowerCase())
+            r.profiles?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+            (r.profiles?.position || '').toLowerCase().includes(search.toLowerCase())
           )
         : (data || []);
 
@@ -183,17 +184,18 @@ export default function AttendanceHistoryPage() {
   const exportCSV = async () => {
     const { data, error } = await supabase
       .from("attendance")
-      .select("*, profiles(full_name)")
+      .select("*, profiles(full_name, position)")
       .gte("date", dateFrom)
       .lte("date", dateTo)
       .order("date", { ascending: false });
 
     if (error || !data) return;
 
-    const header = ["Tanggal", "Nama", "Absen Masuk", "Absen Pulang", "Status", "Terlambat (menit)"];
+    const header = ["Tanggal", "Nama", "Jabatan", "Absen Masuk", "Absen Pulang", "Status", "Terlambat (menit)"];
     const rows = data.map(r => [
       r.date,
       r.profiles?.full_name ?? "-",
+      r.profiles?.position ?? "-",
       fmtTime(r.clock_in_time),
       fmtTime(r.clock_out_time),
       r.attendance_status ?? "-",
