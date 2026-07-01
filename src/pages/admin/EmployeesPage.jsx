@@ -30,7 +30,6 @@ const EmployeesPage = () => {
     role: '',
     employee_status: '',
     department: '',
-    position: '',
   });
 
   const fetchEmployees = async () => {
@@ -59,7 +58,7 @@ const EmployeesPage = () => {
   const resetForm = () => {
     setFormData({
       id: '', username: '', full_name: '', email: '',
-      role: '', employee_status: '', department: '', position: '',
+      role: '', employee_status: '', department: '',
     });
     setShowForm(false);
   };
@@ -101,7 +100,6 @@ const EmployeesPage = () => {
             role: formData.role,
             employee_status: formData.employee_status,
             department: formData.department,
-            position: formData.position,
           })
           .eq('id', formData.id);
 
@@ -117,7 +115,7 @@ const EmployeesPage = () => {
           p_role: formData.role,
           p_employee_status: formData.employee_status,
           p_department: formData.department,
-          p_position: formData.position,
+          p_position: null,
         });
 
         if (error) throw error;
@@ -324,19 +322,6 @@ const EmployeesPage = () => {
                 />
               </div>
 
-              <div>
-                <label className={labelBase}>
-                  <Briefcase size={11} className="inline mr-1" />
-                  Jabatan
-                </label>
-                <input
-                  type="text" name="position" value={formData.position}
-                  onChange={handleInputChange}
-                  placeholder="Contoh: Dokter Umum"
-                  className={inputBase}
-                />
-              </div>
-
               <div className="flex gap-3 pt-2 sticky bottom-0 bg-[#1a0a35]/95 backdrop-blur-md -mx-5 md:-mx-6 px-5 md:px-6 pb-2 -mb-2">
                 <button type="button" onClick={resetForm}
                   className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:bg-white/5 transition-all">
@@ -384,7 +369,6 @@ const EmployeesPage = () => {
                     <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider">Role</th>
                     <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden lg:table-cell">Status</th>
                     <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden lg:table-cell">Departemen</th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden xl:table-cell">Jabatan</th>
                     <th className="text-center px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider">Aksi</th>
                   </tr>
                 </thead>
@@ -414,7 +398,6 @@ const EmployeesPage = () => {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-violet-200/60 hidden lg:table-cell">{emp.department || '-'}</td>
-                      <td className="px-4 py-3 text-violet-200/60 hidden xl:table-cell">{emp.position || '-'}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2">
                           <button onClick={() => handleEdit(emp)}
@@ -470,15 +453,9 @@ const EmployeesPage = () => {
                           {emp.employee_status || '-'}
                         </span>
                       </div>
-                      <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
-                        <div>
-                          <p className="text-slate-400 uppercase tracking-wider">Departemen</p>
-                          <p className="text-violet-200/80 mt-0.5">{emp.department || '-'}</p>
-                        </div>
-                        <div>
-                          <p className="text-slate-400 uppercase tracking-wider">Jabatan</p>
-                          <p className="text-violet-200/80 mt-0.5">{emp.position || '-'}</p>
-                        </div>
+                      <div className="mt-3 text-xs">
+                        <p className="text-slate-400 uppercase tracking-wider">Departemen</p>
+                        <p className="text-violet-200/80 mt-0.5">{emp.department || '-'}</p>
                       </div>
                     </div>
                   </div>

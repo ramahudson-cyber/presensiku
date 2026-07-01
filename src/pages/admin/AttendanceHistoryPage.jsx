@@ -126,7 +126,7 @@ export default function AttendanceHistoryPage() {
       // Base query dengan join profiles
       let query = supabase
         .from("attendance")
-        .select("*, profiles(full_name, department, position)", { count: "exact" })
+        .select("*, profiles(full_name, department)", { count: "exact" })
         .gte("date", dateFrom)
         .lte("date", dateTo)
         .order("date", { ascending: false })
@@ -184,7 +184,7 @@ export default function AttendanceHistoryPage() {
   const exportCSV = async () => {
     const { data, error } = await supabase
       .from("attendance")
-      .select("*, profiles(full_name, department, position)")
+      .select("*, profiles(full_name, department)")
       .gte("date", dateFrom)
       .lte("date", dateTo)
       .order("date", { ascending: false });
