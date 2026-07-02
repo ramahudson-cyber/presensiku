@@ -7,6 +7,10 @@ function isNativePlatform() {
 
 export async function getCurrentPosition(options = {}) {
   if (isNativePlatform()) {
+    const permResult = await Geolocation.requestPermissions();
+    if (!permResult.location || permResult.location === 'denied') {
+      throw new Error('Izin lokasi tidak diberikan');
+    }
     const pos = await Geolocation.getCurrentPosition({
       enableHighAccuracy: true,
       timeout: 15000,
