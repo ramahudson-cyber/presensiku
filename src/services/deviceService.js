@@ -1,44 +1,67 @@
 // src/services/deviceservice.js
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { supabase } from "../lib/supabase";
+import { isNativePlatform, isAndroidCapacitor } from "../lib/devicePlatform";
 
 /**
- * Generate device fingerprint
+ * Generate device info (platform-aware)
+ * - Android (Capacitor) → Device.getId() untuk Android ID
+ * - iOS (Capacitor) → Device.getId() 
+ * - Web → FingerprintJS (existing)
  */
 export async function getDeviceInfo() {
-  const fp = await FingerprintJS.load();
-  const result = await fp.get();
+  let visitorId, deviceName = "Unknown Device", deviceOs = "Unknown", deviceBrowser = "Unknown", deviceType = "web";
 
-  const visitorId = result.visitorId;
+  if (isNativePlatform()) {
+    try {
+      const { Device } = await import('@capacitor/device');
+      const idResult = await Device.getId();
+      visitorId = idResult.uuid;
+
+      const infoResult = await Device.getInfo();
+      deviceOs = infoResult.operatingSystem;
+      deviceName = infoResult.model || infoResult.manufacturer || "Unknown Device";
+      deviceBrowser = infoResult.platform || "Native";
+
+      if (isAndroidCapacitor()) {
+        deviceType = "android";
+      } else {
+        deviceType = "ios";
+      }
+    } catch (err) {
+      console.error("❌ Capacitor Device error:", err);
+      visitorId = "native-fallback-" + Date.now();
+    }
+  } else {
+    const fp = await FingerprintJS.load();
+    const result = await fp.get();
+    visitorId = result.visitorId;
+    deviceType = "web";
+  }
+
+  // Deteksi OS & browser dari User-Agent (fallback + untuk semua platform)
   const ua = navigator.userAgent;
-  let deviceName = "Unknown Device";
-  let deviceOs = "Unknown";
-  let deviceBrowser = "Unknown";
+  if (/Windows/i.test(ua)) deviceOs = deviceOs === "Unknown" ? "Windows" : deviceOs;
+  else if (/Android/i.test(ua)) deviceOs = deviceOs === "Unknown" ? "Android" : deviceOs;
+  else if (/iPhone|iPad|iPod/i.test(ua)) deviceOs = deviceOs === "Unknown" ? "iOS" : deviceOs;
+  else if (/Mac/i.test(ua)) deviceOs = deviceOs === "Unknown" ? "macOS" : deviceOs;
+  else if (/Linux/i.test(ua)) deviceOs = deviceOs === "Unknown" ? "Linux" : deviceOs;
 
-  // Deteksi OS
-  if (/Windows/i.test(ua)) deviceOs = "Windows";
-  else if (/Android/i.test(ua)) deviceOs = "Android";
-  else if (/iPhone|iPad|iPod/i.test(ua)) deviceOs = "iOS";
-  else if (/Mac/i.test(ua)) deviceOs = "macOS";
-  else if (/Linux/i.test(ua)) deviceOs = "Linux";
+  if (/Chrome/i.test(ua) && !/Edg|OPR/i.test(ua)) deviceBrowser = deviceBrowser === "Unknown" ? "Chrome" : deviceBrowser;
+  else if (/Firefox/i.test(ua)) deviceBrowser = deviceBrowser === "Unknown" ? "Firefox" : deviceBrowser;
+  else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) deviceBrowser = deviceBrowser === "Unknown" ? "Safari" : deviceBrowser;
+  else if (/Edg/i.test(ua)) deviceBrowser = deviceBrowser === "Unknown" ? "Edge" : deviceBrowser;
+  else if (/OPR|Opera/i.test(ua)) deviceBrowser = deviceBrowser === "Unknown" ? "Opera" : deviceBrowser;
 
-  // Deteksi browser
-  if (/Chrome/i.test(ua) && !/Edg|OPR/i.test(ua)) deviceBrowser = "Chrome";
-  else if (/Firefox/i.test(ua)) deviceBrowser = "Firefox";
-  else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) deviceBrowser = "Safari";
-  else if (/Edg/i.test(ua)) deviceBrowser = "Edge";
-  else if (/OPR|Opera/i.test(ua)) deviceBrowser = "Opera";
-
-  // Deteksi nama device
   if (/Android/i.test(ua)) {
     const match = ua.match(/Android;[^;]+;([^)]+)\)/);
     if (match) deviceName = `Android ${match[1].trim()}`;
-    else deviceName = "Android Device";
+    else if (deviceName === "Unknown Device") deviceName = "Android Device";
   } else if (/iPhone/i.test(ua)) {
     deviceName = "iPhone";
   } else if (/iPad/i.test(ua)) {
     deviceName = "iPad";
-  } else {
+  } else if (deviceName === "Unknown Device") {
     deviceName = `${deviceOs} ${deviceBrowser}`;
   }
 
@@ -50,6 +73,7 @@ export async function getDeviceInfo() {
     deviceName,
     deviceOs,
     deviceBrowser,
+    deviceType,
   };
 }
 
@@ -64,6 +88,7 @@ export async function checkDeviceBinding(userId, deviceInfo) {
       p_device_name: deviceInfo.deviceName,
       p_device_os: deviceInfo.deviceOs,
       p_device_browser: deviceInfo.deviceBrowser,
+      p_device_type: deviceInfo.deviceType,
     });
 
     if (error) throw error;
@@ -218,6 +243,7 @@ export async function createDeviceRequest(deviceInfo) {
       p_device_name: deviceInfo.deviceName,
       p_device_os: deviceInfo.deviceOs,
       p_device_browser: deviceInfo.deviceBrowser,
+      p_device_type: deviceInfo.deviceType,
     });
 
     if (error) throw error;

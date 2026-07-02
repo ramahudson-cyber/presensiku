@@ -11,9 +11,11 @@ import EmployeeSchedule from "../pages/employee/EmployeeSchedule";
 import SchedulingPage from "../pages/admin/SchedulingPage";
 import ComingSoonPage from "../pages/admin/ComingSoonPage";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
+import BlockPage from "../pages/BlockPage";
 import NotFoundPage from "../pages/NotFoundPage";
 
 import ProtectedRoute from "./ProtectedRoute";
+import PlatformGuard from "../lib/PlatformGuard";
 import AdminLayout from "../layouts/AdminLayout";
 
 function AppRoutes() {
@@ -22,13 +24,16 @@ function AppRoutes() {
       {/* PUBLIC */}
       <Route path="/" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      <Route path="/block" element={<BlockPage />} />
 
       {/* ADMIN */}
       <Route
         path="/admin"
         element={
-          <ProtectedRoute allowedRoles={["super_admin", "admin_puskesmas"]}>
-            <AdminLayout />
+          <ProtectedRoute allowedRoles={["super_admin", "admin_puskesmas", "kepala_unit"]}>
+            <PlatformGuard>
+              <AdminLayout />
+            </PlatformGuard>
           </ProtectedRoute>
         }
       >
@@ -47,7 +52,9 @@ function AppRoutes() {
         path="/employee"
         element={
           <ProtectedRoute allowedRoles={["pegawai"]}>
-            <AdminLayout />
+            <PlatformGuard>
+              <AdminLayout />
+            </PlatformGuard>
           </ProtectedRoute>
         }
       >

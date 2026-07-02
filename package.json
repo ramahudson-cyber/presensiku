@@ -13,6 +13,7 @@
     "@capacitor/android": "^8.4.1",
     "@capacitor/cli": "^8.4.1",
     "@capacitor/core": "^8.4.1",
+    "@capacitor/device": "^8.0.2",
     "@fingerprintjs/fingerprintjs": "^5.2.0",
     "@supabase/supabase-js": "^2.108.2",
     "@tabler/icons-react": "^3.44.0",
@@ -27,6 +28,7 @@
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.17.0",
     "react-toastify": "^11.1.0",
+    "sharp": "^0.35.3",
     "sweetalert2": "^11.26.25",
     "tailwindcss": "^4.3.1",
     "xlsx": "^0.18.5"

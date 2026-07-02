@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
@@ -11,7 +11,6 @@ import {
   verifyOtp,
   createDeviceRequest,
 } from "../../services/deviceService";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import {
   AlertCircle, Mail, Clock, RefreshCw, ArrowLeft, Loader2, Eye, EyeOff, Lock
 } from "lucide-react";
@@ -30,13 +29,6 @@ export default function LoginPage() {
   const [userEmail, setUserEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("");
-
-  // ⚡ PRELOAD: FingerprintJS dimuat saat halaman login pertama kali dibuka
-  // (bukan saat user klik submit) — hemat ~1-2 detik
-  const fpPromiseRef = useRef(null);
-  useEffect(() => {
-    fpPromiseRef.current = FingerprintJS.load();
-  }, []);
 
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
@@ -66,11 +58,11 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // ⚡ STEP 1: Resolve email + Preload device info SECARA PARALEL
+      // ⚡ STEP 1: Resolve email + Ambil device info SECARA PARALEL
       setLoadingText("Memverifikasi akun...");
-      const [email, preloadedDeviceInfo] = await Promise.all([
+      const [email, deviceInfoResult] = await Promise.all([
         resolveEmail(username),
-        getDeviceInfoPreloaded(),
+        getDeviceInfo(),
       ]);
 
       // ⚡ STEP 2: Sign in
@@ -93,11 +85,11 @@ export default function LoginPage() {
       setUserEmail(profile.email || email);
       setUserName(profile.full_name || username);
       setUserId(authUser.id);
-      setDeviceInfo(preloadedDeviceInfo);
+      setDeviceInfo(deviceInfoResult);
 
       // ⚡ STEP 4: Cek device binding
       setLoadingText("Memeriksa perangkat...");
-      const deviceCheck = await checkDeviceBinding(authUser.id, preloadedDeviceInfo);
+      const deviceCheck = await checkDeviceBinding(authUser.id, deviceInfoResult);
 
       if (deviceCheck.canLogin && !deviceCheck.requiresOtp) {
         setLoadingText("Memuat dashboard...");
@@ -113,7 +105,7 @@ export default function LoginPage() {
 
       // ⚡ STEP 5: Cek device request status
       setLoadingText("Cek status persetujuan...");
-      const reqStatus = await checkDeviceRequestStatus(authUser.id, preloadedDeviceInfo.visitorId);
+      const reqStatus = await checkDeviceRequestStatus(authUser.id, deviceInfoResult.visitorId);
 
       if (reqStatus.hasRequest) {
         if (reqStatus.status === "pending") {
@@ -144,51 +136,6 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
       setLoadingText("");
-    }
-  };
-
-  // ⚡ Helper: pakai FingerprintJS yang sudah di-preload
-  const getDeviceInfoPreloaded = async () => {
-    try {
-      const fp = await fpPromiseRef.current;
-      const result = await fp.get();
-      const visitorId = result.visitorId;
-      const ua = navigator.userAgent;
-      let deviceName = "Unknown Device";
-      let deviceOs = "Unknown";
-      let deviceBrowser = "Unknown";
-
-      if (/Windows/i.test(ua)) deviceOs = "Windows";
-      else if (/Android/i.test(ua)) deviceOs = "Android";
-      else if (/iPhone|iPad|iPod/i.test(ua)) deviceOs = "iOS";
-      else if (/Mac/i.test(ua)) deviceOs = "macOS";
-      else if (/Linux/i.test(ua)) deviceOs = "Linux";
-
-      if (/Chrome/i.test(ua) && !/Edg|OPR/i.test(ua)) deviceBrowser = "Chrome";
-      else if (/Firefox/i.test(ua)) deviceBrowser = "Firefox";
-      else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) deviceBrowser = "Safari";
-      else if (/Edg/i.test(ua)) deviceBrowser = "Edge";
-      else if (/OPR|Opera/i.test(ua)) deviceBrowser = "Opera";
-
-      if (/Android/i.test(ua)) {
-        const match = ua.match(/Android;[^;]+;([^)]+)\)/);
-        if (match) deviceName = `Android ${match[1].trim()}`;
-        else deviceName = "Android Device";
-      } else if (/iPhone/i.test(ua)) {
-        deviceName = "iPhone";
-      } else if (/iPad/i.test(ua)) {
-        deviceName = "iPad";
-      } else {
-        deviceName = `${deviceOs} ${deviceBrowser}`;
-      }
-
-      const screenInfo = `${window.screen.width}x${window.screen.height}`;
-      deviceName = `${deviceName} (${screenInfo})`;
-
-      return { visitorId, deviceName, deviceOs, deviceBrowser };
-    } catch (err) {
-      console.error("Fingerprint error:", err);
-      return { visitorId: "fallback-" + Date.now(), deviceName: "Unknown", deviceOs: "Unknown", deviceBrowser: "Unknown" };
     }
   };
 

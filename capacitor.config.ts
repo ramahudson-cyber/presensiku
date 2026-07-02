@@ -4,8 +4,8 @@ const config: CapacitorConfig = {
   appId: 'com.puskesmas.ampenan.siap',
   appName: 'SIAP Puskesmas',
   webDir: 'dist',
-  version: '1.0.0',
-  versionCode: 1,
+  version: '1.1.0',
+  versionCode: 2,
 };
 
 export default config;

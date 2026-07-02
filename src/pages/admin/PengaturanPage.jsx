@@ -939,6 +939,11 @@ function TabManajemenUser() {
                                       <p className="text-sm font-medium text-white truncate">{device.device_name || "Unknown Device"}</p>
                                       <p className="text-xs text-slate-300 font-mono mt-0.5 truncate">ID: {device.visitor_id?.substring(0, 20)}…</p>
                                       <p className="text-xs text-slate-400 mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
+                                      {device.device_type && (
+                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 text-[10px] font-medium rounded-full ring-1 ${device.device_type === 'android' ? 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30' : device.device_type === 'ios' ? 'bg-sky-500/15 text-sky-300 ring-sky-500/30' : 'bg-slate-500/15 text-slate-300 ring-slate-500/30'}`}>
+                                          {device.device_type === 'android' ? '📱 Android' : device.device_type === 'ios' ? '🍎 iOS' : '🌐 Web'}
+                                        </span>
+                                      )}
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-2 shrink-0">
@@ -1015,6 +1020,11 @@ function TabManajemenUser() {
                       <p className="text-sm font-medium text-white truncate">{device.device_name || "Unknown Device"}</p>
                       <p className="text-xs text-slate-300 font-mono mt-0.5 truncate">ID: {device.visitor_id?.substring(0, 20)}…</p>
                       <p className="text-xs text-slate-400 mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
+                      {device.device_type && (
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 text-[10px] font-medium rounded-full ring-1 ${device.device_type === 'android' ? 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30' : device.device_type === 'ios' ? 'bg-sky-500/15 text-sky-300 ring-sky-500/30' : 'bg-slate-500/15 text-slate-300 ring-slate-500/30'}`}>
+                          {device.device_type === 'android' ? '📱 Android' : device.device_type === 'ios' ? '🍎 iOS' : '🌐 Web'}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -1179,6 +1189,16 @@ function TabApprovalDevice() {
                       </p>
                       <p className="text-violet-200/70">
                         <strong className="text-violet-100">OS:</strong> {req.device_os || "Unknown"}
+                      </p>
+                      <p className="text-violet-200/70">
+                        <strong className="text-violet-100">Type:</strong>{' '}
+                        {req.device_type === 'android' ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/15 text-emerald-300 rounded-full font-medium text-[10px]">📱 Android</span>
+                        ) : req.device_type === 'ios' ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-sky-500/15 text-sky-300 rounded-full font-medium text-[10px]">🍎 iOS</span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-500/15 text-slate-300 rounded-full font-medium text-[10px]">🌐 Web</span>
+                        )}
                       </p>
                       <p className="text-slate-300 font-mono break-all">
                         <strong className="text-violet-200/70">ID:</strong> {req.visitor_id?.substring(0, 30)}…
