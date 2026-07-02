@@ -50,7 +50,7 @@ function getDeviceInfoLite() {
 
 const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-const isStandalonePwa = window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
+const isStandalonePwa = (window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches) && !/android/i.test(navigator.userAgent);
 
 export default function AttendancePage() {
   const { user } = useAuth();
@@ -83,8 +83,6 @@ export default function AttendancePage() {
   const [savingAttendance, setSavingAttendance] = useState(false);
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
   const cameraStartingRef = useRef(false);
-  const fileInputRef = useRef(null);
-  const [showNativeFallback, setShowNativeFallback] = useState(false);
 
   // ============================================================
   // ⏰ SYNC SERVER TIME — anti-cheat timestamp
@@ -550,52 +548,6 @@ export default function AttendancePage() {
     }
   };
 
-  // 📱 PWA iOS: native camera via file input + selfie verification
-  const handleNativePhoto = async (e) => {
-    const file = e.target?.files?.[0];
-    if (!file) return;
-    e.target.value = "";
-    try {
-      setFaceStatus("loading");
-      setFaceMessage("Memverifikasi wajah...");
-      const reader = new FileReader();
-      reader.onload = async (ev) => {
-        const dataUrl = ev.target.result;
-
-        // 🔍 Verifikasi selfie: deteksi wajah di foto hasil native camera
-        if (modelsReadyRef.current) {
-          const img = new Image();
-          img.src = dataUrl;
-          await img.decode();
-          const detection = await faceapi.detectSingleFace(
-            img,
-            new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.3 })
-          );
-          if (!detection) {
-            closeCameraModal();
-            setPersistentError("Wajah tidak terdeteksi. Foto harus selfie dengan wajah jelas.");
-            return;
-          }
-        }
-
-        setFaceMessage("Menyimpan absensi...");
-        const saved = await saveAttendanceToSupabase(dataUrl, currentCoords);
-        if (saved) {
-          setFaceStatus("success");
-          setFaceMessage("Absensi tersimpan!");
-          setTimeout(() => closeCameraModal(), 1800);
-        } else {
-          setFaceStatus("idle");
-          setFaceMessage("");
-        }
-      };
-      reader.readAsDataURL(file);
-    } catch {
-      setFaceStatus("idle");
-      setFaceMessage("Gagal memproses foto");
-    }
-  };
-
   const scheduleDetection = () => {
     if (detectionTimer) clearTimeout(detectionTimer);
     if (!streamAlive()) return;
@@ -682,14 +634,12 @@ export default function AttendancePage() {
     if (cameraStartingRef.current) return;
     cameraStartingRef.current = true;
 
-    // Jika model AI gagal, langsung native camera fallback
-    if (modelsFailed) {
-      setCameraOpen(true);
-      setShowNativeFallback(true);
-      setFaceStatus("idle");
-      setFaceMessage("");
-      cameraStartingRef.current = false;
-      return;
+    // 📱 Android: pre-flight permintaan izin kamera
+    if (/android/i.test(navigator.userAgent) && navigator.mediaDevices) {
+      try {
+        const permStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        permStream.getTracks().forEach(t => t.stop());
+      } catch { /* abaikan, error akan muncul di langkah utama */ }
     }
 
     // 📱 iOS PWA: hybrid approach
@@ -720,13 +670,14 @@ export default function AttendancePage() {
           await startStreamCapture(stream);
           cameraStartingRef.current = false;
           return;
-        } catch {
-          // getUserMedia gagal/timeout di PWA → visible native camera button
+        } catch (retryErr) {
           cleanupCamera();
-          setShowNativeFallback(true);
-          setFaceStatus("idle");
-          setFaceMessage("");
           cameraStartingRef.current = false;
+          if (retryErr.message === "getUserMedia_timeout") {
+            setPersistentError("Kamera tidak merespon. Coba restart aplikasi.");
+          } else {
+            setPersistentError("Gagal akses kamera: " + (retryErr.message || ""));
+          }
           return;
         }
       }
@@ -782,7 +733,6 @@ export default function AttendancePage() {
     setFaceStatus("idle");
     setFaceMessage("");
     setCameraError("");
-    setShowNativeFallback(false);
   };
 
   const timeStr = displayTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -923,11 +873,6 @@ export default function AttendancePage() {
           )}
         </div>
 
-        {!todayAttendance && modelsFailed && (
-          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 mb-2">
-            Mode AI tidak tersedia. Gunakan mode foto manual.
-          </div>
-        )}
         {!todayAttendance && (
           <>
             <button
@@ -1052,19 +997,7 @@ export default function AttendancePage() {
                 </div>
               </div>
 
-              {showNativeFallback && (
-                <div className="relative w-full mt-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-center">
-                  <p className="text-xs text-amber-200 mb-3">Kamera tidak merespon. Gunakan mode foto manual:</p>
-                  <label className="block w-full py-4 border-gradient bg-transparent text-white rounded-2xl font-semibold text-center cursor-pointer active:scale-95 transition">
-                    <Camera size={20} className="inline mr-2" /> Ambil Foto Manual
-                    <input ref={fileInputRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handleNativePhoto} />
-                  </label>
-                  <button onClick={() => { setShowNativeFallback(false); closeCameraModal(); }}
-                    className="mt-3 w-full py-2.5 rounded-xl border-gradient bg-transparent text-white text-xs font-medium">
-                    Tutup
-                  </button>
-                </div>
-              )}
+              
             </div>
           </div>
         </div>
