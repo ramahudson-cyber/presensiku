@@ -1,7 +1,7 @@
 {
   "version": "1.2.0",
   "versionCode": 3,
-  "apkUrl": "/SIAP Puskesmas.apk",
+  "apkUrl": "/SIAP-Puskesmas.apk",
   "changelog": "Perbaikan GPS & kamera di Android + hapus foto manual",
   "forceUpdate": true
 }

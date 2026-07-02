@@ -15,7 +15,7 @@ export default function BlockPage() {
           Silakan install aplikasi terlebih dahulu, lalu login kembali.
         </p>
         <a
-          href="/SIAP%20Puskesmas.apk"
+          href="/SIAP-Puskesmas.apk"
           download
           className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors"
         >
