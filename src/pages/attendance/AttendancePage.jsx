@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import LocationMap from "../../components/LocationMap";
 import * as faceapi from "face-api.js";
+import { getCurrentPosition } from "../../services/geoService";
 
 const PUSKESMAS_LOCATION = { latitude: -8.5699, longitude: 116.0770 };
 const RADIUS_METER = 999999; // TEST MODE — ubah ke 300 untuk produksi
@@ -279,29 +280,21 @@ export default function AttendancePage() {
     } catch (e) { console.error(e); }
   };
 
-  const getLocation = () => {
+  const getLocation = async () => {
     setLocationStatus("checking");
     setIsFakeGPS(false);
-    if (!navigator.geolocation) { setLocationStatus("error"); return; }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const loc = {
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          accuracy: pos.coords.accuracy,
-          altitude: pos.coords.altitude
-        };
-        setCurrentCoords(loc);
-        setGpsAccuracy(Math.round(loc.accuracy));
-        const isFake = (loc.accuracy < 3) && (loc.altitude === null || loc.altitude === 0);
-        if (isFake) { setIsFakeGPS(true); setLocationStatus("invalid"); return; }
-        const dist = calculateDistance(loc.latitude, loc.longitude, PUSKESMAS_LOCATION.latitude, PUSKESMAS_LOCATION.longitude);
-        setDistance(Math.round(dist));
-        setLocationStatus(dist <= RADIUS_METER ? "valid" : "invalid");
-      },
-      () => { setLocationStatus("error"); },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-    );
+    try {
+      const loc = await getCurrentPosition();
+      setCurrentCoords(loc);
+      setGpsAccuracy(Math.round(loc.accuracy));
+      const isFake = (loc.accuracy < 3) && (loc.altitude === null || loc.altitude === 0);
+      if (isFake) { setIsFakeGPS(true); setLocationStatus("invalid"); return; }
+      const dist = calculateDistance(loc.latitude, loc.longitude, PUSKESMAS_LOCATION.latitude, PUSKESMAS_LOCATION.longitude);
+      setDistance(Math.round(dist));
+      setLocationStatus(dist <= RADIUS_METER ? "valid" : "invalid");
+    } catch {
+      setLocationStatus("error");
+    }
   };
 
   // ============================================================
