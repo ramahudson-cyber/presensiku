@@ -57,6 +57,7 @@ export default function AttendancePage() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
+  const detectionTimerRef = useRef(null);
 
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [todaySchedule, setTodaySchedule] = useState(null);
@@ -445,8 +446,9 @@ export default function AttendancePage() {
 
   const onStreamEnded = () => {
     if (!streamRef.current) return;
-    setPersistentError("Stream kamera terputus. Coba lagi.");
     cleanupCamera();
+    setFaceStatus("idle");
+    setCameraError("Stream kamera terputus. Tutup dan coba lagi.");
   };
 
   // ⏱ Tunggu video element ter-render + punya dimensi (layout selesai)
@@ -465,7 +467,6 @@ export default function AttendancePage() {
 
   // ⏱ Deteksi cepat — interval kecil untuk respons senyum real-time
   const DETECTION_INTERVAL = 150;
-  let detectionTimer = null;
 
   const capturePhoto = async () => {
     if (!videoRef.current || !streamAlive()) return;
@@ -556,9 +557,9 @@ export default function AttendancePage() {
   };
 
   const scheduleDetection = () => {
-    if (detectionTimer) clearTimeout(detectionTimer);
+    if (detectionTimerRef.current) clearTimeout(detectionTimerRef.current);
     if (!streamAlive()) return;
-    detectionTimer = setTimeout(async () => {
+    detectionTimerRef.current = setTimeout(async () => {
       const next = await runDetection();
       if (next && streamAlive()) scheduleDetection();
     }, DETECTION_INTERVAL);
@@ -726,9 +727,9 @@ export default function AttendancePage() {
 
 
   const cleanupCamera = () => {
-    if (detectionTimer) {
-      clearTimeout(detectionTimer);
-      detectionTimer = null;
+    if (detectionTimerRef.current) {
+      clearTimeout(detectionTimerRef.current);
+      detectionTimerRef.current = null;
     }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(t => {
