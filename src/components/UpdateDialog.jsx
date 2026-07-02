@@ -13,10 +13,15 @@ export default function UpdateDialog() {
 
   if (!update || dismissed) return null;
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!update.apkUrl) return;
     setDownloading(true);
-    window.location.href = update.apkUrl;
+    try {
+      const { Browser } = await import("@capacitor/browser");
+      await Browser.open({ url: update.apkUrl });
+    } catch {
+      window.location.href = update.apkUrl;
+    }
   };
 
   return (
