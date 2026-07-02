@@ -146,6 +146,7 @@ export default function AttendancePage() {
 
     const onVisibility = () => {
       if (document.visibilityState !== "visible") return;
+      if (cameraStartingRef.current) return;
       if (!canReload()) return;
       if (cameraOpen && streamRef.current) {
         const alive = streamRef.current.getVideoTracks().some(t => t.readyState === "live");
@@ -582,8 +583,17 @@ export default function AttendancePage() {
 
     try { await navigator.mediaDevices.enumerateDevices(); } catch {}
 
+    const constraints = {
+      video: {
+        facingMode: "user",
+        width: { ideal: 640 },
+        height: { ideal: 480 }
+      },
+      audio: false
+    };
+
     try {
-      return await getUserMediaWithTimeout({ video: true, audio: false });
+      return await getUserMediaWithTimeout(constraints);
     } catch {
       return await getUserMediaWithTimeout({ video: { facingMode: "user" }, audio: false });
     }
@@ -659,7 +669,7 @@ export default function AttendancePage() {
         await waitForVideoElement(videoRef);
         // Primer play: panggil play() di video kosong untuk "prime" autoplay izin
         videoRef.current?.play().catch(() => {});
-        const stream = await getUserMediaWithTimeout({ video: true, audio: false }, 5000);
+        const stream = await getUserMediaWithTimeout({ video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }, audio: false }, 5000);
         await startStreamCapture(stream);
         cameraStartingRef.current = false;
         return;
@@ -668,7 +678,7 @@ export default function AttendancePage() {
         try {
           await waitForVideoElement(videoRef);
           videoRef.current?.play().catch(() => {});
-          const stream = await getUserMediaWithTimeout({ video: true, audio: false }, 5000);
+          const stream = await getUserMediaWithTimeout({ video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }, audio: false }, 5000);
           await startStreamCapture(stream);
           cameraStartingRef.current = false;
           return;
@@ -952,7 +962,7 @@ export default function AttendancePage() {
               <div className="relative w-full max-w-md aspect-square shrink-0">
                 <div className="absolute -inset-3 sm:-inset-4 bg-gradient-to-br from-violet-600/20 to-purple-800/20 rounded-[1.5rem] sm:rounded-[2rem] blur-2xl"></div>
                 <div className="relative w-full h-full rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden bg-slate-900 shadow-2xl border border-white/10">
-                  <video ref={videoRef} playsInline webkit-playsinline autoPlay muted className="w-full h-full object-cover" style={{ transform: "scaleX(-1) translate3d(0,0,0)" }} />
+                  <video ref={videoRef} playsInline webkit-playsinline autoPlay muted className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
                   <canvas ref={canvasRef} className="hidden" />
 
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
