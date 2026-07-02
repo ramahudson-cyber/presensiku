@@ -16,8 +16,7 @@ export default function UpdateDialog() {
   const handleDownload = () => {
     if (!update.apkUrl) return;
     setDownloading(true);
-    window.open(update.apkUrl, "_blank");
-    setTimeout(() => setDownloading(false), 3000);
+    window.location.href = update.apkUrl;
   };
 
   return (
