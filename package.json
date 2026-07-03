@@ -24,6 +24,7 @@
     "dotenv": "^17.4.2",
     "face-api.js": "^0.22.2",
     "leaflet": "^1.9.4",
+    "libsodium-wrappers": "^0.8.4",
     "lucide-react": "^1.18.0",
     "nodemailer": "^9.0.3",
     "puppeteer": "^25.2.1",

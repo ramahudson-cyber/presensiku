@@ -1,0 +1,9 @@
+﻿2026-07-03T01:35:16.0220951Z ##[group]Run cp android/app/build/outputs/apk/debug/app-debug.apk public/SIAP-Puskesmas.apk
+2026-07-03T01:35:16.0221645Z [36;1mcp android/app/build/outputs/apk/debug/app-debug.apk public/SIAP-Puskesmas.apk[0m
+2026-07-03T01:35:16.0255301Z shell: /usr/bin/bash -e {0}
+2026-07-03T01:35:16.0255559Z env:
+2026-07-03T01:35:16.0255869Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-03T01:35:16.0256396Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-03T01:35:16.0256799Z   ANDROID_HOME: /usr/local/lib/android/sdk
+2026-07-03T01:35:16.0257100Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+2026-07-03T01:35:16.0257374Z ##[endgroup]

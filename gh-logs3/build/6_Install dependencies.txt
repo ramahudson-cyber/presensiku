@@ -1,0 +1,26 @@
+﻿2026-07-03T01:32:15.3293483Z ##[group]Run npm ci
+2026-07-03T01:32:15.3293801Z [36;1mnpm ci[0m
+2026-07-03T01:32:15.3527531Z shell: /usr/bin/bash -e {0}
+2026-07-03T01:32:15.3527845Z env:
+2026-07-03T01:32:15.3528192Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-03T01:32:15.3528755Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-03T01:32:15.3529226Z   ANDROID_HOME: /usr/local/lib/android/sdk
+2026-07-03T01:32:15.3529556Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+2026-07-03T01:32:15.3529864Z ##[endgroup]
+2026-07-03T01:32:19.8995578Z npm warn deprecated source-map@0.8.0-beta.0: The work that was done in this beta branch won't be included in future versions
+2026-07-03T01:32:21.8957530Z npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-07-03T01:32:36.8070993Z 
+2026-07-03T01:32:36.8071973Z added 589 packages, and audited 590 packages in 21s
+2026-07-03T01:32:36.8072603Z 
+2026-07-03T01:32:36.8072863Z 147 packages are looking for funding
+2026-07-03T01:32:36.8073239Z   run `npm fund` for details
+2026-07-03T01:32:36.8114932Z 
+2026-07-03T01:32:36.8117567Z 4 vulnerabilities (2 low, 2 high)
+2026-07-03T01:32:36.8117953Z 
+2026-07-03T01:32:36.8118632Z To address all issues possible (including breaking changes), run:
+2026-07-03T01:32:36.8119431Z   npm audit fix --force
+2026-07-03T01:32:36.8119709Z 
+2026-07-03T01:32:36.8120177Z Some issues need review, and may require choosing
+2026-07-03T01:32:36.8120887Z a different dependency.
+2026-07-03T01:32:36.8121168Z 
+2026-07-03T01:32:36.8121860Z Run `npm audit` for details.

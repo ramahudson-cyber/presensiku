@@ -1,0 +1,24 @@
+﻿2026-07-03T01:35:16.0693665Z ##[group]Run npx vercel --prod --token $VERCEL_TOKEN --yes
+2026-07-03T01:35:16.0694399Z [36;1mnpx vercel --prod --token $VERCEL_TOKEN --yes[0m
+2026-07-03T01:35:16.0737737Z shell: /usr/bin/bash -e {0}
+2026-07-03T01:35:16.0738155Z env:
+2026-07-03T01:35:16.0738662Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-03T01:35:16.0739524Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-03T01:35:16.0740222Z   ANDROID_HOME: /usr/local/lib/android/sdk
+2026-07-03T01:35:16.0740728Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+2026-07-03T01:35:16.0741778Z   VERCEL_TOKEN: ***
+2026-07-03T01:35:16.0742155Z ##[endgroup]
+2026-07-03T01:35:17.1636147Z npm warn exec The following package was not found and will be installed: vercel@54.20.0
+2026-07-03T01:35:24.8523432Z npm warn deprecated stream-to-promise@2.2.0: Deprecated. Use node:stream/promises and node:stream/consumers instead.
+2026-07-03T01:35:27.5236582Z npm warn deprecated tar@7.5.7: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-07-03T01:35:29.1827034Z Vercel CLI 54.20.0 (Node.js 22.23.1)
+2026-07-03T01:35:29.2173154Z > NOTE: The Vercel CLI now collects telemetry regarding usage of the CLI.
+2026-07-03T01:35:29.2174999Z > This information is used to shape the CLI roadmap and prioritize features.
+2026-07-03T01:35:29.2177088Z > You can learn more, including how to opt-out if you'd not like to participate in this program, by visiting the following URL:
+2026-07-03T01:35:29.2179236Z > https://vercel.com/docs/cli/about-telemetry
+2026-07-03T01:35:29.3795373Z 
+2026-07-03T01:35:29.3796799Z   Directory       ~/work/siap-ampenan/siap-ampenan
+2026-07-03T01:35:29.3797278Z 
+2026-07-03T01:35:29.3801081Z Loading user…
+2026-07-03T01:35:29.3917101Z Error: The token provided via `--token` argument is not valid. Please provide a valid token.
+2026-07-03T01:35:29.4842078Z ##[error]Process completed with exit code 1.

@@ -1,6 +1,6 @@
 {
-  "version": "1.2.2",
-  "versionCode": 5,
+  "version": "1.2.3",
+  "versionCode": 6,
   "apkUrl": "https://siap-ampenan.vercel.app/SIAP-Puskesmas.apk",
   "changelog": "Perbaikan kamera Android + update system",
   "forceUpdate": true

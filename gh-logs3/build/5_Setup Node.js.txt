@@ -1,0 +1,25 @@
+﻿2026-07-03T01:32:11.1267529Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-07-03T01:32:11.1268783Z ##[group]Run actions/setup-node@v4
+2026-07-03T01:32:11.1269037Z with:
+2026-07-03T01:32:11.1269227Z   node-version: 22
+2026-07-03T01:32:11.1269429Z   cache: npm
+2026-07-03T01:32:11.1269620Z   always-auth: false
+2026-07-03T01:32:11.1269844Z   check-latest: false
+2026-07-03T01:32:11.1272632Z   token: ***
+2026-07-03T01:32:11.1272861Z env:
+2026-07-03T01:32:11.1273158Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-03T01:32:11.1273658Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-03T01:32:11.1274062Z   ANDROID_HOME: /usr/local/lib/android/sdk
+2026-07-03T01:32:11.1274360Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+2026-07-03T01:32:11.1274660Z ##[endgroup]
+2026-07-03T01:32:11.2725262Z Found in cache @ /opt/hostedtoolcache/node/22.23.1/x64
+2026-07-03T01:32:11.2729721Z (node:2482) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-07-03T01:32:11.2730574Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-07-03T01:32:11.2732051Z ##[group]Environment details
+2026-07-03T01:32:14.7295633Z node: v22.23.1
+2026-07-03T01:32:14.7296084Z npm: 10.9.8
+2026-07-03T01:32:14.7296427Z yarn: 1.22.22
+2026-07-03T01:32:14.7297013Z ##[endgroup]
+2026-07-03T01:32:14.7343107Z [command]/opt/hostedtoolcache/node/22.23.1/x64/bin/npm config get cache
+2026-07-03T01:32:15.0650251Z /home/runner/.npm
+2026-07-03T01:32:15.3163413Z npm cache is not found

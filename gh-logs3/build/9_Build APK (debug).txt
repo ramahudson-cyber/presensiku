@@ -1,0 +1,326 @@
+﻿2026-07-03T01:32:41.0430742Z ##[group]Run cd android
+2026-07-03T01:32:41.0431047Z [36;1mcd android[0m
+2026-07-03T01:32:41.0431266Z [36;1mchmod +x gradlew[0m
+2026-07-03T01:32:41.0431503Z [36;1m./gradlew assembleDebug[0m
+2026-07-03T01:32:41.0465871Z shell: /usr/bin/bash -e {0}
+2026-07-03T01:32:41.0466126Z env:
+2026-07-03T01:32:41.0466430Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-03T01:32:41.0466948Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-03T01:32:41.0467361Z   ANDROID_HOME: /usr/local/lib/android/sdk
+2026-07-03T01:32:41.0467671Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+2026-07-03T01:32:41.0467945Z ##[endgroup]
+2026-07-03T01:32:41.1474211Z Downloading https://services.gradle.org/distributions/gradle-8.14.3-all.zip
+2026-07-03T01:32:43.0065816Z .....................10%.....................20%......................30%.....................40%......................50%.....................60%.....................70%......................80%.....................90%......................100%
+2026-07-03T01:32:46.2927683Z 
+2026-07-03T01:32:46.2943776Z Welcome to Gradle 8.14.3!
+2026-07-03T01:32:46.2945103Z 
+2026-07-03T01:32:46.2945523Z Here are the highlights of this release:
+2026-07-03T01:32:46.2946099Z  - Java 24 support
+2026-07-03T01:32:46.2946673Z  - GraalVM Native Image toolchain selection
+2026-07-03T01:32:46.2952643Z  - Enhancements to test reporting
+2026-07-03T01:32:46.2953577Z  - Build Authoring improvements
+2026-07-03T01:32:46.2954006Z 
+2026-07-03T01:32:46.2954629Z For more details see https://docs.gradle.org/8.14.3/release-notes.html
+2026-07-03T01:32:46.2955080Z 
+2026-07-03T01:32:46.3914890Z Starting a Gradle Daemon (subsequent builds will be faster)
+2026-07-03T01:33:12.5909857Z 
+2026-07-03T01:33:12.5950711Z > Configure project :app
+2026-07-03T01:33:12.5959802Z WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+2026-07-03T01:33:21.5909531Z 
+2026-07-03T01:33:21.5924320Z > Configure project :capacitor-cordova-android-plugins
+2026-07-03T01:33:21.5944182Z WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+2026-07-03T01:33:39.3908659Z 
+2026-07-03T01:33:39.3941316Z > Task :app:preBuild UP-TO-DATE
+2026-07-03T01:33:39.3942238Z > Task :app:preDebugBuild UP-TO-DATE
+2026-07-03T01:33:39.3943413Z > Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+2026-07-03T01:33:39.4917616Z > Task :capacitor-android:preBuild UP-TO-DATE
+2026-07-03T01:33:39.4924219Z > Task :capacitor-android:preDebugBuild UP-TO-DATE
+2026-07-03T01:33:39.4925853Z > Task :capacitor-browser:preBuild UP-TO-DATE
+2026-07-03T01:33:39.4927212Z > Task :capacitor-browser:preDebugBuild UP-TO-DATE
+2026-07-03T01:33:39.4928368Z > Task :capacitor-camera:preBuild UP-TO-DATE
+2026-07-03T01:33:39.4929464Z > Task :capacitor-camera:preDebugBuild UP-TO-DATE
+2026-07-03T01:33:39.4930523Z > Task :capacitor-browser:writeDebugAarMetadata
+2026-07-03T01:33:39.4931629Z > Task :capacitor-android:writeDebugAarMetadata
+2026-07-03T01:33:39.4933315Z > Task :capacitor-cordova-android-plugins:preBuild UP-TO-DATE
+2026-07-03T01:33:39.4937518Z > Task :capacitor-cordova-android-plugins:preDebugBuild UP-TO-DATE
+2026-07-03T01:33:39.4939553Z > Task :app:javaPreCompileDebug
+2026-07-03T01:33:39.4942100Z > Task :capacitor-camera:writeDebugAarMetadata
+2026-07-03T01:33:39.4945775Z > Task :capacitor-device:preBuild UP-TO-DATE
+2026-07-03T01:33:39.4948167Z > Task :capacitor-device:preDebugBuild UP-TO-DATE
+2026-07-03T01:33:39.4949432Z > Task :capacitor-cordova-android-plugins:writeDebugAarMetadata
+2026-07-03T01:33:39.4951769Z > Task :capacitor-geolocation:preBuild UP-TO-DATE
+2026-07-03T01:33:39.4963747Z > Task :capacitor-geolocation:preDebugBuild UP-TO-DATE
+2026-07-03T01:33:39.4964992Z > Task :capacitor-device:writeDebugAarMetadata
+2026-07-03T01:33:39.4966459Z > Task :capacitor-geolocation:writeDebugAarMetadata
+2026-07-03T01:33:47.2926304Z > Task :capacitor-android:processDebugNavigationResources
+2026-07-03T01:33:47.2929484Z > Task :capacitor-browser:processDebugNavigationResources
+2026-07-03T01:33:47.2949876Z > Task :capacitor-camera:processDebugNavigationResources
+2026-07-03T01:33:47.2951331Z > Task :capacitor-cordova-android-plugins:processDebugNavigationResources
+2026-07-03T01:33:47.2952972Z > Task :capacitor-device:processDebugNavigationResources
+2026-07-03T01:33:47.2954001Z > Task :app:checkDebugAarMetadata
+2026-07-03T01:33:47.2955120Z > Task :capacitor-geolocation:processDebugNavigationResources
+2026-07-03T01:33:47.3910974Z > Task :app:processDebugNavigationResources
+2026-07-03T01:33:47.7912001Z > Task :app:compileDebugNavigationResources
+2026-07-03T01:33:47.7915674Z > Task :app:generateDebugResValues
+2026-07-03T01:33:47.7917091Z > Task :capacitor-android:generateDebugResValues
+2026-07-03T01:33:47.7918130Z > Task :capacitor-android:generateDebugResources
+2026-07-03T01:33:47.8925976Z > Task :capacitor-android:packageDebugResources
+2026-07-03T01:33:47.8941646Z > Task :capacitor-browser:generateDebugResValues
+2026-07-03T01:33:47.8943257Z > Task :capacitor-browser:generateDebugResources
+2026-07-03T01:33:47.8949723Z > Task :capacitor-browser:packageDebugResources
+2026-07-03T01:33:47.8969209Z > Task :capacitor-camera:generateDebugResValues
+2026-07-03T01:33:47.8970215Z > Task :capacitor-camera:generateDebugResources
+2026-07-03T01:33:47.8971015Z > Task :capacitor-camera:packageDebugResources
+2026-07-03T01:33:47.8971994Z > Task :capacitor-cordova-android-plugins:generateDebugResValues
+2026-07-03T01:33:47.8973256Z > Task :capacitor-cordova-android-plugins:generateDebugResources
+2026-07-03T01:33:47.8974357Z > Task :capacitor-cordova-android-plugins:packageDebugResources
+2026-07-03T01:33:47.8975241Z > Task :capacitor-device:generateDebugResValues
+2026-07-03T01:33:47.8976067Z > Task :capacitor-device:generateDebugResources
+2026-07-03T01:33:47.8976858Z > Task :capacitor-device:packageDebugResources
+2026-07-03T01:33:47.9911315Z > Task :capacitor-geolocation:generateDebugResValues
+2026-07-03T01:33:47.9944165Z > Task :capacitor-geolocation:generateDebugResources
+2026-07-03T01:33:47.9945439Z > Task :capacitor-geolocation:packageDebugResources
+2026-07-03T01:33:48.0926473Z > Task :app:mapDebugSourceSetPaths
+2026-07-03T01:33:48.0963153Z > Task :app:generateDebugResources
+2026-07-03T01:33:49.2953708Z > Task :app:packageDebugResources
+2026-07-03T01:33:50.3909164Z > Task :app:mergeDebugResources
+2026-07-03T01:33:52.9986893Z > Task :app:createDebugCompatibleScreenManifests
+2026-07-03T01:33:53.0013361Z > Task :app:extractDeepLinksDebug
+2026-07-03T01:33:53.0923531Z > Task :capacitor-android:extractDeepLinksDebug
+2026-07-03T01:33:53.0953340Z > Task :capacitor-browser:extractDeepLinksDebug
+2026-07-03T01:33:53.0973349Z > Task :capacitor-camera:extractDeepLinksDebug
+2026-07-03T01:33:53.1003369Z > Task :app:parseDebugLocalResources
+2026-07-03T01:33:53.1043005Z > Task :capacitor-cordova-android-plugins:extractDeepLinksDebug
+2026-07-03T01:33:53.1933868Z > Task :capacitor-camera:processDebugManifest
+2026-07-03T01:33:53.1943383Z > Task :capacitor-browser:processDebugManifest
+2026-07-03T01:33:53.1963408Z > Task :capacitor-cordova-android-plugins:processDebugManifest
+2026-07-03T01:33:53.1993597Z > Task :capacitor-android:processDebugManifest
+2026-07-03T01:33:53.2043569Z > Task :capacitor-device:extractDeepLinksDebug
+2026-07-03T01:33:53.2053317Z > Task :capacitor-device:processDebugManifest
+2026-07-03T01:33:53.2084349Z > Task :capacitor-geolocation:extractDeepLinksDebug
+2026-07-03T01:33:53.2085729Z > Task :capacitor-geolocation:processDebugManifest
+2026-07-03T01:33:53.2934274Z > Task :capacitor-android:compileDebugLibraryResources
+2026-07-03T01:33:53.5925990Z > Task :app:processDebugMainManifest
+2026-07-03T01:33:53.6935599Z > Task :app:processDebugManifest
+2026-07-03T01:33:53.6936947Z > Task :app:processDebugManifestForPackage
+2026-07-03T01:33:53.6938033Z > Task :capacitor-browser:compileDebugLibraryResources
+2026-07-03T01:33:53.6939124Z > Task :capacitor-android:parseDebugLocalResources
+2026-07-03T01:33:53.6940258Z > Task :capacitor-camera:compileDebugLibraryResources
+2026-07-03T01:33:53.6941398Z > Task :capacitor-browser:parseDebugLocalResources
+2026-07-03T01:33:53.6943183Z > Task :capacitor-cordova-android-plugins:compileDebugLibraryResources
+2026-07-03T01:33:53.7909686Z > Task :capacitor-camera:parseDebugLocalResources
+2026-07-03T01:33:53.7910864Z > Task :capacitor-cordova-android-plugins:parseDebugLocalResources
+2026-07-03T01:33:53.7919678Z > Task :capacitor-cordova-android-plugins:generateDebugRFile
+2026-07-03T01:33:53.7920811Z > Task :capacitor-camera:generateDebugRFile
+2026-07-03T01:33:53.7921756Z > Task :capacitor-android:generateDebugRFile
+2026-07-03T01:33:53.7923373Z > Task :capacitor-browser:generateDebugRFile
+2026-07-03T01:33:53.7925468Z > Task :capacitor-device:compileDebugLibraryResources
+2026-07-03T01:33:53.7927346Z > Task :capacitor-geolocation:compileDebugLibraryResources
+2026-07-03T01:33:53.7928427Z > Task :capacitor-device:parseDebugLocalResources
+2026-07-03T01:33:53.7929510Z > Task :capacitor-geolocation:parseDebugLocalResources
+2026-07-03T01:33:53.7930518Z > Task :capacitor-android:javaPreCompileDebug
+2026-07-03T01:33:53.7932723Z > Task :capacitor-device:generateDebugRFile
+2026-07-03T01:33:53.8909734Z > Task :capacitor-geolocation:generateDebugRFile
+2026-07-03T01:34:00.6910735Z 
+2026-07-03T01:34:00.6933794Z Note: Some input files use unchecked or unsafe operations.
+2026-07-03T01:34:00.6934754Z > Task :capacitor-android:compileDebugJavaWithJavac
+2026-07-03T01:34:00.6938286Z Note: Recompile with -Xlint:unchecked for details.
+2026-07-03T01:34:03.7908749Z 
+2026-07-03T01:34:03.7933876Z > Task :capacitor-camera:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-07-03T01:34:03.7963561Z > Task :capacitor-browser:javaPreCompileDebug
+2026-07-03T01:34:03.7993348Z > Task :capacitor-camera:javaPreCompileDebug
+2026-07-03T01:34:03.7994700Z > Task :capacitor-cordova-android-plugins:javaPreCompileDebug
+2026-07-03T01:34:03.7995734Z > Task :capacitor-device:javaPreCompileDebug
+2026-07-03T01:34:03.7996917Z > Task :capacitor-cordova-android-plugins:compileDebugJavaWithJavac NO-SOURCE
+2026-07-03T01:34:03.7999167Z > Task :capacitor-geolocation:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-07-03T01:34:03.8000482Z > Task :capacitor-cordova-android-plugins:bundleLibCompileToJarDebug
+2026-07-03T01:34:03.8001509Z > Task :capacitor-android:bundleLibCompileToJarDebug
+2026-07-03T01:34:03.8002559Z > Task :capacitor-geolocation:javaPreCompileDebug
+2026-07-03T01:34:03.8933716Z > Task :app:mergeDebugShaders
+2026-07-03T01:34:04.2909852Z > Task :capacitor-browser:compileDebugJavaWithJavac
+2026-07-03T01:34:04.2910853Z > Task :capacitor-browser:bundleLibCompileToJarDebug
+2026-07-03T01:34:04.6909702Z > Task :app:processDebugResources
+2026-07-03T01:34:10.3933855Z > Task :capacitor-device:compileDebugJavaWithJavac
+2026-07-03T01:34:10.4933932Z > Task :capacitor-device:bundleLibCompileToJarDebug
+2026-07-03T01:34:11.3023832Z > Task :app:compileDebugShaders NO-SOURCE
+2026-07-03T01:34:11.3083412Z > Task :app:generateDebugAssets UP-TO-DATE
+2026-07-03T01:34:11.3143466Z > Task :capacitor-android:mergeDebugShaders
+2026-07-03T01:34:11.3166859Z > Task :capacitor-android:compileDebugShaders NO-SOURCE
+2026-07-03T01:34:11.3223938Z > Task :capacitor-android:generateDebugAssets UP-TO-DATE
+2026-07-03T01:34:11.3224931Z > Task :capacitor-android:mergeDebugAssets
+2026-07-03T01:34:11.3313713Z > Task :capacitor-browser:mergeDebugShaders
+2026-07-03T01:34:11.3314695Z > Task :capacitor-browser:compileDebugShaders NO-SOURCE
+2026-07-03T01:34:11.3343878Z > Task :capacitor-browser:generateDebugAssets UP-TO-DATE
+2026-07-03T01:34:11.3373427Z > Task :capacitor-browser:mergeDebugAssets
+2026-07-03T01:34:11.3406184Z > Task :capacitor-camera:mergeDebugShaders
+2026-07-03T01:34:11.3407385Z > Task :capacitor-camera:compileDebugShaders NO-SOURCE
+2026-07-03T01:34:11.3433540Z > Task :capacitor-camera:generateDebugAssets UP-TO-DATE
+2026-07-03T01:34:11.3911603Z > Task :capacitor-camera:mergeDebugAssets
+2026-07-03T01:34:11.3972170Z > Task :capacitor-cordova-android-plugins:mergeDebugShaders
+2026-07-03T01:34:11.4008248Z > Task :capacitor-cordova-android-plugins:compileDebugShaders NO-SOURCE
+2026-07-03T01:34:11.4010099Z > Task :capacitor-cordova-android-plugins:generateDebugAssets UP-TO-DATE
+2026-07-03T01:34:11.4034355Z > Task :capacitor-cordova-android-plugins:mergeDebugAssets
+2026-07-03T01:34:11.4064363Z > Task :capacitor-device:mergeDebugShaders
+2026-07-03T01:34:11.4085400Z > Task :capacitor-device:compileDebugShaders NO-SOURCE
+2026-07-03T01:34:11.4123561Z > Task :capacitor-device:generateDebugAssets UP-TO-DATE
+2026-07-03T01:34:11.4124650Z > Task :capacitor-device:mergeDebugAssets
+2026-07-03T01:34:11.4153324Z > Task :capacitor-geolocation:mergeDebugShaders
+2026-07-03T01:34:11.4183444Z > Task :capacitor-geolocation:compileDebugShaders NO-SOURCE
+2026-07-03T01:34:11.4200818Z > Task :capacitor-geolocation:generateDebugAssets UP-TO-DATE
+2026-07-03T01:34:11.4203990Z > Task :capacitor-geolocation:mergeDebugAssets
+2026-07-03T01:34:11.8973902Z > Task :app:mergeDebugAssets
+2026-07-03T01:34:11.9913820Z > Task :capacitor-browser:bundleLibRuntimeToJarDebug
+2026-07-03T01:34:13.9910024Z > Task :capacitor-device:bundleLibRuntimeToJarDebug
+2026-07-03T01:34:14.1909249Z > Task :app:compressDebugAssets
+2026-07-03T01:34:14.1933763Z > Task :capacitor-cordova-android-plugins:bundleLibRuntimeToJarDebug
+2026-07-03T01:34:14.1963374Z > Task :capacitor-android:bundleLibRuntimeToJarDebug
+2026-07-03T01:34:14.1993285Z > Task :app:desugarDebugFileDependencies
+2026-07-03T01:34:14.1994270Z > Task :app:processDebugJavaRes NO-SOURCE
+2026-07-03T01:34:14.2023338Z > Task :capacitor-android:processDebugJavaRes NO-SOURCE
+2026-07-03T01:34:14.2053319Z > Task :capacitor-browser:processDebugJavaRes NO-SOURCE
+2026-07-03T01:34:14.2054478Z > Task :capacitor-cordova-android-plugins:processDebugJavaRes NO-SOURCE
+2026-07-03T01:34:14.2055529Z > Task :capacitor-device:processDebugJavaRes NO-SOURCE
+2026-07-03T01:34:16.9943595Z > Task :app:checkDebugDuplicateClasses
+2026-07-03T01:34:26.6994180Z > Task :capacitor-geolocation:compileDebugKotlin
+2026-07-03T01:34:30.3962512Z 
+2026-07-03T01:34:30.4013540Z > Task :capacitor-camera:compileDebugKotlin
+2026-07-03T01:34:30.4024868Z w: file:///home/runner/work/siap-ampenan/siap-ampenan/node_modules/@capacitor/camera/android/src/main/java/com/capacitorjs/plugins/camera/IonCameraFlow.kt:864:13 Condition is always 'false'.
+2026-07-03T01:34:46.9908977Z 
+2026-07-03T01:34:46.9933626Z > Task :app:mergeExtDexDebug
+2026-07-03T01:34:59.4935476Z Note: /home/runner/work/siap-ampenan/siap-ampenan/node_modules/@capacitor/camera/android/src/main/java/com/capacitorjs/plugins/camera/CameraBottomSheetDialogFragment.java uses unchecked or unsafe operations.
+2026-07-03T01:34:59.4937538Z 
+2026-07-03T01:34:59.4938190Z > Task :capacitor-camera:compileDebugJavaWithJavac
+2026-07-03T01:34:59.4963400Z Note: Recompile with -Xlint:unchecked for details.
+2026-07-03T01:34:59.4992866Z 
+2026-07-03T01:34:59.5014800Z > Task :capacitor-geolocation:compileDebugJavaWithJavac NO-SOURCE
+2026-07-03T01:34:59.5063241Z > Task :capacitor-camera:bundleLibCompileToJarDebug
+2026-07-03T01:34:59.5123368Z > Task :capacitor-geolocation:bundleLibCompileToJarDebug
+2026-07-03T01:34:59.5153156Z > Task :capacitor-geolocation:bundleLibRuntimeToJarDebug
+2026-07-03T01:34:59.5183277Z > Task :capacitor-camera:bundleLibRuntimeToJarDebug
+2026-07-03T01:35:00.2943930Z > Task :app:compileDebugJavaWithJavac
+2026-07-03T01:35:00.6923610Z > Task :app:dexBuilderDebug
+2026-07-03T01:35:00.6983580Z > Task :capacitor-camera:processDebugJavaRes
+2026-07-03T01:35:00.8909184Z > Task :app:mergeDebugGlobalSynthetics
+2026-07-03T01:35:00.8935422Z > Task :capacitor-geolocation:processDebugJavaRes
+2026-07-03T01:35:01.3913278Z > Task :capacitor-browser:bundleLibRuntimeToDirDebug
+2026-07-03T01:35:01.3963501Z > Task :capacitor-device:bundleLibRuntimeToDirDebug
+2026-07-03T01:35:01.3993545Z > Task :capacitor-camera:bundleLibRuntimeToDirDebug
+2026-07-03T01:35:01.5013863Z > Task :capacitor-geolocation:bundleLibRuntimeToDirDebug
+2026-07-03T01:35:01.5933073Z > Task :capacitor-android:bundleLibRuntimeToDirDebug
+2026-07-03T01:35:01.6934361Z > Task :capacitor-cordova-android-plugins:bundleLibRuntimeToDirDebug
+2026-07-03T01:35:01.8923891Z > Task :app:mergeDebugJniLibFolders
+2026-07-03T01:35:01.8953572Z > Task :capacitor-android:mergeDebugJniLibFolders
+2026-07-03T01:35:01.8961791Z > Task :capacitor-android:mergeDebugNativeLibs NO-SOURCE
+2026-07-03T01:35:01.8983716Z > Task :capacitor-android:copyDebugJniLibsProjectOnly
+2026-07-03T01:35:01.9013512Z > Task :capacitor-browser:mergeDebugJniLibFolders
+2026-07-03T01:35:01.9033611Z > Task :capacitor-browser:mergeDebugNativeLibs NO-SOURCE
+2026-07-03T01:35:01.9061726Z > Task :capacitor-browser:copyDebugJniLibsProjectOnly
+2026-07-03T01:35:01.9909261Z > Task :capacitor-camera:mergeDebugJniLibFolders
+2026-07-03T01:35:01.9934099Z > Task :capacitor-camera:mergeDebugNativeLibs NO-SOURCE
+2026-07-03T01:35:01.9960902Z > Task :capacitor-camera:copyDebugJniLibsProjectOnly
+2026-07-03T01:35:01.9983535Z > Task :app:mergeProjectDexDebug
+2026-07-03T01:35:02.0013765Z > Task :capacitor-cordova-android-plugins:mergeDebugJniLibFolders
+2026-07-03T01:35:02.0019539Z > Task :capacitor-cordova-android-plugins:mergeDebugNativeLibs NO-SOURCE
+2026-07-03T01:35:02.0043831Z > Task :capacitor-cordova-android-plugins:copyDebugJniLibsProjectOnly
+2026-07-03T01:35:02.0073615Z > Task :capacitor-device:mergeDebugJniLibFolders
+2026-07-03T01:35:02.0103725Z > Task :capacitor-device:mergeDebugNativeLibs NO-SOURCE
+2026-07-03T01:35:02.0104865Z > Task :capacitor-device:copyDebugJniLibsProjectOnly
+2026-07-03T01:35:02.0105777Z > Task :capacitor-geolocation:mergeDebugJniLibFolders
+2026-07-03T01:35:02.0106675Z > Task :capacitor-geolocation:mergeDebugNativeLibs NO-SOURCE
+2026-07-03T01:35:02.0107647Z > Task :capacitor-geolocation:copyDebugJniLibsProjectOnly
+2026-07-03T01:35:02.4909620Z > Task :app:mergeDebugJavaResource
+2026-07-03T01:35:03.8935634Z > Task :app:validateSigningDebug
+2026-07-03T01:35:04.0924368Z > Task :app:mergeLibDexDebug
+2026-07-03T01:35:04.0966077Z > Task :app:writeDebugAppMetadata
+2026-07-03T01:35:04.0993611Z > Task :app:mergeDebugNativeLibs
+2026-07-03T01:35:04.0994426Z > Task :app:writeDebugSigningConfigVersions
+2026-07-03T01:35:04.1909196Z 
+2026-07-03T01:35:04.1910108Z > Task :app:stripDebugDebugSymbols
+2026-07-03T01:35:04.1912790Z Unable to strip the following libraries, packaging them as they are: libimage_processing_util_jni.so, libsurface_util_jni.so. Run with --info option to learn more.
+2026-07-03T01:35:04.2922990Z 
+2026-07-03T01:35:04.2953678Z > Task :capacitor-android:checkDebugAarMetadata
+2026-07-03T01:35:04.2954715Z > Task :capacitor-android:stripDebugDebugSymbols NO-SOURCE
+2026-07-03T01:35:04.2955731Z > Task :capacitor-android:copyDebugJniLibsProjectAndLocalJars
+2026-07-03T01:35:10.3909537Z > Task :capacitor-android:extractDebugAnnotations
+2026-07-03T01:35:10.3912272Z > Task :capacitor-android:extractDeepLinksForAarDebug
+2026-07-03T01:35:10.3913968Z > Task :capacitor-android:mergeDebugGeneratedProguardFiles
+2026-07-03T01:35:10.4909456Z > Task :capacitor-android:mergeDebugConsumerProguardFiles
+2026-07-03T01:35:10.4910716Z > Task :capacitor-android:prepareDebugArtProfile
+2026-07-03T01:35:10.4911972Z > Task :capacitor-android:prepareLintJarForPublish
+2026-07-03T01:35:10.4913303Z > Task :capacitor-android:mergeDebugJavaResource
+2026-07-03T01:35:10.5933727Z > Task :app:packageDebug
+2026-07-03T01:35:10.5963477Z > Task :app:createDebugApkListingFileRedirect
+2026-07-03T01:35:10.5964240Z > Task :app:assembleDebug
+2026-07-03T01:35:10.5989707Z > Task :capacitor-android:syncDebugLibJars
+2026-07-03T01:35:10.5990843Z > Task :capacitor-android:bundleDebugAar
+2026-07-03T01:35:10.5991810Z > Task :capacitor-android:assembleDebug
+2026-07-03T01:35:10.5993147Z > Task :capacitor-browser:stripDebugDebugSymbols NO-SOURCE
+2026-07-03T01:35:10.5994279Z > Task :capacitor-browser:checkDebugAarMetadata
+2026-07-03T01:35:10.5995415Z > Task :capacitor-browser:copyDebugJniLibsProjectAndLocalJars
+2026-07-03T01:35:10.6909623Z > Task :capacitor-browser:extractDebugAnnotations
+2026-07-03T01:35:10.6913633Z > Task :capacitor-browser:extractDeepLinksForAarDebug
+2026-07-03T01:35:10.6930047Z > Task :capacitor-browser:mergeDebugGeneratedProguardFiles
+2026-07-03T01:35:10.6931632Z > Task :capacitor-browser:mergeDebugConsumerProguardFiles
+2026-07-03T01:35:10.6935302Z > Task :capacitor-browser:prepareDebugArtProfile
+2026-07-03T01:35:10.6936545Z > Task :capacitor-browser:prepareLintJarForPublish
+2026-07-03T01:35:10.6937728Z > Task :capacitor-browser:mergeDebugJavaResource
+2026-07-03T01:35:10.6938687Z > Task :capacitor-camera:checkDebugAarMetadata
+2026-07-03T01:35:10.6939595Z > Task :capacitor-browser:syncDebugLibJars
+2026-07-03T01:35:10.6940583Z > Task :capacitor-browser:bundleDebugAar
+2026-07-03T01:35:10.6941591Z > Task :capacitor-browser:assembleDebug
+2026-07-03T01:35:10.6943055Z > Task :capacitor-camera:stripDebugDebugSymbols NO-SOURCE
+2026-07-03T01:35:10.6944346Z > Task :capacitor-camera:copyDebugJniLibsProjectAndLocalJars
+2026-07-03T01:35:10.6945523Z > Task :capacitor-camera:extractDebugAnnotations
+2026-07-03T01:35:10.6946573Z > Task :capacitor-camera:extractDeepLinksForAarDebug
+2026-07-03T01:35:10.6947484Z > Task :capacitor-camera:mergeDebugGeneratedProguardFiles
+2026-07-03T01:35:10.6948940Z > Task :capacitor-camera:mergeDebugConsumerProguardFiles
+2026-07-03T01:35:10.6949789Z > Task :capacitor-camera:prepareDebugArtProfile
+2026-07-03T01:35:10.6950582Z > Task :capacitor-camera:prepareLintJarForPublish
+2026-07-03T01:35:10.6951380Z > Task :capacitor-camera:mergeDebugJavaResource
+2026-07-03T01:35:11.8913633Z > Task :capacitor-cordova-android-plugins:checkDebugAarMetadata
+2026-07-03T01:35:11.8917768Z > Task :capacitor-camera:syncDebugLibJars
+2026-07-03T01:35:11.8918742Z > Task :capacitor-camera:bundleDebugAar
+2026-07-03T01:35:11.8919650Z > Task :capacitor-camera:assembleDebug
+2026-07-03T01:35:11.8920844Z > Task :capacitor-cordova-android-plugins:stripDebugDebugSymbols NO-SOURCE
+2026-07-03T01:35:11.9909563Z > Task :capacitor-cordova-android-plugins:copyDebugJniLibsProjectAndLocalJars
+2026-07-03T01:35:12.2923720Z > Task :capacitor-cordova-android-plugins:extractDebugAnnotations
+2026-07-03T01:35:12.2943466Z > Task :capacitor-cordova-android-plugins:extractDeepLinksForAarDebug
+2026-07-03T01:35:12.2973453Z > Task :capacitor-cordova-android-plugins:mergeDebugGeneratedProguardFiles
+2026-07-03T01:35:12.2993810Z > Task :capacitor-cordova-android-plugins:mergeDebugConsumerProguardFiles
+2026-07-03T01:35:12.3021020Z > Task :capacitor-cordova-android-plugins:prepareDebugArtProfile
+2026-07-03T01:35:12.3022065Z > Task :capacitor-cordova-android-plugins:prepareLintJarForPublish
+2026-07-03T01:35:12.3033852Z > Task :capacitor-cordova-android-plugins:mergeDebugJavaResource
+2026-07-03T01:35:12.3035002Z > Task :capacitor-device:checkDebugAarMetadata
+2026-07-03T01:35:12.3036472Z > Task :capacitor-cordova-android-plugins:syncDebugLibJars
+2026-07-03T01:35:12.3037626Z > Task :capacitor-cordova-android-plugins:bundleDebugAar
+2026-07-03T01:35:12.3038753Z > Task :capacitor-cordova-android-plugins:assembleDebug
+2026-07-03T01:35:12.3039887Z > Task :capacitor-device:stripDebugDebugSymbols NO-SOURCE
+2026-07-03T01:35:12.3913602Z > Task :capacitor-device:copyDebugJniLibsProjectAndLocalJars
+2026-07-03T01:35:12.3927383Z > Task :capacitor-device:extractDebugAnnotations
+2026-07-03T01:35:12.3928440Z > Task :capacitor-device:extractDeepLinksForAarDebug
+2026-07-03T01:35:12.3929637Z > Task :capacitor-device:mergeDebugGeneratedProguardFiles
+2026-07-03T01:35:12.3930672Z > Task :capacitor-device:mergeDebugConsumerProguardFiles
+2026-07-03T01:35:12.3931618Z > Task :capacitor-device:prepareDebugArtProfile
+2026-07-03T01:35:12.3932793Z > Task :capacitor-device:prepareLintJarForPublish
+2026-07-03T01:35:12.3933732Z > Task :capacitor-device:mergeDebugJavaResource
+2026-07-03T01:35:12.3934651Z > Task :capacitor-geolocation:checkDebugAarMetadata
+2026-07-03T01:35:12.3935494Z > Task :capacitor-device:syncDebugLibJars
+2026-07-03T01:35:12.3936267Z > Task :capacitor-device:bundleDebugAar
+2026-07-03T01:35:12.3937016Z > Task :capacitor-device:assembleDebug
+2026-07-03T01:35:12.3937979Z > Task :capacitor-geolocation:stripDebugDebugSymbols NO-SOURCE
+2026-07-03T01:35:12.3939098Z > Task :capacitor-geolocation:copyDebugJniLibsProjectAndLocalJars
+2026-07-03T01:35:12.4910587Z > Task :capacitor-geolocation:extractDebugAnnotations
+2026-07-03T01:35:12.4926470Z > Task :capacitor-geolocation:extractDeepLinksForAarDebug
+2026-07-03T01:35:12.4927967Z > Task :capacitor-geolocation:mergeDebugGeneratedProguardFiles
+2026-07-03T01:35:12.4929396Z > Task :capacitor-geolocation:mergeDebugConsumerProguardFiles
+2026-07-03T01:35:12.4930730Z > Task :capacitor-geolocation:prepareDebugArtProfile
+2026-07-03T01:35:12.4931994Z > Task :capacitor-geolocation:prepareLintJarForPublish
+2026-07-03T01:35:12.4933682Z > Task :capacitor-geolocation:mergeDebugJavaResource
+2026-07-03T01:35:12.4934859Z > Task :capacitor-geolocation:syncDebugLibJars
+2026-07-03T01:35:12.4935985Z > Task :capacitor-geolocation:bundleDebugAar
+2026-07-03T01:35:12.4937051Z > Task :capacitor-geolocation:assembleDebug
+2026-07-03T01:35:12.5869568Z 
+2026-07-03T01:35:12.5879579Z [Incubating] Problems report is available at: file:///home/runner/work/siap-ampenan/siap-ampenan/android/build/reports/problems/problems-report.html
+2026-07-03T01:35:12.5892719Z 
+2026-07-03T01:35:12.5894460Z BUILD SUCCESSFUL in 2m 31s
+2026-07-03T01:35:12.5895533Z 218 actionable tasks: 218 executed

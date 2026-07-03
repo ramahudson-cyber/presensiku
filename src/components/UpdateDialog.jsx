@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { checkUpdate } from "../services/updateService";
-import { Download, RefreshCw, X, Loader2 } from "lucide-react";
+import { Download, RefreshCw, X, Loader2, ExternalLink } from "lucide-react";
 
 export default function UpdateDialog() {
   const [update, setUpdate] = useState(null);
   const [dismissed, setDismissed] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     checkUpdate().then(setUpdate);
@@ -16,12 +17,18 @@ export default function UpdateDialog() {
   const handleDownload = async () => {
     if (!update.apkUrl) return;
     setDownloading(true);
+    setError(null);
     try {
       const { Browser } = await import("@capacitor/browser");
       await Browser.open({ url: update.apkUrl });
     } catch {
-      window.location.href = update.apkUrl;
+      try {
+        window.open(update.apkUrl, "_blank");
+      } catch {
+        setError("Gagal membuka browser. Salin link: " + update.apkUrl);
+      }
     }
+    setDownloading(false);
   };
 
   return (
@@ -51,11 +58,22 @@ export default function UpdateDialog() {
               <p className="text-xs text-slate-300 leading-relaxed">{update.changelog}</p>
             </div>
           )}
+          {error && (
+            <div className="bg-red-900/30 border border-red-500/30 rounded-xl p-3">
+              <p className="text-[11px] text-red-300 break-all">{error}</p>
+            </div>
+          )}
           {update.apkUrl ? (
-            <button onClick={handleDownload} disabled={downloading}
-              className="border-gradient bg-transparent text-white w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98] transition-all disabled:opacity-50">
-              {downloading ? <><Loader2 size={16} className="animate-spin" /> Membuka...</> : <><Download size={16} /> Download APK</>}
-            </button>
+            <>
+              <button onClick={handleDownload} disabled={downloading}
+                className="border-gradient bg-transparent text-white w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98] transition-all disabled:opacity-50">
+                {downloading ? <><Loader2 size={16} className="animate-spin" /> Membuka...</> : <><Download size={16} /> Download & Install</>}
+              </button>
+              <a href={update.apkUrl} target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1.5 text-[11px] text-violet-400 hover:text-violet-300 transition">
+                <ExternalLink size={12} /> Buka link langsung di browser
+              </a>
+            </>
           ) : (
             <p className="text-xs text-amber-300/70 text-center">APK belum tersedia. Hubungi admin.</p>
           )}

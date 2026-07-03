@@ -1,0 +1,34 @@
+﻿2026-07-03T01:35:12.9136194Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-07-03T01:35:12.9137495Z ##[group]Run actions/upload-artifact@v4
+2026-07-03T01:35:12.9137760Z with:
+2026-07-03T01:35:12.9137968Z   name: SIAP-Puskesmas-APK-v1.2.1
+2026-07-03T01:35:12.9138294Z   path: android/app/build/outputs/apk/debug/app-debug.apk
+2026-07-03T01:35:12.9138632Z   if-no-files-found: warn
+2026-07-03T01:35:12.9138858Z   compression-level: 6
+2026-07-03T01:35:12.9139071Z   overwrite: false
+2026-07-03T01:35:12.9139281Z   include-hidden-files: false
+2026-07-03T01:35:12.9139506Z env:
+2026-07-03T01:35:12.9139790Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-03T01:35:12.9140275Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10/x64
+2026-07-03T01:35:12.9140700Z   ANDROID_HOME: /usr/local/lib/android/sdk
+2026-07-03T01:35:12.9140996Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+2026-07-03T01:35:12.9141264Z ##[endgroup]
+2026-07-03T01:35:13.0816564Z (node:3119) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-07-03T01:35:13.0818645Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-07-03T01:35:13.0865513Z With the provided path, there will be 1 file uploaded
+2026-07-03T01:35:13.0871170Z Artifact name is valid!
+2026-07-03T01:35:13.0873291Z Root directory input is valid!
+2026-07-03T01:35:13.4351470Z Beginning upload of artifact content to blob storage
+2026-07-03T01:35:13.7104766Z (node:3119) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-07-03T01:35:14.6090277Z Uploaded bytes 8388608
+2026-07-03T01:35:14.8997410Z Uploaded bytes 16777216
+2026-07-03T01:35:14.9981511Z Uploaded bytes 25165824
+2026-07-03T01:35:15.1250210Z Uploaded bytes 33554432
+2026-07-03T01:35:15.4201452Z Uploaded bytes 41943040
+2026-07-03T01:35:15.6879107Z Uploaded bytes 48429594
+2026-07-03T01:35:15.7696281Z Finished uploading artifact content to blob storage!
+2026-07-03T01:35:15.7699922Z SHA256 digest of uploaded artifact zip is de2425f17d8fe0a5ecaf7551f38b93da14b02341d730f45b6118f19306506dfe
+2026-07-03T01:35:15.7702027Z Finalizing artifact upload
+2026-07-03T01:35:16.0032926Z Artifact SIAP-Puskesmas-APK-v1.2.1.zip successfully finalized. Artifact ID 8055762740
+2026-07-03T01:35:16.0034866Z Artifact SIAP-Puskesmas-APK-v1.2.1 has been successfully uploaded! Final size is 48429594 bytes. Artifact ID is 8055762740
+2026-07-03T01:35:16.0043530Z Artifact download URL: https://github.com/ramahudson-cyber/siap-ampenan/actions/runs/28632508831/artifacts/8055762740
