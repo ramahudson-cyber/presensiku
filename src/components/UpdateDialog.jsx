@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { checkUpdate } from "../services/updateService";
-import { Download, RefreshCw, X, Loader2, ExternalLink } from "lucide-react";
+import { Capacitor } from "@capacitor/core";
+import { Download, RefreshCw, X, Loader2, ExternalLink, Zap } from "lucide-react";
 
 export default function UpdateDialog() {
   const [update, setUpdate] = useState(null);
   const [dismissed, setDismissed] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [otaMode, setOtaMode] = useState(false);
   const [error, setError] = useState(null);
+
+  const isNative = Capacitor.isNativePlatform();
 
   useEffect(() => {
     checkUpdate().then(setUpdate);
@@ -14,9 +18,30 @@ export default function UpdateDialog() {
 
   if (!update || dismissed) return null;
 
-  const handleDownload = async () => {
+  const handleOtaUpdate = async () => {
+    if (!update.bundleUrl) return;
+    setDownloading(true);
+    setOtaMode(true);
+    setError(null);
+    try {
+      const { applyOtaUpdate } = await import("../services/otaService");
+      const result = await applyOtaUpdate(update.bundleUrl, update.version);
+      if (!result.success) {
+        setError(result.error);
+        setOtaMode(false);
+        setDownloading(false);
+      }
+    } catch (err) {
+      setError("Gagal update: " + (err.message || ""));
+      setOtaMode(false);
+      setDownloading(false);
+    }
+  };
+
+  const handleApkDownload = async () => {
     if (!update.apkUrl) return;
     setDownloading(true);
+    setOtaMode(false);
     setError(null);
     try {
       const { Browser } = await import("@capacitor/browser");
@@ -63,17 +88,20 @@ export default function UpdateDialog() {
               <p className="text-[11px] text-red-300 break-all">{error}</p>
             </div>
           )}
-          {update.apkUrl ? (
+          {isNative && update.bundleUrl ? (
             <>
-              <button onClick={handleDownload} disabled={downloading}
-                className="border-gradient bg-transparent text-white w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98] transition-all disabled:opacity-50">
-                {downloading ? <><Loader2 size={16} className="animate-spin" /> Membuka...</> : <><Download size={16} /> Download & Install</>}
+              <button onClick={handleOtaUpdate} disabled={downloading}
+                className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98]">
+                {downloading && otaMode ? <><Loader2 size={16} className="animate-spin" /> Mengupdate...</> : <><Zap size={16} /> Update Cepat (OTA)</>}
               </button>
-              <a href={update.apkUrl} target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 text-[11px] text-violet-400 hover:text-violet-300 transition">
-                <ExternalLink size={12} /> Buka link langsung di browser
-              </a>
+              <p className="text-[9px] text-slate-500 text-center">Update cepat tanpa download APK ulang</p>
             </>
+          ) : null}
+          {update.apkUrl ? (
+            <button onClick={handleApkDownload} disabled={downloading}
+              className="border-gradient bg-transparent text-white w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98] transition-all disabled:opacity-50">
+              {downloading && !otaMode ? <><Loader2 size={16} className="animate-spin" /> Membuka...</> : <><Download size={16} /> Download APK</>}
+            </button>
           ) : (
             <p className="text-xs text-amber-300/70 text-center">APK belum tersedia. Hubungi admin.</p>
           )}

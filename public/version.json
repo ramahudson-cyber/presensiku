@@ -2,6 +2,7 @@
   "version": "1.2.5",
   "versionCode": 8,
   "apkUrl": "https://siap-ampenan.vercel.app/SIAP-Puskesmas.apk",
-  "changelog": "Perbaikan loading kamera AI + CDN fallback + tampilkan versi",
+  "bundleUrl": "https://siap-ampenan.vercel.app/bundle.zip",
+  "changelog": "OTA update + perbaikan loading kamera AI + CDN fallback + tampilkan versi",
   "forceUpdate": true
 }

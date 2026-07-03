@@ -15,6 +15,11 @@ const config: CapacitorConfig = {
         },
       },
     },
+    CapacitorUpdater: {
+      autoUpdate: false,
+      allowModifyUrl: true,
+      version: '1.2.5',
+    },
   },
 };
 

@@ -13,6 +13,7 @@ export async function checkUpdate() {
       version: data.version,
       versionCode: data.versionCode,
       apkUrl: data.apkUrl,
+      bundleUrl: data.bundleUrl,
       changelog: data.changelog,
       forceUpdate: data.forceUpdate,
     };
