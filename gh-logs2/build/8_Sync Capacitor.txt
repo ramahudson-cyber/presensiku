@@ -1,0 +1,20 @@
+﻿2026-07-03T01:27:09.1998209Z ##[group]Run npx cap sync android
+2026-07-03T01:27:09.1998530Z [36;1mnpx cap sync android[0m
+2026-07-03T01:27:09.2018516Z shell: /usr/bin/bash -e {0}
+2026-07-03T01:27:09.2018790Z env:
+2026-07-03T01:27:09.2019093Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+2026-07-03T01:27:09.2019580Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+2026-07-03T01:27:09.2019977Z   ANDROID_HOME: /usr/local/lib/android/sdk
+2026-07-03T01:27:09.2020269Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+2026-07-03T01:27:09.2020546Z ##[endgroup]
+2026-07-03T01:27:09.8606808Z ✔ Copying web assets from dist to android/app/src/main/assets/public in 22.86ms
+2026-07-03T01:27:09.8615081Z ✔ Creating capacitor.config.json in android/app/src/main/assets in 568.67μs
+2026-07-03T01:27:09.8681432Z ✔ copy android in 41.85ms
+2026-07-03T01:27:09.8850330Z ✔ Updating Android plugins in 6.01ms
+2026-07-03T01:27:09.8869881Z [info] Found 4 Capacitor plugins for android:
+2026-07-03T01:27:09.8870673Z        @capacitor/browser@8.0.3
+2026-07-03T01:27:09.8871211Z        @capacitor/camera@8.2.0
+2026-07-03T01:27:09.8871711Z        @capacitor/device@8.0.2
+2026-07-03T01:27:09.8872249Z        @capacitor/geolocation@8.2.0
+2026-07-03T01:27:09.9092722Z ✔ update android in 35.71ms
+2026-07-03T01:27:09.9146398Z [info] Sync finished in 0.103s

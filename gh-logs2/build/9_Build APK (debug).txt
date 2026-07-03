@@ -1,0 +1,143 @@
+﻿2026-07-03T01:27:09.9413631Z ##[group]Run cd android
+2026-07-03T01:27:09.9413920Z [36;1mcd android[0m
+2026-07-03T01:27:09.9414136Z [36;1mchmod +x gradlew[0m
+2026-07-03T01:27:09.9414380Z [36;1m./gradlew assembleDebug[0m
+2026-07-03T01:27:09.9434953Z shell: /usr/bin/bash -e {0}
+2026-07-03T01:27:09.9435403Z env:
+2026-07-03T01:27:09.9435903Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+2026-07-03T01:27:09.9436731Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+2026-07-03T01:27:09.9437349Z   ANDROID_HOME: /usr/local/lib/android/sdk
+2026-07-03T01:27:09.9437671Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+2026-07-03T01:27:09.9437948Z ##[endgroup]
+2026-07-03T01:27:10.0512284Z Downloading https://services.gradle.org/distributions/gradle-8.14.3-all.zip
+2026-07-03T01:27:12.4067557Z .....................10%.....................20%......................30%.....................40%......................50%.....................60%.....................70%......................80%.....................90%......................100%
+2026-07-03T01:27:15.1627607Z 
+2026-07-03T01:27:15.1629398Z Welcome to Gradle 8.14.3!
+2026-07-03T01:27:15.1635026Z 
+2026-07-03T01:27:15.1635979Z Here are the highlights of this release:
+2026-07-03T01:27:15.1650950Z  - Java 24 support
+2026-07-03T01:27:15.1652030Z  - GraalVM Native Image toolchain selection
+2026-07-03T01:27:15.1652725Z  - Enhancements to test reporting
+2026-07-03T01:27:15.1653339Z  - Build Authoring improvements
+2026-07-03T01:27:15.1653628Z 
+2026-07-03T01:27:15.1654384Z For more details see https://docs.gradle.org/8.14.3/release-notes.html
+2026-07-03T01:27:15.1654866Z 
+2026-07-03T01:27:15.2625065Z Starting a Gradle Daemon (subsequent builds will be faster)
+2026-07-03T01:27:45.2618734Z 
+2026-07-03T01:27:45.2643433Z > Configure project :app
+2026-07-03T01:27:45.2648253Z WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+2026-07-03T01:27:55.2635924Z 
+2026-07-03T01:27:55.2666863Z > Configure project :capacitor-cordova-android-plugins
+2026-07-03T01:27:55.2669574Z WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+2026-07-03T01:28:03.3618479Z 
+2026-07-03T01:28:03.3624199Z > Task :app:preBuild UP-TO-DATE
+2026-07-03T01:28:03.3625515Z > Task :app:preDebugBuild UP-TO-DATE
+2026-07-03T01:28:03.4626566Z > Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+2026-07-03T01:28:03.4628330Z > Task :capacitor-android:preBuild UP-TO-DATE
+2026-07-03T01:28:03.4629533Z > Task :capacitor-android:preDebugBuild UP-TO-DATE
+2026-07-03T01:28:03.4630906Z > Task :capacitor-browser:preBuild UP-TO-DATE
+2026-07-03T01:28:03.4631897Z > Task :capacitor-browser:preDebugBuild UP-TO-DATE
+2026-07-03T01:28:03.4632814Z > Task :capacitor-camera:preBuild UP-TO-DATE
+2026-07-03T01:28:03.4633736Z > Task :capacitor-camera:preDebugBuild UP-TO-DATE
+2026-07-03T01:28:03.5619801Z > Task :capacitor-android:writeDebugAarMetadata
+2026-07-03T01:28:03.5634077Z > Task :app:javaPreCompileDebug
+2026-07-03T01:28:03.5635345Z > Task :capacitor-browser:writeDebugAarMetadata
+2026-07-03T01:28:03.5636363Z > Task :capacitor-camera:writeDebugAarMetadata
+2026-07-03T01:28:03.5637480Z > Task :capacitor-cordova-android-plugins:preBuild UP-TO-DATE
+2026-07-03T01:28:03.5638716Z > Task :capacitor-cordova-android-plugins:preDebugBuild UP-TO-DATE
+2026-07-03T01:28:03.5639762Z > Task :capacitor-device:preBuild UP-TO-DATE
+2026-07-03T01:28:03.5640932Z > Task :capacitor-device:preDebugBuild UP-TO-DATE
+2026-07-03T01:28:03.5642045Z > Task :capacitor-cordova-android-plugins:writeDebugAarMetadata
+2026-07-03T01:28:03.5643112Z > Task :capacitor-geolocation:preBuild UP-TO-DATE
+2026-07-03T01:28:03.5644115Z > Task :capacitor-geolocation:preDebugBuild UP-TO-DATE
+2026-07-03T01:28:03.5645077Z > Task :capacitor-device:writeDebugAarMetadata
+2026-07-03T01:28:03.5646204Z > Task :capacitor-geolocation:writeDebugAarMetadata
+2026-07-03T01:28:03.5647261Z > Task :capacitor-android:processDebugNavigationResources
+2026-07-03T01:28:17.0622413Z > Task :capacitor-browser:processDebugNavigationResources
+2026-07-03T01:28:17.0623790Z > Task :app:checkDebugAarMetadata
+2026-07-03T01:28:17.0624873Z > Task :capacitor-camera:processDebugNavigationResources
+2026-07-03T01:28:17.0626162Z > Task :capacitor-cordova-android-plugins:processDebugNavigationResources
+2026-07-03T01:28:17.1632809Z > Task :capacitor-device:processDebugNavigationResources
+2026-07-03T01:28:17.1638001Z > Task :capacitor-geolocation:processDebugNavigationResources
+2026-07-03T01:28:17.2619260Z > Task :app:processDebugNavigationResources
+2026-07-03T01:28:18.2619904Z > Task :app:generateDebugResValues
+2026-07-03T01:28:18.2621099Z > Task :app:compileDebugNavigationResources
+2026-07-03T01:28:18.2622166Z > Task :capacitor-android:generateDebugResValues
+2026-07-03T01:28:18.3640658Z > Task :capacitor-android:generateDebugResources
+2026-07-03T01:28:18.3641751Z > Task :capacitor-android:packageDebugResources
+2026-07-03T01:28:18.3642646Z > Task :capacitor-browser:generateDebugResValues
+2026-07-03T01:28:18.3643547Z > Task :capacitor-browser:generateDebugResources
+2026-07-03T01:28:18.3644413Z > Task :capacitor-browser:packageDebugResources
+2026-07-03T01:28:18.3650898Z > Task :capacitor-camera:generateDebugResValues
+2026-07-03T01:28:18.4625643Z > Task :capacitor-camera:generateDebugResources
+2026-07-03T01:28:18.4626891Z > Task :capacitor-camera:packageDebugResources
+2026-07-03T01:28:18.4628136Z > Task :capacitor-cordova-android-plugins:generateDebugResValues
+2026-07-03T01:28:18.4629452Z > Task :capacitor-cordova-android-plugins:generateDebugResources
+2026-07-03T01:28:18.4630806Z > Task :capacitor-cordova-android-plugins:packageDebugResources
+2026-07-03T01:28:18.4631952Z > Task :capacitor-device:generateDebugResValues
+2026-07-03T01:28:18.4632921Z > Task :capacitor-device:generateDebugResources
+2026-07-03T01:28:18.4633869Z > Task :capacitor-device:packageDebugResources
+2026-07-03T01:28:18.4634827Z > Task :capacitor-geolocation:generateDebugResValues
+2026-07-03T01:28:18.4635995Z > Task :capacitor-geolocation:generateDebugResources
+2026-07-03T01:28:18.4637037Z > Task :capacitor-geolocation:packageDebugResources
+2026-07-03T01:28:18.5622761Z > Task :app:mapDebugSourceSetPaths
+2026-07-03T01:28:18.5646286Z > Task :app:generateDebugResources
+2026-07-03T01:28:20.4656949Z > Task :app:packageDebugResources
+2026-07-03T01:28:20.7619396Z > Task :app:mergeDebugResources
+2026-07-03T01:28:21.7646691Z > Task :app:createDebugCompatibleScreenManifests
+2026-07-03T01:28:21.7647837Z > Task :app:extractDeepLinksDebug
+2026-07-03T01:28:21.7666304Z > Task :capacitor-android:extractDeepLinksDebug
+2026-07-03T01:28:21.7686327Z > Task :capacitor-browser:extractDeepLinksDebug
+2026-07-03T01:28:21.7706411Z > Task :capacitor-camera:extractDeepLinksDebug
+2026-07-03T01:28:21.8619164Z > Task :app:parseDebugLocalResources
+2026-07-03T01:28:21.8620942Z > Task :capacitor-cordova-android-plugins:extractDeepLinksDebug
+2026-07-03T01:28:21.8621875Z > Task :capacitor-browser:processDebugManifest
+2026-07-03T01:28:21.8622684Z > Task :capacitor-android:processDebugManifest
+2026-07-03T01:28:21.8623641Z > Task :capacitor-cordova-android-plugins:processDebugManifest
+2026-07-03T01:28:21.8624579Z > Task :capacitor-camera:processDebugManifest
+2026-07-03T01:28:21.8625518Z > Task :capacitor-device:extractDeepLinksDebug
+2026-07-03T01:28:21.8626356Z > Task :capacitor-geolocation:extractDeepLinksDebug
+2026-07-03T01:28:21.8627189Z > Task :capacitor-device:processDebugManifest
+2026-07-03T01:28:21.9620123Z > Task :capacitor-geolocation:processDebugManifest
+2026-07-03T01:28:21.9621665Z > Task :capacitor-android:compileDebugLibraryResources
+2026-07-03T01:28:22.1618872Z > Task :app:processDebugMainManifest
+2026-07-03T01:28:22.2619786Z > Task :app:processDebugManifest
+2026-07-03T01:28:22.2644611Z > Task :capacitor-browser:compileDebugLibraryResources
+2026-07-03T01:28:22.2652897Z > Task :capacitor-android:parseDebugLocalResources
+2026-07-03T01:28:22.2653914Z > Task :app:processDebugManifestForPackage
+2026-07-03T01:28:22.3661886Z > Task :capacitor-browser:parseDebugLocalResources
+2026-07-03T01:28:22.3678516Z > Task :capacitor-camera:compileDebugLibraryResources
+2026-07-03T01:28:22.3692093Z > Task :capacitor-cordova-android-plugins:compileDebugLibraryResources
+2026-07-03T01:28:22.3693101Z > Task :capacitor-browser:generateDebugRFile
+2026-07-03T01:28:22.3693826Z > Task :capacitor-camera:parseDebugLocalResources
+2026-07-03T01:28:22.3694532Z > Task :capacitor-android:generateDebugRFile
+2026-07-03T01:28:22.3695467Z > Task :capacitor-device:compileDebugLibraryResources
+2026-07-03T01:28:22.3696488Z > Task :capacitor-cordova-android-plugins:parseDebugLocalResources
+2026-07-03T01:28:22.3697481Z > Task :capacitor-camera:generateDebugRFile
+2026-07-03T01:28:22.3698385Z > Task :capacitor-cordova-android-plugins:generateDebugRFile
+2026-07-03T01:28:22.3699418Z > Task :capacitor-geolocation:compileDebugLibraryResources
+2026-07-03T01:28:22.3700255Z > Task :capacitor-device:parseDebugLocalResources
+2026-07-03T01:28:22.4618949Z > Task :capacitor-android:javaPreCompileDebug
+2026-07-03T01:28:22.4621974Z > Task :capacitor-browser:javaPreCompileDebug
+2026-07-03T01:28:22.4623194Z > Task :capacitor-geolocation:parseDebugLocalResources
+2026-07-03T01:28:22.4624219Z > Task :capacitor-device:generateDebugRFile
+2026-07-03T01:28:27.7628799Z > Task :capacitor-android:compileDebugJavaWithJavac FAILED
+2026-07-03T01:28:27.7645957Z 
+2026-07-03T01:28:27.7646419Z 
+2026-07-03T01:28:27.7648432Z [Incubating] Problems report is available at: file:///home/runner/work/siap-ampenan/siap-ampenan/android/build/reports/problems/problems-report.html
+2026-07-03T01:28:27.7650080Z 77 actionable tasks: 77 executed
+2026-07-03T01:28:27.7656520Z FAILURE: Build failed with an exception.
+2026-07-03T01:28:27.7675673Z 
+2026-07-03T01:28:27.7706102Z * What went wrong:
+2026-07-03T01:28:27.7746301Z Execution failed for task ':capacitor-android:compileDebugJavaWithJavac'.
+2026-07-03T01:28:27.7747312Z > Java compilation initialization error
+2026-07-03T01:28:27.7747912Z     error: invalid source release: 21
+2026-07-03T01:28:27.7748253Z 
+2026-07-03T01:28:27.7748508Z * Try:
+2026-07-03T01:28:27.7749055Z > Run with --stacktrace option to get the stack trace.
+2026-07-03T01:28:27.7749852Z > Run with --info or --debug option to get more log output.
+2026-07-03T01:28:27.7750664Z > Run with --scan to get full insights.
+2026-07-03T01:28:27.7751468Z > Get more help at https://help.gradle.org.
+2026-07-03T01:28:27.7751947Z 
+2026-07-03T01:28:27.7793633Z BUILD FAILED in 1m 17s
+2026-07-03T01:28:28.2402966Z ##[error]Process completed with exit code 1.
