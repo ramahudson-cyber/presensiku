@@ -1,8 +1,8 @@
 {
-  "version": "1.3.0",
-  "versionCode": 9,
+  "version": "1.4.0",
+  "versionCode": 10,
   "apkUrl": "https://siap-ampenan.vercel.app/SIAP-Puskesmas.apk",
   "bundleUrl": "https://siap-ampenan.vercel.app/bundle.zip",
-  "changelog": "Fitur absen pulang (check-out) + selfie kamera untuk absen pulang",
+  "changelog": "IMEI device binding + Android native plugin untuk baca IMEI & serial",
   "forceUpdate": false
 }
