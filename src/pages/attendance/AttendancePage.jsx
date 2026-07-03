@@ -14,6 +14,7 @@ import { getCurrentPosition } from "../../services/geoService";
 const PUSKESMAS_LOCATION = { latitude: -8.5699, longitude: 116.0770 };
 const RADIUS_METER = 999999; // TEST MODE — ubah ke 300 untuk produksi
 const MODEL_URL = "/models";
+const CDN_MODEL_URL = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model";
 
 const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
 
@@ -183,23 +184,30 @@ export default function AttendancePage() {
           preloadModule = await import("../../utils/preloadModels");
         } catch { preloadModule = null; }
 
+        const loadModelsWithFallback = async () => {
+          try {
+            await Promise.all([
+              faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+              faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+              faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
+            ]);
+          } catch {
+            await Promise.all([
+              faceapi.nets.tinyFaceDetector.loadFromUri(CDN_MODEL_URL),
+              faceapi.nets.faceLandmark68Net.loadFromUri(CDN_MODEL_URL),
+              faceapi.nets.faceExpressionNet.loadFromUri(CDN_MODEL_URL),
+            ]);
+          }
+        };
+
         if (preloadModule) {
           try {
             await preloadModule.preloadFaceModels();
           } catch {
-            // Jika preload gagal, coba load langsung dari /models
-            await Promise.all([
-              faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-              faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-              faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
-            ]);
+            await loadModelsWithFallback();
           }
         } else {
-          await Promise.all([
-            faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-            faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-            faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
-          ]);
+          await loadModelsWithFallback();
         }
         setModelsLoaded(true);
         modelsReadyRef.current = true;

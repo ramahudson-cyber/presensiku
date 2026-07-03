@@ -1,23 +1,33 @@
 import * as faceapi from "face-api.js";
 
 let modelsPromise = null;
-const MODEL_URL = "/models";
+const LOCAL_URL = "/models";
+const CDN_URL = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model";
+
+async function loadModelsFrom(url) {
+  await Promise.all([
+    faceapi.nets.tinyFaceDetector.loadFromUri(url),
+    faceapi.nets.faceLandmark68Net.loadFromUri(url),
+    faceapi.nets.faceExpressionNet.loadFromUri(url),
+  ]);
+}
 
 export function preloadFaceModels() {
   if (!modelsPromise) {
-    console.log("🚀 Preloading face-api models...");
-    modelsPromise = Promise.all([
-      faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-      faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-      faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
-    ]).then(() => {
-      console.log("✅ Face models preloaded");
+    modelsPromise = (async () => {
+      try {
+        await loadModelsFrom(LOCAL_URL);
+      } catch (err) {
+        console.warn("⚠️ Local model load failed, trying CDN:", err.message);
+        try {
+          await loadModelsFrom(CDN_URL);
+        } catch (cdnErr) {
+          console.error("❌ CDN model load also failed:", cdnErr);
+          throw cdnErr;
+        }
+      }
       warmUpModels();
-    }).catch(err => {
-      console.error("❌ Preload failed:", err);
-      modelsPromise = null;
-      throw err; // lempar error agar caller tahu
-    });
+    })();
   }
   return modelsPromise;
 }
