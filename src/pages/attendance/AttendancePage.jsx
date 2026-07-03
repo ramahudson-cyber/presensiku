@@ -87,6 +87,8 @@ export default function AttendancePage() {
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
   const cameraStartingRef = useRef(false);
 
+  const isNative = Capacitor.isNativePlatform();
+
   // ============================================================
   // ⏰ SYNC SERVER TIME — anti-cheat timestamp
   // ============================================================
@@ -442,8 +444,6 @@ export default function AttendancePage() {
   // ============================================================
   // 📷 CAMERA — SAFARI PWA OPTIMIZED
   // ============================================================
-
-  const isNative = Capacitor.isNativePlatform();
 
   // 🔒 Track apakah stream camera masih hidup
   const streamAlive = () => {
