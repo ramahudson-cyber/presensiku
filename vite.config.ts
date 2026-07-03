@@ -4,6 +4,11 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  build: {
+    rolldownOptions: {
+      external: ["@capgo/capacitor-updater"],
+    },
+  },
   plugins: [
     react(),
     tailwindcss(),
