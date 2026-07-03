@@ -1,0 +1,47 @@
+﻿2026-07-03T01:05:53.8117346Z ##[group]Run npm run build
+2026-07-03T01:05:53.8117658Z [36;1mnpm run build[0m
+2026-07-03T01:05:53.8156580Z shell: /usr/bin/bash -e {0}
+2026-07-03T01:05:53.8156840Z env:
+2026-07-03T01:05:53.8157152Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+2026-07-03T01:05:53.8157663Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+2026-07-03T01:05:53.8158090Z   ANDROID_HOME: /usr/local/lib/android/sdk
+2026-07-03T01:05:53.8158386Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+2026-07-03T01:05:53.8158661Z ##[endgroup]
+2026-07-03T01:05:53.9299799Z 
+2026-07-03T01:05:53.9300924Z > siap-puskesmas@0.0.0 build
+2026-07-03T01:05:53.9301390Z > vite build
+2026-07-03T01:05:53.9301563Z 
+2026-07-03T01:05:54.2838341Z [36mvite v8.0.16 [32mbuilding client environment for production...[36m[39m
+2026-07-03T01:05:54.3035985Z [2K
+2026-07-03T01:05:54.4354124Z [33m[plugin rolldown:vite-resolve] Module "fs" has been externalized for browser compatibility, imported by "/home/runner/work/siap-ampenan/siap-ampenan/node_modules/face-api.js/build/es6/env/createFileSystem.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+2026-07-03T01:05:54.7724708Z transforming...✓ 2027 modules transformed.
+2026-07-03T01:05:54.8581085Z rendering chunks...
+2026-07-03T01:05:55.3619999Z computing gzip size...
+2026-07-03T01:05:55.3897074Z dist/manifest.webmanifest                            0.34 kB
+2026-07-03T01:05:55.3898577Z dist/index.html                                      1.53 kB │ gzip:   0.70 kB
+2026-07-03T01:05:55.3899699Z dist/assets/index.B_B6TjTb.css                     154.27 kB │ gzip:  27.55 kB
+2026-07-03T01:05:55.3900839Z dist/assets/esm.BCN855H3.js                          0.33 kB │ gzip:   0.23 kB
+2026-07-03T01:05:55.3901935Z dist/assets/esm.Jo5B1OIY.js                          0.34 kB │ gzip:   0.23 kB
+2026-07-03T01:05:55.3903032Z dist/assets/web.DO1UFgOv.js                          0.36 kB │ gzip:   0.24 kB
+2026-07-03T01:05:55.3904923Z dist/assets/web.M-MLwyrH.js                          2.08 kB │ gzip:   0.85 kB
+2026-07-03T01:05:55.3906096Z dist/assets/web.DL5PIC6g.js                          2.39 kB │ gzip:   1.06 kB
+2026-07-03T01:05:55.3907590Z dist/assets/workbox-window.prod.es5.Bd17z0YL.js      5.65 kB │ gzip:   2.20 kB
+2026-07-03T01:05:55.3909275Z dist/assets/index.BghrqM4i.js                    1,952.43 kB │ gzip: 547.16 kB
+2026-07-03T01:05:55.3909976Z 
+2026-07-03T01:05:55.3912728Z [33m[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mnode_modules/@fingerprintjs/fingerprintjs/dist/fp.esm.js is dynamically imported by src/pages/attendance/AttendancePage.jsx but also statically imported by src/services/deviceService.js, dynamic import will not move module into another chunk.
+2026-07-03T01:05:55.3914256Z [39m
+2026-07-03T01:05:55.3914876Z [33m[plugin builtin:vite-reporter] 
+2026-07-03T01:05:55.3915507Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-07-03T01:05:55.3916121Z - Using dynamic import() to code-split the application
+2026-07-03T01:05:55.3917144Z - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+2026-07-03T01:05:55.3918186Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+2026-07-03T01:05:55.3919944Z [33m[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0msrc/utils/preloadModels.js is dynamically imported by src/pages/attendance/AttendancePage.jsx but also statically imported by src/main.jsx, dynamic import will not move module into another chunk.
+2026-07-03T01:05:55.3920938Z [39m
+2026-07-03T01:05:55.3929327Z [32m✓ built in 1.10s[39m
+2026-07-03T01:05:57.0532854Z 
+2026-07-03T01:05:57.0534049Z [36mPWA v1.3.0[39m
+2026-07-03T01:05:57.0535236Z mode      [35mgenerateSW[39m
+2026-07-03T01:05:57.0536225Z precache  [32m19 entries[39m [2m(2104.64 KiB)[22m
+2026-07-03T01:05:57.0536889Z files generated
+2026-07-03T01:05:57.0537459Z   [2mdist/sw.js[22m
+2026-07-03T01:05:57.0538197Z   [2mdist/workbox-2fbc6a65.js[22m
