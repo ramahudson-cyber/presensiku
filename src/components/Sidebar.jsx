@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
+import { getCurrentVersion } from "../services/updateService";
 import {
   LayoutDashboard, Users, CalendarCheck, CalendarDays,
   FileText, Megaphone, Settings, LogOut,
@@ -112,6 +113,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
             <LogOut size={18} className="shrink-0" />
             <span>Logout</span>
           </button>
+          <p className="text-[9px] text-violet-100/30 text-center mt-2 select-none">v{getCurrentVersion().version}</p>
         </div>
       </aside>
     </>
