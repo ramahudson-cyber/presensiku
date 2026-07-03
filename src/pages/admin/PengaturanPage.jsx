@@ -938,6 +938,8 @@ function TabManajemenUser() {
                                     <div className="min-w-0">
                                       <p className="text-sm font-medium text-white truncate">{device.device_name || "Unknown Device"}</p>
                                       <p className="text-xs text-slate-300 font-mono mt-0.5 truncate">ID: {device.visitor_id?.substring(0, 20)}…</p>
+                                      {device.imei && <p className="text-xs text-emerald-300 font-mono mt-0.5">IMEI: {device.imei}</p>}
+                                      {device.serial && <p className="text-xs text-sky-300 font-mono mt-0.5">Serial: {device.serial}</p>}
                                       <p className="text-xs text-slate-400 mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
                                       {device.device_type && (
                                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 text-[10px] font-medium rounded-full ring-1 ${device.device_type === 'android' ? 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30' : device.device_type === 'ios' ? 'bg-sky-500/15 text-sky-300 ring-sky-500/30' : 'bg-slate-500/15 text-slate-300 ring-slate-500/30'}`}>
@@ -1019,6 +1021,8 @@ function TabManajemenUser() {
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-white truncate">{device.device_name || "Unknown Device"}</p>
                       <p className="text-xs text-slate-300 font-mono mt-0.5 truncate">ID: {device.visitor_id?.substring(0, 20)}…</p>
+                      {device.imei && <p className="text-xs text-emerald-300 font-mono mt-0.5">IMEI: {device.imei}</p>}
+                      {device.serial && <p className="text-xs text-sky-300 font-mono mt-0.5">Serial: {device.serial}</p>}
                       <p className="text-xs text-slate-400 mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
                       {device.device_type && (
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 text-[10px] font-medium rounded-full ring-1 ${device.device_type === 'android' ? 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30' : device.device_type === 'ios' ? 'bg-sky-500/15 text-sky-300 ring-sky-500/30' : 'bg-slate-500/15 text-slate-300 ring-slate-500/30'}`}>
@@ -1203,6 +1207,16 @@ function TabApprovalDevice() {
                       <p className="text-slate-300 font-mono break-all">
                         <strong className="text-violet-200/70">ID:</strong> {req.visitor_id?.substring(0, 30)}…
                       </p>
+                      {req.imei && (
+                        <p className="text-emerald-300 font-mono break-all">
+                          <strong className="text-emerald-200/70">IMEI:</strong> {req.imei}
+                        </p>
+                      )}
+                      {req.serial && (
+                        <p className="text-sky-300 font-mono break-all">
+                          <strong className="text-sky-200/70">Serial:</strong> {req.serial}
+                        </p>
+                      )}
                       <p className="text-slate-300 mt-2 flex items-center gap-1">
                         <ClockIcon size={11} />
                         Request: {new Date(req.created_at).toLocaleString("id-ID")}

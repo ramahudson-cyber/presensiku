@@ -5,19 +5,17 @@ import { isNativePlatform, isAndroidCapacitor } from "../lib/devicePlatform";
 
 /**
  * Generate device info (platform-aware)
- * - Android (Capacitor) → Device.getId() untuk Android ID
- * - iOS (Capacitor) → Device.getId() 
- * - Web → FingerprintJS (existing)
+ * - Android (Capacitor) → prioritaskan IMEI, fallback Android ID
+ * - iOS (Capacitor) → Device.getId()
+ * - Web → FingerprintJS
  */
 export async function getDeviceInfo() {
   let visitorId, deviceName = "Unknown Device", deviceOs = "Unknown", deviceBrowser = "Unknown", deviceType = "web";
+  let imei = null, serial = null;
 
   if (isNativePlatform()) {
     try {
       const { Device } = await import('@capacitor/device');
-      const idResult = await Device.getId();
-      visitorId = idResult.uuid;
-
       const infoResult = await Device.getInfo();
       deviceOs = infoResult.operatingSystem;
       deviceName = infoResult.model || infoResult.manufacturer || "Unknown Device";
@@ -25,8 +23,30 @@ export async function getDeviceInfo() {
 
       if (isAndroidCapacitor()) {
         deviceType = "android";
+
+        // 🔥 Prioritaskan IMEI (permanen per hardware)
+        try {
+          const { registerPlugin } = await import('@capacitor/core');
+          const ImeiPlugin = registerPlugin('ImeiPlugin');
+          const imeiResult = await ImeiPlugin.getImeiInfo();
+          if (imeiResult.imei) {
+            visitorId = imeiResult.imei;
+            imei = imeiResult.imei;
+            serial = imeiResult.serial;
+          }
+        } catch (_) {
+          // IMEI plugin gagal → silent fallback
+        }
+
+        // Fallback ke Android ID jika IMEI tidak tersedia
+        if (!visitorId) {
+          const idResult = await Device.getId();
+          visitorId = idResult.uuid;
+        }
       } else {
         deviceType = "ios";
+        const idResult = await Device.getId();
+        visitorId = idResult.uuid;
       }
     } catch (err) {
       console.error("❌ Capacitor Device error:", err);
@@ -74,6 +94,8 @@ export async function getDeviceInfo() {
     deviceOs,
     deviceBrowser,
     deviceType,
+    imei,
+    serial,
   };
 }
 
@@ -89,6 +111,8 @@ export async function checkDeviceBinding(userId, deviceInfo) {
       p_device_os: deviceInfo.deviceOs,
       p_device_browser: deviceInfo.deviceBrowser,
       p_device_type: deviceInfo.deviceType,
+      p_imei: deviceInfo.imei || null,
+      p_serial: deviceInfo.serial || null,
     });
 
     if (error) throw error;
@@ -244,6 +268,8 @@ export async function createDeviceRequest(deviceInfo) {
       p_device_os: deviceInfo.deviceOs,
       p_device_browser: deviceInfo.deviceBrowser,
       p_device_type: deviceInfo.deviceType,
+      p_imei: deviceInfo.imei || null,
+      p_serial: deviceInfo.serial || null,
     });
 
     if (error) throw error;
