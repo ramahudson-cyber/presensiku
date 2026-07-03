@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
+import { Capacitor } from "@capacitor/core";
+import { Camera as CapCamera } from "@capacitor/camera";
 import {
   MapPin, Camera, Clock, CheckCircle2,
   RefreshCw, Loader2, ShieldAlert, X, Sparkles, ShieldCheck, Navigation
@@ -130,6 +132,8 @@ export default function AttendancePage() {
 
   // 🔄 Safari BFCACHE fix: reload saat restore dari bfcache (back/forward)
   useEffect(() => {
+    if (isNative) return;
+
     const canReload = () => {
       const lastReload = parseInt(sessionStorage.getItem("siap_bfcache_ts") || "0");
       if (Date.now() - lastReload > 30000) {
@@ -161,7 +165,7 @@ export default function AttendancePage() {
       window.removeEventListener("pageshow", onPageShow);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [cameraOpen]);
+  }, [cameraOpen, isNative]);
 
   useEffect(() => {
     syncServerTime();
@@ -439,6 +443,8 @@ export default function AttendancePage() {
   // 📷 CAMERA — SAFARI PWA OPTIMIZED
   // ============================================================
 
+  const isNative = Capacitor.isNativePlatform();
+
   // 🔒 Track apakah stream camera masih hidup
   const streamAlive = () => {
     return streamRef.current && streamRef.current.getVideoTracks().some(t => t.readyState === "live");
@@ -466,7 +472,7 @@ export default function AttendancePage() {
   };
 
   // ⏱ Deteksi cepat — interval kecil untuk respons senyum real-time
-  const DETECTION_INTERVAL = 150;
+  const DETECTION_INTERVAL = isNative ? 300 : 150;
 
   const capturePhoto = async () => {
     if (!videoRef.current || !streamAlive()) return;
@@ -496,15 +502,41 @@ export default function AttendancePage() {
     }
   };
 
+  const captureWithCapacitorCamera = async () => {
+    try {
+      setFaceStatus("loading");
+      setFaceMessage("Membuka kamera...");
+      const photo = await CapCamera.getPhoto({
+        quality: 80,
+        allowEditing: false,
+        resultType: "dataUrl",
+        saveToGallery: false,
+      });
+      if (!photo?.dataUrl) throw new Error("Tidak ada foto");
+      cleanupCamera();
+      setFaceMessage("Menyimpan absensi...");
+      const saved = await saveAttendanceToSupabase(photo.dataUrl, currentCoords);
+      if (saved) {
+        setFaceStatus("success");
+        setFaceMessage("Absensi tersimpan!");
+        setTimeout(() => closeCameraModal(), 1800);
+      } else {
+        setFaceStatus("idle");
+        setFaceMessage("");
+      }
+    } catch (err) {
+      setFaceStatus("idle");
+      setFaceMessage("");
+      setPersistentError("Gagal ambil foto: " + (err.message || ""));
+    }
+  };
+
   const runDetection = async () => {
     if (!videoRef.current || !streamAlive()) return false;
 
-    // Jika model gagal load, langsung native camera fallback
     if (modelsFailed) {
-      cleanupCamera();
-      setShowNativeFallback(true);
       setFaceStatus("idle");
-      setFaceMessage("");
+      setFaceMessage("AI tidak tersedia — pilih deteksi manual");
       return false;
     }
     // Jika model belum siap, tunggu
@@ -702,6 +734,19 @@ export default function AttendancePage() {
     } catch (err) {
       console.error("Camera error:", err);
       cleanupCamera();
+
+      // Fallback ke Capacitor Camera di native platform
+      if (isNative) {
+        setCameraOpen(true);
+        setFaceStatus("loading");
+        setFaceMessage("Membuka kamera native...");
+        try {
+          await waitForVideoElement(videoRef);
+        } catch {}
+        await captureWithCapacitorCamera();
+        cameraStartingRef.current = false;
+        return;
+      }
 
       const isTimeout = err.message === "getUserMedia_timeout";
       const errorMsg = isTimeout
@@ -1010,7 +1055,17 @@ export default function AttendancePage() {
                 </div>
               </div>
 
-              
+              {modelsFailed || isNative ? (
+                <button onClick={isNative ? captureWithCapacitorCamera : capturePhoto}
+                  className="mt-4 w-full py-3.5 border-gradient bg-transparent text-white rounded-2xl font-semibold active:scale-[0.97] transition flex items-center justify-center gap-2">
+                  <Camera size={18} /> Ambil Foto Manual
+                </button>
+              ) : (
+                <button onClick={capturePhoto}
+                  className="mt-4 w-full py-3.5 border-gradient bg-transparent text-white rounded-2xl font-semibold active:scale-[0.97] transition flex items-center justify-center gap-2">
+                  <Camera size={18} /> Ambil Foto Sekarang
+                </button>
+              )}
             </div>
           </div>
         </div>
