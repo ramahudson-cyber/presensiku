@@ -4,8 +4,8 @@ const config: CapacitorConfig = {
   appId: 'com.puskesmas.ampenan.siap',
   appName: 'SIAP Puskesmas',
   webDir: 'dist',
-  version: '1.2.4',
-  versionCode: 7,
+  version: '1.2.5',
+  versionCode: 8,
   plugins: {
     Geolocation: {
       permissions: {

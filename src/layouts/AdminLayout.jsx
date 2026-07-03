@@ -2,6 +2,7 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import BottomNav from "../components/BottomNav";
 import UpdateDialog from "../components/UpdateDialog";
+import { getCurrentVersion } from "../services/updateService";
 import { Outlet } from "react-router-dom";
 
 function AdminLayout() {
@@ -24,6 +25,9 @@ function AdminLayout() {
           <div className="mx-auto max-w-[2000px] w-full">
             <Outlet />
           </div>
+          <footer className="text-center text-[10px] text-white/[0.15] pb-2 select-none mt-2">
+            v{getCurrentVersion().version} &mdash; SIAP Puskesmas Ampenan
+          </footer>
         </main>
       </div>
 
