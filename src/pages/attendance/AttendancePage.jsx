@@ -5,7 +5,7 @@ import { Capacitor } from "@capacitor/core";
 import { Camera as CapCamera } from "@capacitor/camera";
 import {
   MapPin, Camera, Clock, CheckCircle2,
-  RefreshCw, Loader2, ShieldAlert, X, Sparkles, ShieldCheck, Navigation
+  RefreshCw, Loader2, ShieldAlert, X, Sparkles, ShieldCheck, Navigation, LogOut
 } from "lucide-react";
 import LocationMap from "../../components/LocationMap";
 import * as faceapi from "face-api.js";
@@ -86,6 +86,7 @@ export default function AttendancePage() {
   const [isFakeGPS, setIsFakeGPS] = useState(false);
   const [savingAttendance, setSavingAttendance] = useState(false);
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const cameraStartingRef = useRef(false);
 
   const isNative = Capacitor.isNativePlatform();
@@ -450,6 +451,49 @@ export default function AttendancePage() {
   };
 
   // ============================================================
+  // 💾 ABSEN PULANG
+  // ============================================================
+  const saveCheckOutToSupabase = async (photoData, location) => {
+    try {
+      setSavingAttendance(true);
+      const deviceName = getDeviceInfoLite();
+
+      const { data: serverNow, error: timeErr } = await supabase.rpc("get_server_time");
+      if (timeErr) throw timeErr;
+      const now = new Date(serverNow);
+
+      const { error } = await supabase
+        .from("attendance")
+        .update({
+          clock_out_time: now.toISOString(),
+          location_out: location ? {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            accuracy: location.accuracy,
+            altitude: location.altitude,
+            distance_from_puskesmas: distance,
+          } : null,
+          selfie_out_url: photoData,
+          device_visitor_id: deviceVisitorId,
+          device_name: deviceName,
+        })
+        .eq("id", todayAttendance.id);
+
+      if (error) throw error;
+
+      console.log("✅ Check-out saved:", now.toISOString());
+      await fetchTodayAttendance();
+      return true;
+    } catch (err) {
+      console.error("❌ save checkout error:", err);
+      setCameraError("GAGAL ABSEN PULANG: " + (err.message || err.toString()));
+      return false;
+    } finally {
+      setSavingAttendance(false);
+    }
+  };
+
+  // ============================================================
   // 📷 CAMERA — SAFARI PWA OPTIMIZED
   // ============================================================
 
@@ -495,10 +539,12 @@ export default function AttendancePage() {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       const photoData = canvas.toDataURL("image/jpeg", 0.8);
       cleanupCamera();
-      const saved = await saveAttendanceToSupabase(photoData, currentCoords);
+      const saved = isCheckingOut
+        ? await saveCheckOutToSupabase(photoData, currentCoords)
+        : await saveAttendanceToSupabase(photoData, currentCoords);
       if (saved) {
         setFaceStatus("success");
-        setFaceMessage("Absensi tersimpan!");
+        setFaceMessage(isCheckingOut ? "Absen pulang tersimpan!" : "Absensi tersimpan!");
         setTimeout(() => closeCameraModal(), 1800);
       } else {
         setFaceStatus("idle");
@@ -522,11 +568,13 @@ export default function AttendancePage() {
       });
       if (!photo?.dataUrl) throw new Error("Tidak ada foto");
       cleanupCamera();
-      setFaceMessage("Menyimpan absensi...");
-      const saved = await saveAttendanceToSupabase(photo.dataUrl, currentCoords);
+      setFaceMessage(isCheckingOut ? "Menyimpan absen pulang..." : "Menyimpan absensi...");
+      const saved = isCheckingOut
+        ? await saveCheckOutToSupabase(photo.dataUrl, currentCoords)
+        : await saveAttendanceToSupabase(photo.dataUrl, currentCoords);
       if (saved) {
         setFaceStatus("success");
-        setFaceMessage("Absensi tersimpan!");
+        setFaceMessage(isCheckingOut ? "Absen pulang tersimpan!" : "Absensi tersimpan!");
         setTimeout(() => closeCameraModal(), 1800);
       } else {
         setFaceStatus("idle");
@@ -691,8 +739,9 @@ export default function AttendancePage() {
     scheduleDetection();
   };
 
-  const openCameraModal = async () => {
+  const openCameraModal = async (checkOut = false) => {
     if (cameraStartingRef.current) return;
+    setIsCheckingOut(checkOut);
     cameraStartingRef.current = true;
 
     // 📱 iOS PWA: hybrid approach
@@ -830,17 +879,29 @@ export default function AttendancePage() {
         <div className="bg-[#c190ff]/15 rounded-2xl p-4 border border-white/10">
           {todayAttendance ? (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                <CheckCircle2 size={18} className="text-emerald-400" />
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${todayAttendance.clock_out_time ? "bg-violet-500/20" : "bg-emerald-500/20"}`}>
+                {todayAttendance.clock_out_time ? <CheckCircle2 size={18} className="text-violet-400" /> : <CheckCircle2 size={18} className="text-emerald-400" />}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-white">
-                  Sudah Absen {todayAttendance.is_late && <span className="text-amber-400 text-[10px]">(Terlambat {todayAttendance.late_minutes}m)</span>}
+                  {todayAttendance.clock_out_time ? "Sudah Absen (Selesai)" : "Sudah Absen Masuk"}{" "}
+                  {todayAttendance.is_late && <span className="text-amber-400 text-[10px]">(Terlambat {todayAttendance.late_minutes}m)</span>}
                 </p>
-                <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                  <span className="text-[11px] text-slate-400">
-                    {new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}
-                  </span>
+                <div className="flex flex-wrap items-center gap-2 mt-1">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[9px] text-slate-500">Masuk</span>
+                    <span className="text-[11px] text-slate-400">
+                      {new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}
+                    </span>
+                  </div>
+                  {todayAttendance.clock_out_time && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-[9px] text-slate-500">Pulang</span>
+                      <span className="text-[11px] text-violet-300">
+                        {new Date(todayAttendance.clock_out_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}
+                      </span>
+                    </div>
+                  )}
                   {todayAttendance.shift_code && (
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold
                       ${todayAttendance.shift_code === "PG" ? "bg-amber-500/15 text-amber-300" : ""}
@@ -939,17 +1000,19 @@ export default function AttendancePage() {
           )}
         </div>
 
-        {!todayAttendance && (
+        {todayAttendance && todayAttendance.clock_out_time ? null : (
           <>
             <button
-              onClick={openCameraModal}
+              onClick={() => openCameraModal(!!todayAttendance)}
               disabled={locationStatus !== "valid" || isFakeGPS || savingAttendance || !serverTime}
-              className="w-full py-4 border-gradient bg-transparent text-white rounded-2xl font-semibold transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-xl shadow-purple-900/30"
+              className={`w-full py-4 border-gradient bg-transparent rounded-2xl font-semibold transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-xl ${todayAttendance ? "shadow-purple-900/30" : "shadow-purple-900/30"}`}
             >
               {savingAttendance ? (
                 <><Loader2 size={20} className="animate-spin" /> Menyimpan...</>
               ) : !serverTime ? (
                 <><Loader2 size={20} className="animate-spin" /> Sinkron server...</>
+              ) : todayAttendance ? (
+                <><LogOut size={20} /> Absen Pulang</>
               ) : (
                 <><Camera size={20} /> Absen Sekarang</>
               )}
@@ -992,8 +1055,8 @@ export default function AttendancePage() {
                     <Sparkles size={16} className="sm:size-[18] text-white" />
                   </div>
                   <div className="min-w-0">
-                    <h2 className="text-white font-bold text-sm sm:text-base truncate">Verifikasi Wajah</h2>
-                    <p className="text-slate-200 text-[10px] sm:text-[11px] truncate">Posisikan wajah & senyum</p>
+                    <h2 className="text-white font-bold text-sm sm:text-base truncate">{isCheckingOut ? "Absen Pulang" : "Verifikasi Wajah"}</h2>
+                    <p className="text-slate-200 text-[10px] sm:text-[11px] truncate">{isCheckingOut ? "Senyum untuk konfirmasi pulang" : "Posisikan wajah & senyum"}</p>
                   </div>
                 </div>
                 <button onClick={closeCameraModal} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border-gradient bg-transparent hover:bg-white/10 text-white flex items-center justify-center transition active:scale-95 shrink-0">
@@ -1066,12 +1129,12 @@ export default function AttendancePage() {
               {modelsFailed || isNative ? (
                 <button onClick={isNative ? captureWithCapacitorCamera : capturePhoto}
                   className="mt-4 w-full py-3.5 border-gradient bg-transparent text-white rounded-2xl font-semibold active:scale-[0.97] transition flex items-center justify-center gap-2">
-                  <Camera size={18} /> Ambil Foto Manual
+                  {isCheckingOut ? <LogOut size={18} /> : <Camera size={18} />} {isCheckingOut ? "Konfirmasi Pulang" : "Ambil Foto Manual"}
                 </button>
               ) : (
                 <button onClick={capturePhoto}
                   className="mt-4 w-full py-3.5 border-gradient bg-transparent text-white rounded-2xl font-semibold active:scale-[0.97] transition flex items-center justify-center gap-2">
-                  <Camera size={18} /> Ambil Foto Sekarang
+                  {isCheckingOut ? <LogOut size={18} /> : <Camera size={18} />} {isCheckingOut ? "Konfirmasi Pulang" : "Ambil Foto Sekarang"}
                 </button>
               )}
             </div>
