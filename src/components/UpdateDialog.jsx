@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { checkUpdate } from "../services/updateService";
 import { Capacitor } from "@capacitor/core";
 import { Download, RefreshCw, X, Loader2, Zap } from "lucide-react";
@@ -7,12 +7,23 @@ export default function UpdateDialog() {
   const [update, setUpdate] = useState(null);
   const [dismissed, setDismissed] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
 
   const isNative = Capacitor.isNativePlatform();
+  const listenerRef = useRef(null);
 
   useEffect(() => {
     checkUpdate().then(setUpdate);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (listenerRef.current) {
+        listenerRef.current.remove();
+        listenerRef.current = null;
+      }
+    };
   }, []);
 
   if (!update || dismissed) return null;
@@ -39,16 +50,26 @@ export default function UpdateDialog() {
         setError("Gagal update: " + (err.message || ""));
         setDownloading(false);
       }
+    } else if (isNative && update.apkUrl) {
+      try {
+        const { registerPlugin } = await import("@capacitor/core");
+        const plugin = registerPlugin("ApkDownloadPlugin");
+        listenerRef.current = plugin.addListener("downloadProgress", (event) => {
+          setProgress(event.percent || 0);
+        });
+        const result = await plugin.downloadApk({ url: update.apkUrl, version: update.version });
+        if (!result || !result.success) {
+          setError(result?.error || "Gagal download");
+        }
+      } catch (err) {
+        setError("Gagal download: " + (err.message || ""));
+      }
+      setDownloading(false);
     } else if (update.apkUrl) {
       try {
-        const { Browser } = await import("@capacitor/browser");
-        await Browser.open({ url: update.apkUrl });
+        window.open(update.apkUrl, "_blank");
       } catch {
-        try {
-          window.open(update.apkUrl, "_blank");
-        } catch {
-          setError("Gagal membuka browser. Salin link: " + update.apkUrl);
-        }
+        setError("Gagal membuka browser. Salin link: " + update.apkUrl);
       }
       setDownloading(false);
     }
@@ -63,11 +84,13 @@ export default function UpdateDialog() {
               <RefreshCw size={17} className="text-white" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white">Update Tersedia</h3>
+              <h3 className="text-sm font-bold text-white">
+                {downloading ? "Mengunduh..." : "Update Tersedia"}
+              </h3>
               <p className="text-[10px] text-slate-400">v{update.version}</p>
             </div>
           </div>
-          {!update.forceUpdate && (
+          {!update.forceUpdate && !downloading && (
             <button onClick={() => setDismissed(true)}
               className="border-gradient bg-transparent text-white p-1.5 rounded-lg transition-all">
               <X size={16} />
@@ -75,7 +98,7 @@ export default function UpdateDialog() {
           )}
         </div>
         <div className="p-5 space-y-4">
-          {update.changelog && (
+          {update.changelog && !downloading && (
             <div>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Pembaruan</p>
               <p className="text-xs text-slate-300 leading-relaxed">{update.changelog}</p>
@@ -86,14 +109,38 @@ export default function UpdateDialog() {
               <p className="text-[11px] text-red-300 break-all">{error}</p>
             </div>
           )}
-          <button onClick={handleUpdate} disabled={downloading}
-            className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98]">
-            {downloading ? <><Loader2 size={16} className="animate-spin" /> {isOtaPossible ? "Mengupdate..." : "Membuka..."}</> : <><Icon size={16} /> {buttonLabel}</>}
-          </button>
-          {isOtaPossible && (
+
+          {downloading && !isOtaPossible ? (
+            <div className="space-y-2">
+              <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="text-[10px] text-slate-400 text-center">{progress}%</p>
+              {progress >= 100 && (
+                <p className="text-[11px] text-emerald-300 text-center animate-pulse">
+                  Download selesai. Membuka installer...
+                </p>
+              )}
+            </div>
+          ) : downloading && isOtaPossible ? (
+            <div className="flex items-center justify-center gap-2 py-2">
+              <Loader2 size={16} className="animate-spin text-violet-400" />
+              <p className="text-xs text-slate-300">Mengupdate...</p>
+            </div>
+          ) : (
+            <button onClick={handleUpdate}
+              className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98]">
+              <Icon size={16} /> {buttonLabel}
+            </button>
+          )}
+
+          {isOtaPossible && !downloading && (
             <p className="text-[9px] text-slate-500 text-center">Update cepat tanpa download APK ulang</p>
           )}
-          {!update.forceUpdate && (
+          {!update.forceUpdate && !downloading && (
             <button onClick={() => setDismissed(true)}
               className="w-full py-2 text-xs text-slate-400 hover:text-white transition">
               Nanti Saja
