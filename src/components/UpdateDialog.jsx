@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { checkUpdate } from "../services/updateService";
-import { Capacitor } from "@capacitor/core";
-import { Download, RefreshCw, Loader2 } from "lucide-react";
+import { downloadApk } from "../services/apkDownloader";
+import { Download, RefreshCw } from "lucide-react";
 
 export default function UpdateDialog() {
   const [update, setUpdate] = useState(null);
@@ -10,20 +10,8 @@ export default function UpdateDialog() {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
 
-  const isNative = Capacitor.isNativePlatform();
-  const listenerRef = useRef(null);
-
   useEffect(() => {
     checkUpdate().then(setUpdate);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (listenerRef.current) {
-        listenerRef.current.remove();
-        listenerRef.current = null;
-      }
-    };
   }, []);
 
   if (!update) return null;
@@ -38,31 +26,17 @@ export default function UpdateDialog() {
     setDownloading(true);
     setError(null);
 
-    if (isNative && update.apkUrl) {
-      try {
-        const { registerPlugin } = await import("@capacitor/core");
-        const plugin = registerPlugin("ApkDownloadPlugin");
-        listenerRef.current = plugin.addListener("downloadProgress", (event) => {
-          setProgress(event.percent || 0);
-        });
-        const result = await plugin.downloadApk({ url: update.apkUrl, version: update.version });
-        if (!result || !result.success) {
-          setError(result?.error || "Gagal download");
-          setDownloading(false);
-        } else {
-          setProgress(100);
-          setDone(true);
-        }
-      } catch (err) {
-        setError("Gagal download: " + (err.message || ""));
-        setDownloading(false);
-      }
-    } else if (update.apkUrl) {
-      try {
-        window.open(update.apkUrl, "_blank");
-      } catch {
-        setError("Gagal membuka browser. Salin link: " + update.apkUrl);
-      }
+    const result = await downloadApk({
+      url: update.apkUrl,
+      version: update.version,
+      onProgress: (pct) => setProgress(pct),
+    });
+
+    if (result.success) {
+      setProgress(100);
+      setDone(true);
+    } else {
+      setError(result.error || "Gagal download");
       setDownloading(false);
     }
   };
