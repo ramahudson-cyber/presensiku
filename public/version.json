@@ -1,7 +1,7 @@
 {
   "version": "1.5.0",
   "versionCode": 11,
-  "apkUrl": "https://siap-ampenan.vercel.app/SIAP-Puskesmas.apk",
+  "apkUrl": "https://github.com/ramahudson-cyber/siap-ampenan/releases/download/v1.5.0/SIAP-Puskesmas.apk",
   "changelog": "Absensi tanpa kamera/selfie: cukup klik tombol + GPS. Hapus dependensi face-api.js (app lebih ringan ~3MB). Update APK langsung dengan progress bar.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
