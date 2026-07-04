@@ -1,5 +1,6 @@
 import { AuthProvider } from "./context/AuthContext";
 import AppRoutes from "./routes/AppRoutes";
+import UpdateDialog from "./components/UpdateDialog";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useTheme } from "./context/ThemeContext";
@@ -26,6 +27,7 @@ function ToastSetup() {
 function App() {
   return (
     <AuthProvider>
+      <UpdateDialog />
       <AppRoutes />
       <ToastSetup />
     </AuthProvider>

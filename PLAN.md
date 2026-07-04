@@ -1,42 +1,17 @@
 # Rencana Eksekusi — SIAP Puskesmas Ampenan
 
 > Dibuat: 2 Juli 2026
-> Status: **Belum dikerjakan**
+> Status: **Sedang dikerjakan**
 
 ---
 
-## Task 1: Face Recognition (Pencocokan Wajah di Absensi)
+## Task 1: ~~Face Recognition (Pencocokan Wajah di Absensi)~~ — **DIHAPUS**
 
-**Tujuan:** Pegawai A hanya bisa absen pakai wajah A. Face descriptor disimpan di DB, dicocokkan setiap absen.
-
-### Files to Create/Modify
-
-| File | Action | Keterangan |
-|------|--------|------------|
-| `src/services/faceService.js` | **Baru** | Fungsi: register face, extract descriptor, match face |
-| `supabase/migrations/xxx_face_descriptors.sql` | **Baru** | Tabel `face_descriptors` + RPC register/match |
-| `src/pages/attendance/AttendancePage.jsx` | **Ubah** | Tambah face matching setelah capture foto |
-| `src/pages/employee/FaceRegistrationPage.jsx` | **Baru** | Halaman registrasi wajah (selfie → simpan descriptor) |
-| `src/routes/AppRoutes.jsx` | **Ubah** | Tambah route `/registrasi-wajah` |
-| `src/context/AuthContext.jsx` | **Ubah** | Redirect ke registrasi wajah jika belum punya descriptor |
-
-### Logic
-1. Pegawai login pertama → cek apakah sudah punya face descriptor di DB
-2. Belum → redirect ke `/registrasi-wajah` → selfie → extract face descriptor (128 angka float) → simpan
-3. Absen harian → deteksi wajah + senyum → capture foto → extract descriptor → bandingkan dengan yg tersimpan
-4. Threshold: `euclidean distance < 0.6` atau `similarity > 80%`
-5. Cocok → absen masuk. Tidak cocok → "Wajah tidak dikenali"
-6. Model tambahan: `faceRecognitionNet` dan `faceLandmark68Net` (sudah ada)
-
-### Notes
-- Library `face-api.js` sudah terinstall (v0.22.2)
-- Model `faceRecognitionNet` perlu di-download & ditambah ke `public/models/`
-- Descriptor disimpan sebagai JSON array di kolom `face_descriptors.descriptor` (FLOAT8[])
-- Atau alternatif: simpan di Supabase Storage sebagai file JSON
+Tidak jadi pakai face recognition. Cukup device binding + Android ID.
 
 ---
 
-## Task 2: Android APK (Capacitor + Android ID Device Binding)
+## Task 2: Android APK (Capacitor + Android ID Device Binding) — **SELESAI**
 
 **Tujuan:** Pegawai Android pakai APK, device binding pake Android ID (bukan fingerprint browser)
 
@@ -135,31 +110,20 @@ if (Capacitor.isNativePlatform()) {
 ## Urutan Pengerjaan
 
 ```
-1. Task 1: Face Recognition (backend + frontend)
-   - Buat migration SQL (face_descriptors)
-   - Buat faceService.js
-   - Update AttendancePage.jsx
-   - Buat FaceRegistrationPage.jsx
-   - Update AuthContext + routes
+~~1. Task 1: Face Recognition — DIHAPUS~~
 
-2. Task 2: Android APK
-   - Buat devicePlatform.js
-   - Update deviceService.js
-   - Buat migration SQL (device_type)
-   - Init Capacitor + build APK
-   - Update LoginPage.jsx
+1. Task 2: Android APK + Device Binding — ✓ SELESAI
 
-3. Task 3: iOS WebAuthn
+2. Task 3: iOS WebAuthn
    - Buat migration SQL (passkeys)
    - Buat serverless functions (webauthn-register, webauthn-login)
    - Update deviceService.js + LoginPage.jsx
 
-4. Task 4: Admin panel updates
+3. Task 4: Admin panel updates
    - Update PengaturanPage.jsx
    - Update EmployeesPage.jsx
 
-5. Testing + Deploy
-   - Test face recognition
+4. Testing + Deploy
    - Build APK + upload
    - Push ke GitHub
    - Vercel auto-deploy
@@ -171,8 +135,4 @@ if (Capacitor.isNativePlatform()) {
 
 Buka folder project lalu bilang ke AI:
 
-> **"Lanjut rencana kemarin, mulai dari task 1"**
-
-Atau kalau mau langsung:
-
-> **"Lanjut task 1: face recognition"**
+> **"Lanjut rencana, mulai dari task 3"**

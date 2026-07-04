@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { checkUpdate } from "../services/updateService";
 import { downloadApk } from "../services/apkDownloader";
 import { Download, RefreshCw } from "lucide-react";
@@ -9,18 +9,37 @@ export default function UpdateDialog() {
   const [done, setDone] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
+  const pollingRef = useRef(null);
 
   useEffect(() => {
     checkUpdate().then(setUpdate);
+
+    pollingRef.current = setInterval(async () => {
+      const result = await checkUpdate();
+      if (result) setUpdate(result);
+    }, 30000);
+
+    return () => clearInterval(pollingRef.current);
   }, []);
+
+  useEffect(() => {
+    if (update?.forceUpdate) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [update?.forceUpdate]);
 
   if (!update) return null;
 
+  const isForce = update.forceUpdate === true;
+
   const label = done
-    ? `v${update.version} siap diinstal...`
+    ? `v${update.version} siap diinstal`
     : downloading
       ? `Mengunduh v${update.version}...`
-      : `Download APK v${update.version}`;
+      : `Update v${update.version} tersedia`;
 
   const handleUpdate = async () => {
     setDownloading(true);
@@ -36,13 +55,19 @@ export default function UpdateDialog() {
       setProgress(100);
       setDone(true);
     } else {
-      setError(result.error || "Gagal download");
+      setError(result.error || "Gagal mengunduh");
       setDownloading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+    <div
+      className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 ${
+        isForce ? "bg-black" : "bg-black/70 backdrop-blur-sm"
+      } animate-fade-in`}
+      onClick={isForce ? undefined : (e) => e.target === e.currentTarget && setUpdate(null)}
+      style={isForce ? { pointerEvents: "auto" } : undefined}
+    >
       <div className="bg-gradient-to-br from-[#1a0533] to-[#2d0a4e] border border-violet-500/30 rounded-2xl w-full max-w-sm shadow-2xl shadow-violet-900/50 animate-fade-in">
         <div className="p-5 border-b border-white/10 flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shadow-lg">
@@ -54,6 +79,14 @@ export default function UpdateDialog() {
             </h3>
             <p className="text-[10px] text-slate-400">{label}</p>
           </div>
+          {!isForce && !downloading && !done && (
+            <button
+              onClick={() => setUpdate(null)}
+              className="ml-auto text-white/40 hover:text-white/80 text-lg leading-none"
+            >
+              &times;
+            </button>
+          )}
         </div>
         <div className="p-5 space-y-4">
           {update.changelog && !downloading && !done && (
@@ -80,7 +113,7 @@ export default function UpdateDialog() {
                 <p className="text-[10px] text-slate-400 text-center">{progress}%</p>
                 {done && (
                   <p className="text-[11px] text-emerald-300 text-center animate-pulse">
-                    Download selesai. Membuka installer...
+                    Update siap diinstal. Membuka installer...
                   </p>
                 )}
               </div>
@@ -88,7 +121,7 @@ export default function UpdateDialog() {
             {!downloading && !done && (
               <button onClick={handleUpdate}
                 className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98]">
-                <Download size={16} /> Download APK v{update.version}
+                <Download size={16} /> Update v{update.version}
               </button>
             )}
           </div>
