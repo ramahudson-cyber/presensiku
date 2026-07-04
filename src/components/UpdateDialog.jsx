@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { checkUpdate } from "../services/updateService";
 import { Capacitor } from "@capacitor/core";
-import { Download, RefreshCw, X, Loader2, ExternalLink, Zap } from "lucide-react";
+import { Download, RefreshCw, X, Loader2, Zap } from "lucide-react";
 
 export default function UpdateDialog() {
   const [update, setUpdate] = useState(null);
   const [dismissed, setDismissed] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const [otaMode, setOtaMode] = useState(false);
   const [error, setError] = useState(null);
 
   const isNative = Capacitor.isNativePlatform();
@@ -18,42 +17,41 @@ export default function UpdateDialog() {
 
   if (!update || dismissed) return null;
 
-  const handleOtaUpdate = async () => {
-    if (!update.bundleUrl) return;
+  const isOtaPossible = isNative && !!update.bundleUrl && !update.requiresNativeUpdate;
+  const buttonLabel = isOtaPossible
+    ? `Update ke v${update.version}`
+    : `Download APK v${update.version}`;
+  const Icon = isOtaPossible ? Zap : Download;
+
+  const handleUpdate = async () => {
     setDownloading(true);
-    setOtaMode(true);
     setError(null);
-    try {
-      const { applyOtaUpdate } = await import("../services/otaService");
-      const result = await applyOtaUpdate(update.bundleUrl, update.version);
-      if (!result.success) {
-        setError(result.error);
-        setOtaMode(false);
+
+    if (isOtaPossible) {
+      try {
+        const { applyOtaUpdate } = await import("../services/otaService");
+        const result = await applyOtaUpdate(update.bundleUrl, update.version);
+        if (!result.success) {
+          setError(result.error);
+          setDownloading(false);
+        }
+      } catch (err) {
+        setError("Gagal update: " + (err.message || ""));
         setDownloading(false);
       }
-    } catch (err) {
-      setError("Gagal update: " + (err.message || ""));
-      setOtaMode(false);
+    } else if (update.apkUrl) {
+      try {
+        const { Browser } = await import("@capacitor/browser");
+        await Browser.open({ url: update.apkUrl });
+      } catch {
+        try {
+          window.open(update.apkUrl, "_blank");
+        } catch {
+          setError("Gagal membuka browser. Salin link: " + update.apkUrl);
+        }
+      }
       setDownloading(false);
     }
-  };
-
-  const handleApkDownload = async () => {
-    if (!update.apkUrl) return;
-    setDownloading(true);
-    setOtaMode(false);
-    setError(null);
-    try {
-      const { Browser } = await import("@capacitor/browser");
-      await Browser.open({ url: update.apkUrl });
-    } catch {
-      try {
-        window.open(update.apkUrl, "_blank");
-      } catch {
-        setError("Gagal membuka browser. Salin link: " + update.apkUrl);
-      }
-    }
-    setDownloading(false);
   };
 
   return (
@@ -88,22 +86,12 @@ export default function UpdateDialog() {
               <p className="text-[11px] text-red-300 break-all">{error}</p>
             </div>
           )}
-          {isNative && update.bundleUrl ? (
-            <>
-              <button onClick={handleOtaUpdate} disabled={downloading}
-                className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98]">
-                {downloading && otaMode ? <><Loader2 size={16} className="animate-spin" /> Mengupdate...</> : <><Zap size={16} /> Update Cepat (OTA)</>}
-              </button>
-              <p className="text-[9px] text-slate-500 text-center">Update cepat tanpa download APK ulang</p>
-            </>
-          ) : null}
-          {update.apkUrl ? (
-            <button onClick={handleApkDownload} disabled={downloading}
-              className="border-gradient bg-transparent text-white w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98] transition-all disabled:opacity-50">
-              {downloading && !otaMode ? <><Loader2 size={16} className="animate-spin" /> Membuka...</> : <><Download size={16} /> Download APK</>}
-            </button>
-          ) : (
-            <p className="text-xs text-amber-300/70 text-center">APK belum tersedia. Hubungi admin.</p>
+          <button onClick={handleUpdate} disabled={downloading}
+            className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98]">
+            {downloading ? <><Loader2 size={16} className="animate-spin" /> {isOtaPossible ? "Mengupdate..." : "Membuka..."}</> : <><Icon size={16} /> {buttonLabel}</>}
+          </button>
+          {isOtaPossible && (
+            <p className="text-[9px] text-slate-500 text-center">Update cepat tanpa download APK ulang</p>
           )}
           {!update.forceUpdate && (
             <button onClick={() => setDismissed(true)}

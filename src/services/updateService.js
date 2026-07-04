@@ -15,6 +15,7 @@ export async function checkUpdate() {
       apkUrl: data.apkUrl,
       bundleUrl: data.bundleUrl,
       changelog: data.changelog,
+      requiresNativeUpdate: data.requiresNativeUpdate ?? true,
       forceUpdate: data.forceUpdate,
     };
   } catch {

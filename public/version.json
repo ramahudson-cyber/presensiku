@@ -4,5 +4,6 @@
   "apkUrl": "https://siap-ampenan.vercel.app/SIAP-Puskesmas.apk",
   "bundleUrl": "https://siap-ampenan.vercel.app/bundle.zip",
   "changelog": "IMEI device binding + Android native plugin untuk baca IMEI & serial",
+  "requiresNativeUpdate": true,
   "forceUpdate": false
 }
