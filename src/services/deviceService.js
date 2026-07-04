@@ -25,23 +25,34 @@ export async function getDeviceInfo() {
         deviceType = "android";
 
         // 🔥 Prioritaskan IMEI (permanen per hardware)
+        // Plugin akan otomatis request permission jika belum granted
         try {
           const { registerPlugin } = await import('@capacitor/core');
           const ImeiPlugin = registerPlugin('ImeiPlugin');
           const imeiResult = await ImeiPlugin.getImeiInfo();
-          if (imeiResult.imei) {
+          
+          if (imeiResult.permissionDenied) {
+            // User menolak permission - fallback ke Android ID
+            console.log("⚠️ IMEI permission denied by user, using Android ID fallback");
+          } else if (imeiResult.imei) {
+            // Permission granted & IMEI berhasil diambil
             visitorId = imeiResult.imei;
             imei = imeiResult.imei;
             serial = imeiResult.serial;
+            console.log("✅ IMEI berhasil diambil:", imei);
+          } else if (imeiResult.hasPermission && !imeiResult.imei) {
+            // Permission granted tapi IMEI null (device tanpa SIM/IMEI)
+            console.log("⚠️ Permission granted tapi IMEI tidak tersedia");
           }
-        } catch (_) {
-          // IMEI plugin gagal → silent fallback
+        } catch (err) {
+          console.warn("⚠️ IMEI plugin error:", err.message);
         }
 
         // Fallback ke Android ID jika IMEI tidak tersedia
         if (!visitorId) {
           const idResult = await Device.getId();
           visitorId = idResult.uuid;
+          console.log("📱 Menggunakan Android ID fallback:", visitorId);
         }
       } else {
         deviceType = "ios";

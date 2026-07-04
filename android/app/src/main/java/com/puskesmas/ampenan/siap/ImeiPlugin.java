@@ -14,6 +14,8 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
+import com.getcapacitor.PermissionState;
 
 @CapacitorPlugin(
     name = "ImeiPlugin",
@@ -28,6 +30,40 @@ public class ImeiPlugin extends Plugin {
 
     @PluginMethod
     public void getImeiInfo(PluginCall call) {
+        // Cek apakah permission sudah granted
+        if (getPermissionState("imei") == PermissionState.GRANTED) {
+            // Permission sudah ada, langsung ambil IMEI
+            returnImeiInfo(call);
+        } else {
+            // Permission belum ada, request ke user
+            requestPermissionForAlias("imei", call, "imeiPermissionCallback");
+        }
+    }
+
+    /**
+     * Callback setelah user response permission request
+     */
+    @PermissionCallback
+    private void imeiPermissionCallback(PluginCall call) {
+        if (getPermissionState("imei") == PermissionState.GRANTED) {
+            // User approved - ambil IMEI
+            returnImeiInfo(call);
+        } else {
+            // User rejected - return dengan hasPermission = false
+            JSObject result = new JSObject();
+            result.put("imei", null);
+            result.put("serial", null);
+            result.put("model", Build.MODEL);
+            result.put("hasPermission", false);
+            result.put("permissionDenied", true);
+            call.resolve(result);
+        }
+    }
+
+    /**
+     * Method untuk mengambil IMEI setelah permission confirmed
+     */
+    private void returnImeiInfo(PluginCall call) {
         JSObject result = new JSObject();
 
         try {
@@ -38,27 +74,22 @@ public class ImeiPlugin extends Plugin {
             String serial = null;
             String model = Build.MODEL;
 
-            boolean hasPermission = ContextCompat.checkSelfPermission(
-                context, Manifest.permission.READ_PRECISE_PHONE_STATE
-            ) == PackageManager.PERMISSION_GRANTED;
-
-            if (hasPermission && tm != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    imei = tm.getImei();
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    try {
-                        serial = Build.getSerial();
-                    } catch (SecurityException e) {
-                        serial = null;
-                    }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && tm != null) {
+                imei = tm.getImei();
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                try {
+                    serial = Build.getSerial();
+                } catch (SecurityException e) {
+                    serial = null;
                 }
             }
 
             result.put("imei", imei);
             result.put("serial", serial);
             result.put("model", model);
-            result.put("hasPermission", hasPermission);
+            result.put("hasPermission", true);
+            result.put("permissionDenied", false);
 
             call.resolve(result);
         } catch (Exception e) {

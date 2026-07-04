@@ -1,8 +1,8 @@
 {
-  "version": "1.5.0",
-  "versionCode": 11,
-  "apkUrl": "https://github.com/ramahudson-cyber/siap-ampenan/releases/download/v1.5.0/app-debug.apk",
-  "changelog": "Absensi tanpa kamera/selfie: cukup klik tombol + GPS. Hapus dependensi face-api.js (app lebih ringan ~3MB). Update APK langsung dengan progress bar.",
+  "version": "1.6.0",
+  "versionCode": 12,
+  "apkUrl": "https://github.com/ramahudson-cyber/siap-ampenan/releases/download/v1.6.0/app-debug.apk",
+  "changelog": "Penambahan permission request IMEI untuk device binding yang lebih akurat. User dapat mengizinkan atau menolak akses IMEI saat login pertama kali.",
   "requiresNativeUpdate": true,
   "forceUpdate": true
 }
