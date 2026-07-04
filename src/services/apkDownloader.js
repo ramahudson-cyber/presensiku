@@ -30,7 +30,7 @@ export async function downloadApk({ url, version, onProgress }) {
 
 async function downloadWithFetch(url, version, onProgress) {
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { mode: "cors" });
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -69,6 +69,17 @@ async function downloadWithFetch(url, version, onProgress) {
     onProgress?.(100);
     return { success: true };
   } catch (err) {
+    if (err.name === "TypeError" && err.message.includes("fetch")) {
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `SIAP-Puskesmas-${version || "latest"}.apk`;
+      a.target = "_blank";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      onProgress?.(100);
+      return { success: true };
+    }
     return { success: false, error: err.message };
   }
 }

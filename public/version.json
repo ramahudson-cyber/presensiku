@@ -1,7 +1,7 @@
 {
   "version": "1.6.1",
   "versionCode": 13,
-  "apkUrl": "https://github.com/ramahudson-cyber/siap-ampenan/releases/download/v1.6.1/app-debug.apk",
+  "apkUrl": "/SIAP-Puskesmas.apk",
   "changelog": "Perbaikan force update: modal blocking di tengah layar, polling otomatis, dan tombol Update.",
   "requiresNativeUpdate": true,
   "forceUpdate": true
