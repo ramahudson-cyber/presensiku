@@ -117,104 +117,47 @@ export async function getTodayAttendance(userId) {
 }
 
 /**
- * Clock In - ANTI MANIPULASI WAKTU
- * Waktu dicatat oleh SERVER (NOW()), bukan dari HP pegawai
+ * Clock In
  */
-export async function clockIn(userId, location, selfieBase64) {
+export async function clockIn(userId, location) {
   const today = new Date().toISOString().split("T")[0];
 
-  // Upload selfie
-  let selfieUrl = null;
-  if (selfieBase64) {
-    const fileName = `checkin_${userId}_${today}.jpg`;
-    const base64Data = selfieBase64.replace(/^data:image\/\w+;base64,/, "");
-    const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-
-    const { error: uploadError } = await supabase.storage
-      .from("selfies")
-      .upload(fileName, byteArray, {
-        contentType: "image/jpeg",
-        upsert: true,
-      });
-
-    if (!uploadError) {
-      const { data: urlData } = supabase.storage
-        .from("selfies")
-        .getPublicUrl(fileName);
-      selfieUrl = urlData.publicUrl;
-    }
-  }
-
-  // ❌ JANGAN KIRIM clock_in_time dari HP!
-  // ✅ Biarkan database Supabase catat waktu (DEFAULT NOW())
   const { data, error } = await supabase
     .from("attendance")
     .insert({
       user_id: userId,
       date: today,
-      // clock_in_time TIDAK DIKIRIM - server akan isi dengan NOW()
       location_in: location,
-      selfie_in_url: selfieUrl,
+      selfie_in_url: null,
       attendance_status: "hadir",
-      // is_late & late_minutes akan dihitung oleh database trigger
     })
     .select()
     .single();
 
   if (error) throw error;
 
-  // Catat ke audit log
   await supabase.rpc('log_audit', {
     p_action: 'CLOCK_IN',
     p_description: `Clock in berhasil`,
     p_entity_type: 'attendance',
     p_entity_id: data.id,
-    p_metadata: { 
-      location: location,
-      server_time: data.clock_in_time // Waktu dari server
-    }
+    p_metadata: { location, server_time: data.clock_in_time }
   }).catch(() => {});
 
   return data;
 }
 
 /**
- * Clock Out - ANTI MANIPULASI WAKTU
- * Waktu dicatat oleh SERVER (NOW()), bukan dari HP pegawai
+ * Clock Out
  */
-export async function clockOut(userId, location, selfieBase64) {
+export async function clockOut(userId, location) {
   const today = new Date().toISOString().split("T")[0];
 
-  // Upload selfie out
-  let selfieUrl = null;
-  if (selfieBase64) {
-    const fileName = `checkout_${userId}_${today}.jpg`;
-    const base64Data = selfieBase64.replace(/^data:image\/\w+;base64,/, "");
-    const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-
-    const { error: uploadError } = await supabase.storage
-      .from("selfies")
-      .upload(fileName, byteArray, {
-        contentType: "image/jpeg",
-        upsert: true,
-      });
-
-    if (!uploadError) {
-      const { data: urlData } = supabase.storage
-        .from("selfies")
-        .getPublicUrl(fileName);
-      selfieUrl = urlData.publicUrl;
-    }
-  }
-
-  // ❌ JANGAN KIRIM clock_out_time dari HP!
-  // ✅ Biarkan database Supabase catat waktu (DEFAULT NOW())
   const { data, error } = await supabase
     .from("attendance")
     .update({
-      // clock_out_time TIDAK DIKIRIM - server akan isi dengan NOW()
       location_out: location,
-      selfie_out_url: selfieUrl,
+      selfie_out_url: null,
     })
     .eq("user_id", userId)
     .eq("date", today)
@@ -223,16 +166,12 @@ export async function clockOut(userId, location, selfieBase64) {
 
   if (error) throw error;
 
-  // Catat ke audit log
   await supabase.rpc('log_audit', {
     p_action: 'CLOCK_OUT',
     p_description: `Clock out berhasil`,
     p_entity_type: 'attendance',
     p_entity_id: data.id,
-    p_metadata: { 
-      location: location,
-      server_time: data.clock_out_time // Waktu dari server
-    }
+    p_metadata: { location, server_time: data.clock_out_time }
   }).catch(() => {});
 
   return data;
