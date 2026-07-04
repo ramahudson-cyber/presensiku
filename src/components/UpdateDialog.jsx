@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { checkUpdate } from "../services/updateService";
 import { Capacitor } from "@capacitor/core";
-import { Download, RefreshCw, X, Loader2, Zap } from "lucide-react";
+import { Download, RefreshCw, X, Loader2 } from "lucide-react";
 
 export default function UpdateDialog() {
   const [update, setUpdate] = useState(null);
@@ -28,29 +28,11 @@ export default function UpdateDialog() {
 
   if (!update || dismissed) return null;
 
-  const isOtaPossible = isNative && !!update.bundleUrl && !update.requiresNativeUpdate;
-  const buttonLabel = isOtaPossible
-    ? `Update ke v${update.version}`
-    : `Download APK v${update.version}`;
-  const Icon = isOtaPossible ? Zap : Download;
-
   const handleUpdate = async () => {
     setDownloading(true);
     setError(null);
 
-    if (isOtaPossible) {
-      try {
-        const { applyOtaUpdate } = await import("../services/otaService");
-        const result = await applyOtaUpdate(update.bundleUrl, update.version);
-        if (!result.success) {
-          setError(result.error);
-          setDownloading(false);
-        }
-      } catch (err) {
-        setError("Gagal update: " + (err.message || ""));
-        setDownloading(false);
-      }
-    } else if (isNative && update.apkUrl) {
+    if (isNative && update.apkUrl) {
       try {
         const { registerPlugin } = await import("@capacitor/core");
         const plugin = registerPlugin("ApkDownloadPlugin");
@@ -110,7 +92,7 @@ export default function UpdateDialog() {
             </div>
           )}
 
-          {downloading && !isOtaPossible ? (
+          {downloading ? (
             <div className="space-y-2">
               <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
                 <div
@@ -125,21 +107,13 @@ export default function UpdateDialog() {
                 </p>
               )}
             </div>
-          ) : downloading && isOtaPossible ? (
-            <div className="flex items-center justify-center gap-2 py-2">
-              <Loader2 size={16} className="animate-spin text-violet-400" />
-              <p className="text-xs text-slate-300">Mengupdate...</p>
-            </div>
           ) : (
             <button onClick={handleUpdate}
               className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98]">
-              <Icon size={16} /> {buttonLabel}
+              <Download size={16} /> Download APK v{update.version}
             </button>
           )}
 
-          {isOtaPossible && !downloading && (
-            <p className="text-[9px] text-slate-500 text-center">Update cepat tanpa download APK ulang</p>
-          )}
           {!update.forceUpdate && !downloading && (
             <button onClick={() => setDismissed(true)}
               className="w-full py-2 text-xs text-slate-400 hover:text-white transition">

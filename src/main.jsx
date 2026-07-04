@@ -3,15 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
-import { Capacitor } from "@capacitor/core";
 import "./index.css";
-
-// ✅ Beri tahu CapacitorUpdater bahwa JS bundle berjalan normal
-if (Capacitor.isNativePlatform()) {
-  import("./services/otaService").then(({ notifyAppReady }) => {
-    notifyAppReady();
-  });
-}
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
