@@ -19,9 +19,23 @@ export async function downloadApk({ url, version, onProgress }) {
         return { success: true };
       }
 
-      console.warn("Native download gagal, fallback ke web:", result?.error);
+      if (result?.permissionRequired) {
+        return {
+          success: false,
+          error: "Aktifkan 'Izinkan instal dari sumber tidak dikenal' di pengaturan, lalu coba lagi.",
+          permissionRequired: true,
+        };
+      }
+
+      return {
+        success: false,
+        error: result?.error || "Gagal mengunduh",
+      };
     } catch (err) {
-      console.warn("Native download error, fallback ke web:", err.message);
+      return {
+        success: false,
+        error: err.message || "Gagal mengunduh",
+      };
     }
   }
 

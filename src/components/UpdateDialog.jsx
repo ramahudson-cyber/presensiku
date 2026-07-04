@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from "react";
+import { Capacitor } from "@capacitor/core";
 import { checkUpdate } from "../services/updateService";
 import { downloadApk } from "../services/apkDownloader";
-import { Download, RefreshCw } from "lucide-react";
+import { Download, RefreshCw, Settings, ExternalLink } from "lucide-react";
 
 export default function UpdateDialog() {
   const [update, setUpdate] = useState(null);
@@ -9,6 +10,7 @@ export default function UpdateDialog() {
   const [done, setDone] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
+  const [permissionRequired, setPermissionRequired] = useState(false);
   const pollingRef = useRef(null);
 
   useEffect(() => {
@@ -44,6 +46,7 @@ export default function UpdateDialog() {
   const handleUpdate = async () => {
     setDownloading(true);
     setError(null);
+    setPermissionRequired(false);
 
     const result = await downloadApk({
       url: update.apkUrl,
@@ -55,9 +58,27 @@ export default function UpdateDialog() {
       setProgress(100);
       setDone(true);
     } else {
+      if (result.permissionRequired) {
+        setPermissionRequired(true);
+      }
       setError(result.error || "Gagal mengunduh");
       setDownloading(false);
+      setProgress(0);
     }
+  };
+
+  const openInstallSettings = () => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        Capacitor.getPlatform();
+      } catch (_) {}
+    }
+    const a = document.createElement("a");
+    a.href = "package:com.puskesmas.ampenan.siap";
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   return (
@@ -89,15 +110,21 @@ export default function UpdateDialog() {
           )}
         </div>
         <div className="p-5 space-y-4">
-          {update.changelog && !downloading && !done && (
+          {update.changelog && !downloading && !done && !error && (
             <div>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Pembaruan</p>
               <p className="text-xs text-slate-300 leading-relaxed">{update.changelog}</p>
             </div>
           )}
           {error && (
-            <div className="bg-red-900/30 border border-red-500/30 rounded-xl p-3">
-              <p className="text-[11px] text-red-300 break-all">{error}</p>
+            <div className="bg-red-900/30 border border-red-500/30 rounded-xl p-3 space-y-2">
+              <p className="text-[11px] text-red-300">{error}</p>
+              {permissionRequired && (
+                <button onClick={openInstallSettings}
+                  className="w-full py-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 bg-red-800/50 text-red-200 border border-red-500/30 hover:bg-red-800/70 active:scale-[0.98]">
+                  <Settings size={13} /> Buka Pengaturan
+                </button>
+              )}
             </div>
           )}
 
@@ -118,10 +145,16 @@ export default function UpdateDialog() {
                 )}
               </div>
             )}
-            {!downloading && !done && (
+            {!downloading && !done && !error && (
               <button onClick={handleUpdate}
                 className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98]">
                 <Download size={16} /> Update v{update.version}
+              </button>
+            )}
+            {!downloading && error && (
+              <button onClick={handleUpdate}
+                className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98]">
+                <Download size={16} /> Coba Lagi
               </button>
             )}
           </div>

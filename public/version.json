@@ -1,8 +1,8 @@
 {
-  "version": "1.6.1",
-  "versionCode": 13,
+  "version": "1.6.2",
+  "versionCode": 14,
   "apkUrl": "https://siap-ampenan.vercel.app/SIAP-Puskesmas.apk",
-  "changelog": "Perbaikan force update: modal blocking di tengah layar, polling otomatis, dan tombol Update.",
+  "changelog": "Perbaikan installer: cek izin 'Install unknown apps' sebelum buka installer.",
   "requiresNativeUpdate": true,
   "forceUpdate": true
 }
