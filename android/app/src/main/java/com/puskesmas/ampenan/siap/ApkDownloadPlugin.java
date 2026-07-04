@@ -103,10 +103,12 @@ public class ApkDownloadPlugin extends Plugin {
                 output.close();
                 input.close();
 
+                final long finalBytesLoaded = totalRead;
+                final int finalBytesTotal = contentLength;
                 notifyListeners("downloadProgress", new JSObject() {{
                     put("percent", 100);
-                    put("bytesLoaded", totalRead);
-                    put("bytesTotal", contentLength);
+                    put("bytesLoaded", finalBytesLoaded);
+                    put("bytesTotal", finalBytesTotal);
                 }});
 
                 Uri apkUri = FileProvider.getUriForFile(
