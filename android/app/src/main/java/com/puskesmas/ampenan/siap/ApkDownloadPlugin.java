@@ -1,6 +1,7 @@
 package com.puskesmas.ampenan.siap;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -37,13 +38,9 @@ public class ApkDownloadPlugin extends Plugin {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (!getContext().getPackageManager().canRequestPackageInstalls()) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
-                intent.setData(Uri.parse("package:" + getContext().getPackageName()));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getContext().startActivity(intent);
                 JSObject error = new JSObject();
                 error.put("success", false);
-                error.put("error", "PERMISSION_REQUIRED");
+                error.put("error", "Aktifkan 'Izinkan instal dari sumber tidak dikenal' di pengaturan, lalu coba lagi.");
                 error.put("permissionRequired", true);
                 call.resolve(error);
                 return;
@@ -61,10 +58,7 @@ public class ApkDownloadPlugin extends Plugin {
 
                 int contentLength = conn.getContentLength();
 
-                File downloadDir = new File(
-                    getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
-                    "apk"
-                );
+                File downloadDir = new File(getContext().getCacheDir(), "apk");
                 downloadDir.mkdirs();
 
                 String fileName = "SIAP-Puskesmas-" + (version != null ? version : "latest") + ".apk";
@@ -109,12 +103,10 @@ public class ApkDownloadPlugin extends Plugin {
                 output.close();
                 input.close();
 
-                final long finalTotal = totalRead;
-                final int finalContent = contentLength;
                 notifyListeners("downloadProgress", new JSObject() {{
                     put("percent", 100);
-                    put("bytesLoaded", finalTotal);
-                    put("bytesTotal", finalContent);
+                    put("bytesLoaded", totalRead);
+                    put("bytesTotal", contentLength);
                 }});
 
                 Uri apkUri = FileProvider.getUriForFile(
@@ -123,15 +115,28 @@ public class ApkDownloadPlugin extends Plugin {
                     apkFile
                 );
 
-                Intent installIntent = new Intent(Intent.ACTION_VIEW);
-                installIntent.setDataAndType(apkUri, "application/vnd.android.package-archive");
-                installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                getContext().startActivity(installIntent);
+                Intent installIntent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                installIntent.setData(apkUri);
+                installIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                installIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                installIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                JSObject result = new JSObject();
-                result.put("success", true);
-                call.resolve(result);
+                if (installIntent.resolveActivity(getContext().getPackageManager()) != null) {
+                    getContext().startActivity(installIntent);
+                    JSObject result = new JSObject();
+                    result.put("success", true);
+                    call.resolve(result);
+                } else {
+                    Intent fallbackIntent = new Intent(Intent.ACTION_VIEW);
+                    fallbackIntent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                    fallbackIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    getContext().startActivity(fallbackIntent);
+                    JSObject result = new JSObject();
+                    result.put("success", true);
+                    call.resolve(result);
+                }
 
             } catch (Exception e) {
                 JSObject error = new JSObject();
