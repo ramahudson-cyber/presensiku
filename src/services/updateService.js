@@ -1,6 +1,6 @@
 const VERSION_URL = "https://siap-ampenan.vercel.app/version.json";
-const CURRENT_VERSION = "1.4.0";
-const CURRENT_VERSION_CODE = 10;
+const CURRENT_VERSION = "1.5.0";
+const CURRENT_VERSION_CODE = 11;
 
 export async function checkUpdate() {
   try {

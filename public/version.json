@@ -1,9 +1,9 @@
 {
-  "version": "1.4.0",
-  "versionCode": 10,
+  "version": "1.5.0",
+  "versionCode": 11,
   "apkUrl": "https://siap-ampenan.vercel.app/SIAP-Puskesmas.apk",
   "bundleUrl": "https://siap-ampenan.vercel.app/bundle.zip",
-  "changelog": "IMEI device binding + Android native plugin untuk baca IMEI & serial",
+  "changelog": "Absensi tanpa kamera/selfie: cukup klik tombol + GPS. Hapus dependensi face-api.js (app lebih ringan ~3MB).",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }
