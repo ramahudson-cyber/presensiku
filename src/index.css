@@ -4,6 +4,16 @@
 
 @theme {
   --font-sans: 'Inter', sans-serif;
+  --font-urbanist: 'Urbanist', sans-serif;
+  --color-obsidian: #060311;
+  --color-onyx: #161320;
+  --color-electric-violet: #5800fd;
+  --color-periwinkle-glow: #7066ed;
+  --color-slate-mist: #9ba1ae;
+  --color-pure-white: #ffffff;
+  --color-true-black: #000000;
+  --color-deep-indigo: #2415c6;
+  --color-halo-violet: #4b39ef;
 }
 
 /* --- BASE --- */
