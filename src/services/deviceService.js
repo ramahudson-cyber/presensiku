@@ -50,24 +50,41 @@ export async function getDeviceInfo() {
 
         // Fallback ke Android ID jika IMEI tidak tersedia
         if (!visitorId) {
-          const idResult = await Device.getId();
-          visitorId = idResult.uuid;
-          console.log("📱 Menggunakan Android ID fallback:", visitorId);
+          try {
+            const idResult = await Device.getId();
+            visitorId = idResult.identifier || idResult.uuid;
+            console.log("📱 Menggunakan Android ID fallback:", visitorId);
+          } catch (err2) {
+            console.warn("⚠️ Device.getId error:", err2.message);
+          }
         }
       } else {
         deviceType = "ios";
-        const idResult = await Device.getId();
-        visitorId = idResult.uuid;
+        try {
+          const idResult = await Device.getId();
+          visitorId = idResult.identifier || idResult.uuid;
+        } catch (err2) {
+          console.warn("⚠️ iOS Device.getId error:", err2.message);
+        }
       }
     } catch (err) {
       console.error("❌ Capacitor Device error:", err);
-      visitorId = "native-fallback-" + Date.now();
     }
   } else {
-    const fp = await FingerprintJS.load();
-    const result = await fp.get();
-    visitorId = result.visitorId;
-    deviceType = "web";
+    try {
+      const fp = await FingerprintJS.load();
+      const result = await fp.get();
+      visitorId = result.visitorId;
+      deviceType = "web";
+    } catch (err) {
+      console.warn("⚠️ FingerprintJS error:", err.message);
+    }
+  }
+
+  // FINAL FALLBACK: visitorId WAJIB ada
+  if (!visitorId) {
+    visitorId = "device-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
+    console.warn("⚠️ Final fallback visitorId:", visitorId);
   }
 
   // Deteksi OS & browser dari User-Agent (fallback + untuk semua platform)
@@ -128,7 +145,7 @@ export async function checkDeviceBinding(userId, deviceInfo) {
 
     if (error) throw error;
 
-    if (!data || data.length === 0) {
+    if (!data) {
       return {
         canLogin: true,
         isRegistered: true,
@@ -138,7 +155,7 @@ export async function checkDeviceBinding(userId, deviceInfo) {
       };
     }
 
-    const result = data[0];
+    const result = data;
     return {
       canLogin: result.can_login,
       isRegistered: result.is_registered,
@@ -320,7 +337,7 @@ export async function getUserDevices(userId) {
   const { data, error } = await supabase
     .from("user_devices")
     .select("*")
-    .eq("user_id", userId)
+    .eq("user", userId)
     .eq("is_active", true)
     .order("last_login_at", { ascending: false });
 

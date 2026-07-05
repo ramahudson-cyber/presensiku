@@ -25,6 +25,7 @@ dist-ssr
 
 # Sensitive files
 *.keystore
+keystore.properties
 bundle.zip
 .opencode/vercel_token.txt
 .opencode/github_token.txt

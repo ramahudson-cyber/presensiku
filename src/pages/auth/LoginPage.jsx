@@ -27,6 +27,7 @@ export default function LoginPage() {
   const [otpCode, setOtpCode] = useState("");
   const [deviceInfo, setDeviceInfo] = useState(null);
   const [userEmail, setUserEmail] = useState("");
+  const [deviceDebug, setDeviceDebug] = useState("");
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("");
 
@@ -91,7 +92,22 @@ export default function LoginPage() {
       setLoadingText("Memeriksa perangkat...");
       const deviceCheck = await checkDeviceBinding(authUser.id, deviceInfoResult);
 
+      // DEBUG: tangkap error device binding
+      const isDeviceError = deviceCheck.message && deviceCheck.message.startsWith("Gagal cek device");
+      if (isDeviceError) {
+        const debugText = `DEVICE ERROR: ${deviceCheck.message}\nvisitorId: ${deviceInfoResult?.visitorId}\nimei: ${deviceInfoResult?.imei}\ndeviceType: ${deviceInfoResult?.deviceType}`;
+        setDeviceDebug(debugText);
+      } else {
+        setDeviceDebug("");
+      }
+
       if (deviceCheck.canLogin && !deviceCheck.requiresOtp) {
+        // DEBUG: kalau ada error device binding, jangan lanjut — tampilkan debug
+        if (isDeviceError) {
+          setError(`DEVICE BINDING ERROR — ${deviceCheck.message}`);
+          setLoading(false);
+          return;
+        }
         setLoadingText("Memuat dashboard...");
         await refreshUser();
         // Force ganti password untuk non-super_admin yang pertama login
@@ -301,6 +317,11 @@ export default function LoginPage() {
                 <div className="mb-3 p-2.5 bg-red-500/10 rounded-lg flex items-center gap-2">
                   <AlertCircle size={15} className="text-red-400 shrink-0" />
                   <p className="text-xs text-red-300">{error}</p>
+                </div>
+              )}
+              {deviceDebug && (
+                <div className="mb-3 p-2.5 bg-amber-500/10 rounded-lg border border-amber-500/30">
+                  <p className="text-[10px] text-amber-300 font-mono whitespace-pre-wrap break-all">{deviceDebug}</p>
                 </div>
               )}
               <form onSubmit={handleSubmit} className="space-y-3">

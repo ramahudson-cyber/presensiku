@@ -33,6 +33,17 @@ public class ApkDownloadPlugin extends Plugin {
             return;
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (!getContext().getPackageManager().canRequestPackageInstalls()) {
+                JSObject error = new JSObject();
+                error.put("success", false);
+                error.put("error", "Aktifkan 'Izinkan instal dari sumber tidak dikenal' di pengaturan, lalu coba lagi.");
+                error.put("permissionRequired", true);
+                call.resolve(error);
+                return;
+            }
+        }
+
         cancelled = false;
 
         new Thread(() -> {

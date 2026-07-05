@@ -7,21 +7,30 @@ android {
         applicationId "com.puskesmas.ampenan.siap"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 15
-        versionName "1.6.3"
+        versionCode 16
+        versionName "1.6.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters "arm64-v8a"
+        }
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    def keystorePropertiesFile = rootProject.file("keystore.properties")
+    def keystoreProperties = new Properties()
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    }
+
     signingConfigs {
         release {
-            storeFile file(System.getenv("KEYSTORE_PATH") ?: "$rootDir/../siap-release-key.keystore")
-            storePassword System.getenv("STORE_PASSWORD") ?: ""
-            keyAlias System.getenv("KEY_ALIAS") ?: "siap-release-key"
-            keyPassword System.getenv("KEY_PASSWORD") ?: ""
+            storeFile file(System.getenv("KEYSTORE_PATH") ?: keystoreProperties.getProperty("storeFile") ?: "$rootDir/../siap-release-key.keystore")
+            storePassword System.getenv("STORE_PASSWORD") ?: keystoreProperties.getProperty("storePassword") ?: ""
+            keyAlias System.getenv("KEY_ALIAS") ?: keystoreProperties.getProperty("keyAlias") ?: "siap-release-key"
+            keyPassword System.getenv("KEY_PASSWORD") ?: keystoreProperties.getProperty("keyPassword") ?: ""
         }
     }
     buildTypes {
@@ -29,8 +38,9 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
     }
