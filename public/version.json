@@ -1,8 +1,8 @@
 {
-  "version": "1.6.2",
-  "versionCode": 14,
+  "version": "1.6.3",
+  "versionCode": 15,
   "apkUrl": "https://siap-ampenan.vercel.app/SIAP-Puskesmas.apk",
-  "changelog": "Perbaikan installer: cek izin 'Install unknown apps' sebelum buka installer.",
+  "changelog": "Perbaikan: auto-installer APK setelah download (startActivity di UI thread). Web: tampilkan pesan refresh, bukan download APK.",
   "requiresNativeUpdate": true,
   "forceUpdate": true
 }
