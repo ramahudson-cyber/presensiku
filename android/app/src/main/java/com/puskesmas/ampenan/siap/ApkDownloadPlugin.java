@@ -1,15 +1,13 @@
 package com.puskesmas.ampenan.siap;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.provider.Settings;
 
 import androidx.core.content.FileProvider;
 
 import com.getcapacitor.JSObject;
+import com.getcapacitor.Logger;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -111,34 +109,38 @@ public class ApkDownloadPlugin extends Plugin {
                     put("bytesTotal", finalBytesTotal);
                 }});
 
-                Uri apkUri = FileProvider.getUriForFile(
+                final Uri apkUri = FileProvider.getUriForFile(
                     getContext(),
                     getContext().getPackageName() + ".fileprovider",
                     apkFile
                 );
 
-                Intent installIntent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-                installIntent.setData(apkUri);
-                installIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                installIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                installIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                getActivity().runOnUiThread(() -> {
+                    try {
+                        Intent installIntent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                        installIntent.setData(apkUri);
+                        installIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        installIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        installIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                if (installIntent.resolveActivity(getContext().getPackageManager()) != null) {
-                    getContext().startActivity(installIntent);
+                        if (installIntent.resolveActivity(getContext().getPackageManager()) != null) {
+                            getContext().startActivity(installIntent);
+                        } else {
+                            Intent fallbackIntent = new Intent(Intent.ACTION_VIEW);
+                            fallbackIntent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                            fallbackIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            getContext().startActivity(fallbackIntent);
+                        }
+                    } catch (Exception e) {
+                        Logger.error("Failed to start install intent", e);
+                    }
+
                     JSObject result = new JSObject();
                     result.put("success", true);
                     call.resolve(result);
-                } else {
-                    Intent fallbackIntent = new Intent(Intent.ACTION_VIEW);
-                    fallbackIntent.setDataAndType(apkUri, "application/vnd.android.package-archive");
-                    fallbackIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    getContext().startActivity(fallbackIntent);
-                    JSObject result = new JSObject();
-                    result.put("success", true);
-                    call.resolve(result);
-                }
+                });
 
             } catch (Exception e) {
                 JSObject error = new JSObject();
