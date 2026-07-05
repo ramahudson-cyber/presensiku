@@ -1,6 +1,5 @@
 package com.puskesmas.ampenan.siap;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -8,7 +7,6 @@ import android.os.Build;
 import androidx.core.content.FileProvider;
 
 import com.getcapacitor.JSObject;
-import com.getcapacitor.Logger;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -33,17 +31,6 @@ public class ApkDownloadPlugin extends Plugin {
         if (url == null) {
             call.reject("URL required");
             return;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (!getContext().getPackageManager().canRequestPackageInstalls()) {
-                JSObject error = new JSObject();
-                error.put("success", false);
-                error.put("error", "Aktifkan 'Izinkan instal dari sumber tidak dikenal' di pengaturan, lalu coba lagi.");
-                error.put("permissionRequired", true);
-                call.resolve(error);
-                return;
-            }
         }
 
         cancelled = false;
@@ -110,36 +97,27 @@ public class ApkDownloadPlugin extends Plugin {
                     put("bytesTotal", finalBytesTotal);
                 }});
 
-                final Uri apkUri = FileProvider.getUriForFile(
+                Uri apkUri = FileProvider.getUriForFile(
                     getContext(),
                     getContext().getPackageName() + ".fileprovider",
                     apkFile
                 );
 
-                Activity activity = getActivity();
-                if (activity != null) {
-                    activity.runOnUiThread(() -> {
-                        try {
-                            Intent installIntent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-                            installIntent.setData(apkUri);
-                            installIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            installIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            installIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                            if (installIntent.resolveActivity(getContext().getPackageManager()) != null) {
-                                getContext().startActivity(installIntent);
-                            } else {
-                                Intent fallbackIntent = new Intent(Intent.ACTION_VIEW);
-                                fallbackIntent.setDataAndType(apkUri, "application/vnd.android.package-archive");
-                                fallbackIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                getContext().startActivity(fallbackIntent);
-                            }
-                        } catch (Exception e) {
-                            Logger.error("Failed to start install intent", e);
-                        }
-                    });
+                try {
+                    getContext().startActivity(intent);
+                } catch (Exception e) {
+                    // fallback: coba ACTION_INSTALL_PACKAGE
+                    Intent fallback = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                    fallback.setData(apkUri);
+                    fallback.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    fallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getContext().startActivity(fallback);
                 }
 
                 JSObject result = new JSObject();
