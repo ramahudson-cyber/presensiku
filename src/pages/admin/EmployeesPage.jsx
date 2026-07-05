@@ -16,14 +16,11 @@ const POSITIONS = [
   "Kepala Puskesmas", "Kasubag TU",
 ];
 
-const cardBase =
-  'bg-[#c190ff]/15 border border-white/10 rounded-2xl transition-all';
+// cardBase removed — use `design-card` directly in JSX
 
-const inputBase =
-  'w-full px-3 py-2.5 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all';
+const inputBase = 'design-input';
 
-const labelBase =
-  'block text-xs font-medium text-violet-100/70 mb-1.5 uppercase tracking-wider';
+const labelBase = 'design-label';
 
 const EmployeesPage = () => {
   const [employees, setEmployees] = useState([]);
@@ -130,7 +127,8 @@ const EmployeesPage = () => {
         if (error) throw error;
         // Kirim notif email
         try {
-          await fetch('/api/send-email', {
+          const API_BASE = "https://siap-ampenan.vercel.app";
+          await fetch(API_BASE + '/api/send-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -196,7 +194,7 @@ const EmployeesPage = () => {
 
   const avatarGradient = (name = '') => {
     const grads = [
-      'from-violet-500 to-purple-700',
+      'from-electric-violet to-deep-indigo',
       'from-sky-500 to-blue-700',
       'from-emerald-500 to-teal-700',
       'from-amber-500 to-orange-700',
@@ -214,17 +212,17 @@ const EmployeesPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
         <div className="min-w-0">
-          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+          <h1 className="design-section-title">
             Manajemen Pegawai
           </h1>
-          <p className="text-slate-200 text-sm mt-1 flex items-center gap-1.5">
+          <p className="text-slate-mist text-sm mt-1 flex items-center gap-1.5">
             <Users size={13} />
-            Total: <span className="font-semibold text-violet-100">{employees.length}</span> pegawai
+            Total: <span className="font-semibold text-pure-white">{employees.length}</span> pegawai
           </p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center justify-center gap-2 px-4 py-3 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 active:scale-95 transition-all w-full sm:w-auto"
+          className="flex items-center justify-center gap-2 px-4 py-3 border-gradient bg-transparent text-white rounded-full text-sm font-medium active:scale-95 transition-all w-full sm:w-auto"
         >
           <UserPlus size={16} />
           Tambah Pegawai
@@ -233,27 +231,27 @@ const EmployeesPage = () => {
 
       {/* Search */}
       <div className="relative mb-4">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-mist" />
         <input
           type="text"
           placeholder="Cari nama atau username..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all backdrop-blur-sm"
+          className="design-input pl-10"
         />
       </div>
 
       {/* Modal Form */}
       {showForm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-[#1a0a35] border border-white/10 rounded-2xl shadow-2xl shadow-violet-900/40 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-5 md:p-6 border-b border-white/10 sticky top-0 bg-[#1a0a35]/95 backdrop-blur-md z-10">
+          <div className="design-modal w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-5 md:p-6 border-b border-white/[0.06] sticky top-0 bg-onyx/95 backdrop-blur-md z-10">
               <h2 className="text-lg font-bold text-white">
                 {formData.id ? 'Edit Pegawai' : 'Tambah Pegawai Baru'}
               </h2>
               <button
                 onClick={resetForm}
-                className="p-1.5 rounded-lg text-slate-200 hover:text-white hover:bg-white/5 transition-all"
+                className="p-1.5 rounded-xl text-slate-mist hover:text-white hover:bg-white/[0.03] transition-all"
               >
                 <X size={20} />
               </button>
@@ -309,11 +307,11 @@ const EmployeesPage = () => {
                   </label>
                   <select name="role" value={formData.role} onChange={handleInputChange} required
                     className={inputBase}>
-                    <option value="" className="bg-[#1a0a35]">Pilih Role</option>
-                    <option value="super_admin" className="bg-[#1a0a35]">Super Admin</option>
-                    <option value="admin_puskesmas" className="bg-[#1a0a35]">Admin Puskesmas</option>
-                    <option value="kepala_unit" className="bg-[#1a0a35]">Kepala Unit</option>
-                    <option value="pegawai" className="bg-[#1a0a35]">Pegawai</option>
+                    <option value="" className="bg-onyx">Pilih Role</option>
+                    <option value="super_admin" className="bg-onyx">Super Admin</option>
+                    <option value="admin_puskesmas" className="bg-onyx">Admin Puskesmas</option>
+                    <option value="kepala_unit" className="bg-onyx">Kepala Unit</option>
+                    <option value="pegawai" className="bg-onyx">Pegawai</option>
                   </select>
                 </div>
 
@@ -324,11 +322,11 @@ const EmployeesPage = () => {
                   </label>
                   <select name="employee_status" value={formData.employee_status} onChange={handleInputChange} required
                     className={inputBase}>
-                    <option value="" className="bg-[#1a0a35]">Pilih Status</option>
-                    <option value="asn" className="bg-[#1a0a35]">ASN</option>
-                    <option value="pppk_penuh_waktu" className="bg-[#1a0a35]">PPPK Penuh Waktu</option>
-                    <option value="pppk_paruh_waktu" className="bg-[#1a0a35]">PPPK Paruh Waktu</option>
-                    <option value="tpk" className="bg-[#1a0a35]">TPK</option>
+                    <option value="" className="bg-onyx">Pilih Status</option>
+                    <option value="asn" className="bg-onyx">ASN</option>
+                    <option value="pppk_penuh_waktu" className="bg-onyx">PPPK Penuh Waktu</option>
+                    <option value="pppk_paruh_waktu" className="bg-onyx">PPPK Paruh Waktu</option>
+                    <option value="tpk" className="bg-onyx">TPK</option>
                   </select>
                 </div>
               </div>
@@ -340,23 +338,23 @@ const EmployeesPage = () => {
                 </label>
                 <select name="position" value={formData.position} onChange={handleInputChange} required
                   className={inputBase}>
-                  <option value="" className="bg-[#1a0a35]">Pilih Jabatan</option>
+                  <option value="" className="bg-onyx">Pilih Jabatan</option>
                   {POSITIONS.map(p => (
-                    <option key={p} value={p} className="bg-[#1a0a35]">{p}</option>
+                    <option key={p} value={p} className="bg-onyx">{p}</option>
                   ))}
                   {formData.position && !POSITIONS.includes(formData.position) && (
-                    <option value={formData.position} className="bg-[#1a0a35]">{formData.position}</option>
+                    <option value={formData.position} className="bg-onyx">{formData.position}</option>
                   )}
                 </select>
               </div>
 
-              <div className="flex gap-3 pt-2 sticky bottom-0 bg-[#1a0a35]/95 backdrop-blur-md -mx-5 md:-mx-6 px-5 md:px-6 pb-2 -mb-2">
+              <div className="flex gap-3 pt-2 sticky bottom-0 bg-onyx/95 backdrop-blur-md -mx-5 md:-mx-6 px-5 md:px-6 pb-2 -mb-2">
                 <button type="button" onClick={resetForm}
-                  className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:bg-white/5 transition-all">
+                  className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-full text-sm font-medium hover:bg-white/[0.03] transition-all">
                   Batal
                 </button>
                 <button type="submit" disabled={loading}
-                  className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                  className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-full text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                   {loading && <RefreshCwIconSpinning />}
                   {loading ? 'Menyimpan...' : formData.id ? 'Update' : 'Simpan'}
                 </button>
@@ -367,20 +365,20 @@ const EmployeesPage = () => {
       )}
 
       {/* Desktop Table + Mobile Cards */}
-      <div className={`${cardBase} overflow-hidden`}>
+        <div className="design-card overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16 gap-3">
             <div className="animate-spin rounded-full h-6 w-6 border-2 border-violet-500/30 border-t-violet-400"></div>
-            <span className="text-slate-200 text-sm">Memuat data...</span>
+            <span className="text-slate-mist text-sm">Memuat data...</span>
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-16 flex flex-col items-center gap-3">
-            <div className="p-4 rounded-2xl bg-white/5">
-              <Users size={32} className="text-slate-400" />
+            <div className="design-empty-icon">
+              <Users size={32} className="text-slate-mist" />
             </div>
             <div>
-              <p className="text-violet-200/60 font-medium">Tidak ada data pegawai</p>
-              <p className="text-slate-400 text-xs mt-1">
+              <p className="text-pure-white/60 font-medium">Tidak ada data pegawai</p>
+              <p className="text-slate-mist text-xs mt-1">
                 Klik "Tambah Pegawai" untuk menambahkan
               </p>
             </div>
@@ -390,31 +388,31 @@ const EmployeesPage = () => {
             {/* Desktop table */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-white/5 border-b border-white/10">
+                <thead className="design-table-header">
                   <tr>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider">Nama</th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden xl:table-cell">Username</th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider">Role</th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden lg:table-cell">Status</th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden xl:table-cell">Jabatan</th>
-                    <th className="text-center px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider">Aksi</th>
+                    <th className="text-left px-4 py-3 font-semibold text-slate-mist text-xs uppercase tracking-wider">Nama</th>
+                    <th className="text-left px-4 py-3 font-semibold text-slate-mist text-xs uppercase tracking-wider hidden xl:table-cell">Username</th>
+                    <th className="text-left px-4 py-3 font-semibold text-slate-mist text-xs uppercase tracking-wider">Role</th>
+                    <th className="text-left px-4 py-3 font-semibold text-slate-mist text-xs uppercase tracking-wider hidden lg:table-cell">Status</th>
+                    <th className="text-left px-4 py-3 font-semibold text-slate-mist text-xs uppercase tracking-wider hidden xl:table-cell">Jabatan</th>
+                    <th className="text-center px-4 py-3 font-semibold text-slate-mist text-xs uppercase tracking-wider">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-white/[0.06]">
                   {filtered.map((emp) => (
-                    <tr key={emp.id} className="hover:bg-white/5 transition-all">
+                    <tr key={emp.id} className="design-table-row">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarGradient(emp.full_name)} flex items-center justify-center text-white text-xs font-bold shadow-lg shrink-0`}>
+                          <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarGradient(emp.full_name)} flex items-center justify-center text-pure-white text-xs font-bold shadow-lg shrink-0`}>
                             {initials(emp.full_name)}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-medium text-white">{emp.full_name || '-'}</p>
-                            <p className="text-xs text-slate-400 xl:hidden font-mono mt-0.5">{emp.username || '-'}</p>
+                            <p className="font-medium text-pure-white">{emp.full_name || '-'}</p>
+                            <p className="text-xs text-slate-mist xl:hidden font-mono mt-0.5">{emp.username || '-'}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-violet-200/60 font-mono text-xs hidden xl:table-cell">{emp.username || '-'}</td>
+                      <td className="px-4 py-3 text-pure-white/60 font-mono text-xs hidden xl:table-cell">{emp.username || '-'}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${roleBadge(emp.role)}`}>
                           {emp.role || '-'}
@@ -425,7 +423,7 @@ const EmployeesPage = () => {
                           {emp.employee_status || '-'}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-violet-200/60 hidden xl:table-cell">{emp.position || '-'}</td>
+                      <td className="px-4 py-3 text-pure-white/60 hidden xl:table-cell">{emp.position || '-'}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2">
                           <button onClick={() => handleEdit(emp)}
@@ -447,9 +445,9 @@ const EmployeesPage = () => {
             </div>
 
             {/* Mobile cards */}
-            <div className="md:hidden divide-y divide-white/5">
+            <div className="md:hidden divide-y divide-white/[0.06]">
               {filtered.map((emp) => (
-                <div key={emp.id} className="p-4 hover:bg-white/5 transition-all">
+                <div key={emp.id} className="p-4 hover:bg-white/[0.03] transition-all">
                   <div className="flex items-start gap-3">
                     <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${avatarGradient(emp.full_name)} flex items-center justify-center text-white text-sm font-bold shadow-lg shrink-0`}>
                       {initials(emp.full_name)}
@@ -457,8 +455,8 @@ const EmployeesPage = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <p className="font-semibold text-white truncate">{emp.full_name || '-'}</p>
-                          <p className="text-xs text-slate-400 font-mono">@{emp.username || '-'}</p>
+                          <p className="font-semibold text-pure-white truncate">{emp.full_name || '-'}</p>
+                          <p className="text-xs text-slate-mist font-mono">@{emp.username || '-'}</p>
                         </div>
                         <div className="flex gap-1.5 shrink-0">
                           <button onClick={() => handleEdit(emp)}
@@ -482,8 +480,8 @@ const EmployeesPage = () => {
                         </span>
                       </div>
                       <div className="mt-3 text-xs">
-                        <p className="text-slate-400 uppercase tracking-wider">Jabatan</p>
-                        <p className="text-violet-200/80 mt-0.5">{emp.position || '-'}</p>
+                        <p className="text-slate-mist uppercase tracking-wider">Jabatan</p>
+                        <p className="text-pure-white/80 mt-0.5">{emp.position || '-'}</p>
                       </div>
 
                     </div>

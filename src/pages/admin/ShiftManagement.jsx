@@ -78,7 +78,7 @@ export default function TabShift() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
-        <RefreshCw size={24} className="animate-spin text-violet-400" />
+        <RefreshCw size={24} className="animate-spin text-periwinkle-glow" />
       </div>
     );
   }
@@ -88,18 +88,18 @@ export default function TabShift() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-white">Kelola Shift</h2>
-          <p className="text-sm text-slate-400 mt-0.5">Atur jam kerja setiap shift per hari</p>
+          <h2 className="text-xl font-bold text-pure-white">Kelola Shift</h2>
+          <p className="text-sm text-slate-mist mt-0.5">Atur jam kerja setiap shift per hari</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={fetchData} className="border-gradient bg-transparent text-white transition-all">
+          <button onClick={fetchData} className="border-gradient bg-transparent text-pure-white transition-all">
             <RefreshCw size={16} />
           </button>
           <button onClick={saveAll} disabled={saving || !dirty}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all active:scale-95
               ${dirty
-                ? "border-gradient bg-transparent text-white hover:shadow-lg hover:shadow-violet-900/30"
-                : "border-gradient bg-transparent text-white cursor-not-allowed"}`}>
+                ? "border-gradient bg-transparent text-pure-white hover:shadow-lg"
+                : "border-gradient bg-transparent text-pure-white cursor-not-allowed"}`}>
             <Save size={15} /> {saving ? "Menyimpan..." : dirty ? "Simpan Perubahan" : "Tersimpan"}
           </button>
         </div>
@@ -113,17 +113,17 @@ export default function TabShift() {
           const shiftScheds = schedules.filter(s => s.shift_code === shift.code);
 
           return (
-            <div key={shift.code} className="bg-[#c190ff]/10 border border-white/10 rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-[#c190ff]/20 transition-all">
+            <div key={shift.code} className="design-card overflow-hidden hover:shadow-lg transition-all">
               {/* Card Header */}
-              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10 bg-gradient-to-r from-white/[0.03] to-transparent">
-                <div className={`w-10 h-10 rounded-xl ${meta?.bg || "bg-white/5"} flex items-center justify-center ring-1 ${meta?.ring || "ring-white/10"}`}>
-                  <Icon size={20} className={meta?.color || "text-violet-400"} />
+              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/[0.06] bg-gradient-to-r from-white/[0.03] to-transparent">
+                <div className={`w-10 h-10 rounded-2xl ${meta?.bg || "bg-onyx"} flex items-center justify-center ring-1 ${meta?.ring || "ring-white/10"}`}>
+                  <Icon size={20} className={meta?.color || "text-periwinkle-glow"} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-bold text-white">{shift.name}</h3>
-                  <p className="text-[10px] text-slate-500 font-mono">{shift.code}</p>
+                  <h3 className="text-sm font-bold text-pure-white">{shift.name}</h3>
+                  <p className="text-[10px] text-slate-mist font-mono">{shift.code}</p>
                 </div>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${meta?.bg || "bg-white/5"} ${meta?.color || "text-slate-400"}`}>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${meta?.bg || "bg-onyx"} ${meta?.color || "text-slate-mist"}`}>
                   {shiftScheds.filter(s => s.is_working_day).length}/7 hari
                 </span>
               </div>
@@ -134,27 +134,27 @@ export default function TabShift() {
                   const sched = shiftScheds.find(s => s.day_of_week === i);
                   const working = sched?.is_working_day;
                   return (
-                    <div key={i} className={`flex items-center gap-2 p-2 rounded-xl transition-all ${working ? "bg-white/[0.03] hover:bg-white/[0.06]" : "opacity-50"}`}>
-                      <span className="w-14 text-[10px] font-semibold text-slate-400 shrink-0">{name}</span>
+                    <div key={i} className={`flex items-center gap-2 p-2 rounded-3xl transition-all ${working ? "bg-onyx hover:bg-white/[0.06]" : "opacity-50"}`}>
+                      <span className="w-14 text-[10px] font-semibold text-slate-mist shrink-0">{name}</span>
                       {working ? (
                         <>
                           <input type="time" value={sched?.start_time || ""}
                             onChange={e => update(shift.code, i, "start_time", e.target.value)}
-                            className="flex-1 text-[11px] bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50" />
-                          <span className="text-[10px] text-slate-500 shrink-0">—</span>
+                            className="flex-1 text-[11px] bg-onyx border border-white/[0.06] rounded-2xl px-2 py-1.5 text-pure-white focus:outline-none focus:ring-2 focus:ring-electric-violet/50" />
+                          <span className="text-[10px] text-slate-mist shrink-0">—</span>
                           <input type="time" value={sched?.end_time || ""}
                             onChange={e => update(shift.code, i, "end_time", e.target.value)}
-                            className="flex-1 text-[11px] bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50" />
+                            className="flex-1 text-[11px] bg-onyx border border-white/[0.06] rounded-2xl px-2 py-1.5 text-pure-white focus:outline-none focus:ring-2 focus:ring-electric-violet/50" />
                           <button onClick={() => update(shift.code, i, "is_working_day", false)}
-                            className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all shrink-0">
+                            className="p-1.5 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all shrink-0">
                             <XCircle size={13} />
                           </button>
                         </>
                       ) : (
                         <>
-                          <span className="flex-1 text-[10px] text-slate-600 italic">Libur</span>
+                          <span className="flex-1 text-[10px] text-slate-mist italic">Libur</span>
                           <button onClick={() => update(shift.code, i, "is_working_day", true)}
-                            className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all shrink-0">
+                            className="p-1.5 rounded-full bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all shrink-0">
                             <CheckCircle2 size={13} />
                           </button>
                         </>
@@ -169,9 +169,9 @@ export default function TabShift() {
       </div>
 
       {/* Info */}
-      <div className="flex items-center gap-2 p-3.5 rounded-xl bg-violet-500/5 border border-violet-500/10 text-[11px] text-slate-400">
-        <Info size={13} className="text-violet-400 shrink-0" />
-        <p>Klik <XCircle size={11} className="inline text-red-400" /> untuk libur, <CheckCircle2 size={11} className="inline text-emerald-400" /> untuk aktifkan. Jangan lupa <strong className="text-violet-300">Simpan Perubahan</strong> setelah edit.</p>
+      <div className="flex items-center gap-2 p-3.5 rounded-xl bg-electric-violet/5 border border-electric-violet/10 text-[11px] text-slate-mist">
+        <Info size={13} className="text-periwinkle-glow shrink-0" />
+        <p>Klik <XCircle size={11} className="inline text-red-400" /> untuk libur, <CheckCircle2 size={11} className="inline text-emerald-400" /> untuk aktifkan. Jangan lupa <strong className="text-periwinkle-glow">Simpan Perubahan</strong> setelah edit.</p>
       </div>
     </div>
   );

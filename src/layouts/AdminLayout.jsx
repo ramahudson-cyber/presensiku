@@ -6,13 +6,13 @@ import { Outlet } from "react-router-dom";
 
 function AdminLayout() {
   return (
-    <div className="min-h-screen relative overflow-x-hidden bg-white dark:bg-[#05000a] transition-colors duration-500">
-      {/* Deep Purple Gradient Background — dark mode only */}
-      <div className="fixed inset-0 bg-gradient-to-br from-[#1a0533] via-[#05000a] to-[#2d0a4e] animate-gradient-bg pointer-events-none hidden dark:block"></div>
+    <div className="min-h-screen relative overflow-x-hidden bg-white dark:bg-obsidian transition-colors duration-500">
+      {/* Deep Violet Gradient Background — dark mode only */}
+      <div className="fixed inset-0 bg-gradient-to-br from-[#2415c6]/20 via-obsidian to-[#5800fd]/10 animate-gradient-bg pointer-events-none hidden dark:block"></div>
 
-      {/* Floating Orbs — dark mode only */}
-      <div className="fixed top-[-10%] left-[5%] w-[400px] h-[400px] bg-purple-700 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-orb pointer-events-none hidden dark:block"></div>
-      <div className="fixed bottom-[-10%] right-[5%] w-[400px] h-[400px] bg-violet-800 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-orb animate-orb-delay pointer-events-none hidden dark:block"></div>
+      {/* Floating Orbs — DESIGN.md Halo Violet — dark mode only */}
+      <div className="fixed top-[-10%] left-[5%] w-[400px] h-[400px] bg-halo-violet rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-orb pointer-events-none hidden dark:block"></div>
+      <div className="fixed bottom-[-10%] right-[5%] w-[400px] h-[400px] bg-electric-violet rounded-full mix-blend-screen filter blur-[120px] opacity-15 animate-orb animate-orb-delay pointer-events-none hidden dark:block"></div>
       <div className="fixed inset-0 professional-ambient-bg pointer-events-none"></div>
       <div className="fixed inset-0 professional-grid-bg pointer-events-none"></div>
 

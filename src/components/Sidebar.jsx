@@ -48,7 +48,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
         {/* Logo */}
         <div className="p-5 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shrink-0">
+            <div className="w-10 h-10 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-xl flex items-center justify-center shadow-lg shrink-0">
               <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-white">
                 <path d="M12 2L2 7v10l10 5 10-5V7L12 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
                 <path d="M12 22V12M2 7l10 5 10-5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
@@ -56,11 +56,11 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
               </svg>
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-wide">SIAP</h1>
-              <p className="text-[10px] text-violet-100/70">Puskesmas Ampenan</p>
+              <h1 className="text-lg font-bold tracking-wide text-pure-white">SIAP</h1>
+              <p className="text-[10px] text-slate-mist">Puskesmas Ampenan</p>
             </div>
           </div>
-          <button onClick={() => setMenuOpen(false)} className="xl:hidden border-gradient bg-transparent text-white rounded-lg transition">
+              <button onClick={() => setMenuOpen(false)} className="xl:hidden border-gradient bg-transparent text-pure-white rounded-lg transition">
             <X size={18} />
           </button>
         </div>
@@ -68,19 +68,19 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
         {/* User Info */}
         <div className="px-5 py-4 border-b border-white/10 bg-white/[0.03]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-xs font-bold shrink-0 text-white">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-electric-violet to-deep-indigo flex items-center justify-center text-xs font-bold shrink-0 text-pure-white">
               {user?.full_name?.charAt(0) || user?.username?.charAt(0) || "U"}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate">{user?.full_name || user?.username || "User"}</p>
-              <p className="text-[10px] text-violet-100/60 capitalize">{userRole.replace("_", " ")}</p>
+              <p className="text-sm font-semibold truncate text-pure-white">{user?.full_name || user?.username || "User"}</p>
+              <p className="text-[10px] text-slate-mist capitalize">{userRole.replace("_", " ")}</p>
             </div>
           </div>
         </div>
 
         {/* Menu */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          <p className="text-[9px] font-bold text-violet-100/40 uppercase tracking-widest px-3 mb-2">Menu Utama</p>
+          <p className="text-[9px] font-bold text-slate-mist/60 uppercase tracking-widest px-3 mb-2">Menu Utama</p>
           {menus.map((item) => {
             const Icon = item.icon;
             return (
@@ -113,7 +113,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
             <LogOut size={18} className="shrink-0" />
             <span>Logout</span>
           </button>
-          <p className="text-[9px] text-violet-100/30 text-center mt-2 select-none">v{getCurrentVersion().version}</p>
+            <p className="text-[9px] text-slate-mist/40 text-center mt-2 select-none">v{getCurrentVersion().version}</p>
         </div>
       </aside>
     </>

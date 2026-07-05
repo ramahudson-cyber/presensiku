@@ -20,7 +20,7 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
 
           <div ref={sheetRef} onClick={e => e.stopPropagation()}
             style={{ maxHeight: snap === "full" ? "95vh" : snap === "half" ? "60vh" : "85vh" }}
-            className="relative w-full max-w-lg bg-gradient-to-b from-[#1e0a35] to-[#12061f] border border-white/10 rounded-t-[28px] md:rounded-2xl shadow-2xl shadow-violet-900/40 animate-slide-up md:animate-fade-in overflow-hidden flex flex-col">
+            className="relative w-full max-w-lg bg-gradient-to-b from-onyx to-obsidian border border-white/10 rounded-t-[28px] md:rounded-3xl shadow-2xl animate-slide-up md:animate-fade-in overflow-hidden flex flex-col">
 
             <div className="flex md:hidden justify-center pt-2.5 pb-1 shrink-0">
               <div className="w-10 h-1 rounded-full bg-white/20" />
@@ -29,8 +29,8 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
             {(title || subtitle) && (
               <div className="flex items-center justify-between px-5 pt-2 md:pt-5 pb-3 shrink-0">
                 <div className="min-w-0 flex-1">
-                  {title && <h3 className="text-sm font-bold text-white">{title}</h3>}
-                  {subtitle && <p className="text-[10px] text-slate-400 mt-0.5">{subtitle}</p>}
+                  {title && <h3 className="text-sm font-bold text-pure-white">{title}</h3>}
+                  {subtitle && <p className="text-[10px] text-slate-mist mt-0.5">{subtitle}</p>}
                 </div>
                 <button onClick={onClose}
                   className="border-gradient bg-transparent text-white w-8 h-8 flex items-center justify-center transition-all active:scale-90 shrink-0 ml-3">

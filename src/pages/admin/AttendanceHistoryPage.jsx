@@ -35,11 +35,9 @@ const getWitaDateString = (date = new Date()) => {
   return new Date(witaMs).toISOString().split("T")[0];
 };
 
-const cardBase =
-  "bg-[#c190ff]/15 border border-white/10 rounded-2xl transition-all";
+const cardBase = "design-card";
 
-const inputBase =
-  "px-3 py-2 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all";
+const inputBase = "design-input";
 
 // ── Helper ───────────────────────────────────────────────────────────────────
 const fmtTime = (iso) =>
@@ -61,7 +59,7 @@ const initials = (name) => {
 
 const avatarGradient = (name = "") => {
   const grads = [
-    "from-violet-500 to-purple-700",
+    "from-electric-violet to-deep-indigo",
     "from-sky-500 to-blue-700",
     "from-emerald-500 to-teal-700",
     "from-amber-500 to-orange-700",
@@ -75,7 +73,7 @@ const avatarGradient = (name = "") => {
 
 // ── Sub-komponen ─────────────────────────────────────────────────────────────
 function StatusBadge({ status }) {
-  const s = STATUS_STYLE[status] ?? { bg: "bg-white/5 text-slate-200 ring-white/10", icon: null };
+  const s = STATUS_STYLE[status] ?? { bg: "bg-white/5 text-slate-mist ring-white/10", icon: null };
   return (
     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ring-1 ${s.bg}`}>
       {s.icon}
@@ -87,12 +85,12 @@ function StatusBadge({ status }) {
 function SummaryCard({ label, value, accent, icon: Icon }) {
   return (
     <div className={`${cardBase} p-4 flex items-center gap-3 hover:scale-[1.02]`}>
-      <div className={`p-2.5 rounded-xl bg-gradient-to-br ${accent} text-white shadow-lg shrink-0`}>
+      <div className={`p-2.5 rounded-2xl bg-gradient-to-br ${accent} text-pure-white shadow shrink-0`}>
         <Icon size={18} />
       </div>
       <div className="min-w-0">
-        <p className="text-2xl md:text-3xl font-bold text-white tabular-nums leading-none">{value}</p>
-        <p className="text-xs text-slate-200 uppercase tracking-wider mt-1.5 truncate">{label}</p>
+        <p className="text-2xl md:text-3xl font-bold text-pure-white tabular-nums leading-none">{value}</p>
+        <p className="text-xs text-slate-mist uppercase tracking-wider mt-1.5 truncate">{label}</p>
       </div>
     </div>
   );
@@ -221,12 +219,12 @@ export default function AttendanceHistoryPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Riwayat Absensi</h1>
-          <p className="text-sm text-slate-200 mt-1">Data absensi seluruh pegawai</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-pure-white tracking-tight">Riwayat Absensi</h1>
+          <p className="text-sm text-slate-mist mt-1">Data absensi seluruh pegawai</p>
         </div>
         <button
           onClick={exportCSV}
-          className="flex items-center gap-2 px-4 py-2.5 border-gradient bg-transparent text-white text-sm font-medium rounded-xl hover:shadow-lg hover:shadow-emerald-900/30 hover:scale-105 transition-all shrink-0"
+          className="design-btn-ghost flex items-center gap-2 px-4 py-2.5 text-sm font-medium shrink-0"
         >
           <Download size={15} />
           <span className="hidden sm:inline">Export CSV</span>
@@ -247,7 +245,7 @@ export default function AttendanceHistoryPage() {
         <div className="flex flex-col md:flex-row gap-3">
           {/* Search - Full width on mobile, flex-1 on desktop */}
           <div className="relative flex-1">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-mist" />
             <input
               type="text"
               placeholder="Cari nama..."
@@ -261,28 +259,28 @@ export default function AttendanceHistoryPage() {
           <div className="flex flex-wrap items-center gap-3">
             {/* Status filter */}
             <div className="relative">
-              <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-mist pointer-events-none" />
               <select
                 value={statusFilter}
                 onChange={e => setStatus(e.target.value)}
                 className={`pl-9 pr-4 py-2 ${inputBase} appearance-none w-full sm:w-[140px]`}
               >
                 {STATUS_OPTIONS.map(o => (
-                  <option key={o.value} value={o.value} className="bg-[#1a0a35]">{o.label}</option>
+                  <option key={o.value} value={o.value} className="bg-obsidian">{o.label}</option>
                 ))}
               </select>
             </div>
 
             {/* Date filters grouped */}
             <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-              <span className="text-xs text-slate-200 uppercase tracking-wider whitespace-nowrap">Dari</span>
+              <span className="text-xs text-slate-mist uppercase tracking-wider whitespace-nowrap">Dari</span>
               <input
                 type="date"
                 value={dateFrom}
                 onChange={e => setDateFrom(e.target.value)}
                 className={`${inputBase} [color-scheme:dark] w-full sm:w-auto`}
               />
-              <span className="text-xs text-slate-200 uppercase tracking-wider whitespace-nowrap">Sampai</span>
+              <span className="text-xs text-slate-mist uppercase tracking-wider whitespace-nowrap">Sampai</span>
               <input
                 type="date"
                 value={dateTo}
@@ -294,7 +292,7 @@ export default function AttendanceHistoryPage() {
             {/* Refresh */}
             <button
               onClick={() => fetchRecords(true)}
-              className="border-gradient bg-transparent text-white hover:text-violet-200 hover:bg-white/10 hover:scale-105 transition-all shrink-0"
+              className="design-btn-ghost p-2 shrink-0"
               aria-label="Refresh"
             >
               <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
@@ -308,16 +306,16 @@ export default function AttendanceHistoryPage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 size={28} className="animate-spin text-violet-400" />
+            <Loader2 size={28} className="animate-spin text-periwinkle-glow" />
           </div>
         ) : records.length === 0 ? (
-          <div className="text-center py-16 flex flex-col items-center gap-3">
-            <div className="p-4 rounded-2xl bg-white/5">
-              <Inbox size={32} className="text-slate-400" />
+          <div className="design-empty flex flex-col items-center gap-3">
+            <div className="design-empty-icon">
+              <Inbox size={32} />
             </div>
             <div>
-              <p className="text-violet-200/60 font-medium">Tidak ada data pada rentang tanggal ini</p>
-              <p className="text-slate-400 text-xs mt-1">Coba ubah filter tanggal atau status</p>
+              <p className="text-pure-white/60 font-medium">Tidak ada data pada rentang tanggal ini</p>
+              <p className="design-empty-text text-xs mt-1">Coba ubah filter tanggal atau status</p>
             </div>
           </div>
         ) : (
@@ -326,27 +324,27 @@ export default function AttendanceHistoryPage() {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/10 bg-white/5">
-                    <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Tanggal</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Nama</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Absen Masuk</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Absen Pulang</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Status</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-200 text-xs uppercase tracking-wider">Terlambat</th>
+                  <tr className="design-table-header">
+                    <th className="text-left py-3 px-4 font-semibold text-slate-mist text-xs uppercase tracking-wider">Tanggal</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-mist text-xs uppercase tracking-wider">Nama</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-mist text-xs uppercase tracking-wider">Absen Masuk</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-mist text-xs uppercase tracking-wider">Absen Pulang</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-mist text-xs uppercase tracking-wider">Status</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-mist text-xs uppercase tracking-wider">Terlambat</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-white/[0.06]">
                   {records.map(r => (
-                    <tr key={r.id} className="hover:bg-white/5 transition-all">
-                      <td className="py-3 px-4 text-violet-200/70">
+                    <tr key={r.id} className="hover:bg-white/[0.03] transition-all">
+                      <td className="py-3 px-4 text-pure-white/70">
                         {fmtDate(r.date)}
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2.5">
-                          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${avatarGradient(r.profiles?.full_name)} flex items-center justify-center text-white text-xs font-bold shadow shrink-0`}>
+                          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${avatarGradient(r.profiles?.full_name)} flex items-center justify-center text-pure-white text-xs font-bold shadow shrink-0`}>
                             {initials(r.profiles?.full_name)}
                           </div>
-                          <span className="font-medium text-white">
+                          <span className="font-medium text-pure-white">
                             {r.profiles?.full_name ?? "–"}
                           </span>
                         </div>
@@ -366,7 +364,7 @@ export default function AttendanceHistoryPage() {
                             +{r.late_minutes} menit
                           </span>
                         ) : (
-                          <span className="text-xs text-slate-500">–</span>
+                          <span className="text-xs text-slate-mist">–</span>
                         )}
                       </td>
                     </tr>
@@ -376,9 +374,9 @@ export default function AttendanceHistoryPage() {
             </div>
 
             {/* Mobile cards */}
-            <div className="md:hidden divide-y divide-white/5">
+            <div className="md:hidden divide-y divide-white/[0.06]">
               {records.map(r => (
-                <div key={r.id} className="p-4 hover:bg-white/5 transition-all">
+                <div key={r.id} className="p-4 hover:bg-white/[0.03] transition-all">
                   <div className="flex items-start gap-3">
                     <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${avatarGradient(r.profiles?.full_name)} flex items-center justify-center text-white text-xs font-bold shadow shrink-0`}>
                       {initials(r.profiles?.full_name)}
@@ -386,21 +384,21 @@ export default function AttendanceHistoryPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <p className="font-semibold text-white truncate">{r.profiles?.full_name ?? "–"}</p>
+                          <p className="font-semibold text-pure-white truncate">{r.profiles?.full_name ?? "–"}</p>
                         </div>
                         <StatusBadge status={r.attendance_status} />
                       </div>
-                      <div className="flex items-center gap-2 mt-2 text-xs text-slate-300">
+                      <div className="flex items-center gap-2 mt-2 text-xs text-slate-mist">
                         <Calendar size={11} />
                         {fmtDate(r.date)}
                       </div>
                       <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
-                        <div className="bg-white/5 rounded-lg p-2">
-                          <p className="text-slate-400 uppercase tracking-wider text-[10px]">Check In</p>
+                        <div className="bg-onyx rounded-2xl p-2">
+                          <p className="text-slate-mist uppercase tracking-wider text-[10px]">Check In</p>
                           <p className="text-emerald-300 font-mono tabular-nums mt-0.5">{fmtTime(r.clock_in_time)}</p>
                         </div>
-                        <div className="bg-white/5 rounded-lg p-2">
-                          <p className="text-slate-400 uppercase tracking-wider text-[10px]">Check Out</p>
+                        <div className="bg-onyx rounded-2xl p-2">
+                          <p className="text-slate-mist uppercase tracking-wider text-[10px]">Check Out</p>
                           <p className="text-rose-300 font-mono tabular-nums mt-0.5">{fmtTime(r.clock_out_time)}</p>
                         </div>
                       </div>
@@ -419,15 +417,15 @@ export default function AttendanceHistoryPage() {
 
         {/* Pagination */}
         {!loading && totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 gap-2">
-            <p className="text-xs text-slate-200">
-              Halaman <span className="text-white font-medium">{page}</span> dari {totalPages} · {total} data
+          <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.06] gap-2">
+            <p className="text-xs text-slate-mist">
+              Halaman <span className="text-pure-white font-medium">{page}</span> dari {totalPages} · {total} data
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-lg border border-white/10 border-gradient bg-transparent text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="p-2 rounded-full border border-white/10 border-gradient bg-transparent text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                 aria-label="Halaman sebelumnya"
               >
                 <ChevronLeft size={15} />
@@ -435,7 +433,7 @@ export default function AttendanceHistoryPage() {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-lg border border-white/10 border-gradient bg-transparent text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="p-2 rounded-full border border-white/10 border-gradient bg-transparent text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                 aria-label="Halaman berikutnya"
               >
                 <ChevronRight size={15} />

@@ -25,6 +25,7 @@ export default function LoginPage() {
 
   const [step, setStep] = useState("login");
   const [otpCode, setOtpCode] = useState("");
+  const [generatedOtp, setGeneratedOtp] = useState("");
   const [deviceInfo, setDeviceInfo] = useState(null);
   const [userEmail, setUserEmail] = useState("");
   const [deviceDebug, setDeviceDebug] = useState("");
@@ -141,6 +142,7 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
+      setGeneratedOtp(otpResult.otp);
       setStep("otp");
     } catch (err) {
       console.error("Login error:", err);
@@ -219,6 +221,8 @@ export default function LoginPage() {
       const res = await sendOtpEmail(userEmail, userName);
       if (!res.success) {
         setError("Gagal kirim ulang: " + (res.error || "Cek koneksi internet"));
+      } else {
+        setGeneratedOtp(res.otp);
       }
     } catch {
       setError("Gagal kirim ulang.");
@@ -232,6 +236,7 @@ export default function LoginPage() {
     await supabase.auth.signOut();
     setStep("login");
     setOtpCode("");
+    setGeneratedOtp("");
     setDeviceInfo(null);
     setError("");
   };
@@ -356,6 +361,11 @@ export default function LoginPage() {
                   <p className="text-slate-mist text-xs sm:text-sm mt-2 tracking-[0.72px]">
                     Kode dikirim ke {userEmail}
                   </p>
+                  <div className="mt-3 p-2 bg-amber-500/10 border border-amber-500/20 rounded-[12px]">
+                    <p className="text-[10px] text-amber-400/70">
+                      Tidak terima email? Gunakan kode: <span className="font-mono font-bold text-amber-300 tracking-wider text-sm">{generatedOtp}</span>
+                    </p>
+                  </div>
                 </div>
                 {error && (
                   <div className="mb-4 p-3 bg-electric-violet/10 rounded-[16px] flex items-start gap-2.5">

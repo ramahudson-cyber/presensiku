@@ -319,48 +319,48 @@ export default function AttendancePage() {
 
   return (
     <div className="space-y-3 animate-fade-in">
-      <div className="relative bg-white dark:bg-[#1a0d2e] rounded-2xl p-5 text-slate-900 dark:text-white shadow-lg border border-slate-200 dark:border-white/10 overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 dark:bg-white/10 rounded-full -mr-16 -mt-16"></div>
+      <div className="relative bg-onyx rounded-2xl p-5 text-pure-white shadow-lg border border-white/[0.06] overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-electric-violet/5 rounded-full -mr-16 -mt-16"></div>
         <div className="relative">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">{dateStr}</p>
+            <p className="text-[10px] text-slate-mist uppercase tracking-wider">{dateStr}</p>
             {serverTime && (
-              <div className="flex items-center gap-1 text-[9px] bg-violet-100 dark:bg-white/10 text-violet-700 dark:text-white px-2 py-1 rounded-full">
+              <div className="flex items-center gap-1 text-[9px] bg-electric-violet/10 text-periwinkle-glow px-2 py-1 rounded-full">
                 <ShieldCheck size={10} /> <span>Server Time</span>
               </div>
             )}
           </div>
           <p className="text-2xl font-bold mt-1 font-mono tabular-nums">{timeStr}</p>
           {!serverTime && (
-            <p className="text-[10px] text-amber-600 dark:text-amber-200 mt-1 flex items-center gap-1">
+            <p className="text-[10px] text-amber-200 mt-1 flex items-center gap-1">
               <Loader2 size={10} className="animate-spin" /> Sinkron server...
             </p>
           )}
         </div>
       </div>
 
-      <div className="bg-[#c190ff]/15 rounded-2xl p-4 border border-white/10">
+      <div className="design-card p-4">
         {todayAttendance ? (
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${todayAttendance.clock_out_time ? "bg-violet-500/20" : "bg-emerald-500/20"}`}>
-              {todayAttendance.clock_out_time ? <CheckCircle2 size={18} className="text-violet-400" /> : <CheckCircle2 size={18} className="text-emerald-400" />}
+            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${todayAttendance.clock_out_time ? "bg-electric-violet/20" : "bg-emerald-500/20"}`}>
+              {todayAttendance.clock_out_time ? <CheckCircle2 size={18} className="text-periwinkle-glow" /> : <CheckCircle2 size={18} className="text-emerald-400" />}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-pure-white">
                 {todayAttendance.clock_out_time ? "Sudah Absen (Selesai)" : "Sudah Absen Masuk"}{" "}
                 {todayAttendance.is_late && <span className="text-amber-400 text-[10px]">(Terlambat {todayAttendance.late_minutes}m)</span>}
               </p>
               <div className="flex flex-wrap items-center gap-2 mt-1">
                 <div className="flex items-center gap-1">
-                  <span className="text-[9px] text-slate-500">Masuk</span>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-[9px] text-slate-mist">Masuk</span>
+                  <span className="text-[11px] text-slate-mist">
                     {new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}
                   </span>
                 </div>
                 {todayAttendance.clock_out_time && (
                   <div className="flex items-center gap-1">
-                    <span className="text-[9px] text-slate-500">Pulang</span>
-                    <span className="text-[11px] text-violet-300">
+                    <span className="text-[9px] text-slate-mist">Pulang</span>
+                    <span className="text-[11px] text-periwinkle-glow">
                       {new Date(todayAttendance.clock_out_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}
                     </span>
                   </div>
@@ -380,11 +380,11 @@ export default function AttendancePage() {
           </div>
         ) : (
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
-              <Clock size={18} className="text-violet-400" />
+            <div className="w-10 h-10 rounded-2xl bg-electric-violet/20 flex items-center justify-center">
+              <Clock size={18} className="text-periwinkle-glow" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white">Belum absen hari ini</p>
+              <p className="text-sm font-semibold text-pure-white">Belum absen hari ini</p>
               {todaySchedule ? (
                 <div className="flex items-center gap-1.5 mt-1">
                   <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold
@@ -395,7 +395,7 @@ export default function AttendancePage() {
                   `}>
                     {todaySchedule.name}
                   </span>
-                  <span className="text-[10px] text-slate-500">Jadwal hari ini</span>
+                  <span className="text-[10px] text-slate-mist">Jadwal hari ini</span>
                 </div>
               ) : (
                 <p className="text-[10px] text-amber-300/70 mt-1">Tidak ada jadwal shift hari ini</p>
@@ -405,10 +405,10 @@ export default function AttendancePage() {
         )}
       </div>
 
-      <div className="rounded-2xl bg-[#c190ff]/15 border border-white/10 overflow-hidden">
+      <div className="design-card overflow-hidden">
         <div className="flex items-center justify-between px-4 pt-4 pb-3">
           <div className="flex items-center gap-2.5">
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+            <div className={`w-8 h-8 rounded-2xl flex items-center justify-center ${
               locationStatus === "valid" ? "bg-emerald-500/20" :
               locationStatus === "invalid" ? "bg-red-500/20" :
               "bg-slate-500/20"
@@ -416,12 +416,12 @@ export default function AttendancePage() {
               <MapPin size={15} className={
                 locationStatus === "valid" ? "text-emerald-400" :
                 locationStatus === "invalid" ? "text-red-400" :
-                "text-slate-400"
+                "text-slate-mist"
               } />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Lokasi</p>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-sm font-semibold text-pure-white">Lokasi</p>
+              <p className="text-[10px] text-slate-mist">
                 {locationStatus === "valid" ? `${distance}m dari Puskesmas` :
                  locationStatus === "checking" ? "Mendeteksi..." :
                  locationStatus === "error" ? "GPS tidak aktif" :
@@ -430,7 +430,7 @@ export default function AttendancePage() {
             </div>
           </div>
           <button onClick={getLocation}
-            className="w-8 h-8 rounded-xl border-gradient bg-transparent hover:bg-white/10 text-white flex items-center justify-center transition active:scale-90">
+            className="w-8 h-8 rounded-2xl border-gradient bg-transparent hover:bg-white/10 text-pure-white flex items-center justify-center transition active:scale-90">
             <RefreshCw size={14} className={locationStatus === "checking" ? "animate-spin" : ""} />
           </button>
         </div>
@@ -448,9 +448,9 @@ export default function AttendancePage() {
 
         {!currentCoords && (
           <div className="px-4 pb-4">
-            <div className="rounded-2xl bg-slate-800/50 border border-white/5 flex flex-col items-center justify-center" style={{ height: 200 }}>
-              <Loader2 size={24} className="animate-spin text-violet-400 mb-2" />
-              <p className="text-xs text-slate-400">Mendapatkan lokasi...</p>
+            <div className="rounded-2xl bg-onyx border border-white/[0.06] flex flex-col items-center justify-center" style={{ height: 200 }}>
+              <Loader2 size={24} className="animate-spin text-periwinkle-glow mb-2" />
+              <p className="text-xs text-slate-mist">Mendapatkan lokasi...</p>
             </div>
           </div>
         )}
@@ -480,7 +480,7 @@ export default function AttendancePage() {
         <button
           onClick={todayAttendance ? handleCheckOut : handleCheckIn}
           disabled={locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
-          className="w-full py-4 border-gradient bg-transparent rounded-2xl font-semibold transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-xl shadow-purple-900/30"
+          className="w-full py-4 border-gradient bg-transparent rounded-full font-semibold transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg"
         >
           {saving ? (
             <><Loader2 size={20} className="animate-spin" /> Menyimpan...</>

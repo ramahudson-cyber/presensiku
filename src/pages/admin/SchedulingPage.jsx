@@ -15,7 +15,7 @@ const SHIFTS = [
   { code: "PG", name: "Pagi", icon: Sun, color: "text-amber-400", bg: "bg-amber-500/15", ring: "ring-amber-500/30" },
   { code: "SR", name: "Sore", icon: Sunset, color: "text-orange-400", bg: "bg-orange-500/15", ring: "ring-orange-500/30" },
   { code: "SI", name: "Siang", icon: CloudSun, color: "text-sky-400", bg: "bg-sky-500/15", ring: "ring-sky-500/30" },
-  { code: "ML", name: "Malam", icon: Moon, color: "text-violet-400", bg: "bg-violet-500/15", ring: "ring-violet-500/30" },
+  { code: "ML", name: "Malam", icon: Moon, color: "text-periwinkle-glow", bg: "bg-electric-violet/15", ring: "ring-violet-500/30" },
 ];
 
 const SHIFT_MAP = Object.fromEntries(SHIFTS.map(s => [s.code, s]));
@@ -86,28 +86,28 @@ export default function SchedulingPage() {
     <div className="space-y-5 animate-fade-in min-w-0 pb-24 md:pb-6">
 
       {/* HEADER */}
-      <div className="relative bg-gradient-to-br from-violet-600/20 via-purple-700/10 to-transparent rounded-2xl p-5 md:p-6 border border-white/10 overflow-hidden">
-        <div className="absolute top-0 right-0 w-48 h-48 bg-violet-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-600/10 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none" />
+      <div className="relative design-card p-5 md:p-6 overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-electric-violet/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-32 h-32 bg-deep-indigo/10 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none" />
         <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-violet-900/30">
-                <CalendarRange size={20} className="text-white" />
+              <div className="w-10 h-10 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-2xl flex items-center justify-center shadow-lg">
+                <CalendarRange size={20} className="text-pure-white" />
               </div>
               <div>
-                <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight">Penjadwalan Shift</h1>
-                <p className="text-sm text-slate-400 mt-0.5">Atur jadwal shift pegawai per bulan</p>
+                <h1 className="text-xl md:text-2xl font-bold text-pure-white tracking-tight">Penjadwalan Shift</h1>
+                <p className="text-sm text-slate-mist mt-0.5">Atur jadwal shift pegawai per bulan</p>
               </div>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
             <button onClick={handleDownloadTemplate}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl border-gradient bg-transparent text-white hover:text-white hover:bg-white/10 text-xs transition-all active:scale-95">
+              className="flex items-center gap-2 px-3.5 py-2 design-btn-ghost text-xs">
               <Download size={14} /> Template
             </button>
             <button onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl border-gradient bg-transparent text-white hover:text-white hover:bg-white/10 text-xs transition-all active:scale-95">
+              className="flex items-center gap-2 px-3.5 py-2 design-btn-ghost text-xs">
               <Upload size={14} /> Upload Excel
             </button>
             <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleFileUpload} className="hidden" />
@@ -118,24 +118,24 @@ export default function SchedulingPage() {
       {/* CONTROLS */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
-          <Users size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
+          <Users size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-mist z-10" />
           <div onClick={() => setShowSearchModal(true)}
-            className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl bg-white/5 border border-white/10 text-white cursor-pointer flex items-center gap-2 hover:bg-white/[0.08] transition-all">
+            className="w-full pl-9 pr-3 py-2.5 text-sm rounded-2xl bg-onyx border border-white/[0.06] text-pure-white cursor-pointer flex items-center gap-2 hover:bg-white/[0.03] transition-all">
             {selectedEmployee ? (
               <>
                 <span className="flex-1 truncate font-medium">{selectedEmployee.full_name}</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-slate-400">{selectedEmployee.role}</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-onyx text-slate-mist">{selectedEmployee.role}</span>
               </>
             ) : (
-              <span className="text-slate-400 flex-1">Pilih pegawai...</span>
+              <span className="text-slate-mist flex-1">Pilih pegawai...</span>
             )}
-            <Search size={14} className="text-slate-500 shrink-0" />
+            <Search size={14} className="text-slate-mist shrink-0" />
           </div>
         </div>
-        <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-xl px-2.5 py-1.5">
-          <button onClick={() => nav(-1)} className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-all"><ChevronLeft size={17} /></button>
-          <span className="text-sm font-semibold text-white w-[136px] text-center select-none">{MONTHS[month]} {year}</span>
-          <button onClick={() => nav(1)} className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-all"><ChevronRight size={17} /></button>
+        <div className="flex items-center gap-1.5 bg-onyx border border-white/[0.06] rounded-2xl px-2.5 py-1.5">
+          <button onClick={() => nav(-1)} className="p-1.5 rounded-full hover:bg-white/[0.03] text-slate-mist hover:text-pure-white transition-all"><ChevronLeft size={17} /></button>
+          <span className="text-sm font-semibold text-pure-white w-[136px] text-center select-none">{MONTHS[month]} {year}</span>
+          <button onClick={() => nav(1)} className="p-1.5 rounded-full hover:bg-white/[0.03] text-slate-mist hover:text-pure-white transition-all"><ChevronRight size={17} /></button>
         </div>
       </div>
 
@@ -144,19 +144,19 @@ export default function SchedulingPage() {
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex flex-wrap gap-2">
             <button onClick={() => setShowBulkAssign(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-gradient bg-transparent text-white text-xs font-medium transition-all active:scale-95 shadow-sm">
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full border-gradient bg-transparent text-pure-white text-xs font-medium transition-all active:scale-95 shadow-sm">
               <Layers size={14} /> Isi Cepat
             </button>
             <button onClick={handleCopyPrevMonth}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-gradient bg-transparent text-white text-xs font-medium transition-all active:scale-95">
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full border-gradient bg-transparent text-pure-white text-xs font-medium transition-all active:scale-95">
               <Copy size={14} /> Copy Bulan Lalu
             </button>
             <button onClick={handleClearMonth}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-gradient bg-transparent text-white text-xs font-medium transition-all active:scale-95">
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full border-gradient bg-transparent text-pure-white text-xs font-medium transition-all active:scale-95">
               <Trash2 size={14} /> Hapus Bulan
             </button>
           </div>
-          <div className="flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/5 text-[11px] text-slate-400">
+          <div className="flex items-center gap-3 px-3.5 py-1.5 rounded-2xl bg-onyx border border-white/[0.06] text-[11px] text-slate-mist">
             <span className="flex items-center gap-1"><Calendar size={12} /> {assignedCount}/{lastDay} hari</span>
             <span className="w-px h-3 bg-white/10" />
             <span className="flex items-center gap-1"><Clock size={12} /> {MONTHS[month]}</span>
@@ -166,7 +166,7 @@ export default function SchedulingPage() {
 
       {/* LEGEND */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mr-1">Shift</span>
+        <span className="text-[9px] font-semibold text-slate-mist uppercase tracking-wider mr-1">Shift</span>
         {SHIFTS.map(s => {
           const Icon = s.icon;
           return (
@@ -175,7 +175,7 @@ export default function SchedulingPage() {
             </span>
           );
         })}
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/[0.03] text-slate-500 ring-1 ring-white/5">
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium bg-onyx text-slate-mist ring-1 ring-white/5">
           <X size={11} /> Kosong
         </span>
       </div>
@@ -183,25 +183,25 @@ export default function SchedulingPage() {
       {/* CALENDAR */}
       {!selectedUser ? (
         <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-700/20 flex items-center justify-center mb-4 ring-1 ring-white/10">
-            <Calendar size={32} className="text-violet-400" />
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-electric-violet/20 to-deep-indigo/20 flex items-center justify-center mb-4 ring-1 ring-white/[0.06]">
+            <Calendar size={32} className="text-periwinkle-glow" />
           </div>
-          <p className="text-slate-300 font-medium">Pilih pegawai untuk mulai</p>
-          <p className="text-slate-500 text-sm mt-1">Klik kolom pencarian di atas, lalu cari nama pegawai</p>
+          <p className="text-slate-mist font-medium">Pilih pegawai untuk mulai</p>
+          <p className="text-slate-mist text-sm mt-1">Klik kolom pencarian di atas, lalu cari nama pegawai</p>
         </div>
       ) : loading ? (
         <div className="flex items-center justify-center min-h-[50vh]">
           <div className="flex flex-col items-center gap-3">
-            <Loader2 size={28} className="animate-spin text-violet-400" />
-            <p className="text-sm text-slate-400">Memuat jadwal...</p>
+            <Loader2 size={28} className="animate-spin text-periwinkle-glow" />
+            <p className="text-sm text-slate-mist">Memuat jadwal...</p>
           </div>
         </div>
       ) : (
-        <div className="bg-[#c190ff]/10 border border-white/10 rounded-2xl p-3 md:p-5 overflow-x-auto">
+        <div className="design-card p-3 md:p-5 overflow-x-auto">
           <div className="min-w-[620px]">
             <div className="grid grid-cols-7 gap-2 mb-2">
               {DAY_SHORT.map(d => (
-                <div key={d} className="text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest py-1">{d}</div>
+                <div key={d} className="text-center text-[10px] font-bold text-slate-mist uppercase tracking-widest py-1">{d}</div>
               ))}
             </div>
             <div className="grid grid-cols-7 gap-2">
@@ -213,22 +213,22 @@ export default function SchedulingPage() {
                 const isToday = day && year === now.getFullYear() && month === now.getMonth() && day === now.getDate();
                 return (
                   <button key={i} onClick={() => handleDayClick(day)} disabled={!day}
-                    className={`group relative aspect-[4/3] rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 text-xs
+                    className={`group relative aspect-[4/3] rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 text-xs
                       ${!day ? "invisible" : "cursor-pointer active:scale-95"}
-                      ${isToday ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-[#05000a]" : ""}
+                      ${isToday ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-obsidian" : ""}
                       ${!shiftInfo
-                        ? "bg-white/[0.02] hover:bg-white/[0.06] hover:shadow-lg hover:shadow-violet-900/10"
+                        ? "bg-white/[0.02] hover:bg-white/[0.06] hover:shadow-lg"
                         : `${shiftInfo.bg} hover:brightness-110 hover:shadow-lg hover:shadow-${shiftInfo.code === "PG" ? "amber" : shiftInfo.code === "SR" ? "orange" : shiftInfo.code === "SI" ? "sky" : "violet"}-900/20`
                       }
                     `}>
-                    <span className={`text-[11px] font-bold leading-none ${isToday ? "text-violet-300" : "text-slate-400"}`}>{day}</span>
+                    <span className={`text-[11px] font-bold leading-none ${isToday ? "text-violet-300" : "text-slate-mist"}`}>{day}</span>
                     {shiftInfo && (
                       <div className={`flex items-center gap-0.5 mt-0.5 ${shiftInfo.color}`}>
                         <shiftInfo.icon size={9} />
                         <span className="text-[7px] font-bold tracking-wider">{shiftInfo.name}</span>
                       </div>
                     )}
-                    <div className={`absolute inset-0 rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100 bg-gradient-to-t from-white/[0.06] to-transparent pointer-events-none`} />
+                    <div className={`absolute inset-0 rounded-2xl transition-opacity duration-300 opacity-0 group-hover:opacity-100 bg-gradient-to-t from-white/[0.06] to-transparent pointer-events-none`} />
                   </button>
                 );
               })}
@@ -246,9 +246,9 @@ export default function SchedulingPage() {
             const isActive = schedules[showShiftPicker]?.shift_code === s.code;
             return (
               <button key={s.code} onClick={() => assignShift(s.code)}
-                className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm
-                  ${isActive ? "bg-violet-600/30 border border-violet-500/50 text-white shadow-lg shadow-violet-900/20" : "bg-white/[0.04] border border-transparent text-slate-300 hover:bg-white/10 hover:border-white/10"}`}>
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${s.bg}`}>
+                className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all text-sm
+                  ${isActive ? "bg-electric-violet/30 border border-violet-500/50 text-pure-white shadow-lg" : "bg-onyx border border-transparent text-slate-mist hover:bg-white/[0.03] hover:border-white/[0.06]"}`}>
+                <div className={`w-8 h-8 rounded-2xl flex items-center justify-center ${s.bg}`}>
                   <Icon size={16} className={s.color} />
                 </div>
                 <span className="flex-1 text-left font-medium">{s.name}</span>
@@ -259,7 +259,7 @@ export default function SchedulingPage() {
         </div>
         {schedules[showShiftPicker] && (
           <button onClick={() => assignShift(schedules[showShiftPicker].shift_code)}
-            className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-gradient bg-transparent text-white text-xs font-medium hover:bg-red-500/20 transition-all active:scale-95">
+            className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border-gradient bg-transparent text-pure-white text-xs font-medium hover:bg-red-500/20 transition-all active:scale-95">
             <Trash2 size={13} /> Hapus Jadwal
           </button>
         )}
@@ -290,8 +290,8 @@ export default function SchedulingPage() {
         confirmText="Ya, Hapus" onConfirm={confirmClearMonth} />
 
       {/* FOOTER INFO */}
-      <div className="flex items-center gap-2 p-3.5 rounded-xl bg-gradient-to-r from-sky-500/5 to-violet-500/5 border border-sky-500/10 text-[11px] text-slate-400">
-        <div className="w-6 h-6 rounded-lg bg-sky-500/10 flex items-center justify-center shrink-0">
+      <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-gradient-to-r from-sky-500/5 to-violet-500/5 border border-sky-500/10 text-[11px] text-slate-mist">
+          <div className="w-6 h-6 rounded-2xl bg-sky-500/10 flex items-center justify-center shrink-0">
           <UserCheck size={13} className="text-sky-400" />
         </div>
         <p>Klik tanggal untuk atur shift. Gunakan <strong className="text-sky-300 font-semibold">Isi Cepat</strong> untuk mengisi banyak jadwal sekaligus, <strong className="text-sky-300 font-semibold">Upload</strong> via Excel, atau <strong className="text-sky-300 font-semibold">Copy Bulan Lalu</strong> untuk duplikasi.</p>
@@ -422,26 +422,26 @@ function EmployeeSearchContent({ employees, value, onSelect }) {
   return (
     <div className="space-y-2">
       <div className="relative">
-        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-mist" />
         <input ref={inputRef} value={q} onChange={e => setQ(e.target.value)}
           placeholder="Ketik nama pegawai..."
-          className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all" />
+          className="w-full pl-9 pr-3 py-2.5 text-sm design-input placeholder:text-slate-mist focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all" />
       </div>
       <div className="max-h-56 overflow-y-auto space-y-0.5 -mx-1 px-1">
         {filtered.map(emp => (
           <button key={emp.id} onClick={() => onSelect(emp.id)}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-all hover:bg-white/[0.06] ${emp.id === value ? "bg-violet-600/20 text-violet-200 ring-1 ring-violet-500/30" : "text-slate-300"}`}>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center text-xs font-bold text-white shrink-0">
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm text-left transition-all hover:bg-white/[0.06] ${emp.id === value ? "bg-electric-violet/20 text-pure-white ring-1 ring-electric-violet/30" : "text-slate-mist"}`}>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-electric-violet to-deep-indigo flex items-center justify-center text-xs font-bold text-pure-white shrink-0">
               {emp.full_name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium truncate">{emp.full_name}</p>
-              <p className="text-[10px] text-slate-500">{emp.role}</p>
+              <p className="text-[10px] text-slate-mist">{emp.role}</p>
             </div>
-            {emp.id === value && <CheckCircle2 size={16} className="text-violet-400 shrink-0" />}
+            {emp.id === value && <CheckCircle2 size={16} className="text-periwinkle-glow shrink-0" />}
           </button>
         ))}
-        {!filtered.length && <p className="text-xs text-slate-500 text-center py-6">Tidak ditemukan</p>}
+        {!filtered.length && <p className="text-xs text-slate-mist text-center py-6">Tidak ditemukan</p>}
       </div>
     </div>
   );
@@ -484,18 +484,18 @@ function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-      <div className="bg-gradient-to-br from-[#1a0533] to-[#2d0a4e] border border-white/10 rounded-2xl w-full max-w-lg shadow-2xl shadow-violet-900/40 animate-fade-in max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="p-5 border-b border-white/10 flex items-center justify-between">
+      <div className="bg-onyx border border-white/[0.06] rounded-3xl w-full max-w-lg shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="p-5 border-b border-white/[0.06] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shadow-lg">
-              <Layers size={17} className="text-white" />
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-electric-violet to-deep-indigo flex items-center justify-center shadow-lg">
+              <Layers size={17} className="text-pure-white" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white">Isi Cepat Jadwal</h3>
-              <p className="text-[10px] text-slate-400">Atur shift untuk banyak pegawai sekaligus</p>
+              <h3 className="text-sm font-bold text-pure-white">Isi Cepat Jadwal</h3>
+              <p className="text-[10px] text-slate-mist">Atur shift untuk banyak pegawai sekaligus</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white transition-all">
+          <button onClick={onClose} className="p-1.5 rounded-full bg-onyx text-slate-mist hover:bg-white/[0.03] hover:text-pure-white transition-all">
             <X size={16} />
           </button>
         </div>
@@ -504,13 +504,13 @@ function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) 
 
           {/* Shift */}
           <div>
-            <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Shift</label>
+            <label className="text-[9px] font-bold text-slate-mist uppercase tracking-widest mb-2 block">Shift</label>
             <div className="grid grid-cols-2 gap-2">
               {SHIFTS.map(s => {
                 const Icon = s.icon;
                 return (
                   <button key={s.code} onClick={() => setShiftCode(s.code)}
-                    className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-xs font-medium transition-all ${shiftCode === s.code ? "bg-violet-600/30 border border-violet-500/50 text-white shadow-lg shadow-violet-900/20" : "bg-white/[0.04] border border-white/10 text-slate-300 hover:bg-white/10"}`}>
+                    className={`flex items-center gap-2.5 px-3.5 py-3 rounded-2xl text-xs font-medium transition-all ${shiftCode === s.code ? "bg-electric-violet/30 border border-violet-500/50 text-pure-white shadow-lg" : "bg-onyx border border-white/[0.06] text-slate-mist hover:bg-white/[0.03]"}`}>
                     <Icon size={16} className={s.color} /> {s.name}
                   </button>
                 );
@@ -520,34 +520,34 @@ function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) 
 
           {/* Date Range */}
           <div>
-            <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Rentang Tanggal</label>
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-3">
+            <label className="text-[9px] font-bold text-slate-mist uppercase tracking-widest mb-2 block">Rentang Tanggal</label>
+            <div className="bg-onyx border border-white/[0.06] rounded-2xl p-3">
               <div className="flex items-center justify-center gap-3">
                 <div className="text-center">
-                  <span className="text-[10px] text-slate-500 block mb-1">Dari</span>
+                  <span className="text-[10px] text-slate-mist block mb-1">Dari</span>
                   <input type="number" min={1} max={lastDay} value={range.start}
                     onChange={e => setRange(p => ({ ...p, start: Math.max(1, Math.min(lastDay, Number(e.target.value)))}))}
-                    className="w-16 px-2 py-1.5 text-sm rounded-lg bg-white/5 border border-white/10 text-white text-center font-mono focus:outline-none focus:ring-2 focus:ring-violet-500/50" />
+                    className="w-16 px-2 py-1.5 text-sm rounded-2xl bg-onyx border border-white/[0.06] text-pure-white text-center font-mono focus:outline-none focus:ring-2 focus:ring-violet-500/50" />
                 </div>
-                <span className="text-slate-500 mt-5">—</span>
+                <span className="text-slate-mist mt-5">—</span>
                 <div className="text-center">
-                  <span className="text-[10px] text-slate-500 block mb-1">Sampai</span>
+                  <span className="text-[10px] text-slate-mist block mb-1">Sampai</span>
                   <input type="number" min={1} max={lastDay} value={range.end}
                     onChange={e => setRange(p => ({ ...p, end: Math.max(1, Math.min(lastDay, Number(e.target.value)))}))}
-                    className="w-16 px-2 py-1.5 text-sm rounded-lg bg-white/5 border border-white/10 text-white text-center font-mono focus:outline-none focus:ring-2 focus:ring-violet-500/50" />
+                    className="w-16 px-2 py-1.5 text-sm rounded-2xl bg-onyx border border-white/[0.06] text-pure-white text-center font-mono focus:outline-none focus:ring-2 focus:ring-violet-500/50" />
                 </div>
-                <span className="text-[10px] text-slate-400 mt-5 whitespace-nowrap">{MONTHS[month]} {year}</span>
+                <span className="text-[10px] text-slate-mist mt-5 whitespace-nowrap">{MONTHS[month]} {year}</span>
               </div>
             </div>
           </div>
 
           {/* Days */}
           <div>
-            <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Hari</label>
+            <label className="text-[9px] font-bold text-slate-mist uppercase tracking-widest mb-2 block">Hari</label>
             <div className="flex flex-wrap gap-1.5">
               {DAY_SHORT.map((d, i) => (
                 <button key={i} onClick={() => setDays(p => p.includes(i) ? p.filter(x => x !== i) : [...p, i])}
-                  className={`px-3.5 py-2 rounded-lg text-[10px] font-bold transition-all ${days.includes(i) ? "bg-violet-600/30 border border-violet-500/50 text-white shadow-sm" : "bg-white/[0.04] border border-white/10 text-slate-400 hover:bg-white/10"}`}>
+                  className={`px-3.5 py-2 rounded-full text-[10px] font-bold transition-all ${days.includes(i) ? "bg-electric-violet/30 border border-violet-500/50 text-pure-white shadow-sm" : "bg-onyx border border-white/[0.06] text-slate-mist hover:bg-white/[0.03]"}`}>
                   {d}
                 </button>
               ))}
@@ -557,17 +557,17 @@ function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) 
           {/* Employees */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Pegawai ({selectedIds.length})</label>
+              <label className="text-[9px] font-bold text-slate-mist uppercase tracking-widest">Pegawai ({selectedIds.length})</label>
               <button onClick={() => { if (selectAll) { setSelectedIds([]); setSelectAll(false); } else { setSelectedIds(employees.map(e => e.id)); setSelectAll(true); } }}
-                className="text-[10px] font-semibold text-violet-400 hover:text-violet-300 transition-all">{selectAll ? "Hapus semua" : "Pilih semua"}</button>
+                className="text-[10px] font-semibold text-periwinkle-glow hover:text-violet-300 transition-all">{selectAll ? "Hapus semua" : "Pilih semua"}</button>
             </div>
-            <div className="max-h-40 overflow-y-auto space-y-0.5 rounded-xl bg-white/[0.02] border border-white/5 p-1">
+            <div className="max-h-40 overflow-y-auto space-y-0.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] p-1">
               {employees.map(emp => (
-                <label key={emp.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-xs transition-all ${selectedIds.includes(emp.id) ? "bg-violet-600/15 border border-violet-500/25" : "hover:bg-white/[0.04]"}`}>
+                <label key={emp.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer text-xs transition-all ${selectedIds.includes(emp.id) ? "bg-violet-600/15 border border-violet-500/25" : "hover:bg-white/[0.04]"}`}>
                   <input type="checkbox" checked={selectedIds.includes(emp.id)} onChange={() => toggle(emp.id)}
                     className="accent-violet-500 w-3.5 h-3.5" />
-                  <span className="text-slate-200 flex-1 font-medium">{emp.full_name}</span>
-                  <span className="text-[9px] text-slate-500">{emp.role}</span>
+                  <span className="text-slate-mist flex-1 font-medium">{emp.full_name}</span>
+                  <span className="text-[9px] text-slate-mist">{emp.role}</span>
                 </label>
               ))}
             </div>
@@ -575,7 +575,7 @@ function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) 
 
           {/* Apply */}
           <button onClick={apply} disabled={saving}
-            className="w-full flex items-center justify-center gap-2 py-3 border-gradient bg-transparent text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-violet-900/20">
+            className="w-full flex items-center justify-center gap-2 py-3 border-gradient bg-transparent text-pure-white rounded-full text-sm font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg">
             {saving ? <><Loader2 size={16} className="animate-spin" /> Menyimpan...</> : <><CheckCircle2 size={17} /> Terapkan Jadwal</>}
           </button>
         </div>

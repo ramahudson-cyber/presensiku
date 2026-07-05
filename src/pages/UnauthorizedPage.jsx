@@ -3,18 +3,18 @@ import { ShieldX } from "lucide-react";
 
 export default function UnauthorizedPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950">
+    <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-obsidian">
       <div className="text-center p-8">
         <ShieldX size={64} className="mx-auto text-red-500 mb-4" />
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-bold text-pure-white mb-2">
           Akses Ditolak
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
+        <p className="text-slate-mist mb-6">
           Anda tidak memiliki izin untuk mengakses halaman ini.
         </p>
         <Link
           to="/"
-          className="px-6 py-3 border-gradient bg-transparent text-white rounded-xl transition-colors"
+          className="design-btn-ghost"
         >
           Kembali ke Login
         </Link>

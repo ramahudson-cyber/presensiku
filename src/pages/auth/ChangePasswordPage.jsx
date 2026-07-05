@@ -85,8 +85,8 @@ export default function ChangePasswordPage() {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-500/15 mb-4">
             <Shield size={28} className="text-amber-400" />
           </div>
-          <h1 className="text-2xl font-extrabold text-white">Ubah Password</h1>
-          <p className="text-sm text-slate-300/70 mt-2">
+          <h1 className="text-2xl font-extrabold text-pure-white">Ubah Password</h1>
+          <p className="text-sm text-slate-mist mt-2">
             Ini adalah login pertama Anda. Silakan ganti password default.
           </p>
         </div>
@@ -101,7 +101,7 @@ export default function ChangePasswordPage() {
 
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="relative">
-              <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-mist" />
               <input
                 type={showPassword ? "text" : "password"}
                 value={newPassword}
@@ -110,19 +110,19 @@ export default function ChangePasswordPage() {
                 required
                 minLength={6}
                 disabled={loading}
-                className="w-full pl-10 pr-10 py-3 bg-black/50 border border-violet-500/20 rounded-xl text-white text-sm placeholder-slate-500 focus:outline-none focus:border-violet-500/50 transition disabled:opacity-50"
+                className="w-full pl-10 pr-10 py-3 bg-black/50 border border-violet-500/20 rounded-xl text-pure-white text-sm placeholder-slate-mist focus:outline-none focus:border-violet-500/50 transition disabled:opacity-50"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-mist hover:text-pure-white"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
 
             <div className="relative">
-              <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-mist" />
               <input
                 type={showPassword ? "text" : "password"}
                 value={confirmPassword}
@@ -131,14 +131,14 @@ export default function ChangePasswordPage() {
                 required
                 minLength={6}
                 disabled={loading}
-                className="w-full pl-10 pr-4 py-3 bg-black/50 border border-violet-500/20 rounded-xl text-white text-sm placeholder-slate-500 focus:outline-none focus:border-violet-500/50 transition disabled:opacity-50"
+                className="w-full pl-10 pr-4 py-3 bg-black/50 border border-violet-500/20 rounded-xl text-pure-white text-sm placeholder-slate-mist focus:outline-none focus:border-violet-500/50 transition disabled:opacity-50"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 border-gradient bg-transparent text-white font-semibold rounded-xl text-sm shadow-lg shadow-purple-900/30 hover:shadow-purple-900/50 transition disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3 border-gradient bg-transparent text-pure-white font-semibold rounded-xl text-sm shadow-lg shadow-purple-900/30 hover:shadow-purple-900/50 transition disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

@@ -89,45 +89,45 @@ export default function EmployeeSchedule() {
   return (
     <div className="space-y-4 animate-fade-in min-w-0 pb-24 md:pb-6">
       {/* HEADER */}
-      <div className="relative bg-gradient-to-br from-violet-600/15 via-purple-700/10 to-transparent rounded-2xl p-5 md:p-6 border border-white/10 overflow-hidden">
-        <div className="absolute top-0 right-0 w-48 h-48 bg-violet-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+      <div className="relative bg-onyx rounded-2xl p-5 md:p-6 border border-white/[0.06] overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-electric-violet/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-600/10 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none" />
         <div className="relative flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-violet-900/30">
-            <Calendar size={20} className="text-white" />
+          <div className="w-10 h-10 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-xl flex items-center justify-center shadow-lg">
+            <Calendar size={20} className="text-pure-white" />
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight">Jadwal Shift Saya</h1>
-            <p className="text-sm text-slate-400 mt-0.5">Kalender jadwal kerja bulanan</p>
+            <h1 className="text-xl md:text-2xl font-bold text-pure-white tracking-tight">Jadwal Shift Saya</h1>
+            <p className="text-sm text-slate-mist mt-0.5">Kalender jadwal kerja bulanan</p>
           </div>
         </div>
       </div>
 
       {/* NAV + STATS */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-xl px-2.5 py-1.5">
-          <button onClick={() => nav(-1)} className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-all">
+        <div className="flex items-center gap-1.5 bg-onyx border border-white/[0.06] rounded-2xl px-2.5 py-1.5">
+          <button onClick={() => nav(-1)} className="p-1.5 rounded-lg hover:bg-white/10 text-slate-mist hover:text-pure-white transition-all">
             <ChevronLeft size={17} />
           </button>
-          <span className="text-sm font-semibold text-white w-[136px] text-center select-none">{MONTHS[month]} {year}</span>
-          <button onClick={() => nav(1)} className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-all">
+          <span className="text-sm font-semibold text-pure-white w-[136px] text-center select-none">{MONTHS[month]} {year}</span>
+          <button onClick={() => nav(1)} className="p-1.5 rounded-lg hover:bg-white/10 text-slate-mist hover:text-pure-white transition-all">
             <ChevronRight size={17} />
           </button>
         </div>
         {!isCurrentMonth && (
           <button onClick={goToday}
-            className="px-3 py-1.5 rounded-xl border-gradient bg-transparent text-white text-xs font-medium transition-all active:scale-95">
+            className="px-3 py-1.5 rounded-full border-gradient bg-transparent text-pure-white text-xs font-medium transition-all active:scale-95">
             Hari Ini
           </button>
         )}
-        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/5 text-[11px] text-slate-400 ml-auto">
+        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-onyx border border-white/[0.06] text-[11px] text-slate-mist ml-auto">
           <span className="flex items-center gap-1"><Calendar size={12} /> {stats.total} hari</span>
         </div>
       </div>
 
       {/* LEGEND */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mr-1">Shift</span>
+        <span className="text-[9px] font-semibold text-slate-mist uppercase tracking-wider mr-1">Shift</span>
         {SHIFTS.map(s => {
           const Icon = s.icon;
           return (
@@ -142,16 +142,16 @@ export default function EmployeeSchedule() {
       {loading ? (
         <div className="flex items-center justify-center min-h-[40vh]">
           <div className="flex flex-col items-center gap-3">
-            <Loader2 size={28} className="animate-spin text-violet-400" />
-            <p className="text-sm text-slate-400">Memuat jadwal...</p>
+            <Loader2 size={28} className="animate-spin text-periwinkle-glow" />
+            <p className="text-sm text-slate-mist">Memuat jadwal...</p>
           </div>
         </div>
       ) : (
-        <div className="bg-[#c190ff]/10 border border-white/10 rounded-2xl p-3 md:p-5 overflow-x-auto">
+        <div className="design-card p-3 md:p-5 overflow-x-auto">
           <div className="min-w-[600px]">
             <div className="grid grid-cols-7 gap-2 mb-2">
               {DAY_SHORT.map(d => (
-                <div key={d} className="text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest py-1">
+                <div key={d} className="text-center text-[10px] font-bold text-slate-mist uppercase tracking-widest py-1">
                   {d}
                 </div>
               ))}
@@ -167,9 +167,9 @@ export default function EmployeeSchedule() {
 
                 return (
                   <div key={i}
-                    className={`relative aspect-[4/3] rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 text-xs
+                    className={`relative aspect-[4/3] rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 text-xs
                       ${!day ? "invisible" : ""}
-                      ${isToday ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-[#05000a]" : ""}
+                      ${isToday ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-obsidian" : ""}
                       ${!shiftInfo
                         ? isWeekend
                           ? "bg-white/[0.01]"
@@ -177,7 +177,7 @@ export default function EmployeeSchedule() {
                         : `${shiftInfo.bg}`
                       }
                     `}>
-                    <span className={`text-[11px] font-bold leading-none ${isToday ? "text-violet-300" : isWeekend && !shiftInfo ? "text-slate-600" : "text-slate-400"}`}>
+                    <span className={`text-[11px] font-bold leading-none ${isToday ? "text-periwinkle-glow" : isWeekend && !shiftInfo ? "text-slate-mist" : "text-slate-mist"}`}>
                       {day}
                     </span>
                     {shiftInfo && (
@@ -187,7 +187,7 @@ export default function EmployeeSchedule() {
                       </div>
                     )}
                     {!shiftInfo && isWeekend && (
-                      <span className="text-[6px] text-slate-600 mt-0.5">Libur</span>
+                      <span className="text-[6px] text-slate-mist mt-0.5">Libur</span>
                     )}
                   </div>
                 );
@@ -210,7 +210,7 @@ export default function EmployeeSchedule() {
                   <Icon size={16} className={s.color} />
                 </div>
                 <div>
-                  <p className="text-base font-bold text-white">{count}</p>
+                  <p className="text-base font-bold text-pure-white">{count}</p>
                   <p className={`text-[10px] ${s.color}`}>{s.name}</p>
                 </div>
               </div>
@@ -220,7 +220,7 @@ export default function EmployeeSchedule() {
       )}
 
       {/* FOOTER INFO */}
-      <div className="flex items-center gap-2 p-3.5 rounded-xl bg-gradient-to-r from-sky-500/5 to-violet-500/5 border border-sky-500/10 text-[11px] text-slate-400">
+      <div className="flex items-center gap-2 p-3.5 rounded-xl bg-gradient-to-r from-sky-500/5 to-violet-500/5 border border-sky-500/10 text-[11px] text-slate-mist">
         <div className="w-6 h-6 rounded-lg bg-sky-500/10 flex items-center justify-center shrink-0">
           <Info size={13} className="text-sky-400" />
         </div>

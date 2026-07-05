@@ -41,7 +41,7 @@ export default function BottomNav() {
     <>
       {/* Bottom Navigation Bar — Mobile Only */}
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#160a29]/95 backdrop-blur-xl border-t border-white/10"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-onyx/95 backdrop-blur-xl border-t border-white/[0.06]"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="flex items-center justify-around h-16 px-1">
@@ -54,13 +54,13 @@ export default function BottomNav() {
                 end={item.end}
                 className={({ isActive }) =>
                   `flex flex-col items-center justify-center gap-0.5 flex-1 py-2 transition-all ${
-                    isActive ? "text-violet-400" : "text-slate-500"
+                    isActive ? "text-electric-violet" : "text-slate-mist"
                   }`
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <div className={`p-1.5 rounded-xl transition-all ${isActive ? "bg-violet-500/15 scale-110" : ""}`}>
+                    <div className={`p-1.5 rounded-2xl transition-all ${isActive ? "bg-electric-violet/15 scale-110" : ""}`}>
                       <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                     </div>
                     <span className={`text-[10px] ${isActive ? "font-semibold" : "font-medium"}`}>{item.label}</span>
@@ -74,9 +74,9 @@ export default function BottomNav() {
           {moreMenus.length > 0 && (
             <button
               onClick={() => setMoreOpen(true)}
-              className="flex flex-col items-center justify-center gap-0.5 flex-1 py-2 text-slate-500 hover:text-violet-400 transition"
+              className="flex flex-col items-center justify-center gap-0.5 flex-1 py-2 text-slate-mist hover:text-electric-violet transition"
             >
-              <div className="p-1.5 rounded-xl">
+              <div className="p-1.5 rounded-2xl">
                 <MoreHorizontal size={22} strokeWidth={2} />
               </div>
               <span className="text-[10px] font-medium">Lainnya</span>
@@ -92,9 +92,9 @@ export default function BottomNav() {
             const Icon = item.icon;
             return (
               <NavLink key={item.path} to={item.path} onClick={() => setMoreOpen(false)}
-                className={({ isActive }) =>
-                  `flex flex-col items-center gap-2 p-4 rounded-2xl transition-all ${isActive
-                    ? "border-gradient bg-transparent text-white"
+                   className={({ isActive }) =>
+                  `flex flex-col items-center gap-2 p-4 rounded-3xl transition-all ${isActive
+                    ? "border-gradient bg-transparent text-pure-white"
                     : "bg-white/5 hover:bg-white/10"}`
                 }>
                 <Icon size={24} />

@@ -98,19 +98,19 @@ export default function UpdateDialog() {
         onClick={isForce ? undefined : (e) => e.target === e.currentTarget && setUpdate(null)}
         style={isForce ? { pointerEvents: "auto" } : undefined}
       >
-        <div className="bg-gradient-to-br from-[#1a0533] to-[#2d0a4e] border border-violet-500/30 rounded-2xl w-full max-w-sm shadow-2xl shadow-violet-900/50 animate-fade-in">
-          <div className="p-5 border-b border-white/10 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shadow-lg">
-              <RefreshCw size={17} className="text-white" />
+        <div className="bg-onyx border border-electric-violet/30 rounded-3xl w-full max-w-sm shadow-2xl animate-fade-in">
+          <div className="p-5 border-b border-white/[0.06] flex items-center gap-3">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-electric-violet to-deep-indigo flex items-center justify-center shadow-lg">
+              <RefreshCw size={17} className="text-pure-white" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white">Update Tersedia</h3>
-              <p className="text-[10px] text-slate-400">{label}</p>
+              <h3 className="text-sm font-bold text-pure-white">Update Tersedia</h3>
+              <p className="text-[10px] text-slate-mist">{label}</p>
             </div>
             {!isForce && (
               <button
                 onClick={() => setUpdate(null)}
-                className="ml-auto text-white/40 hover:text-white/80 text-lg leading-none"
+                className="ml-auto text-pure-white/40 hover:text-pure-white/80 text-lg leading-none"
               >
                 &times;
               </button>
@@ -119,15 +119,15 @@ export default function UpdateDialog() {
           <div className="p-5 space-y-4">
             {update.changelog && (
               <div>
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Pembaruan</p>
-                <p className="text-xs text-slate-300 leading-relaxed">{update.changelog}</p>
+                <p className="text-[10px] font-bold text-slate-mist uppercase tracking-wider mb-1.5">Pembaruan</p>
+                <p className="text-xs text-slate-mist leading-relaxed">{update.changelog}</p>
               </div>
             )}
-            <p className="text-xs text-slate-400 text-center">
+            <p className="text-xs text-slate-mist text-center">
               Versi baru tersedia. Refresh halaman untuk mendapatkan update.
             </p>
             <button onClick={handleRefresh}
-              className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98]">
+              className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-purple-600 text-pure-white hover:shadow-lg active:scale-[0.98]">
               <RefreshCw size={16} /> Refresh Halaman
             </button>
           </div>
@@ -144,21 +144,21 @@ export default function UpdateDialog() {
       onClick={isForce ? undefined : (e) => e.target === e.currentTarget && setUpdate(null)}
       style={isForce ? { pointerEvents: "auto" } : undefined}
     >
-      <div className="bg-gradient-to-br from-[#1a0533] to-[#2d0a4e] border border-violet-500/30 rounded-2xl w-full max-w-sm shadow-2xl shadow-violet-900/50 animate-fade-in">
-        <div className="p-5 border-b border-white/10 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shadow-lg">
-            <RefreshCw size={17} className="text-white" />
+      <div className="bg-onyx border border-electric-violet/30 rounded-3xl w-full max-w-sm shadow-2xl animate-fade-in">
+        <div className="p-5 border-b border-white/[0.06] flex items-center gap-3">
+          <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-electric-violet to-deep-indigo flex items-center justify-center shadow-lg">
+            <RefreshCw size={17} className="text-pure-white" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-white">
+            <h3 className="text-sm font-bold text-pure-white">
               {done ? "Instalasi" : downloading ? "Mengunduh" : "Update Tersedia"}
             </h3>
-            <p className="text-[10px] text-slate-400">{label}</p>
+            <p className="text-[10px] text-slate-mist">{label}</p>
           </div>
           {!isForce && !downloading && !done && (
             <button
               onClick={() => setUpdate(null)}
-              className="ml-auto text-white/40 hover:text-white/80 text-lg leading-none"
+              className="ml-auto text-pure-white/40 hover:text-pure-white/80 text-lg leading-none"
             >
               &times;
             </button>
@@ -172,11 +172,11 @@ export default function UpdateDialog() {
             </div>
           )}
           {error && (
-            <div className="bg-red-900/30 border border-red-500/30 rounded-xl p-3 space-y-2">
+            <div className="bg-red-900/30 border border-red-500/30 rounded-2xl p-3 space-y-2">
               <p className="text-[11px] text-red-300">{error}</p>
               {permissionRequired && (
                 <button onClick={openInstallSettings}
-                  className="w-full py-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 bg-red-800/50 text-red-200 border border-red-500/30 hover:bg-red-800/70 active:scale-[0.98]">
+                  className="w-full py-2 rounded-full text-[11px] font-semibold flex items-center justify-center gap-1.5 bg-red-800/50 text-red-200 border border-red-500/30 hover:bg-red-800/70 active:scale-[0.98]">
                   <Settings size={13} /> Buka Pengaturan
                 </button>
               )}
@@ -186,13 +186,13 @@ export default function UpdateDialog() {
           <div className="space-y-2">
             {(downloading || done) && (
               <div className="space-y-2">
-                <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
+                <div className="w-full bg-white/[0.06] rounded-full h-3 overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-electric-violet to-purple-500 rounded-full transition-all duration-300"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <p className="text-[10px] text-slate-400 text-center">{progress}%</p>
+                <p className="text-[10px] text-slate-mist text-center">{progress}%</p>
                 {done && (
                   <p className="text-[11px] text-emerald-300 text-center animate-pulse">
                     Update siap diinstal. Membuka installer...
@@ -202,13 +202,13 @@ export default function UpdateDialog() {
             )}
             {!downloading && !done && !error && (
               <button onClick={handleUpdate}
-                className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98]">
+                className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-purple-600 text-pure-white hover:shadow-lg active:scale-[0.98]">
                 <Download size={16} /> Update v{update.version}
               </button>
             )}
             {!downloading && error && (
               <button onClick={handleUpdate}
-                className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-900/30 active:scale-[0.98]">
+                className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-purple-600 text-pure-white hover:shadow-lg active:scale-[0.98]">
                 <Download size={16} /> Coba Lagi
               </button>
             )}

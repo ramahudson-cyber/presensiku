@@ -16,29 +16,23 @@ import ConfirmSheet from "../../components/ConfirmSheet";
 /* ──────────────────────────────────────────────────────────────────────────
    SHARED THEME TOKENS
    ────────────────────────────────────────────────────────────────────────── */
-const cardBase =
-  "bg-[#c190ff]/15 border border-white/10 rounded-2xl transition-all";
+const cardBase = "design-card";
 
-const inputBase =
-  "w-full px-3 py-2.5 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all";
+const inputBase = "design-input";
 
-const labelBase =
-  "block text-xs font-medium text-violet-100/70 mb-1.5 uppercase tracking-wider";
+const labelBase = "design-label";
 
-const sectionTitle =
-  "text-xl md:text-2xl font-bold text-white tracking-tight";
+const sectionTitle = "design-section-title";
 
-const sectionSub = "text-sm text-slate-200 mt-1";
+const sectionSub = "design-section-sub";
 
-const btnPrimary =
-  "flex items-center gap-2 px-4 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed";
+const btnPrimary = "design-btn-ghost";
 
-const btnGhost =
-  "p-2 rounded-xl border-gradient bg-transparent text-white hover:text-violet-200 hover:bg-white/10 hover:scale-105 transition-all";
+const btnGhost = "design-btn-ghost p-2";
 
 const avatarGradient = (name = "") => {
   const grads = [
-    "from-violet-500 to-purple-700",
+    "from-electric-violet to-deep-indigo",
     "from-sky-500 to-blue-700",
     "from-emerald-500 to-teal-700",
     "from-amber-500 to-orange-700",
@@ -254,7 +248,7 @@ function TabProfilPuskesmas() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-violet-400" />
+        <RefreshCw size={28} className="animate-spin text-periwinkle-glow" />
       </div>
     );
   }
@@ -341,14 +335,14 @@ function TabProfilPuskesmas() {
             />
           </div>
 
-          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
+          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-3xl bg-white/5 border border-white/[0.06] hover:bg-white/[0.03] transition-all">
             <input
               type="checkbox"
               checked={formData.is_active}
               onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
               className="w-4 h-4 rounded accent-violet-500"
             />
-            <span className="text-sm text-violet-100/90">
+            <span className="text-sm text-pure-white/90">
               Jadikan lokasi aktif (untuk absensi)
             </span>
           </label>
@@ -356,13 +350,13 @@ function TabProfilPuskesmas() {
           <div className="flex gap-3 pt-2">
             <button
               type="button" onClick={resetForm}
-              className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:bg-white/5 transition-all"
+              className="flex-1 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:bg-white/[0.03] transition-all"
             >
               Batal
             </button>
             <button
               type="submit" disabled={saving}
-              className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {saving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
               {editingId ? "Update" : "Simpan"}
@@ -375,33 +369,33 @@ function TabProfilPuskesmas() {
         {locations.length === 0 ? (
           <div className="text-center py-12 flex flex-col items-center gap-3">
             <div className="p-4 rounded-2xl bg-white/5">
-              <MapPin size={32} className="text-slate-400" />
+              <MapPin size={32} className="text-slate-mist" />
             </div>
             <div>
-              <p className="text-violet-200/60 font-medium">Belum ada lokasi</p>
-              <p className="text-slate-400 text-xs mt-1">Klik "Tambah Lokasi" untuk menambahkan</p>
+              <p className="text-pure-white/60 font-medium">Belum ada lokasi</p>
+              <p className="text-slate-mist text-xs mt-1">Klik "Tambah Lokasi" untuk menambahkan</p>
             </div>
           </div>
         ) : (
-          <div className="divide-y divide-white/5">
+          <div className="divide-y divide-white/[0.06]">
             {locations.map((loc) => (
-              <div key={loc.id} className="p-4 md:p-5 hover:bg-white/5 transition-all">
+              <div key={loc.id} className="p-4 md:p-5 hover:bg-white/[0.03] transition-all">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="flex items-start gap-3 flex-1 min-w-0">
-                    <div className={`p-2.5 rounded-xl shrink-0 ${loc.is_active ? "bg-emerald-500/15" : "bg-white/5"}`}>
-                      <MapPin size={18} className={loc.is_active ? "text-emerald-300" : "text-slate-300"} />
+                    <div className={`p-2.5 rounded-3xl shrink-0 ${loc.is_active ? "bg-emerald-500/15" : "bg-white/5"}`}>
+                      <MapPin size={18} className={loc.is_active ? "text-emerald-300" : "text-slate-mist"} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h4 className="font-semibold text-white">{loc.name}</h4>
+                        <h4 className="font-semibold text-pure-white">{loc.name}</h4>
                         {loc.is_active && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/15 text-emerald-300 text-xs font-medium rounded-full ring-1 ring-emerald-500/30">
                             <CheckCircle2 size={10} /> AKTIF
                           </span>
                         )}
                       </div>
-                      {loc.address && <p className="text-sm text-violet-200/60 mb-1 break-words">{loc.address}</p>}
-                      <div className="flex flex-wrap gap-3 text-xs text-slate-300 mt-1">
+                      {loc.address && <p className="text-sm text-pure-white/60 mb-1 break-words">{loc.address}</p>}
+                      <div className="flex flex-wrap gap-3 text-xs text-slate-mist mt-1">
                         <span className="font-mono break-all">📍 {loc.latitude}, {loc.longitude}</span>
                         <span>📏 {loc.radius_meter}m</span>
                       </div>
@@ -413,21 +407,21 @@ function TabProfilPuskesmas() {
                       <button
                         onClick={() => handleSetActive(loc.id, loc.name)}
                         title="Jadikan aktif"
-                        className="p-2 text-emerald-300 hover:bg-emerald-500/15 rounded-lg transition-all hover:scale-110"
+                        className="p-2 text-emerald-300 hover:bg-emerald-500/15 rounded-full transition-all hover:scale-110"
                       >
                         <CheckCircle2 size={16} />
                       </button>
                     )}
                     <button
                       onClick={() => handleEdit(loc)}
-                      className="p-2 text-sky-300 hover:bg-sky-500/15 rounded-lg transition-all hover:scale-110"
+                      className="p-2 text-sky-300 hover:bg-sky-500/15 rounded-full transition-all hover:scale-110"
                       title="Edit"
                     >
                       <Pencil size={15} />
                     </button>
                     <button
                       onClick={() => handleDelete(loc.id, loc.name)}
-                      className="p-2 text-rose-300 hover:bg-rose-500/15 rounded-lg transition-all hover:scale-110"
+                      className="p-2 text-rose-300 hover:bg-rose-500/15 rounded-full transition-all hover:scale-110"
                       title="Hapus"
                     >
                       <Trash2 size={15} />
@@ -440,7 +434,7 @@ function TabProfilPuskesmas() {
         )}
       </div>
 
-      <div className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-4">
+      <div className="bg-sky-500/10 border border-sky-500/20 rounded-3xl p-4">
         <div className="flex gap-3">
           <AlertTriangle size={18} className="text-sky-300 shrink-0 mt-0.5" />
           <div className="text-sm text-sky-200/90">
@@ -571,7 +565,7 @@ function TabJamKerja() {
         </div>
         <button
           onClick={handleSave} disabled={saving}
-          className="flex items-center gap-2 px-4 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-emerald-900/30 hover:scale-105 transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:shadow-lg hover:shadow-emerald-900/30 hover:scale-105 transition-all disabled:opacity-50"
         >
           {saving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
           Simpan Semua
@@ -579,7 +573,7 @@ function TabJamKerja() {
       </div>
 
       {!dbReady && (
-        <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
+        <div className="flex items-center gap-2 p-3 rounded-3xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
           <AlertTriangle size={13} className="shrink-0" />
           Database belum siap. Pengaturan disimpan lokal. Jalankan <code className="px-1 py-0.5 bg-black/30 rounded font-mono">scripts/create-system-settings.sql</code> di Supabase.
         </div>
@@ -590,10 +584,10 @@ function TabJamKerja() {
         return (
           <div key={cat} className={`${cardBase} p-5 md:p-6`}>
             <div className="flex items-center gap-2 mb-4">
-              <div className="p-2 rounded-lg bg-violet-500/15">
-                <CatIcon size={16} className="text-violet-100" />
+              <div className="p-2 rounded-3xl bg-electric-violet/15">
+                <CatIcon size={16} className="text-pure-white" />
               </div>
-              <h3 className="text-lg font-semibold text-white">
+              <h3 className="text-lg font-semibold text-pure-white">
                 {categoryLabels[cat]}
               </h3>
             </div>
@@ -601,12 +595,12 @@ function TabJamKerja() {
               {SETTING_KEYS.filter(s => s.category === cat).map(item => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.key} className="p-3 rounded-xl bg-white/5 border border-white/5">
-                    <label className="flex items-center gap-2 text-xs font-medium text-violet-100/70 mb-1 uppercase tracking-wider">
-                      <Icon size={12} className="text-violet-400" />
+                  <div key={item.key} className="p-3 rounded-3xl bg-white/5 border border-white/[0.06]">
+                    <label className="flex items-center gap-2 text-xs font-medium text-pure-white/70 mb-1 uppercase tracking-wider">
+                      <Icon size={12} className="text-periwinkle-glow" />
                       {item.label}
                     </label>
-                    <p className="text-xs text-slate-400 mb-2">{item.desc}</p>
+                    <p className="text-xs text-slate-mist mb-2">{item.desc}</p>
                     <input
                       type={item.type}
                       value={(settings[item.key] ?? DEFAULT_SETTINGS[item.key]) || ""}
@@ -622,10 +616,10 @@ function TabJamKerja() {
       })}
 
       {/* Sticky save button (mobile bottom) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-[#0f0524]/90 backdrop-blur-md border-t border-white/10">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-onyx/90 backdrop-blur-md border-t border-white/[0.06]">
         <button
           onClick={handleSave} disabled={saving}
-          className="w-full flex items-center justify-center gap-2 py-3 border-gradient bg-transparent text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-violet-900/30 transition-all disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 py-3 border-gradient bg-transparent text-pure-white rounded-full text-sm font-semibold hover:shadow-lg transition-all disabled:opacity-50"
         >
           {saving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
           Simpan Semua Perubahan
@@ -785,7 +779,7 @@ function TabManajemenUser() {
       kepala_unit: "bg-sky-500/15 text-sky-300 ring-sky-500/30",
       pegawai: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
     };
-    return map[role] || "bg-white/5 text-slate-200 ring-white/10";
+    return map[role] || "bg-white/5 text-slate-mist ring-white/10";
   };
 
   const filtered = users.filter(u =>
@@ -797,7 +791,7 @@ function TabManajemenUser() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-violet-400" />
+        <RefreshCw size={28} className="animate-spin text-periwinkle-glow" />
       </div>
     );
   }
@@ -812,7 +806,7 @@ function TabManajemenUser() {
       </div>
 
       <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-mist" />
         <input
           type="text"
           placeholder="Cari nama, username, atau email..."
@@ -824,51 +818,51 @@ function TabManajemenUser() {
 
       <BottomSheet open={resetModal.show} onClose={() => setResetModal({ show: false, user: null, password: "" })}
         title="Reset Password" subtitle={resetModal.user?.full_name}>
-        <p className="text-sm text-slate-300 mb-4">Masukkan password baru</p>
+        <p className="text-sm text-slate-mist mb-4">Masukkan password baru</p>
         <input type="text" value={resetModal.password}
           onChange={(e) => setResetModal({ ...resetModal, password: e.target.value })}
           placeholder="Masukkan password baru..."
           className={inputBase + " mb-4"} autoFocus />
         <div className="flex gap-3">
           <button onClick={() => setResetModal({ show: false, user: null, password: "" })}
-            className="flex-1 py-2.5 rounded-xl border-gradient bg-transparent text-white text-sm hover:bg-white/5 transition-all">Batal</button>
+            className="flex-1 py-2.5 rounded-full border-gradient bg-transparent text-pure-white text-sm hover:bg-white/[0.03] transition-all">Batal</button>
           <button onClick={confirmResetPassword}
-            className="flex-1 py-2.5 rounded-xl border-gradient bg-transparent text-white text-sm font-semibold transition-all">Konfirmasi</button>
+            className="flex-1 py-2.5 rounded-full border-gradient bg-transparent text-pure-white text-sm font-semibold transition-all">Konfirmasi</button>
         </div>
       </BottomSheet>
 
       <div className={`${cardBase} overflow-hidden`}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-white/5 border-b border-white/10">
+            <thead className="design-table-header">
               <tr>
-                <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider">User</th>
-                <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden md:table-cell">Username</th>
-                <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider hidden lg:table-cell">Email</th>
-                <th className="text-left px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider">Role</th>
-                <th className="text-center px-4 py-3 font-semibold text-slate-200 text-xs uppercase tracking-wider">Aksi</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-mist text-xs uppercase tracking-wider">User</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-mist text-xs uppercase tracking-wider hidden md:table-cell">Username</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-mist text-xs uppercase tracking-wider hidden lg:table-cell">Email</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-mist text-xs uppercase tracking-wider">Role</th>
+                <th className="text-center px-4 py-3 font-semibold text-slate-mist text-xs uppercase tracking-wider">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-white/[0.06]">
               {filtered.map(u => (
                 <>
-                  <tr key={u.id} className="hover:bg-white/5 transition-all">
+                  <tr key={u.id} className="design-table-row transition-all">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
                         <button
                           onClick={() => { if (window.innerWidth < 768) openDeviceSheet(u); else toggleExpand(u.id); }}
-                          className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarGradient(u.full_name)} flex items-center justify-center text-white text-xs font-bold shadow-lg shrink-0 hover:scale-110 transition-all`}
+                          className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarGradient(u.full_name)} flex items-center justify-center text-pure-white text-xs font-bold shadow-lg shrink-0 hover:scale-110 transition-all`}
                         >
                           {initials(u.full_name)}
                         </button>
                         <div className="min-w-0">
-                          <p className="font-medium text-white truncate">{u.full_name || "-"}</p>
-                          <p className="text-xs text-slate-400 md:hidden truncate">{u.username || "-"} • {u.email || "-"}</p>
+                          <p className="font-medium text-pure-white truncate">{u.full_name || "-"}</p>
+                          <p className="text-xs text-slate-mist md:hidden truncate">{u.username || "-"} • {u.email || "-"}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-violet-200/60 font-mono text-xs hidden md:table-cell">{u.username || "-"}</td>
-                    <td className="px-4 py-3 text-violet-200/60 text-xs hidden lg:table-cell">{u.email || "-"}</td>
+                    <td className="px-4 py-3 text-pure-white/60 font-mono text-xs hidden md:table-cell">{u.username || "-"}</td>
+                    <td className="px-4 py-3 text-pure-white/60 text-xs hidden lg:table-cell">{u.email || "-"}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${roleBadge(u.role)}`}>{u.role || "-"}</span>
                     </td>
@@ -878,7 +872,7 @@ function TabManajemenUser() {
                           onClick={() => handleResetPassword(u)}
                           disabled={resettingId === u.id}
                           title="Reset password ke default"
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 rounded-lg text-xs font-medium transition-all disabled:opacity-50"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 rounded-full text-xs font-medium transition-all disabled:opacity-50"
                         >
                           {resettingId === u.id ? <RefreshCw size={11} className="animate-spin" /> : <Key size={11} />}
                           Password
@@ -886,7 +880,7 @@ function TabManajemenUser() {
                         <button
                           onClick={() => { if (window.innerWidth < 768) openDeviceSheet(u); else toggleExpand(u.id); }}
                           title="Lihat & kelola device"
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-sky-500/15 text-sky-300 hover:bg-sky-500/25 rounded-lg text-xs font-medium transition-all"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-sky-500/15 text-sky-300 hover:bg-sky-500/25 rounded-full text-xs font-medium transition-all"
                         >
                           <Smartphone size={11} />
                           Device
@@ -900,14 +894,14 @@ function TabManajemenUser() {
                       <td colSpan={5} className="px-4 py-4">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
-                            <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-                              <Smartphone size={14} className="text-violet-100" />
+                            <h4 className="text-sm font-semibold text-pure-white flex items-center gap-2">
+                              <Smartphone size={14} className="text-pure-white" />
                               Device Terdaftar untuk {u.full_name}
                             </h4>
                             <button
                               onClick={() => handleResetDevice(u)}
                               disabled={resettingDeviceId === u.id}
-                              className="text-xs px-3 py-1.5 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 rounded-lg transition-all disabled:opacity-50 flex items-center gap-1.5"
+                              className="text-xs px-3 py-1.5 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 rounded-full transition-all disabled:opacity-50 flex items-center gap-1.5"
                             >
                               {resettingDeviceId === u.id ? <RefreshCw size={11} className="animate-spin" /> : <Trash2 size={11} />}
                               Reset Semua Device
@@ -915,12 +909,12 @@ function TabManajemenUser() {
                           </div>
 
                           {!userDevices[u.id] ? (
-                            <div className="text-center py-4 text-slate-300 text-sm flex flex-col items-center gap-2">
+                            <div className="text-center py-4 text-slate-mist text-sm flex flex-col items-center gap-2">
                               <RefreshCw size={20} className="animate-spin" />
                               Memuat device...
                             </div>
                           ) : userDevices[u.id].length === 0 ? (
-                            <div className="text-center py-4 text-slate-400 text-sm flex flex-col items-center gap-2">
+                            <div className="text-center py-4 text-slate-mist text-sm flex flex-col items-center gap-2">
                               <Smartphone size={28} className="opacity-40" />
                               Belum ada device terdaftar. User belum pernah login.
                             </div>
@@ -929,20 +923,20 @@ function TabManajemenUser() {
                               {userDevices[u.id].map((device, idx) => (
                                 <div
                                   key={device.id}
-                                  className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10 gap-3"
+                                  className="flex items-center justify-between p-3 bg-white/5 rounded-3xl border border-white/[0.06] gap-3"
                                 >
                                   <div className="flex items-center gap-3 min-w-0">
-                                    <div className={`p-2 rounded-lg ${device.is_trusted ? "bg-emerald-500/15" : "bg-rose-500/15"}`}>
+                                    <div className={`p-2 rounded-3xl ${device.is_trusted ? "bg-emerald-500/15" : "bg-rose-500/15"}`}>
                                       <Smartphone size={16} className={device.is_trusted ? "text-emerald-300" : "text-rose-300"} />
                                     </div>
                                     <div className="min-w-0">
-                                      <p className="text-sm font-medium text-white truncate">{device.device_name || "Unknown Device"}</p>
-                                      <p className="text-xs text-slate-300 font-mono mt-0.5 truncate">ID: {device.visitor_id?.substring(0, 20)}…</p>
+                                      <p className="text-sm font-medium text-pure-white truncate">{device.device_name || "Unknown Device"}</p>
+                                      <p className="text-xs text-slate-mist font-mono mt-0.5 truncate">ID: {device.visitor_id?.substring(0, 20)}…</p>
                                       {device.imei && <p className="text-xs text-emerald-300 font-mono mt-0.5">IMEI: {device.imei}</p>}
                                       {device.serial && <p className="text-xs text-sky-300 font-mono mt-0.5">Serial: {device.serial}</p>}
-                                      <p className="text-xs text-slate-400 mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
+                                      <p className="text-xs text-slate-mist mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
                                       {device.device_type && (
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 text-[10px] font-medium rounded-full ring-1 ${device.device_type === 'android' ? 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30' : device.device_type === 'ios' ? 'bg-sky-500/15 text-sky-300 ring-sky-500/30' : 'bg-slate-500/15 text-slate-300 ring-slate-500/30'}`}>
+                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 text-[10px] font-medium rounded-full ring-1 ${device.device_type === 'android' ? 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30' : device.device_type === 'ios' ? 'bg-sky-500/15 text-sky-300 ring-sky-500/30' : 'bg-slate-500/15 text-slate-mist ring-slate-500/30'}`}>
                                           {device.device_type === 'android' ? '📱 Android' : device.device_type === 'ios' ? '🍎 iOS' : '🌐 Web'}
                                         </span>
                                       )}
@@ -957,7 +951,7 @@ function TabManajemenUser() {
                                     <button
                                       onClick={() => handleResetDevice(u, device.visitor_id)}
                                       disabled={resettingDeviceId === device.visitor_id}
-                                      className="p-1.5 text-rose-300 hover:bg-rose-500/15 rounded-lg transition-all disabled:opacity-50"
+                                      className="p-1.5 text-rose-300 hover:bg-rose-500/15 rounded-full transition-all disabled:opacity-50"
                                       title="Hapus device ini"
                                     >
                                       {resettingDeviceId === device.visitor_id ? <RefreshCw size={13} className="animate-spin" /> : <Trash2 size={13} />}
@@ -979,9 +973,9 @@ function TabManajemenUser() {
         {filtered.length === 0 && (
           <div className="text-center py-12 flex flex-col items-center gap-3">
             <div className="p-4 rounded-2xl bg-white/5">
-              <Users size={32} className="text-slate-400" />
+              <Users size={32} className="text-slate-mist" />
             </div>
-            <p className="text-violet-200/60">Tidak ada user ditemukan</p>
+            <p className="text-pure-white/60">Tidak ada user ditemukan</p>
           </div>
         )}
       </div>
@@ -992,19 +986,19 @@ function TabManajemenUser() {
           <button
             onClick={() => handleResetDevice(deviceSheetUser)}
             disabled={resettingDeviceId === deviceSheetUser?.id}
-            className="w-full py-2.5 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 rounded-xl text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-2.5 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 rounded-full text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {resettingDeviceId === deviceSheetUser?.id ? <RefreshCw size={14} className="animate-spin" /> : <Trash2 size={14} />}
             Reset Semua Device
           </button>
 
           {!deviceSheetUser ? null : !userDevices[deviceSheetUser.id] ? (
-            <div className="text-center py-10 text-slate-300 text-sm flex flex-col items-center gap-2">
+            <div className="text-center py-10 text-slate-mist text-sm flex flex-col items-center gap-2">
               <RefreshCw size={24} className="animate-spin" />
               Memuat device...
             </div>
           ) : userDevices[deviceSheetUser.id].length === 0 ? (
-            <div className="text-center py-10 text-slate-400 text-sm flex flex-col items-center gap-2">
+            <div className="text-center py-10 text-slate-mist text-sm flex flex-col items-center gap-2">
               <Smartphone size={36} className="opacity-40" />
               Belum ada device terdaftar
             </div>
@@ -1012,20 +1006,20 @@ function TabManajemenUser() {
             <div className="space-y-2">
               {userDevices[deviceSheetUser.id].map((device) => (
                 <div key={device.id}
-                  className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10 gap-3"
+                  className="flex items-center justify-between p-3 bg-white/5 rounded-3xl border border-white/[0.06] gap-3"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className={`p-2 rounded-lg ${device.is_trusted ? "bg-emerald-500/15" : "bg-rose-500/15"}`}>
+                    <div className={`p-2 rounded-3xl ${device.is_trusted ? "bg-emerald-500/15" : "bg-rose-500/15"}`}>
                       <Smartphone size={16} className={device.is_trusted ? "text-emerald-300" : "text-rose-300"} />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-white truncate">{device.device_name || "Unknown Device"}</p>
-                      <p className="text-xs text-slate-300 font-mono mt-0.5 truncate">ID: {device.visitor_id?.substring(0, 20)}…</p>
+                      <p className="text-sm font-medium text-pure-white truncate">{device.device_name || "Unknown Device"}</p>
+                      <p className="text-xs text-slate-mist font-mono mt-0.5 truncate">ID: {device.visitor_id?.substring(0, 20)}…</p>
                       {device.imei && <p className="text-xs text-emerald-300 font-mono mt-0.5">IMEI: {device.imei}</p>}
                       {device.serial && <p className="text-xs text-sky-300 font-mono mt-0.5">Serial: {device.serial}</p>}
-                      <p className="text-xs text-slate-400 mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
+                      <p className="text-xs text-slate-mist mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
                       {device.device_type && (
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 text-[10px] font-medium rounded-full ring-1 ${device.device_type === 'android' ? 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30' : device.device_type === 'ios' ? 'bg-sky-500/15 text-sky-300 ring-sky-500/30' : 'bg-slate-500/15 text-slate-300 ring-slate-500/30'}`}>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 text-[10px] font-medium rounded-full ring-1 ${device.device_type === 'android' ? 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30' : device.device_type === 'ios' ? 'bg-sky-500/15 text-sky-300 ring-sky-500/30' : 'bg-slate-500/15 text-slate-mist ring-slate-500/30'}`}>
                           {device.device_type === 'android' ? '📱 Android' : device.device_type === 'ios' ? '🍎 iOS' : '🌐 Web'}
                         </span>
                       )}
@@ -1040,7 +1034,7 @@ function TabManajemenUser() {
                     <button
                       onClick={() => handleResetDevice(deviceSheetUser, device.visitor_id)}
                       disabled={resettingDeviceId === device.visitor_id}
-                      className="p-1.5 text-rose-300 hover:bg-rose-500/15 rounded-lg transition-all disabled:opacity-50"
+                      className="p-1.5 text-rose-300 hover:bg-rose-500/15 rounded-full transition-all disabled:opacity-50"
                       title="Hapus device ini"
                     >
                       {resettingDeviceId === device.visitor_id ? <RefreshCw size={13} className="animate-spin" /> : <Trash2 size={13} />}
@@ -1135,7 +1129,7 @@ function TabApprovalDevice() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-violet-400" />
+        <RefreshCw size={28} className="animate-spin text-periwinkle-glow" />
       </div>
     );
   }
@@ -1163,7 +1157,7 @@ function TabApprovalDevice() {
           <div className="p-4 rounded-2xl bg-emerald-500/15">
             <CheckCircle2 size={36} className="text-emerald-300" />
           </div>
-          <p className="text-violet-200/60 font-medium">Tidak ada request device yang menunggu approval</p>
+          <p className="text-pure-white/60 font-medium">Tidak ada request device yang menunggu approval</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -1174,38 +1168,38 @@ function TabApprovalDevice() {
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 flex-1 min-w-0">
-                  <div className="p-2.5 rounded-xl bg-amber-500/15 shrink-0">
+                  <div className="p-2.5 rounded-3xl bg-amber-500/15 shrink-0">
                     <Smartphone size={20} className="text-amber-300" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <p className="font-semibold text-white">{req.user_name}</p>
+                      <p className="font-semibold text-pure-white">{req.user_name}</p>
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/15 text-amber-300 text-xs font-medium rounded-full ring-1 ring-amber-500/30">
                         <Clock size={10} /> PENDING
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 mb-2 flex items-center gap-1">
+                    <p className="text-xs text-slate-mist mb-2 flex items-center gap-1">
                       <Mail size={11} /> {req.user_email}
                     </p>
                     <div className="space-y-1 text-xs">
-                      <p className="text-violet-200/70">
-                        <strong className="text-violet-100">Device:</strong> {req.device_name || "Unknown"}
+                      <p className="text-pure-white/70">
+                        <strong className="text-pure-white">Device:</strong> {req.device_name || "Unknown"}
                       </p>
-                      <p className="text-violet-200/70">
-                        <strong className="text-violet-100">OS:</strong> {req.device_os || "Unknown"}
+                      <p className="text-pure-white/70">
+                        <strong className="text-pure-white">OS:</strong> {req.device_os || "Unknown"}
                       </p>
-                      <p className="text-violet-200/70">
-                        <strong className="text-violet-100">Type:</strong>{' '}
+                      <p className="text-pure-white/70">
+                        <strong className="text-pure-white">Type:</strong>{' '}
                         {req.device_type === 'android' ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/15 text-emerald-300 rounded-full font-medium text-[10px]">📱 Android</span>
                         ) : req.device_type === 'ios' ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-sky-500/15 text-sky-300 rounded-full font-medium text-[10px]">🍎 iOS</span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-500/15 text-slate-300 rounded-full font-medium text-[10px]">🌐 Web</span>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-500/15 text-slate-mist rounded-full font-medium text-[10px]">🌐 Web</span>
                         )}
                       </p>
-                      <p className="text-slate-300 font-mono break-all">
-                        <strong className="text-violet-200/70">ID:</strong> {req.visitor_id?.substring(0, 30)}…
+                      <p className="text-slate-mist font-mono break-all">
+                        <strong className="text-pure-white/70">ID:</strong> {req.visitor_id?.substring(0, 30)}…
                       </p>
                       {req.imei && (
                         <p className="text-emerald-300 font-mono break-all">
@@ -1217,7 +1211,7 @@ function TabApprovalDevice() {
                           <strong className="text-sky-200/70">Serial:</strong> {req.serial}
                         </p>
                       )}
-                      <p className="text-slate-300 mt-2 flex items-center gap-1">
+                      <p className="text-slate-mist mt-2 flex items-center gap-1">
                         <ClockIcon size={11} />
                         Request: {new Date(req.created_at).toLocaleString("id-ID")}
                       </p>
@@ -1229,7 +1223,7 @@ function TabApprovalDevice() {
                   <button
                     onClick={() => handleApprove(req.id, req.user_name)}
                     disabled={processingId === req.id}
-                    className="px-3 py-2 border-gradient bg-transparent text-white rounded-lg text-xs font-medium hover:shadow-lg hover:shadow-emerald-900/30 transition-all disabled:opacity-50 flex items-center gap-1.5 justify-center"
+                    className="px-3 py-2 border-gradient bg-transparent text-pure-white rounded-full text-xs font-medium hover:shadow-lg hover:shadow-emerald-900/30 transition-all disabled:opacity-50 flex items-center gap-1.5 justify-center"
                   >
                     {processingId === req.id ? <RefreshCw size={12} className="animate-spin" /> : <CheckCircle2 size={12} />}
                     Approve
@@ -1237,7 +1231,7 @@ function TabApprovalDevice() {
                   <button
                     onClick={() => setShowRejectModal(req)}
                     disabled={processingId === req.id}
-                    className="px-3 py-2 bg-rose-500/15 text-rose-300 rounded-lg text-xs font-medium hover:bg-rose-500/25 transition-all flex items-center gap-1.5 justify-center"
+                    className="px-3 py-2 bg-rose-500/15 text-rose-300 rounded-full text-xs font-medium hover:bg-rose-500/25 transition-all flex items-center gap-1.5 justify-center"
                   >
                     <XCircle size={12} />
                     Reject
@@ -1274,15 +1268,15 @@ function RejectReasonModal({ request, onClose, onConfirm, processing }) {
   return (
     <BottomSheet open={!!request} onClose={onClose}
       title="Tolak Request Device" subtitle={request?.user_name}>
-      <p className="text-sm text-violet-200/70 mb-4">
-        Tolak request dari <strong className="text-white">{request?.user_name}</strong>?
+      <p className="text-sm text-pure-white/70 mb-4">
+        Tolak request dari <strong className="text-pure-white">{request?.user_name}</strong>?
       </p>
 
       <div className="space-y-2 mb-4">
         {reasons.map((r) => (
           <label
             key={r}
-            className="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg hover:bg-white/5 transition-all"
+            className="flex items-center gap-2 cursor-pointer p-2.5 rounded-3xl hover:bg-white/[0.03] transition-all"
           >
             <input
               type="radio"
@@ -1292,7 +1286,7 @@ function RejectReasonModal({ request, onClose, onConfirm, processing }) {
               onChange={(e) => setReason(e.target.value)}
               className="w-4 h-4 accent-rose-500"
             />
-            <span className="text-sm text-violet-100/90">{r}</span>
+            <span className="text-sm text-pure-white/90">{r}</span>
           </label>
         ))}
       </div>
@@ -1307,11 +1301,11 @@ function RejectReasonModal({ request, onClose, onConfirm, processing }) {
 
       <div className="flex gap-3">
         <button onClick={onClose}
-          className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:bg-white/5 transition-all">
+          className="flex-1 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:bg-white/[0.03] transition-all">
           Batal
         </button>
         <button onClick={() => onConfirm(reason)} disabled={processing}
-          className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-rose-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+          className="flex-1 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:shadow-lg hover:shadow-rose-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
           {processing ? <RefreshCw size={14} className="animate-spin" /> : <XCircle size={14} />}
           Tolak Request
         </button>
@@ -1362,7 +1356,7 @@ function TabAuditLog() {
     };
 
     const prefix = action?.split("_")[0];
-    return map[action] || map[prefix] || "bg-white/5 text-slate-200 ring-white/10";
+    return map[action] || map[prefix] || "bg-white/5 text-slate-mist ring-white/10";
   };
 
   const filtered = logs.filter(l =>
@@ -1374,7 +1368,7 @@ function TabAuditLog() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-violet-400" />
+        <RefreshCw size={28} className="animate-spin text-periwinkle-glow" />
       </div>
     );
   }
@@ -1398,7 +1392,7 @@ function TabAuditLog() {
       </div>
 
       <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-mist" />
         <input
           type="text"
           placeholder="Cari berdasarkan aksi, email, atau deskripsi..."
@@ -1412,32 +1406,32 @@ function TabAuditLog() {
         {filtered.length === 0 ? (
           <div className="text-center py-12 flex flex-col items-center gap-3">
             <div className="p-4 rounded-2xl bg-white/5">
-              <Activity size={32} className="text-slate-400" />
+              <Activity size={32} className="text-slate-mist" />
             </div>
-            <p className="text-violet-200/60">Belum ada aktivitas tercatat</p>
+            <p className="text-pure-white/60">Belum ada aktivitas tercatat</p>
           </div>
         ) : (
           <div className="space-y-2">
             {filtered.map(log => (
-              <div key={log.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/5 transition-all">
-                <div className="p-2 rounded-lg bg-white/5 shrink-0">
-                  <Activity size={14} className="text-slate-200" />
+              <div key={log.id} className="flex items-start gap-3 p-3 rounded-3xl hover:bg-white/[0.03] transition-all">
+                <div className="p-2 rounded-3xl bg-white/5 shrink-0">
+                  <Activity size={14} className="text-slate-mist" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ring-1 ${actionBadge(log.action)}`}>
                       {log.action}
                     </span>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-slate-mist">
                       {new Date(log.created_at).toLocaleString("id-ID", {
                         day: "numeric", month: "short", year: "numeric",
                         hour: "2-digit", minute: "2-digit"
                       })}
                     </span>
                   </div>
-                  <p className="text-sm text-violet-100/90">{log.description || "-"}</p>
+                  <p className="text-sm text-pure-white/90">{log.description || "-"}</p>
                   {log.user_email && (
-                    <p className="text-xs text-slate-400 mt-0.5">oleh: {log.user_email}</p>
+                    <p className="text-xs text-slate-mist mt-0.5">oleh: {log.user_email}</p>
                   )}
                 </div>
               </div>
@@ -1468,8 +1462,8 @@ export default function PengaturanPage() {
         <div className="p-5 rounded-3xl bg-rose-500/10 mb-4">
           <Shield size={48} className="text-rose-300" />
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">Akses Ditolak</h2>
-        <p className="text-slate-200">Halaman ini hanya untuk Super Admin.</p>
+        <h2 className="text-2xl font-bold text-pure-white mb-2">Akses Ditolak</h2>
+        <p className="text-slate-mist">Halaman ini hanya untuk Super Admin.</p>
       </div>
     );
   }
@@ -1497,8 +1491,8 @@ export default function PengaturanPage() {
   return (
     <div className="space-y-6 pb-20 animate-fade-in min-w-0">
       <div className="min-w-0">
-        <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Pengaturan Sistem</h1>
-        <p className="text-slate-200 mt-1.5 text-sm">
+        <h1 className="text-2xl md:text-3xl font-bold text-pure-white tracking-tight">Pengaturan Sistem</h1>
+        <p className="text-slate-mist mt-1.5 text-sm">
           Kelola konfigurasi aplikasi, lokasi, user, dan audit log
         </p>
       </div>
@@ -1514,11 +1508,11 @@ export default function PengaturanPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all ${
                 isActive
-                  ? "bg-violet-600/20 border-violet-500/50 text-white shadow-lg shadow-violet-900/20"
-                  : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
+                  ? "bg-violet-600/20 border-violet-500/50 text-pure-white shadow-lg"
+                  : "bg-white/5 border-white/[0.06] text-slate-mist hover:bg-white/[0.03]"
               }`}
             >
-              <Icon size={24} className={isActive ? "text-violet-400" : "text-slate-400"} />
+              <Icon size={24} className={isActive ? "text-periwinkle-glow" : "text-slate-mist"} />
               <span className="text-[11px] font-semibold text-center leading-tight">{tab.label.split(" &")[0]}</span>
             </button>
           );
