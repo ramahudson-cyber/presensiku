@@ -135,7 +135,7 @@ DECLARE
 BEGIN
   SELECT * INTO v_device
   FROM user_devices ud
-  WHERE ud.user = p_user_id
+    WHERE ud.user_id = p_user_id
     AND ud.visitor_id = p_visitor_id
     AND ud.is_active = true
   LIMIT 1;
@@ -144,7 +144,7 @@ BEGIN
 
   SELECT COUNT(*) INTO v_device_count
   FROM user_devices ud
-  WHERE ud.user = p_user_id AND ud.is_active = true;
+  WHERE ud.user_id = p_user_id AND ud.is_active = true;
 
   v_max_devices := 3;
 
@@ -216,11 +216,11 @@ BEGIN
   UPDATE device_requests SET status = 'approved' WHERE id = p_request_id;
 
   DELETE FROM user_devices ud
-  WHERE ud.user = v_request.user_id
+  WHERE ud.user_id = v_request.user_id
     AND ud.visitor_id = v_request.visitor_id;
 
   INSERT INTO user_devices (
-    "user", visitor_id, device_name, device_os, device_browser, device_type,
+    user_id, visitor_id, device_name, device_os, device_browser, device_type,
     is_trusted, is_active, last_login_at, imei, serial
   ) VALUES (
     v_request.user_id, v_request.visitor_id,
@@ -249,14 +249,14 @@ DECLARE
 BEGIN
   IF p_visitor_id IS NULL THEN
     DELETE FROM user_devices ud
-    WHERE ud.user = p_user_id;
+    WHERE ud.user_id = p_user_id;
     GET DIAGNOSTICS v_count = ROW_COUNT;
 
     DELETE FROM device_requests
     WHERE user_id = p_user_id AND status = 'pending';
   ELSE
     DELETE FROM user_devices ud
-    WHERE ud.user = p_user_id AND ud.visitor_id = p_visitor_id;
+    WHERE ud.user_id = p_user_id AND ud.visitor_id = p_visitor_id;
     GET DIAGNOSTICS v_count = ROW_COUNT;
 
     DELETE FROM device_requests
