@@ -135,7 +135,12 @@ export default function LoginPage() {
       }
 
       setLoadingText("Mengirim kode OTP...");
-      await sendOtpEmail(profile.email || email, profile.full_name || username);
+      const otpResult = await sendOtpEmail(profile.email || email, profile.full_name || username);
+      if (!otpResult.success) {
+        setError("Gagal mengirim OTP: " + (otpResult.error || "Cek koneksi internet"));
+        setLoading(false);
+        return;
+      }
       setStep("otp");
     } catch (err) {
       console.error("Login error:", err);
@@ -211,7 +216,10 @@ export default function LoginPage() {
     setError("");
     setLoadingText("Mengirim ulang OTP...");
     try {
-      await sendOtpEmail(userEmail, userName);
+      const res = await sendOtpEmail(userEmail, userName);
+      if (!res.success) {
+        setError("Gagal kirim ulang: " + (res.error || "Cek koneksi internet"));
+      }
     } catch {
       setError("Gagal kirim ulang.");
     } finally {

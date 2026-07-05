@@ -28,6 +28,7 @@ DECLARE
   v_device_count INT;
   v_max_devices INT;
   v_result JSON;
+  v_found BOOLEAN;
 BEGIN
   SELECT * INTO v_device
   FROM user_devices
@@ -36,13 +37,15 @@ BEGIN
     AND is_active = true
   LIMIT 1;
 
+  v_found := FOUND;
+
   SELECT COUNT(*) INTO v_device_count
   FROM user_devices
   WHERE user_id = p_user_id AND is_active = true;
 
   v_max_devices := 3;
 
-  IF FOUND THEN
+  IF v_found THEN
     IF v_device.is_trusted THEN
       v_result := json_build_object(
         'can_login', true,

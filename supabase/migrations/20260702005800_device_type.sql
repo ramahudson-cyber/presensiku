@@ -23,6 +23,7 @@ DECLARE
   v_device_count INT;
   v_max_devices INT;
   v_result JSON;
+  v_found BOOLEAN;
 BEGIN
   -- Cek apakah device sudah terdaftar & trusted
   SELECT * INTO v_device
@@ -32,6 +33,8 @@ BEGIN
     AND is_active = true
   LIMIT 1;
 
+  v_found := FOUND;
+
   -- Hitung total device aktif user
   SELECT COUNT(*) INTO v_device_count
   FROM user_devices
@@ -39,7 +42,7 @@ BEGIN
 
   v_max_devices := 3; -- max 3 device per user
 
-  IF FOUND THEN
+  IF v_found THEN
     -- Device sudah terdaftar
     IF v_device.is_trusted THEN
       v_result := json_build_object(

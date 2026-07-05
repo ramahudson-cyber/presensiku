@@ -207,6 +207,8 @@ export async function checkDeviceRequestStatus(userId, visitorId) {
 /**
  * Generate OTP & kirim ke email pegawai
  */
+const API_BASE = "https://siap-ampenan.vercel.app";
+
 export async function sendOtpEmail(userEmail, userName) {
   try {
     // Get current user ID
@@ -219,12 +221,13 @@ export async function sendOtpEmail(userEmail, userName) {
     });
 
     if (otpError) throw otpError;
+    if (!otp) throw new Error("Gagal generate kode OTP");
 
     // Kirim email via Vercel serverless function
     const isDev = import.meta.env.DEV;
     const apiUrl = isDev 
       ? "http://localhost:5173/api/send-otp"
-      : "/api/send-otp";
+      : API_BASE + "/api/send-otp";
 
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -244,8 +247,7 @@ export async function sendOtpEmail(userEmail, userName) {
 
     return { success: true, otp };
   } catch (err) {
-    console.error("❌ sendOtpEmail error:", err);
-    console.warn("⚠️ FALLBACK: OTP untuk development - cek di Supabase → otp_codes table");
+    console.error("sendOtpEmail error:", err);
     return { success: false, error: err.message };
   }
 }
