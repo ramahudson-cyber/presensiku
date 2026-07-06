@@ -222,7 +222,7 @@ const EmployeesPage = () => {
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center justify-center gap-2 px-4 py-3 border-gradient bg-transparent text-white rounded-full text-sm font-medium active:scale-95 transition-all w-full sm:w-auto"
+          className="flex items-center justify-center gap-2 px-4 py-3 bg-electric-violet text-pure-white rounded-full text-sm font-medium active:scale-95 transition-all w-full sm:w-auto"
         >
           <UserPlus size={16} />
           Tambah Pegawai

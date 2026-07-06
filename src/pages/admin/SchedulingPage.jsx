@@ -103,11 +103,11 @@ export default function SchedulingPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <button onClick={handleDownloadTemplate}
-              className="flex items-center gap-2 px-3.5 py-2 design-btn-ghost text-xs">
+              className="flex items-center gap-2 px-3.5 py-2 bg-electric-violet text-pure-white rounded-full text-xs">
               <Download size={14} /> Template
             </button>
             <button onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 px-3.5 py-2 design-btn-ghost text-xs">
+              className="flex items-center gap-2 px-3.5 py-2 bg-electric-violet text-pure-white rounded-full text-xs">
               <Upload size={14} /> Upload Excel
             </button>
             <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleFileUpload} className="hidden" />
