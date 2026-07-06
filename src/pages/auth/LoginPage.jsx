@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
+import { isNativePlatform } from "../../lib/devicePlatform";
 import {
   getDeviceInfo,
   checkDeviceBinding,
@@ -12,13 +13,20 @@ import {
   createDeviceRequest,
 } from "../../services/deviceService";
 import {
-  AlertCircle, Mail, Clock, RefreshCw, ArrowLeft, Loader2, Eye, EyeOff, Lock, Smartphone
+  saveCredentials, getCredentials, clearCredentials,
+  isBiometricEnabled, setBiometricEnabled, authenticateBiometric,
+} from "../../services/storageService";
+import {
+  AlertCircle, Mail, Clock, RefreshCw, ArrowLeft, Loader2, Eye, EyeOff, Smartphone, Fingerprint
 } from "lucide-react";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [useBiometric, setUseBiometric] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("");
@@ -33,7 +41,42 @@ export default function LoginPage() {
   const [userId, setUserId] = useState("");
 
   const navigate = useNavigate();
-  const { refreshUser } = useAuth();
+  const { refreshUser, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    (async () => {
+      const creds = await getCredentials();
+      if (creds?.username) {
+        setUsername(creds.username);
+        setPassword(creds.password || "");
+        setRememberMe(true);
+        const bio = await isBiometricEnabled();
+        setUseBiometric(bio);
+      }
+      setInitialized(true);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!initialized) return;
+    if (isAuthenticated) return;
+    if (step !== "login") return;
+    if (!useBiometric) return;
+    if (!isNativePlatform()) return;
+    if (!username || !password) return;
+
+    const doBioLogin = async () => {
+      try {
+        const bioResult = await authenticateBiometric();
+        if (bioResult) {
+          document.querySelector("form")?.requestSubmit();
+        }
+      } catch {
+        console.log("Biometric skipped or failed, fallback to manual login");
+      }
+    };
+    doBioLogin();
+  }, [initialized, useBiometric, step, isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const redirectByRole = (role) => {
     if (role === "pegawai") navigate("/employee", { replace: true });
@@ -68,6 +111,16 @@ export default function LoginPage() {
 
       setLoadingText("Masuk ke sistem...");
       await signIn(email, password);
+
+      if (rememberMe) {
+        await saveCredentials(username, password);
+        if (isNativePlatform()) {
+          await setBiometricEnabled(useBiometric);
+        }
+      } else {
+        await clearCredentials();
+        await setBiometricEnabled(false);
+      }
 
       setLoadingText("Memuat data pengguna...");
       const [
@@ -173,7 +226,7 @@ export default function LoginPage() {
         return;
       }
       setStep("pending");
-    } catch (err) {
+    } catch {
       setError("Terjadi kesalahan.");
     } finally {
       setLoading(false);
@@ -205,7 +258,7 @@ export default function LoginPage() {
       } else {
         setError("Masih menunggu approval admin.");
       }
-    } catch (err) {
+    } catch {
       setError("Gagal cek status.");
     } finally {
       setLoading(false);
@@ -339,6 +392,62 @@ export default function LoginPage() {
                       Lupa password?
                     </button>
                   </div>
+
+                  <div className="space-y-3 py-2">
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <div className="relative mt-0.5">
+                        <input
+                          type="checkbox"
+                          checked={rememberMe}
+                          onChange={(e) => setRememberMe(e.target.checked)}
+                          className="peer sr-only"
+                        />
+                        <div className="w-[18px] h-[18px] rounded-[6px] border border-slate-mist/40 bg-obsidian peer-checked:bg-electric-violet peer-checked:border-electric-violet transition-all duration-200" />
+                        <svg
+                          className="absolute inset-0 w-[18px] h-[18px] text-pure-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
+                          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm text-pure-white font-medium leading-tight">Ingat Saya</p>
+                        <p className="text-[10px] text-slate-mist/60 leading-relaxed mt-0.5">
+                          Username & password tersimpan untuk login cepat
+                        </p>
+                      </div>
+                    </label>
+
+                    {isNativePlatform() && rememberMe && (
+                      <label className="flex items-start gap-3 cursor-pointer group">
+                        <div className="relative mt-0.5">
+                          <input
+                            type="checkbox"
+                            checked={useBiometric}
+                            onChange={(e) => setUseBiometric(e.target.checked)}
+                            className="peer sr-only"
+                          />
+                          <div className="w-[18px] h-[18px] rounded-[6px] border border-slate-mist/40 bg-obsidian peer-checked:bg-electric-violet peer-checked:border-electric-violet transition-all duration-200" />
+                          <svg
+                            className="absolute inset-0 w-[18px] h-[18px] text-pure-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm text-pure-white font-medium leading-tight flex items-center gap-1.5">
+                            <Fingerprint size={14} className="text-periwinkle-glow" />
+                            Gunakan Sidik Jari
+                          </p>
+                          <p className="text-[10px] text-slate-mist/60 leading-relaxed mt-0.5">
+                            Login cepat dengan fingerprint di perangkat ini
+                          </p>
+                        </div>
+                      </label>
+                    )}
+                  </div>
+
                   <button
                     type="submit"
                     disabled={loading}
