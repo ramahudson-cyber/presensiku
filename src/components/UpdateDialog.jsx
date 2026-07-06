@@ -37,6 +37,12 @@ export default function UpdateDialog() {
     };
   }, [update?.forceUpdate]);
 
+  useEffect(() => {
+    return () => {
+      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+    };
+  }, []);
+
   if (!update) return null;
 
   const isForce = update.forceUpdate === true;
@@ -94,12 +100,6 @@ export default function UpdateDialog() {
       setProgress(0);
     }
   };
-
-  useEffect(() => {
-    return () => {
-      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
-    };
-  }, []);
 
   const handleRefresh = () => {
     window.location.reload();
