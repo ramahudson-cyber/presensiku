@@ -1,6 +1,10 @@
 -- FIX: Kolom di tabel otp_codes bernama "code", bukan "otp_code"
 -- Juga ada kolom "purpose" yang tidak diisi oleh RPC lama
 
+-- 0. Rename kolom otp_code → code (jika masih bernama otp_code)
+ALTER TABLE IF EXISTS otp_codes
+  RENAME COLUMN otp_code TO code;
+
 -- 1. Fix generate_otp_code
 CREATE OR REPLACE FUNCTION generate_otp_code(
   p_user_id UUID

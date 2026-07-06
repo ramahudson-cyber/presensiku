@@ -6,6 +6,10 @@
 ALTER TABLE IF EXISTS otp_codes
   ADD COLUMN IF NOT EXISTS purpose VARCHAR DEFAULT 'device_verification';
 
+-- 1b. Rename kolom otp_code → code (jika masih bernama otp_code)
+ALTER TABLE IF EXISTS otp_codes
+  RENAME COLUMN otp_code TO code;
+
 -- 2. Fix generate_otp_code — pakai kolom "code", isi "purpose"
 CREATE OR REPLACE FUNCTION generate_otp_code(
   p_user_id UUID
