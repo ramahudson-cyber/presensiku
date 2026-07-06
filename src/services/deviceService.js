@@ -339,7 +339,7 @@ export async function getUserDevices(userId) {
   const { data, error } = await supabase
     .from("user_devices")
     .select("*")
-    .eq("user", userId)
+    .eq("user_id", userId)
     .eq("is_active", true)
     .order("last_login_at", { ascending: false });
 
