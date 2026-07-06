@@ -61,23 +61,25 @@ html.dark, html.dark body, html.dark #root {
   border-radius: var(--radius-cards);
 }
 
-.design-input {
-  width: 100%;
-  padding: 0.625rem 0.75rem;
-  font-size: 0.875rem;
-  border-radius: var(--radius-inputs);
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--color-pure-white);
-  outline: none;
-  transition: all 0.2s;
-}
-.design-input::placeholder {
-  color: var(--color-slate-mist);
-}
-.design-input:focus {
-  border-color: rgba(88, 0, 253, 0.5);
-  box-shadow: 0 0 0 2px rgba(88, 0, 253, 0.25);
+@layer components {
+  .design-input {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: var(--radius-inputs);
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-pure-white);
+    outline: none;
+    transition: all 0.2s;
+  }
+  .design-input::placeholder {
+    color: var(--color-slate-mist);
+  }
+  .design-input:focus {
+    border-color: rgba(88, 0, 253, 0.5);
+    box-shadow: 0 0 0 2px rgba(88, 0, 253, 0.25);
+  }
 }
 
 .design-label {
