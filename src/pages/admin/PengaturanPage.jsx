@@ -26,7 +26,7 @@ const sectionTitle = "design-section-title";
 
 const sectionSub = "design-section-sub";
 
-const btnPrimary = "bg-electric-violet text-pure-white rounded-full hover:brightness-110 active:brightness-90 transition-all duration-200";
+const btnPrimary = "inline-flex items-center justify-center gap-2.5 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium hover:brightness-110 active:brightness-90 transition-all duration-200";
 
 const btnGhost = "design-btn-ghost p-2";
 
