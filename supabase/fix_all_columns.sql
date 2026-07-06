@@ -9,10 +9,16 @@ ALTER TABLE IF EXISTS user_devices
   ADD COLUMN IF NOT EXISTS device_type VARCHAR DEFAULT 'web';
 
 -- ============================================================
--- 2. Rename kolom otp_code → code (jika masih bernama otp_code)
+-- 2. Rename kolom otp_code → code (hanya jika masih bernama otp_code)
 -- ============================================================
-ALTER TABLE IF EXISTS otp_codes
-  RENAME COLUMN otp_code TO code;
+DO $$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'otp_codes' AND column_name = 'otp_code'
+  ) THEN
+    ALTER TABLE otp_codes RENAME COLUMN otp_code TO code;
+  END IF;
+END $$;
 
 -- ============================================================
 -- 3. Fix generate_otp_code (kolom "code" bukan "otp_code")
@@ -35,7 +41,7 @@ END;
 $$;
 
 -- ============================================================
--- 3. Fix verify_otp_code (WHERE otp_code -> code)
+-- 3b. Fix verify_otp_code (WHERE otp_code -> code)
 -- ============================================================
 CREATE OR REPLACE FUNCTION verify_otp_code(
   p_user_id UUID,
