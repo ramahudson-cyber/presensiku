@@ -1,9 +1,9 @@
 {
-  "version": "1.6.5",
-  "versionCode": 17,
-  "apkUrl": "https://github.com/ramahudson-cyber/siap-ampenan/releases/download/v1.6.5/app-release.apk",
+  "version": "1.6.6",
+  "versionCode": 18,
+  "apkUrl": "https://github.com/ramahudson-cyber/siap-ampenan/releases/download/v1.6.6/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/siap-ampenan/releases/latest/download/app-release.apk",
-  "changelog": "Perbaikan: APK update 100% work — fix deploy APK ke Vercel, tambah fallback manual install, fix auto-installer Android 14+",
+  "changelog": "Feat: Remember Me & Biometric (sidik jari) login",
   "requiresNativeUpdate": true,
-  "forceUpdate": true
+  "forceUpdate": false
 }
