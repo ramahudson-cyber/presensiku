@@ -1070,9 +1070,30 @@ function TabApprovalDevice() {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.rpc("get_pending_device_requests");
-      if (error) throw error;
-      setRequests(data || []);
+      const { data: reqData, error: reqErr } = await supabase
+        .from("device_requests")
+        .select("*")
+        .eq("status", "pending")
+        .order("created_at", { ascending: false });
+      if (reqErr) throw reqErr;
+
+      const userIds = [...new Set((reqData || []).map((r) => r.user_id))];
+      let profileMap = {};
+      if (userIds.length > 0) {
+        const { data: profData } = await supabase
+          .from("profiles")
+          .select("id, full_name, email")
+          .in("id", userIds);
+        (profData || []).forEach((p) => { profileMap[p.id] = p; });
+      }
+
+      const enriched = (reqData || []).map((r) => ({
+        ...r,
+        user_name: profileMap[r.user_id]?.full_name || "Unknown",
+        user_email: profileMap[r.user_id]?.email || "",
+      }));
+
+      setRequests(enriched);
     } catch (err) {
       console.error("❌ Fetch requests:", err);
       toast.error("Gagal memuat data request");
