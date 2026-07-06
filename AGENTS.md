@@ -83,6 +83,12 @@
 ### Next (setelah APK build)
 1. Testing APK — remember me & biometric benar-benar berfungsi
 2. Jika icon fingerprint diinginkan: ganti `ShieldCheck` dengan `ScanFace` atau custom SVG
+3. **(Rencana) WebAuthn untuk PWA** — nanti setelah APK selesai:
+   - Butuh Vercel Functions: `/api/webauthn/register` & `/api/webauthn/authenticate`
+   - Tambah tabel `webauthn_credentials` di Supabase (user_id, credential_id, public_key, counter)
+   - Integrasi login: cek WebAuthn dulu, jika ada → auto-login seperti biometric APK
+   - Biaya: gratis (memanfaatkan Vercel Functions & Supabase yang sudah ada)
+   - CATATAN: WebAuthn tidak sesederhana plugin Capacitor — butuh backend endpoint + DB + logika kriptografi.
 
 ### Notes
 - `Fingerprint` icon tidak ada di lucide-react v1.18.0
