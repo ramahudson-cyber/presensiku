@@ -1114,10 +1114,39 @@ function TabApprovalDevice() {
     setConfirmApprove(null);
     setProcessingId(requestId);
     try {
-      const { error } = await supabase.rpc("approve_device_request", {
-        p_request_id: requestId,
+      const { data: req, error: reqErr } = await supabase
+        .from("device_requests")
+        .select("*")
+        .eq("id", requestId)
+        .single();
+      if (reqErr) throw reqErr;
+
+      const { error: updErr } = await supabase
+        .from("device_requests")
+        .update({ status: "approved", updated_at: new Date().toISOString() })
+        .eq("id", requestId);
+      if (updErr) throw updErr;
+
+      await supabase
+        .from("user_devices")
+        .delete()
+        .eq("user_id", req.user_id)
+        .eq("visitor_id", req.visitor_id);
+
+      const { error: insErr } = await supabase.from("user_devices").insert({
+        user_id: req.user_id,
+        visitor_id: req.visitor_id,
+        device_name: req.device_name,
+        device_os: req.device_os,
+        device_browser: req.device_browser,
+        device_type: req.device_type,
+        imei: req.imei,
+        serial: req.serial,
+        is_trusted: true,
+        is_active: true,
+        last_login_at: new Date().toISOString(),
       });
-      if (error) throw error;
+      if (insErr) throw insErr;
 
       toast.success(`✅ Device ${userName} berhasil di-approve`);
       fetchRequests();
@@ -1131,10 +1160,10 @@ function TabApprovalDevice() {
   const handleReject = async (requestId, reason) => {
     setProcessingId(requestId);
     try {
-      const { error } = await supabase.rpc("reject_device_request", {
-        p_request_id: requestId,
-        p_reason: reason,
-      });
+      const { error } = await supabase
+        .from("device_requests")
+        .update({ status: "rejected", rejection_reason: reason, updated_at: new Date().toISOString() })
+        .eq("id", requestId);
       if (error) throw error;
 
       toast.success(`❌ Device request ditolak`);
