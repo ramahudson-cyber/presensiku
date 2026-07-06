@@ -53,103 +53,99 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div className="login-dark-bg min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-[#0f0214] via-[#1a0533] to-[#2d0a4e]">
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-900/20 via-transparent to-purple-900/20"></div>
+    <div className="min-h-screen bg-obsidian relative overflow-hidden">
+      {/* Radial glow dari atas */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle farthest-side at 0px -30%, rgb(75,57,239), rgba(6,3,17,0) 84%)'
+        }}
+      />
 
-      <div className="absolute -top-48 -left-48 w-[600px] h-[600px] opacity-25 animate-blob">
-        <svg viewBox="0 0 600 600" className="w-full h-full">
-          <defs>
-            <linearGradient id="blob1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#8b5cf6" />
-              <stop offset="100%" stopColor="#6d28d9" />
-            </linearGradient>
-          </defs>
-          <path d="M300,40C400,30 520,100 550,210C580,320 540,430 460,500C380,570 240,580 140,510C40,440 -10,290 30,180C70,70 200,50 300,40Z" fill="url(#blob1)" />
-        </svg>
-      </div>
+      {/* Subtle grid overlay */}
+      <div className="absolute inset-0 professional-grid-bg pointer-events-none" />
 
-      <div className="absolute -bottom-32 -right-32 w-[450px] h-[450px] opacity-20 animate-blob animation-delay-2000">
-        <svg viewBox="0 0 450 450" className="w-full h-full">
-          <defs>
-            <linearGradient id="blob2" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#a78bfa" />
-              <stop offset="100%" stopColor="#7c3aed" />
-            </linearGradient>
-          </defs>
-          <path d="M225,25C315,30 420,100 430,200C440,300 350,420 250,430C150,440 30,350 20,250C10,150 135,20 225,25Z" fill="url(#blob2)" />
-        </svg>
-      </div>
+      {/* Ambient sweep */}
+      <div className="absolute inset-0 professional-ambient-bg pointer-events-none" />
 
-      <div className="relative z-10 w-full max-w-[380px]">
-        <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-500/15 mb-4">
-            <Shield size={28} className="text-amber-400" />
+      {/* Content */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6">
+        <div className="w-full max-w-[420px] mx-auto">
+
+          {/* Hero — rata kiri */}
+          <div className="text-left mb-8 sm:mb-10 px-2">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 mb-4">
+              <Shield size={22} className="text-amber-400" />
+            </div>
+            <h1 className="font-urbanist text-3xl sm:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
+              Ubah Password
+            </h1>
+            <p className="text-slate-mist text-sm sm:text-base leading-relaxed mt-2 max-w-[320px] tracking-[0.72px]">
+              Ini adalah login pertama Anda. Silakan ganti password default.
+            </p>
           </div>
-          <h1 className="text-2xl font-extrabold text-pure-white">Ubah Password</h1>
-          <p className="text-sm text-slate-mist mt-2">
-            Ini adalah login pertama Anda. Silakan ganti password default.
-          </p>
-        </div>
 
-        <div className="bg-black/80 backdrop-blur-xl rounded-2xl p-7 shadow-2xl shadow-purple-950/50">
-          {error && (
-            <div className="mb-3 p-2.5 bg-red-500/10 rounded-lg flex items-center gap-2">
-              <AlertCircle size={15} className="text-red-400 shrink-0" />
-              <p className="text-xs text-red-300">{error}</p>
-            </div>
-          )}
+          {/* Card — Onyx surface */}
+          <div className="bg-onyx rounded-[24px] p-6 sm:p-10">
+            {error && (
+              <div className="mb-4 p-3 bg-electric-violet/10 rounded-[16px] flex items-start gap-2.5">
+                <AlertCircle size="15" className="text-periwinkle-glow shrink-0 mt-0.5" />
+                <p className="text-xs sm:text-sm text-periwinkle-glow/90">{error}</p>
+              </div>
+            )}
 
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="relative">
-              <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-mist" />
-              <input
-                type={showPassword ? "text" : "password"}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Password Baru"
-                required
-                minLength={6}
-                disabled={loading}
-                className="w-full pl-10 pr-10 py-3 bg-black/50 border border-violet-500/20 rounded-xl text-pure-white text-sm placeholder-slate-mist focus:outline-none focus:border-violet-500/50 transition disabled:opacity-50"
-              />
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="relative">
+                <Lock size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-mist" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Password Baru"
+                  required
+                  minLength={6}
+                  disabled={loading}
+                  className="w-full pl-11 pr-11 py-3 sm:py-3.5 bg-obsidian border border-onyx rounded-[16px] text-pure-white text-sm placeholder-slate-mist/60 focus:outline-none focus:border-electric-violet/40 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-mist hover:text-pure-white transition-colors"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+
+              <div className="relative">
+                <Lock size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-mist" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Konfirmasi Password"
+                  required
+                  minLength={6}
+                  disabled={loading}
+                  className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-obsidian border border-onyx rounded-[16px] text-pure-white text-sm placeholder-slate-mist/60 focus:outline-none focus:border-electric-violet/40 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40"
+                />
+              </div>
+
               <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-mist hover:text-pure-white"
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-
-            <div className="relative">
-              <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-mist" />
-              <input
-                type={showPassword ? "text" : "password"}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Konfirmasi Password"
-                required
-                minLength={6}
+                type="submit"
                 disabled={loading}
-                className="w-full pl-10 pr-4 py-3 bg-black/50 border border-violet-500/20 rounded-xl text-pure-white text-sm placeholder-slate-mist focus:outline-none focus:border-violet-500/50 transition disabled:opacity-50"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 border-gradient bg-transparent text-pure-white font-semibold rounded-xl text-sm shadow-lg shadow-purple-900/30 hover:shadow-purple-900/50 transition disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" />
-                  Menyimpan...
-                </>
-              ) : (
-                "Simpan Password"
-              )}
-            </button>
-          </form>
+                className="w-full py-3.5 sm:py-4 px-8 bg-electric-violet text-pure-white font-medium text-sm rounded-full hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40 flex items-center justify-center gap-2.5"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Menyimpan...
+                  </>
+                ) : (
+                  "Simpan Password"
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
