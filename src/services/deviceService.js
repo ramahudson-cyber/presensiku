@@ -304,24 +304,48 @@ export async function createDeviceRequest(deviceInfo) {
 
     if (error) throw error;
 
-    // Cek apakah user adalah admin
+    // Cek apakah user adalah super_admin → auto-approve
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
       .eq("id", user.id)
       .single();
 
-    // Kalau admin → auto-approve device request-nya sendiri
-    if (profile?.role === "super_admin" || profile?.role === "admin_puskesmas") {
-      console.log("👑 Admin login - auto-approve device");
-      const { error: approveError } = await supabase.rpc("approve_device_request", {
-        p_request_id: requestId,
-      });
-      
-      if (approveError) {
-        console.warn("⚠️ Auto-approve failed:", approveError.message);
-      } else {
-        console.log("✅ Device auto-approved (admin)");
+    if (profile?.role === "super_admin") {
+      console.log("👑 Super Admin login - auto-approve device");
+      const { data: req } = await supabase
+        .from("device_requests")
+        .select("*")
+        .eq("id", requestId)
+        .single();
+
+      if (req) {
+        await supabase
+          .from("device_requests")
+          .update({ status: "approved" })
+          .eq("id", requestId);
+
+        await supabase
+          .from("user_devices")
+          .delete()
+          .eq("user_id", req.user_id)
+          .eq("visitor_id", req.visitor_id);
+
+        await supabase.from("user_devices").insert({
+          user_id: req.user_id,
+          visitor_id: req.visitor_id,
+          device_name: req.device_name,
+          device_os: req.device_os,
+          device_browser: req.device_browser,
+          device_type: req.device_type,
+          imei: req.imei,
+          serial: req.serial,
+          is_trusted: true,
+          is_active: true,
+          last_login_at: new Date().toISOString(),
+        });
+
+        console.log("✅ Device auto-approved (super_admin)");
       }
     }
 
