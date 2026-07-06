@@ -1301,6 +1301,11 @@ function TabApprovalDevice() {
           processing={processingId === showRejectModal.id}
         />
       )}
+
+      <ConfirmSheet open={!!confirmApprove} onClose={() => setConfirmApprove(null)}
+        title="Approve Device Request"
+        message={`Approve device request dari ${confirmApprove?.userName}?`}
+        confirmText="Ya, Setujui" onConfirm={confirmApproveAction} variant="primary" />
     </div>
   );
 }
@@ -1489,11 +1494,6 @@ function TabAuditLog() {
           </div>
         )}
       </div>
-
-      <ConfirmSheet open={!!confirmApprove} onClose={() => setConfirmApprove(null)}
-        title="Approve Device Request"
-        message={`Approve device request dari ${confirmApprove?.userName}?`}
-        confirmText="Ya, Setujui" onConfirm={confirmApproveAction} variant="primary" />
     </div>
   );
 }
