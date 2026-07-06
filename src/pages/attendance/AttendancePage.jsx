@@ -430,7 +430,7 @@ export default function AttendancePage() {
             </div>
           </div>
           <button onClick={getLocation}
-            className="w-8 h-8 rounded-2xl border-gradient bg-transparent hover:bg-white/10 text-pure-white flex items-center justify-center transition active:scale-90">
+            className="w-8 h-8 rounded-2xl bg-electric-violet text-pure-white flex items-center justify-center hover:brightness-110 active:brightness-90 transition-all duration-200">
             <RefreshCw size={14} className={locationStatus === "checking" ? "animate-spin" : ""} />
           </button>
         </div>
@@ -480,7 +480,7 @@ export default function AttendancePage() {
         <button
           onClick={todayAttendance ? handleCheckOut : handleCheckIn}
           disabled={locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
-          className="w-full py-4 border-gradient bg-transparent rounded-full font-semibold transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg"
+          className="w-full py-4 bg-electric-violet text-pure-white rounded-full font-semibold hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40 flex items-center justify-center gap-2"
         >
           {saving ? (
             <><Loader2 size={20} className="animate-spin" /> Menyimpan...</>
