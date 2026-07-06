@@ -2,7 +2,7 @@
   "version": "1.6.5",
   "versionCode": 17,
   "apkUrl": "https://github.com/ramahudson-cyber/siap-ampenan/releases/download/v1.6.5/app-release.apk",
-  "apkUrlFallback": "https://siap-ampenan.vercel.app/SIAP-Puskesmas.apk",
+  "apkUrlFallback": "https://github.com/ramahudson-cyber/siap-ampenan/releases/latest/download/app-release.apk",
   "changelog": "Perbaikan: APK update 100% work — fix deploy APK ke Vercel, tambah fallback manual install, fix auto-installer Android 14+",
   "requiresNativeUpdate": true,
   "forceUpdate": true
