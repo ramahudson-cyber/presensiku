@@ -1,22 +1,37 @@
 import { Capacitor } from "@capacitor/core";
 
-export async function downloadApk({ url, version, onProgress }) {
+async function tryDownloadNative({ url, version, onProgress, plugin }) {
+  const listener = plugin.addListener("downloadProgress", (event) => {
+    onProgress?.(event.percent || 0);
+  });
+  try {
+    const result = await plugin.downloadApk({ url, version });
+    return { result, listener };
+  } catch (err) {
+    listener.remove();
+    throw err;
+  }
+}
+
+export async function downloadApk({ url, version, onProgress, fallbackUrl }) {
   if (Capacitor.isNativePlatform()) {
     try {
       const { registerPlugin } = await import("@capacitor/core");
       const plugin = registerPlugin("ApkDownloadPlugin");
 
-      const listener = plugin.addListener("downloadProgress", (event) => {
-        onProgress?.(event.percent || 0);
-      });
+      let { result, listener } = await tryDownloadNative({ url, version, onProgress, plugin });
 
-      const result = await plugin.downloadApk({ url, version });
+      if (!result?.success && fallbackUrl) {
+        const retry = await tryDownloadNative({ url: fallbackUrl, version, onProgress, plugin });
+        result = retry.result;
+        listener = retry.listener;
+      }
 
       listener.remove();
 
       if (result?.success) {
         onProgress?.(100);
-        return { success: true };
+        return { success: true, installerOpened: result?.installerOpened ?? true, apkPath: result?.apkPath };
       }
 
       if (result?.permissionRequired) {

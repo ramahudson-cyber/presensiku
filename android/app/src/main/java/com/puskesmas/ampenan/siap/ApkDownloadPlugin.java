@@ -114,25 +114,35 @@ public class ApkDownloadPlugin extends Plugin {
                     apkFile
                 );
 
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                boolean installerOpened = false;
 
+                // Intent 1: ACTION_VIEW (standar)
                 try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     getContext().startActivity(intent);
-                } catch (Exception e) {
-                    // fallback: coba ACTION_INSTALL_PACKAGE
-                    Intent fallback = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-                    fallback.setData(apkUri);
-                    fallback.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    fallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getContext().startActivity(fallback);
+                    installerOpened = true;
+                } catch (Exception ignored) {}
+
+                // Intent 2: ACTION_INSTALL_PACKAGE (fallback)
+                if (!installerOpened) {
+                    try {
+                        Intent fallback = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                        fallback.setData(apkUri);
+                        fallback.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        fallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getContext().startActivity(fallback);
+                        installerOpened = true;
+                    } catch (Exception ignored) {}
                 }
 
                 JSObject result = new JSObject();
                 result.put("success", true);
+                result.put("installerOpened", installerOpened);
+                result.put("apkPath", apkFile.getAbsolutePath());
                 call.resolve(result);
 
             } catch (Exception e) {

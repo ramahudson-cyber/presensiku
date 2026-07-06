@@ -47,3 +47,4 @@ gh-logs2
 
 # APK (terlalu besar untuk git, upload manual ke Vercel)
 public/SIAP-Puskesmas.apk
+.env*

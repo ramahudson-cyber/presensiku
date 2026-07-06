@@ -58,15 +58,31 @@ jobs:
           name: SIAP-Puskesmas-APK
           path: android/app/build/outputs/apk/release/app-release.apk
 
-      - name: Copy APK ke public untuk deploy
-        run: cp android/app/build/outputs/apk/release/app-release.apk public/SIAP-Puskesmas.apk
-
-      - name: Buat bundle.zip untuk OTA update
-        run: |
-          cd dist
-          zip -r ../public/bundle.zip . -x "models/*"
-
-      - name: Deploy ke Vercel (web + APK + bundle OTA)
+      - name: Build Vercel output locally
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: npx vercel --prod --token $VERCEL_TOKEN --yes
+        run: npx vercel build --prod --token $VERCEL_TOKEN --yes
+
+      - name: Copy APK & bundle ke output Vercel
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk .vercel/output/static/SIAP-Puskesmas.apk
+          cp public/bundle.zip .vercel/output/static/bundle.zip 2>/dev/null; true
+
+      - name: Deploy ke Vercel (prebuilt — include APK)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel deploy --prebuilt --prod --token $VERCEL_TOKEN --yes
+
+      - name: Extract version name
+        id: version
+        run: echo "name=v$(grep versionName android/app/build.gradle | head -1 | sed 's/.*"\(.*\)".*/\1/')" >> $GITHUB_OUTPUT
+
+      - name: Create/Update GitHub Release & upload APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.name }}
+          name: "SIAP Puskesmas ${{ steps.version.outputs.name }}"
+          body_path: public/release-notes.txt
+          files: android/app/build/outputs/apk/release/app-release.apk
+          make_latest: true
+          generate_release_notes: true

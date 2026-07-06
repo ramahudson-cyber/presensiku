@@ -1,8 +1,9 @@
 {
-  "version": "1.6.4",
-  "versionCode": 16,
-  "apkUrl": "https://siap-ampenan.vercel.app/SIAP-Puskesmas.apk",
-  "changelog": "Perbaikan: auto-installer APK via GitHub Releases + permission check Android 8+",
+  "version": "1.6.5",
+  "versionCode": 17,
+  "apkUrl": "https://github.com/ramahudson-cyber/siap-ampenan/releases/download/v1.6.5/app-release.apk",
+  "apkUrlFallback": "https://siap-ampenan.vercel.app/SIAP-Puskesmas.apk",
+  "changelog": "Perbaikan: APK update 100% work — fix deploy APK ke Vercel, tambah fallback manual install, fix auto-installer Android 14+",
   "requiresNativeUpdate": true,
   "forceUpdate": true
 }

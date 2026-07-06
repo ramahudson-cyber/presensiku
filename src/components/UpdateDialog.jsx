@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Capacitor } from "@capacitor/core";
 import { checkUpdate } from "../services/updateService";
 import { downloadApk } from "../services/apkDownloader";
-import { Download, RefreshCw, Settings } from "lucide-react";
+import { Download, RefreshCw, Settings, FileDown } from "lucide-react";
 
 export default function UpdateDialog() {
   const [update, setUpdate] = useState(null);
@@ -11,7 +11,9 @@ export default function UpdateDialog() {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
   const [permissionRequired, setPermissionRequired] = useState(false);
+  const [installerOpened, setInstallerOpened] = useState(true);
   const pollingRef = useRef(null);
+  const fallbackTimerRef = useRef(null);
 
   const isNative = Capacitor.isNativePlatform();
 
@@ -47,6 +49,17 @@ export default function UpdateDialog() {
         ? `Update v${update.version} tersedia`
         : `Versi v${update.version} tersedia`;
 
+  const handleManualInstall = () => {
+    const url = update.apkUrlFallback || update.apkUrl;
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `SIAP-Puskesmas-${update.version}.apk`;
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   const handleUpdate = async () => {
     setDownloading(true);
     setError(null);
@@ -54,6 +67,7 @@ export default function UpdateDialog() {
 
     const result = await downloadApk({
       url: update.apkUrl,
+      fallbackUrl: update.apkUrlFallback,
       version: update.version,
       onProgress: (pct) => setProgress(pct),
     });
@@ -61,6 +75,16 @@ export default function UpdateDialog() {
     if (result.success) {
       setProgress(100);
       setDone(true);
+      const opened = result.installerOpened !== false;
+      setInstallerOpened(opened);
+      if (!opened) {
+        setError("Installer tidak terbuka secara otomatis. Silakan buka file APK manual.");
+      }
+      fallbackTimerRef.current = setTimeout(() => {
+        if (!opened) {
+          setError("Klik 'Buka Manual' untuk menginstall APK.");
+        }
+      }, 5000);
     } else {
       if (result.permissionRequired) {
         setPermissionRequired(true);
@@ -70,6 +94,12 @@ export default function UpdateDialog() {
       setProgress(0);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+    };
+  }, []);
 
   const handleRefresh = () => {
     window.location.reload();
@@ -180,6 +210,12 @@ export default function UpdateDialog() {
                   <Settings size={13} /> Buka Pengaturan
                 </button>
               )}
+              {done && !installerOpened && (
+                <button onClick={handleManualInstall}
+                  className="w-full py-2 rounded-full text-[11px] font-semibold flex items-center justify-center gap-1.5 bg-electric-violet text-pure-white hover:brightness-110 active:scale-[0.98]">
+                  <FileDown size={13} /> Buka Manual APK
+                </button>
+              )}
             </div>
           )}
 
@@ -193,10 +229,16 @@ export default function UpdateDialog() {
                   />
                 </div>
                 <p className="text-[10px] text-slate-mist text-center">{progress}%</p>
-                {done && (
+                {done && installerOpened && (
                   <p className="text-[11px] text-emerald-300 text-center animate-pulse">
                     Update siap diinstal. Membuka installer...
                   </p>
+                )}
+                {done && !installerOpened && (
+                  <button onClick={handleManualInstall}
+                    className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-purple-600 text-pure-white hover:shadow-lg active:scale-[0.98]">
+                    <FileDown size={16} /> Buka Manual
+                  </button>
                 )}
               </div>
             )}
@@ -206,7 +248,7 @@ export default function UpdateDialog() {
                 <Download size={16} /> Update v{update.version}
               </button>
             )}
-            {!downloading && error && (
+            {!downloading && error && !done && (
               <button onClick={handleUpdate}
                 className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-purple-600 text-pure-white hover:shadow-lg active:scale-[0.98]">
                 <Download size={16} /> Coba Lagi

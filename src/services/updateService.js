@@ -1,6 +1,6 @@
 const VERSION_URL = "https://siap-ampenan.vercel.app/version.json";
-const CURRENT_VERSION = "1.6.4";
-const CURRENT_VERSION_CODE = 16;
+const CURRENT_VERSION = "1.6.5";
+const CURRENT_VERSION_CODE = 17;
 
 export async function checkUpdate() {
   try {
@@ -13,6 +13,7 @@ export async function checkUpdate() {
       version: data.version,
       versionCode: data.versionCode,
       apkUrl: data.apkUrl,
+      apkUrlFallback: data.apkUrlFallback,
       bundleUrl: data.bundleUrl,
       changelog: data.changelog,
       requiresNativeUpdate: data.requiresNativeUpdate ?? true,

@@ -1,0 +1,6 @@
+Perbaikan APK update: deploy Vercel fix, fallback manual install, auto-installer Android 14+
+- Fix: APK sekarang terdeploy ke Vercel + GitHub Releases
+- Fix: Update dialog punya tombol "Buka Manual" sebagai fallback
+- Fix: Auto-installer lebih robust di Android 14+
+- Fix: OTP email via Brevo SMTP
+- Fix: Database column name mismatch di otp_codes
