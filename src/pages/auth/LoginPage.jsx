@@ -17,7 +17,7 @@ import {
   isBiometricEnabled, setBiometricEnabled, authenticateBiometric,
 } from "../../services/storageService";
 import {
-  AlertCircle, Mail, Clock, RefreshCw, ArrowLeft, Loader2, Eye, EyeOff, Smartphone, Fingerprint
+  AlertCircle, Mail, Clock, RefreshCw, ArrowLeft, Loader2, Eye, EyeOff, Smartphone, ShieldCheck
 } from "lucide-react";
 
 export default function LoginPage() {
@@ -437,7 +437,7 @@ export default function LoginPage() {
                         </div>
                         <div>
                           <p className="text-sm text-pure-white font-medium leading-tight flex items-center gap-1.5">
-                            <Fingerprint size={14} className="text-periwinkle-glow" />
+                            <ShieldCheck size={14} className="text-periwinkle-glow" />
                             Gunakan Sidik Jari
                           </p>
                           <p className="text-[10px] text-slate-mist/60 leading-relaxed mt-0.5">
