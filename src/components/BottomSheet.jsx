@@ -33,7 +33,7 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
                   {subtitle && <p className="text-[10px] text-slate-mist mt-0.5">{subtitle}</p>}
                 </div>
                 <button onClick={onClose}
-                  className="border-gradient bg-transparent text-white w-8 h-8 flex items-center justify-center transition-all active:scale-90 shrink-0 ml-3">
+                  className="bg-white/10 hover:bg-white/[0.07] text-white w-8 h-8 flex items-center justify-center rounded-xl transition-all active:scale-90 shrink-0 ml-3">
                   <X size={16} />
                 </button>
               </div>

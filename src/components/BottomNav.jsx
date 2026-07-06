@@ -92,10 +92,10 @@ export default function BottomNav() {
             const Icon = item.icon;
             return (
               <NavLink key={item.path} to={item.path} onClick={() => setMoreOpen(false)}
-                   className={({ isActive }) =>
+                     className={({ isActive }) =>
                   `flex flex-col items-center gap-2 p-4 rounded-3xl transition-all ${isActive
-                    ? "border-gradient bg-transparent text-pure-white"
-                    : "bg-white/5 hover:bg-white/10"}`
+                    ? "bg-white/10 text-pure-white"
+                    : "bg-white/5 hover:bg-white/[0.07]"}`
                 }>
                 <Icon size={24} />
                 <span className="text-[10px] font-medium text-center leading-tight">{item.label}</span>
