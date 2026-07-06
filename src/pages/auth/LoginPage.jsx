@@ -261,14 +261,27 @@ export default function LoginPage() {
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-[420px] mx-auto">
 
-          {/* Hero */}
-          <div className="text-center mb-10 sm:mb-12 px-2">
-            <h1 className="font-urbanist text-3xl sm:text-[32px] font-medium tracking-[1.22px] text-pure-white leading-tight">
-              Selamat Datang<br />di SIAP
+          {/* Hero — rata kiri */}
+          <div className="text-left mb-10 sm:mb-12 px-2">
+            <h1 className="font-urbanist text-5xl sm:text-6xl font-bold tracking-[1.22px] text-pure-white leading-none">
+              SIAP
             </h1>
-            <p className="text-slate-mist text-sm sm:text-base leading-relaxed mt-4 sm:mt-5 max-w-[300px] mx-auto tracking-[0.72px]">
+            <p className="text-slate-mist text-sm sm:text-base leading-relaxed mt-2 max-w-[320px] tracking-[0.72px]">
               Sistem Informasi Administrasi dan Presensi Puskesmas Ampenan
             </p>
+            <div className="flex items-center gap-3 mt-5 flex-wrap">
+              <span className="text-periwinkle-glow text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
+                Disiplin
+              </span>
+              <span className="text-slate-mist/20 text-xs">—</span>
+              <span className="text-periwinkle-glow text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
+                Akurat
+              </span>
+              <span className="text-slate-mist/20 text-xs">—</span>
+              <span className="text-periwinkle-glow text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
+                Optimal
+              </span>
+            </div>
           </div>
 
           {/* Card — Onyx surface */}
