@@ -26,7 +26,7 @@ const sectionTitle = "design-section-title";
 
 const sectionSub = "design-section-sub";
 
-const btnPrimary = "bg-electric-violet text-pure-white rounded-full";
+const btnPrimary = "bg-electric-violet text-pure-white rounded-full hover:brightness-110 active:brightness-90 transition-all duration-200";
 
 const btnGhost = "design-btn-ghost p-2";
 
@@ -565,7 +565,7 @@ function TabJamKerja() {
         </div>
         <button
           onClick={handleSave} disabled={saving}
-          className="flex items-center gap-2 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium hover:shadow-lg hover:shadow-electric-violet/30 hover:scale-105 transition-all disabled:opacity-50"
+          className="flex items-center gap-2.5 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40"
         >
           {saving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
           Simpan Semua
@@ -619,7 +619,7 @@ function TabJamKerja() {
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-onyx/90 backdrop-blur-md border-t border-white/[0.06]">
         <button
           onClick={handleSave} disabled={saving}
-          className="w-full flex items-center justify-center gap-2 py-3 bg-electric-violet text-pure-white rounded-full text-sm font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2.5 py-3 bg-electric-violet text-pure-white rounded-full text-sm font-semibold hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40"
         >
           {saving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
           Simpan Semua Perubahan

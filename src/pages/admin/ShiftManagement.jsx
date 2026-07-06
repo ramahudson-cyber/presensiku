@@ -92,14 +92,14 @@ export default function TabShift() {
           <p className="text-sm text-slate-mist mt-0.5">Atur jam kerja setiap shift per hari</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={fetchData} className="bg-electric-violet text-pure-white p-2 rounded-full transition-all">
+          <button onClick={fetchData} className="bg-electric-violet text-pure-white p-2 rounded-full hover:brightness-110 active:brightness-90 transition-all duration-200">
             <RefreshCw size={16} />
           </button>
           <button onClick={saveAll} disabled={saving || !dirty}
-            className={`flex items-center gap-2 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium transition-all active:scale-95
+            className={`flex items-center gap-2.5 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium transition-all duration-200
               ${dirty
-                ? "hover:shadow-lg"
-                : "opacity-50 cursor-not-allowed"}`}>
+                ? "hover:brightness-110 active:brightness-90"
+                : "opacity-40 cursor-not-allowed"}`}>
             <Save size={15} /> {saving ? "Menyimpan..." : dirty ? "Simpan Perubahan" : "Tersimpan"}
           </button>
         </div>

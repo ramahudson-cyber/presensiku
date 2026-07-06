@@ -166,7 +166,7 @@ export default function DashboardPage() {
       <div className="flex justify-end">
         <button
           onClick={fetchDashboardData}
-          className="flex items-center gap-1.5 px-3 py-2 bg-electric-violet text-pure-white rounded-full text-xs"
+          className="flex items-center gap-1.5 px-3 py-2 bg-electric-violet text-pure-white rounded-full text-xs hover:brightness-110 active:brightness-90 transition-all duration-200"
         >
           <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
           Refresh

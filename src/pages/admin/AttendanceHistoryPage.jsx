@@ -224,7 +224,7 @@ export default function AttendanceHistoryPage() {
         </div>
         <button
           onClick={exportCSV}
-          className="flex items-center gap-2 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium shrink-0"
+          className="flex items-center gap-2.5 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium hover:brightness-110 active:brightness-90 transition-all duration-200 shrink-0"
         >
           <Download size={15} />
           <span className="hidden sm:inline">Export CSV</span>
@@ -292,7 +292,7 @@ export default function AttendanceHistoryPage() {
             {/* Refresh */}
             <button
               onClick={() => fetchRecords(true)}
-              className="bg-electric-violet text-pure-white p-2 rounded-full shrink-0"
+              className="bg-electric-violet text-pure-white p-2 rounded-full hover:brightness-110 active:brightness-90 transition-all duration-200 shrink-0"
               aria-label="Refresh"
             >
               <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
