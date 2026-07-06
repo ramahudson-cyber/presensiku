@@ -1123,7 +1123,7 @@ function TabApprovalDevice() {
 
       const { error: updErr } = await supabase
         .from("device_requests")
-        .update({ status: "approved", updated_at: new Date().toISOString() })
+        .update({ status: "approved" })
         .eq("id", requestId);
       if (updErr) throw updErr;
 
@@ -1162,7 +1162,7 @@ function TabApprovalDevice() {
     try {
       const { error } = await supabase
         .from("device_requests")
-        .update({ status: "rejected", rejection_reason: reason, updated_at: new Date().toISOString() })
+        .update({ status: "rejected", rejection_reason: reason })
         .eq("id", requestId);
       if (error) throw error;
 
