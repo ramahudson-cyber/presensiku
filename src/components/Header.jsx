@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { signOut } from "../services/authService";
 import { useState, useEffect } from "react";
+import ThemeToggle from "./ThemeToggle";
 
 const TITLES = {
   "/admin": "Dashboard",
@@ -68,6 +69,7 @@ function Header() {
             <Bell size={18} />
             <span className="absolute top-2 right-2 md:top-2.5 md:right-2.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white dark:ring-obsidian"></span>
           </button>
+          <ThemeToggle />
           <button
             onClick={handleLogout}
             className="p-2.5 md:p-3 rounded-2xl text-slate-500 dark:text-slate-mist hover:bg-slate-100 dark:hover:bg-white/[0.06] dark:hover:text-rose-400 hover:text-rose-500 transition-colors"
