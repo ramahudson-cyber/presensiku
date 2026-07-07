@@ -3,7 +3,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Crosshair, Check, Search, Loader2, AlertTriangle } from "lucide-react";
 
-export default function LocationPicker({ visible, onCancel, onConfirm, initialLat = -8.5697, initialLng = 116.0821 }) {
+export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.5697, initialLng = 116.0821 }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
@@ -18,12 +18,8 @@ export default function LocationPicker({ visible, onCancel, onConfirm, initialLa
   const [manualLng, setManualLng] = useState(initialLng.toString());
 
   useEffect(() => {
-    if (!visible || !mapRef.current) return;
+    if (!mapRef.current) return;
 
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.remove();
-      mapInstanceRef.current = null;
-    }
     setMapError(false);
 
     const timer = setTimeout(() => {
@@ -75,7 +71,7 @@ export default function LocationPicker({ visible, onCancel, onConfirm, initialLa
         markerRef.current = null;
       }
     };
-  }, [visible]);
+  }, []);
 
   useEffect(() => {
     setManualLat(lat.toString());
@@ -153,8 +149,6 @@ export default function LocationPicker({ visible, onCancel, onConfirm, initialLa
     onConfirm(lat, lng);
     onCancel();
   };
-
-  if (!visible) return null;
 
   return (
     <div className="border-t border-white/10 pt-4 mt-4 space-y-4">

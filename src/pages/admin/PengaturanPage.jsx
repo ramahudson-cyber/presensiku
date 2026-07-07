@@ -71,7 +71,7 @@ function TabProfilPuskesmas() {
   });
 
   const [confirmDeleteLoc, setConfirmDeleteLoc] = useState(null);
-  const [showPicker, setShowPicker] = useState(false);
+  const [formView, setFormView] = useState("form");
 
   const fetchLocations = async () => {
     setLoading(true);
@@ -105,7 +105,7 @@ function TabProfilPuskesmas() {
     });
     setEditingId(null);
     setShowForm(false);
-    setShowPicker(false);
+    setFormView("form");
   };
 
   const handleEdit = (loc) => {
@@ -272,117 +272,120 @@ function TabProfilPuskesmas() {
       </div>
 
       <BottomSheet open={showForm} onClose={resetForm}
-        title={editingId ? "Edit Lokasi" : "Tambah Lokasi Baru"}>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className={labelBase}>
-              <MapPin size={11} className="inline mr-1" />
-              Nama Lokasi *
-            </label>
-            <input
-              type="text" required
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Contoh: Puskesmas Ampenan"
-              className={inputBase}
-            />
-          </div>
+        title={editingId ? "Edit Lokasi" : formView === "map" ? "Pilih Lokasi di Peta" : "Tambah Lokasi Baru"}>
 
-          <div>
-            <label className={labelBase}>
-              <MapPinned size={11} className="inline mr-1" />
-              Alamat
-            </label>
-            <input
-              type="text"
-              value={formData.address}
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              placeholder="Jl. ..."
-              className={inputBase}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className={labelBase}>Latitude *</label>
-              <input
-                type="number" step="any" required
-                value={formData.latitude}
-                onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
-                placeholder="-8.5697"
-                className={`${inputBase} font-mono`}
-              />
-            </div>
-            <div>
-              <label className={labelBase}>Longitude *</label>
-              <input
-                type="number" step="any" required
-                value={formData.longitude}
-                onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
-                placeholder="116.0821"
-                className={`${inputBase} font-mono`}
-              />
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setShowPicker(true)}
-            className="w-full py-2.5 border border-white/10 text-slate-mist rounded-full text-sm hover:text-pure-white hover:border-white/20 transition-all flex items-center justify-center gap-2"
-          >
-            <MapPin size={14} /> Pilih dari Peta
-          </button>
-
-          <div>
-            <label className={labelBase}>
-              <MapPin size={11} className="inline mr-1" />
-              Radius Absensi (meter) *
-            </label>
-            <input
-              type="number" required min="10" max="2000"
-              value={formData.radius_meter}
-              onChange={(e) => setFormData({ ...formData, radius_meter: e.target.value })}
-              className={inputBase}
-            />
-          </div>
-
-          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-3xl bg-white/5 border border-white/[0.06] hover:bg-white/[0.03] transition-all">
-            <input
-              type="checkbox"
-              checked={formData.is_active}
-              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-              className="w-4 h-4 rounded accent-violet-500"
-            />
-            <span className="text-sm text-pure-white/90">
-              Jadikan lokasi aktif (untuk absensi)
-            </span>
-          </label>
-
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button" onClick={resetForm}
-              className="flex-1 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:bg-white/[0.03] transition-all"
-            >
-              Batal
-            </button>
-            <button
-              type="submit" disabled={saving}
-              className="flex-1 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {saving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
-              {editingId ? "Update" : "Simpan"}
-            </button>
-          </div>
-        </form>
-
-        {showPicker && (
+        {formView === "map" ? (
           <LocationPicker
-            visible
-            onCancel={() => setShowPicker(false)}
+            onCancel={() => setFormView("form")}
             initialLat={parseFloat(formData.latitude) || -8.5697}
             initialLng={parseFloat(formData.longitude) || 116.0821}
-            onConfirm={(lat, lng) => setFormData(prev => ({ ...prev, latitude: String(lat), longitude: String(lng) }))}
+            onConfirm={(lat, lng) => {
+              setFormData(prev => ({ ...prev, latitude: String(lat), longitude: String(lng) }));
+              setFormView("form");
+            }}
           />
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className={labelBase}>
+                <MapPin size={11} className="inline mr-1" />
+                Nama Lokasi *
+              </label>
+              <input
+                type="text" required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Contoh: Puskesmas Ampenan"
+                className={inputBase}
+              />
+            </div>
+
+            <div>
+              <label className={labelBase}>
+                <MapPinned size={11} className="inline mr-1" />
+                Alamat
+              </label>
+              <input
+                type="text"
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                placeholder="Jl. ..."
+                className={inputBase}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className={labelBase}>Latitude *</label>
+                <input
+                  type="number" step="any" required
+                  value={formData.latitude}
+                  onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                  placeholder="-8.5697"
+                  className={`${inputBase} font-mono`}
+                />
+              </div>
+              <div>
+                <label className={labelBase}>Longitude *</label>
+                <input
+                  type="number" step="any" required
+                  value={formData.longitude}
+                  onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                  placeholder="116.0821"
+                  className={`${inputBase} font-mono`}
+                />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setFormView("map")}
+              className="w-full py-2.5 border border-white/10 text-slate-mist rounded-full text-sm hover:text-pure-white hover:border-white/20 transition-all flex items-center justify-center gap-2"
+            >
+              <MapPin size={14} /> Pilih dari Peta
+            </button>
+
+            <div>
+              <label className={labelBase}>
+                <MapPin size={11} className="inline mr-1" />
+                Radius Absensi (meter) *
+              </label>
+              <input
+                type="number" required min="10" max="2000"
+                value={formData.radius_meter}
+                onChange={(e) => setFormData({ ...formData, radius_meter: e.target.value })}
+                className={inputBase}
+              />
+            </div>
+
+            <label className="flex items-center gap-3 cursor-pointer p-3 rounded-3xl bg-white/5 border border-white/[0.06] hover:bg-white/[0.03] transition-all">
+              <input
+                type="checkbox"
+                checked={formData.is_active}
+                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                className="w-4 h-4 rounded accent-violet-500"
+              />
+              <span className="text-sm text-pure-white/90">
+                Jadikan lokasi aktif (untuk absensi)
+              </span>
+            </label>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button" onClick={resetForm}
+                className="flex-1 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:bg-white/[0.03] transition-all"
+              >
+                Batal
+              </button>
+              <button
+                type="submit" disabled={saving}
+                className="flex-1 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {saving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
+                {editingId ? "Update" : "Simpan"}
+              </button>
+            </div>
+          </form>
         )}
       </BottomSheet>
 
