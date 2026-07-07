@@ -7,19 +7,9 @@ import {
 } from "lucide-react";
 import LocationMap from "../../components/LocationMap";
 import { getCurrentPosition } from "../../services/geoService";
-
-const PUSKESMAS_LOCATION = { latitude: -8.5699, longitude: 116.0770 };
-const RADIUS_METER = 999999;
+import { getPuskesmasLocation, calculateDistance } from "../../services/attendanceService";
 
 const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
-
-function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371000;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
 
 function getDeviceInfoLite() {
   const ua = navigator.userAgent;
@@ -66,6 +56,7 @@ export default function AttendancePage() {
   const [isFakeGPS, setIsFakeGPS] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
+  const [puskesmasLocation, setPuskesmasLocation] = useState({ latitude: -8.5697, longitude: 116.0821, radius_meter: 200 });
 
   const syncServerTime = async () => {
     try {
@@ -96,6 +87,9 @@ export default function AttendancePage() {
     fetchTodayAttendance();
     fetchTodaySchedule();
     getDeviceVisitorId();
+    getPuskesmasLocation().then(loc => {
+      if (loc) setPuskesmasLocation(loc);
+    });
     return () => clearInterval(t);
   }, []);
 
@@ -158,9 +152,9 @@ export default function AttendancePage() {
       setCurrentCoords(loc);
       const isFake = (loc.accuracy < 3) && (loc.altitude === null || loc.altitude === 0);
       if (isFake) { setIsFakeGPS(true); setLocationStatus("invalid"); return; }
-      const dist = calculateDistance(loc.latitude, loc.longitude, PUSKESMAS_LOCATION.latitude, PUSKESMAS_LOCATION.longitude);
+      const dist = calculateDistance(loc.latitude, loc.longitude, puskesmasLocation.latitude, puskesmasLocation.longitude);
       setDistance(Math.round(dist));
-      setLocationStatus(dist <= RADIUS_METER ? "valid" : "invalid");
+      setLocationStatus(dist <= (puskesmasLocation.radius_meter || 200) ? "valid" : "invalid");
     } catch {
       setLocationStatus("error");
     }
@@ -439,7 +433,7 @@ export default function AttendancePage() {
           <div className="px-4 pb-4">
             <LocationMap
               userLocation={{ latitude: currentCoords.latitude, longitude: currentCoords.longitude }}
-              puskesmasLocation={PUSKESMAS_LOCATION}
+              puskesmasLocation={{ latitude: puskesmasLocation.latitude, longitude: puskesmasLocation.longitude }}
               distance={distance}
               status={locationStatus}
             />

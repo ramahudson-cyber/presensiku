@@ -12,6 +12,7 @@ import {
 import TabShift from "./ShiftManagement";
 import BottomSheet from "../../components/BottomSheet";
 import ConfirmSheet from "../../components/ConfirmSheet";
+import LocationPicker from "../../components/LocationPicker";
 
 /* ──────────────────────────────────────────────────────────────────────────
    SHARED THEME TOKENS
@@ -70,6 +71,7 @@ function TabProfilPuskesmas() {
   });
 
   const [confirmDeleteLoc, setConfirmDeleteLoc] = useState(null);
+  const [showPicker, setShowPicker] = useState(false);
 
   const fetchLocations = async () => {
     setLoading(true);
@@ -268,6 +270,14 @@ function TabProfilPuskesmas() {
         </button>
       </div>
 
+      <LocationPicker
+        open={showPicker}
+        onClose={() => setShowPicker(false)}
+        initialLat={parseFloat(formData.latitude) || -8.5697}
+        initialLng={parseFloat(formData.longitude) || 116.0821}
+        onConfirm={(lat, lng) => setFormData(prev => ({ ...prev, latitude: String(lat), longitude: String(lng) }))}
+      />
+
       <BottomSheet open={showForm} onClose={resetForm}
         title={editingId ? "Edit Lokasi" : "Tambah Lokasi Baru"}>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -321,6 +331,14 @@ function TabProfilPuskesmas() {
               />
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setShowPicker(true)}
+            className="w-full py-2.5 border border-white/10 text-slate-mist rounded-full text-sm hover:text-pure-white hover:border-white/20 transition-all flex items-center justify-center gap-2"
+          >
+            <MapPin size={14} /> Pilih dari Peta
+          </button>
 
           <div>
             <label className={labelBase}>
