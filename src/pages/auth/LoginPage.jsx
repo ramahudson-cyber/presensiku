@@ -97,11 +97,11 @@ export default function LoginPage() {
     return data.email;
   };
 
-  function withTimeout(promise, ms) {
+  function withTimeout(promise, ms, label) {
     return Promise.race([
       promise,
       new Promise((_, reject) =>
-        setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms)
+        setTimeout(() => reject(new Error(label ? `Timeout ${label} after ${ms}ms` : `Timeout after ${ms}ms`)), ms)
       ),
     ]);
   }
@@ -144,8 +144,8 @@ export default function LoginPage() {
         { data: { user: authUser } },
         { data: profile }
       ] = await Promise.all([
-        supabase.auth.getUser(),
-        supabase.from("profiles").select("*").eq("id", (await supabase.auth.getUser()).data.user.id).single()
+        withTimeout(supabase.auth.getUser(), 15000, "getUser"),
+        withTimeout(supabase.from("profiles").select("*").eq("id", (await supabase.auth.getUser()).data.user.id).single(), 15000, "getProfile")
       ]);
       console.log("[Login] 4/9 OK — user:", authUser?.id, "profile:", profile?.role);
 
@@ -159,7 +159,7 @@ export default function LoginPage() {
 
       console.log("[Login] 5/9 Memeriksa perangkat...");
       setLoadingText("Memeriksa perangkat...");
-      const deviceCheck = await checkDeviceBinding(authUser.id, deviceInfoResult);
+      const deviceCheck = await withTimeout(checkDeviceBinding(authUser.id, deviceInfoResult), 15000, "checkDeviceBinding");
       console.log("[Login] 5/9 OK — canLogin:", deviceCheck.canLogin, "requiresOtp:", deviceCheck.requiresOtp);
 
       const isDeviceError = deviceCheck.message && deviceCheck.message.startsWith("Gagal cek device");
@@ -178,7 +178,7 @@ export default function LoginPage() {
         }
         console.log("[Login] 6/9 Memuat dashboard...");
         setLoadingText("Memuat dashboard...");
-        await refreshUser();
+        await withTimeout(refreshUser(), 15000, "refreshUser");
         if (profile.role !== "super_admin" && profile.password_changed === false) {
           navigate("/ubah-password", { replace: true });
           return;
@@ -189,7 +189,7 @@ export default function LoginPage() {
 
       console.log("[Login] 6/9 Cek status persetujuan...");
       setLoadingText("Cek status persetujuan...");
-      const reqStatus = await checkDeviceRequestStatus(authUser.id, deviceInfoResult.visitorId);
+      const reqStatus = await withTimeout(checkDeviceRequestStatus(authUser.id, deviceInfoResult.visitorId), 15000, "checkDeviceRequestStatus");
       console.log("[Login] 6/9 OK — hasRequest:", reqStatus.hasRequest, "status:", reqStatus.status);
 
       if (reqStatus.hasRequest) {
@@ -199,7 +199,7 @@ export default function LoginPage() {
           return;
         }
         if (reqStatus.status === "approved") {
-          await refreshUser();
+          await withTimeout(refreshUser(), 15000, "refreshUser");
           redirectByRole(profile.role);
           return;
         }
@@ -213,7 +213,7 @@ export default function LoginPage() {
 
       console.log("[Login] 7/9 Mengirim OTP...");
       setLoadingText("Mengirim kode OTP...");
-      const otpResult = await sendOtpEmail(profile.email || email, profile.full_name || username);
+      const otpResult = await withTimeout(sendOtpEmail(profile.email || email, profile.full_name || username), 20000, "sendOtpEmail");
       console.log("[Login] 7/9 OK — otpSent:", otpResult.success);
       if (!otpResult.success) {
         setError("Gagal mengirim OTP: " + (otpResult.error || "Cek koneksi internet"));
@@ -225,14 +225,8 @@ export default function LoginPage() {
     })(), 90000);
     } catch (err) {
       console.error("[Login] ERROR:", err);
-      const isTimeout = err.message?.includes("Timeout");
-      const isDeviceTimeout = isTimeout && err.message?.includes("getDeviceInfo");
-      const msg = isDeviceTimeout
-        ? "Gagal mendeteksi perangkat — coba restart aplikasi atau nonaktifkan IMEI permission"
-        : isTimeout
-          ? "Login timeout — periksa koneksi internet"
-          : "Username/email atau password salah.";
-      setError(msg);
+      setDeviceDebug(`[${err.name}] ${err.message}`);
+      setError(`[${err.name}] ${err.message}`);
     } finally {
       setLoading(false);
       setLoadingText("");
