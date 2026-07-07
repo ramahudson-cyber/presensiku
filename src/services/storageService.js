@@ -1,5 +1,3 @@
-import { Capacitor } from "@capacitor/core";
-
 const KEYS = {
   CREDENTIALS: "siap_saved_credentials",
   BIOMETRIC_ENABLED: "siap_biometric_enabled",
@@ -14,47 +12,14 @@ function withTimeout(promise, ms, label) {
   ]);
 }
 
-async function getPreferences() {
-  if (!Capacitor.isNativePlatform()) return null;
-  try {
-    const mod = await withTimeout(import("@capacitor/preferences"), 8000, "import Preferences");
-    return mod.Preferences;
-  } catch {
-    return null;
-  }
-}
-
-async function getBiometricAuth() {
-  if (!Capacitor.isNativePlatform()) return null;
-  try {
-    const mod = await withTimeout(import("@aparajita/capacitor-biometric-auth"), 8000, "import BiometricAuth");
-    return mod.BiometricAuth;
-  } catch {
-    return null;
-  }
-}
-
 export async function saveCredentials(username, password) {
   const data = { username, password, savedAt: new Date().toISOString() };
-  const json = JSON.stringify(data);
-  const prefs = await getPreferences();
-  if (prefs) {
-    await withTimeout(prefs.set({ key: KEYS.CREDENTIALS, value: json }), 10000);
-  } else {
-    localStorage.setItem(KEYS.CREDENTIALS, json);
-  }
+  localStorage.setItem(KEYS.CREDENTIALS, JSON.stringify(data));
 }
 
 export async function getCredentials() {
   try {
-    const prefs = await getPreferences();
-    let raw;
-    if (prefs) {
-      const result = await prefs.get({ key: KEYS.CREDENTIALS });
-      raw = result.value;
-    } else {
-      raw = localStorage.getItem(KEYS.CREDENTIALS);
-    }
+    const raw = localStorage.getItem(KEYS.CREDENTIALS);
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -62,33 +27,15 @@ export async function getCredentials() {
 }
 
 export async function clearCredentials() {
-  const prefs = await getPreferences();
-  if (prefs) {
-    await withTimeout(prefs.remove({ key: KEYS.CREDENTIALS }), 10000);
-  }
   localStorage.removeItem(KEYS.CREDENTIALS);
 }
 
 export async function isBiometricEnabled() {
-  try {
-    const prefs = await getPreferences();
-    if (prefs) {
-      const result = await withTimeout(prefs.get({ key: KEYS.BIOMETRIC_ENABLED }), 10000);
-      return result.value === "true";
-    }
-    return localStorage.getItem(KEYS.BIOMETRIC_ENABLED) === "true";
-  } catch {
-    return false;
-  }
+  return localStorage.getItem(KEYS.BIOMETRIC_ENABLED) === "true";
 }
 
 export async function setBiometricEnabled(enabled) {
-  const val = String(enabled);
-  const prefs = await getPreferences();
-  if (prefs) {
-    await withTimeout(prefs.set({ key: KEYS.BIOMETRIC_ENABLED, value: val }), 10000);
-  }
-  localStorage.setItem(KEYS.BIOMETRIC_ENABLED, val);
+  localStorage.setItem(KEYS.BIOMETRIC_ENABLED, String(enabled));
 }
 
 export async function hasSavedAccount() {
@@ -97,13 +44,14 @@ export async function hasSavedAccount() {
 }
 
 export async function authenticateBiometric() {
-  const BiometricAuth = await getBiometricAuth();
-  if (!BiometricAuth) return true;
   try {
-    const result = await BiometricAuth.authenticate({
+    const { Capacitor } = await import("@capacitor/core");
+    if (!Capacitor.isNativePlatform()) return true;
+    const { BiometricAuth } = await import("@aparajita/capacitor-biometric-auth");
+    const result = await withTimeout(BiometricAuth.authenticate({
       reason: "Login ke SIAP Puskesmas",
       cancelTitle: "Batal",
-    });
+    }), 10000, "BiometricAuth.authenticate");
     return result.authenticated === true;
   } catch {
     return false;
