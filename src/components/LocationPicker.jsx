@@ -1,19 +1,25 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Crosshair, Check, Search, Loader2 } from "lucide-react";
+import { Crosshair, Check, Search, Loader2, AlertTriangle } from "lucide-react";
 import BottomSheet from "./BottomSheet";
 
 export default function LocationPicker({ open, onClose, onConfirm, initialLat = -8.5697, initialLng = 116.0821 }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
+  const searchInputRef = useRef(null);
   const [lat, setLat] = useState(initialLat);
   const [lng, setLng] = useState(initialLng);
   const [search, setSearch] = useState("");
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const [mapError, setMapError] = useState(false);
+  const [manualLat, setManualLat] = useState(initialLat.toString());
+  const [manualLng, setManualLng] = useState(initialLng.toString());
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
 
   useEffect(() => {
     if (!open || !mapRef.current) return;
@@ -22,55 +28,71 @@ export default function LocationPicker({ open, onClose, onConfirm, initialLat = 
       mapInstanceRef.current.remove();
       mapInstanceRef.current = null;
     }
+    setMapError(false);
 
-    const map = L.map(mapRef.current, {
-      zoomControl: false,
-      attributionControl: false,
-      zoom: 17,
-      center: [lat, lng],
-    });
+    const timer = setTimeout(() => {
+      if (!mapRef.current) return;
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-    }).addTo(map);
+      const map = L.map(mapRef.current, {
+        zoomControl: false,
+        attributionControl: false,
+        zoom: 17,
+        center: [lat, lng],
+      });
 
-    const icon = L.divIcon({
-      className: "",
-      html: `<div style="width:28px;height:28px;background:#8b5cf6;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(139,92,246,0.5);font-size:14px;">📍</div>`,
-      iconSize: [28, 28],
-      iconAnchor: [14, 14],
-    });
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+      }).addTo(map);
 
-    markerRef.current = L.marker([lat, lng], { icon, draggable: true }).addTo(map);
+      map.on("tileerror", () => setMapError(true));
 
-    markerRef.current.on("dragend", () => {
-      const pos = markerRef.current.getLatLng();
-      setLat(parseFloat(pos.lat.toFixed(6)));
-      setLng(parseFloat(pos.lng.toFixed(6)));
-    });
+      const icon = L.divIcon({
+        className: "",
+        html: `<div style="width:28px;height:28px;background:#8b5cf6;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(139,92,246,0.5);font-size:14px;">📍</div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+      });
 
-    map.on("click", (e) => {
-      if (markerRef.current) {
-        markerRef.current.setLatLng(e.latlng);
-      }
-      setLat(parseFloat(e.latlng.lat.toFixed(6)));
-      setLng(parseFloat(e.latlng.lng.toFixed(6)));
-    });
+      markerRef.current = L.marker([lat, lng], { icon, draggable: true }).addTo(map);
 
-    requestAnimationFrame(() => map.invalidateSize());
+      markerRef.current.on("dragend", () => {
+        const pos = markerRef.current.getLatLng();
+        setLat(parseFloat(pos.lat.toFixed(6)));
+        setLng(parseFloat(pos.lng.toFixed(6)));
+      });
 
-    mapInstanceRef.current = map;
+      map.on("click", (e) => {
+        if (markerRef.current) markerRef.current.setLatLng(e.latlng);
+        setLat(parseFloat(e.latlng.lat.toFixed(6)));
+        setLng(parseFloat(e.latlng.lng.toFixed(6)));
+      });
+
+      map.invalidateSize();
+      mapInstanceRef.current = map;
+    }, 350);
 
     return () => {
-      map.remove();
-      mapInstanceRef.current = null;
-      markerRef.current = null;
+      clearTimeout(timer);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+        markerRef.current = null;
+      }
     };
   }, [open]);
+
+  useEffect(() => {
+    setManualLat(lat.toString());
+    setManualLng(lng.toString());
+  }, [lat, lng]);
 
   const handleSearch = async (q) => {
     setSearch(q);
     if (!q.trim()) { setSearchResults([]); setShowResults(false); return; }
+    if (searchInputRef.current) {
+      const rect = searchInputRef.current.getBoundingClientRect();
+      setDropdownPos({ top: rect.bottom, left: rect.left, width: rect.width });
+    }
     setSearching(true);
     setShowResults(true);
     try {
@@ -93,9 +115,7 @@ export default function LocationPicker({ open, onClose, onConfirm, initialLat = 
     setLng(newLng);
     if (mapInstanceRef.current) {
       mapInstanceRef.current.setView([newLat, newLng], 17);
-      if (markerRef.current) {
-        markerRef.current.setLatLng([newLat, newLng]);
-      }
+      if (markerRef.current) markerRef.current.setLatLng([newLat, newLng]);
     }
     setShowResults(false);
     setSearch(result.display_name);
@@ -107,9 +127,7 @@ export default function LocationPicker({ open, onClose, onConfirm, initialLat = 
       (pos) => {
         const { latitude, longitude } = pos.coords;
         mapInstanceRef.current.setView([latitude, longitude], 17);
-        if (markerRef.current) {
-          markerRef.current.setLatLng([latitude, longitude]);
-        }
+        if (markerRef.current) markerRef.current.setLatLng([latitude, longitude]);
         setLat(parseFloat(latitude.toFixed(6)));
         setLng(parseFloat(longitude.toFixed(6)));
       },
@@ -118,18 +136,58 @@ export default function LocationPicker({ open, onClose, onConfirm, initialLat = 
     );
   };
 
+  const handleManualInput = () => {
+    const newLat = parseFloat(manualLat);
+    const newLng = parseFloat(manualLng);
+    if (isNaN(newLat) || isNaN(newLng)) return;
+    setLat(newLat);
+    setLng(newLng);
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setView([newLat, newLng], 17);
+      if (markerRef.current) markerRef.current.setLatLng([newLat, newLng]);
+    }
+  };
+
   const handleConfirm = () => {
     onConfirm(lat, lng);
     onClose();
   };
 
+  const searchDropdown = showResults && searchResults.length > 0 && createPortal(
+    <div
+      className="fixed z-[9999] bg-onyx border border-white/10 rounded-xl shadow-xl overflow-hidden"
+      style={{
+        top: dropdownPos.top,
+        left: dropdownPos.left,
+        width: dropdownPos.width || "calc(100vw - 32px)",
+        maxWidth: 512,
+      }}
+    >
+      <div className="overflow-y-auto" style={{ maxHeight: 192 }}>
+        {searchResults.map((r, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => goToResult(r)}
+            className="w-full text-left px-3.5 py-2.5 text-xs text-pure-white hover:bg-white/5 border-b border-white/[0.04] last:border-0 transition-colors"
+          >
+            <span className="line-clamp-2">{r.display_name}</span>
+          </button>
+        ))}
+      </div>
+    </div>,
+    document.body
+  );
+
   return (
     <BottomSheet open={open} onClose={onClose} title="Pilih Lokasi di Peta">
+      {searchDropdown}
       <div className="space-y-4">
         <div className="relative">
           <div className="relative">
             <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-mist" />
             <input
+              ref={searchInputRef}
               type="text"
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
@@ -138,35 +196,59 @@ export default function LocationPicker({ open, onClose, onConfirm, initialLat = 
             />
             {searching && <Loader2 size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-periwinkle-glow animate-spin" />}
           </div>
-          {showResults && searchResults.length > 0 && (
-            <div className="absolute top-full left-0 right-0 z-[2000] mt-1 bg-onyx border border-white/10 rounded-xl overflow-hidden shadow-xl max-h-48 overflow-y-auto">
-              {searchResults.map((r, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => goToResult(r)}
-                  className="w-full text-left px-3.5 py-2.5 text-xs text-pure-white hover:bg-white/5 border-b border-white/[0.04] last:border-0 transition-colors"
-                >
-                  <span className="line-clamp-2">{r.display_name}</span>
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
-        <div className="relative rounded-2xl overflow-hidden border border-white/10" style={{ height: 350 }}>
-          <div ref={mapRef} className="w-full h-full" />
-          <div className="absolute top-3 right-3 z-[1000] flex flex-col gap-2">
+        {!mapError ? (
+          <div className="relative rounded-2xl overflow-hidden border border-white/10" style={{ height: 350, touchAction: "none" }}>
+            <div ref={mapRef} className="w-full h-full" />
+            <div className="absolute top-3 right-3 z-[1000] flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={handleLocateMe}
+                className="p-2.5 bg-black/70 backdrop-blur-sm rounded-full text-white hover:bg-black/90 transition-all"
+                title="Pakai lokasi saya"
+              >
+                <Crosshair size={16} />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-amber/30 bg-amber/5 p-4 space-y-3">
+            <div className="flex items-center gap-2 text-amber text-sm">
+              <AlertTriangle size={16} />
+              <span>Peta tidak dapat dimuat. Masukkan koordinat manual:</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] text-slate-mist uppercase tracking-wider mb-1 block">Latitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  value={manualLat}
+                  onChange={(e) => setManualLat(e.target.value)}
+                  className="w-full px-3 py-2 bg-obsidian border border-white/10 rounded-xl text-sm text-pure-white"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] text-slate-mist uppercase tracking-wider mb-1 block">Longitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  value={manualLng}
+                  onChange={(e) => setManualLng(e.target.value)}
+                  className="w-full px-3 py-2 bg-obsidian border border-white/10 rounded-xl text-sm text-pure-white"
+                />
+              </div>
+            </div>
             <button
               type="button"
-              onClick={handleLocateMe}
-              className="p-2.5 bg-black/70 backdrop-blur-sm rounded-full text-white hover:bg-black/90 transition-all"
-              title="Pakai lokasi saya"
+              onClick={handleManualInput}
+              className="w-full py-2 border border-white/10 text-slate-mist rounded-full text-sm font-medium hover:text-pure-white transition-all"
             >
-              <Crosshair size={16} />
+              Terapkan Koordinat
             </button>
           </div>
-        </div>
+        )}
 
         <div className="grid grid-cols-2 gap-3">
           <div>
