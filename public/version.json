@@ -1,9 +1,9 @@
 {
-  "version": "1.6.7",
-  "versionCode": 19,
-  "apkUrl": "https://github.com/ramahudson-cyber/siap-ampenan/releases/download/v1.6.7/app-debug.apk",
+  "version": "1.6.8",
+  "versionCode": 20,
+  "apkUrl": "https://github.com/ramahudson-cyber/siap-ampenan/releases/download/v1.6.8/app-debug.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/siap-ampenan/releases/latest/download/app-debug.apk",
-  "changelog": "Fix: npm install biometric & preferences untuk APK",
+  "changelog": "Fix: login timeout, console.log detail untuk debugging APK",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }

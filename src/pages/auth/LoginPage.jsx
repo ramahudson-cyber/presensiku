@@ -97,21 +97,36 @@ export default function LoginPage() {
     return data.email;
   };
 
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms)
+      ),
+    ]);
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
+      await withTimeout((async () => {
+      console.log("[Login] 1/9 Memverifikasi akun...");
       setLoadingText("Memverifikasi akun...");
       const [email, deviceInfoResult] = await Promise.all([
         resolveEmail(username),
         getDeviceInfo(),
       ]);
+      console.log("[Login] 1/9 OK — email:", email, "visitorId:", deviceInfoResult?.visitorId);
 
+      console.log("[Login] 2/9 signIn...");
       setLoadingText("Masuk ke sistem...");
       await signIn(email, password);
+      console.log("[Login] 2/9 OK — signed in");
 
+      console.log("[Login] 3/9 Credential ops...");
       if (rememberMe) {
         await saveCredentials(username, password);
         if (isNativePlatform()) {
@@ -121,7 +136,9 @@ export default function LoginPage() {
         await clearCredentials();
         await setBiometricEnabled(false);
       }
+      console.log("[Login] 3/9 OK — credentials saved/cleared");
 
+      console.log("[Login] 4/9 Memuat data pengguna...");
       setLoadingText("Memuat data pengguna...");
       const [
         { data: { user: authUser } },
@@ -130,6 +147,7 @@ export default function LoginPage() {
         supabase.auth.getUser(),
         supabase.from("profiles").select("*").eq("id", (await supabase.auth.getUser()).data.user.id).single()
       ]);
+      console.log("[Login] 4/9 OK — user:", authUser?.id, "profile:", profile?.role);
 
       if (!authUser) throw new Error("No session");
       if (!profile) throw new Error("No profile");
@@ -139,8 +157,10 @@ export default function LoginPage() {
       setUserId(authUser.id);
       setDeviceInfo(deviceInfoResult);
 
+      console.log("[Login] 5/9 Memeriksa perangkat...");
       setLoadingText("Memeriksa perangkat...");
       const deviceCheck = await checkDeviceBinding(authUser.id, deviceInfoResult);
+      console.log("[Login] 5/9 OK — canLogin:", deviceCheck.canLogin, "requiresOtp:", deviceCheck.requiresOtp);
 
       const isDeviceError = deviceCheck.message && deviceCheck.message.startsWith("Gagal cek device");
       if (isDeviceError) {
@@ -156,6 +176,7 @@ export default function LoginPage() {
           setLoading(false);
           return;
         }
+        console.log("[Login] 6/9 Memuat dashboard...");
         setLoadingText("Memuat dashboard...");
         await refreshUser();
         if (profile.role !== "super_admin" && profile.password_changed === false) {
@@ -166,8 +187,10 @@ export default function LoginPage() {
         return;
       }
 
+      console.log("[Login] 6/9 Cek status persetujuan...");
       setLoadingText("Cek status persetujuan...");
       const reqStatus = await checkDeviceRequestStatus(authUser.id, deviceInfoResult.visitorId);
+      console.log("[Login] 6/9 OK — hasRequest:", reqStatus.hasRequest, "status:", reqStatus.status);
 
       if (reqStatus.hasRequest) {
         if (reqStatus.status === "pending") {
@@ -188,8 +211,10 @@ export default function LoginPage() {
         }
       }
 
+      console.log("[Login] 7/9 Mengirim OTP...");
       setLoadingText("Mengirim kode OTP...");
       const otpResult = await sendOtpEmail(profile.email || email, profile.full_name || username);
+      console.log("[Login] 7/9 OK — otpSent:", otpResult.success);
       if (!otpResult.success) {
         setError("Gagal mengirim OTP: " + (otpResult.error || "Cek koneksi internet"));
         setLoading(false);
@@ -197,12 +222,18 @@ export default function LoginPage() {
       }
       setGeneratedOtp(otpResult.otp);
       setStep("otp");
+    })(), 90000);
     } catch (err) {
-      console.error("Login error:", err);
-      setError("Username/email atau password salah.");
+      console.error("[Login] ERROR:", err);
+      const msg = err.message?.includes("Timeout")
+        ? "Login timeout — periksa koneksi internet"
+        : "Username/email atau password salah.";
+      setError(msg);
     } finally {
       setLoading(false);
       setLoadingText("");
+
+      console.log("[Login] FINISHED — loading=false, error shown if any");
     }
   };
 

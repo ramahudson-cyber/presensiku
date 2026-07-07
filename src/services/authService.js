@@ -1,11 +1,20 @@
 import { supabase } from "../supabase/client";
 
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
 export async function signIn(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-  
+  const { data, error } = await withTimeout(
+    supabase.auth.signInWithPassword({ email, password }),
+    30000
+  );
+
   if (error) throw error;
   return data;
 }

@@ -5,6 +5,15 @@ const KEYS = {
   BIOMETRIC_ENABLED: "siap_biometric_enabled",
 };
 
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
 async function getPreferences() {
   if (!Capacitor.isNativePlatform()) return null;
   try {
@@ -30,7 +39,7 @@ export async function saveCredentials(username, password) {
   const json = JSON.stringify(data);
   const prefs = await getPreferences();
   if (prefs) {
-    await prefs.set({ key: KEYS.CREDENTIALS, value: json });
+    await withTimeout(prefs.set({ key: KEYS.CREDENTIALS, value: json }), 10000);
   } else {
     localStorage.setItem(KEYS.CREDENTIALS, json);
   }
@@ -55,7 +64,7 @@ export async function getCredentials() {
 export async function clearCredentials() {
   const prefs = await getPreferences();
   if (prefs) {
-    await prefs.remove({ key: KEYS.CREDENTIALS });
+    await withTimeout(prefs.remove({ key: KEYS.CREDENTIALS }), 10000);
   }
   localStorage.removeItem(KEYS.CREDENTIALS);
 }
@@ -64,7 +73,7 @@ export async function isBiometricEnabled() {
   try {
     const prefs = await getPreferences();
     if (prefs) {
-      const result = await prefs.get({ key: KEYS.BIOMETRIC_ENABLED });
+      const result = await withTimeout(prefs.get({ key: KEYS.BIOMETRIC_ENABLED }), 10000);
       return result.value === "true";
     }
     return localStorage.getItem(KEYS.BIOMETRIC_ENABLED) === "true";
@@ -77,7 +86,7 @@ export async function setBiometricEnabled(enabled) {
   const val = String(enabled);
   const prefs = await getPreferences();
   if (prefs) {
-    await prefs.set({ key: KEYS.BIOMETRIC_ENABLED, value: val });
+    await withTimeout(prefs.set({ key: KEYS.BIOMETRIC_ENABLED, value: val }), 10000);
   }
   localStorage.setItem(KEYS.BIOMETRIC_ENABLED, val);
 }
