@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS attendance_locations (
 );
 
 -- 2. RPC ambil lokasi aktif
+DROP FUNCTION IF EXISTS get_active_location();
 CREATE OR REPLACE FUNCTION get_active_location()
 RETURNS SETOF attendance_locations
 LANGUAGE sql
