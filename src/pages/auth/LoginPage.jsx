@@ -241,7 +241,16 @@ export default function LoginPage() {
     } catch (err) {
       console.error("[Login] ERROR:", err);
       setDeviceDebug(`[${err.name}] ${err.message}`);
-      setError(`[${err.name}] ${err.message}`);
+      const msg = err.message?.includes("Invalid login credentials")
+        ? "Username/email atau password salah."
+        : err.message?.includes("Timeout")
+          ? "Login timeout — periksa koneksi internet"
+          : err.message?.includes("Email not confirmed")
+            ? "Email belum diverifikasi. Periksa email Anda."
+            : err.message?.includes("rate limit")
+              ? "Terlalu banyak percobaan. Tunggu beberapa saat."
+              : err.message || "Terjadi kesalahan. Coba lagi.";
+      setError(msg);
     } finally {
       setLoading(false);
       setLoadingText("");
