@@ -39,7 +39,7 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
               </div>
             )}
 
-            <div className="flex-1 overflow-y-auto px-5 pb-6">
+            <div className="flex-1 overflow-y-scroll px-5 pb-6 scrollbar-thin">
               {children}
             </div>
           </div>

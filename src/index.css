@@ -649,3 +649,14 @@ html:not(.dark) .ring-white.dark\:ring-\[\#0f0524\] { --tw-ring-color: #ffffff; 
 @media (prefers-reduced-motion: reduce) {
   .professional-ambient-bg, .professional-grid-bg { animation: none }
 }
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+}

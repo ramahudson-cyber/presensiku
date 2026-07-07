@@ -105,6 +105,7 @@ function TabProfilPuskesmas() {
     });
     setEditingId(null);
     setShowForm(false);
+    setShowPicker(false);
   };
 
   const handleEdit = (loc) => {
@@ -270,14 +271,6 @@ function TabProfilPuskesmas() {
         </button>
       </div>
 
-      <LocationPicker
-        open={showPicker}
-        onClose={() => setShowPicker(false)}
-        initialLat={parseFloat(formData.latitude) || -8.5697}
-        initialLng={parseFloat(formData.longitude) || 116.0821}
-        onConfirm={(lat, lng) => setFormData(prev => ({ ...prev, latitude: String(lat), longitude: String(lng) }))}
-      />
-
       <BottomSheet open={showForm} onClose={resetForm}
         title={editingId ? "Edit Lokasi" : "Tambah Lokasi Baru"}>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -381,6 +374,16 @@ function TabProfilPuskesmas() {
             </button>
           </div>
         </form>
+
+        {showPicker && (
+          <LocationPicker
+            visible
+            onCancel={() => setShowPicker(false)}
+            initialLat={parseFloat(formData.latitude) || -8.5697}
+            initialLng={parseFloat(formData.longitude) || 116.0821}
+            onConfirm={(lat, lng) => setFormData(prev => ({ ...prev, latitude: String(lat), longitude: String(lng) }))}
+          />
+        )}
       </BottomSheet>
 
       <div className={`${cardBase} overflow-hidden`}>
