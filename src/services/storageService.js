@@ -1,9 +1,12 @@
+import { Capacitor } from "@capacitor/core";
+
 const KEYS = {
   CREDENTIALS: "siap_saved_credentials",
   BIOMETRIC_ENABLED: "siap_biometric_enabled",
 };
 
 async function getPreferences() {
+  if (!Capacitor.isNativePlatform()) return null;
   try {
     const { Preferences } = await import("@capacitor/preferences");
     return Preferences;
@@ -13,6 +16,7 @@ async function getPreferences() {
 }
 
 async function getBiometricAuth() {
+  if (!Capacitor.isNativePlatform()) return null;
   try {
     const { BiometricAuth } = await import("@aparajita/capacitor-biometric-auth");
     return BiometricAuth;
