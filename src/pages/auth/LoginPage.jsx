@@ -159,6 +159,19 @@ export default function LoginPage() {
       setUserId(authUser.id);
       setDeviceInfo(deviceInfoResult);
 
+      // Admin & super_admin skip OTP entirely
+      if (profile.role === "super_admin" || profile.role === "admin") {
+        console.log(`[Login] ${profile.role} — skip device binding & OTP`);
+        setLoadingText("Memuat dashboard...");
+        await withTimeout(refreshUser(), 15000, "refreshUser");
+        if (profile.role !== "super_admin" && profile.password_changed === false) {
+          navigate("/ubah-password", { replace: true });
+          return;
+        }
+        redirectByRole(profile.role);
+        return;
+      }
+
       console.log("[Login] 5/9 Memeriksa perangkat...");
       setLoadingText("Memeriksa perangkat...");
       const deviceCheck = await withTimeout(checkDeviceBinding(authUser.id, deviceInfoResult), 15000, "checkDeviceBinding");
