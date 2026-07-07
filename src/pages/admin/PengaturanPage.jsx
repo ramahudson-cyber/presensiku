@@ -467,6 +467,14 @@ function TabProfilPuskesmas() {
           </div>
         </div>
       </div>
+
+      <ConfirmSheet
+        open={!!confirmDeleteLoc}
+        onClose={() => setConfirmDeleteLoc(null)}
+        onConfirm={confirmDeleteLocation}
+        title="Hapus Lokasi"
+        message={`Yakin ingin menghapus "${confirmDeleteLoc?.name}"?`}
+      />
     </div>
   );
 }
