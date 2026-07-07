@@ -1,7 +1,15 @@
-// src/services/deviceservice.js
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { supabase } from "../lib/supabase";
 import { isNativePlatform, isAndroidCapacitor } from "../lib/devicePlatform";
+
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(label ? `Timeout ${label} after ${ms}ms` : `Timeout after ${ms}ms`)), ms)
+    ),
+  ]);
+}
 
 /**
  * Generate device info (platform-aware)
@@ -10,13 +18,31 @@ import { isNativePlatform, isAndroidCapacitor } from "../lib/devicePlatform";
  * - Web → FingerprintJS
  */
 export async function getDeviceInfo() {
+  try {
+    return await withTimeout(_getDeviceInfo(), 20000, "getDeviceInfo");
+  } catch (err) {
+    console.warn("⚠️ getDeviceInfo timeout, using fallback:", err.message);
+    const fallback = {
+      visitorId: "device-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+      deviceName: "Unknown Device",
+      deviceOs: "Unknown",
+      deviceBrowser: "Unknown",
+      deviceType: isNativePlatform() ? "android" : "web",
+      imei: null,
+      serial: null,
+    };
+    return fallback;
+  }
+}
+
+async function _getDeviceInfo() {
   let visitorId, deviceName = "Unknown Device", deviceOs = "Unknown", deviceBrowser = "Unknown", deviceType = "web";
   let imei = null, serial = null;
 
   if (isNativePlatform()) {
     try {
       const { Device } = await import('@capacitor/device');
-      const infoResult = await Device.getInfo();
+      const infoResult = await withTimeout(Device.getInfo(), 8000, "Device.getInfo");
       deviceOs = infoResult.operatingSystem;
       deviceName = infoResult.model || infoResult.manufacturer || "Unknown Device";
       deviceBrowser = infoResult.platform || "Native";
@@ -29,7 +55,7 @@ export async function getDeviceInfo() {
         try {
           const { registerPlugin } = await import('@capacitor/core');
           const ImeiPlugin = registerPlugin('ImeiPlugin');
-          const imeiResult = await ImeiPlugin.getImeiInfo();
+          const imeiResult = await withTimeout(ImeiPlugin.getImeiInfo(), 10000, "ImeiPlugin.getImeiInfo");
           
           if (imeiResult.permissionDenied) {
             // User menolak permission - fallback ke Android ID
@@ -45,26 +71,26 @@ export async function getDeviceInfo() {
             console.log("⚠️ Permission granted tapi IMEI tidak tersedia");
           }
         } catch (err) {
-          console.warn("⚠️ IMEI plugin error:", err.message);
+          console.warn("⚠️ IMEI plugin error/timeout:", err.message);
         }
 
         // Fallback ke Android ID jika IMEI tidak tersedia
         if (!visitorId) {
           try {
-            const idResult = await Device.getId();
+            const idResult = await withTimeout(Device.getId(), 5000, "Device.getId");
             visitorId = idResult.identifier || idResult.uuid;
             console.log("📱 Menggunakan Android ID fallback:", visitorId);
           } catch (err2) {
-            console.warn("⚠️ Device.getId error:", err2.message);
+            console.warn("⚠️ Device.getId error/timeout:", err2.message);
           }
         }
       } else {
         deviceType = "ios";
         try {
-          const idResult = await Device.getId();
+          const idResult = await withTimeout(Device.getId(), 5000, "iOS Device.getId");
           visitorId = idResult.identifier || idResult.uuid;
         } catch (err2) {
-          console.warn("⚠️ iOS Device.getId error:", err2.message);
+          console.warn("⚠️ iOS Device.getId error/timeout:", err2.message);
         }
       }
     } catch (err) {

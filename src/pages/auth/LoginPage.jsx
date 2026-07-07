@@ -225,9 +225,13 @@ export default function LoginPage() {
     })(), 90000);
     } catch (err) {
       console.error("[Login] ERROR:", err);
-      const msg = err.message?.includes("Timeout")
-        ? "Login timeout — periksa koneksi internet"
-        : "Username/email atau password salah.";
+      const isTimeout = err.message?.includes("Timeout");
+      const isDeviceTimeout = isTimeout && err.message?.includes("getDeviceInfo");
+      const msg = isDeviceTimeout
+        ? "Gagal mendeteksi perangkat — coba restart aplikasi atau nonaktifkan IMEI permission"
+        : isTimeout
+          ? "Login timeout — periksa koneksi internet"
+          : "Username/email atau password salah.";
       setError(msg);
     } finally {
       setLoading(false);
