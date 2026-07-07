@@ -1,8 +1,9 @@
+import { useSearchParams } from "react-router-dom";
 import { Smartphone, Monitor } from "lucide-react";
 
 export default function BlockPage() {
-  const params = new URLSearchParams(window.location.search);
-  const device = params.get("device");
+  const [searchParams] = useSearchParams();
+  const device = searchParams.get("device");
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-obsidian">

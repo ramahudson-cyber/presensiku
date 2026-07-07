@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { AuthProvider } from "./context/AuthContext";
 import AppRoutes from "./routes/AppRoutes";
 import UpdateDialog from "./components/UpdateDialog";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useTheme } from "./context/ThemeContext";
@@ -25,12 +27,18 @@ function ToastSetup() {
 }
 
 function App() {
+  useEffect(() => {
+    document.body.style.overflow = "";
+  }, []);
+
   return (
-    <AuthProvider>
-      <UpdateDialog />
-      <AppRoutes />
-      <ToastSetup />
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <UpdateDialog />
+        <AppRoutes />
+        <ToastSetup />
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
