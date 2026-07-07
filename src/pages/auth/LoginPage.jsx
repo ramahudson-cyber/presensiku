@@ -127,15 +127,17 @@ export default function LoginPage() {
       console.log("[Login] 2/9 OK — signed in");
 
       console.log("[Login] 3/9 Credential ops...");
-      if (rememberMe) {
-        await saveCredentials(username, password);
-        if (isNativePlatform()) {
-          await setBiometricEnabled(useBiometric);
+      await withTimeout((async () => {
+        if (rememberMe) {
+          await saveCredentials(username, password);
+          if (isNativePlatform()) {
+            await setBiometricEnabled(useBiometric);
+          }
+        } else {
+          await clearCredentials();
+          await setBiometricEnabled(false);
         }
-      } else {
-        await clearCredentials();
-        await setBiometricEnabled(false);
-      }
+      })(), 15000, "credentialOps");
       console.log("[Login] 3/9 OK — credentials saved/cleared");
 
       console.log("[Login] 4/9 Memuat data pengguna...");

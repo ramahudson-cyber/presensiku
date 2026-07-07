@@ -5,11 +5,11 @@ const KEYS = {
   BIOMETRIC_ENABLED: "siap_biometric_enabled",
 };
 
-function withTimeout(promise, ms) {
+function withTimeout(promise, ms, label) {
   return Promise.race([
     promise,
     new Promise((_, reject) =>
-      setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms)
+      setTimeout(() => reject(new Error(label ? `Timeout ${label} after ${ms}ms` : `Timeout after ${ms}ms`)), ms)
     ),
   ]);
 }
@@ -17,8 +17,8 @@ function withTimeout(promise, ms) {
 async function getPreferences() {
   if (!Capacitor.isNativePlatform()) return null;
   try {
-    const { Preferences } = await import("@capacitor/preferences");
-    return Preferences;
+    const mod = await withTimeout(import("@capacitor/preferences"), 8000, "import Preferences");
+    return mod.Preferences;
   } catch {
     return null;
   }
@@ -27,8 +27,8 @@ async function getPreferences() {
 async function getBiometricAuth() {
   if (!Capacitor.isNativePlatform()) return null;
   try {
-    const { BiometricAuth } = await import("@aparajita/capacitor-biometric-auth");
-    return BiometricAuth;
+    const mod = await withTimeout(import("@aparajita/capacitor-biometric-auth"), 8000, "import BiometricAuth");
+    return mod.BiometricAuth;
   } catch {
     return null;
   }
