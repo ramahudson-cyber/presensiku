@@ -115,7 +115,7 @@ const EmployeesPage = () => {
       } else {
         const defaultPass = await getSetting('default_password', 'Puskesmas@123');
         // CREATE via RPC
-        const { error } = await supabase.rpc('create_employee_with_auth', {
+        const { data: rpcResult, error } = await supabase.rpc('create_employee_with_auth', {
           p_username: formData.username,
           p_full_name: formData.full_name,
           p_email: formData.email,
@@ -127,6 +127,7 @@ const EmployeesPage = () => {
         });
 
         if (error) throw error;
+        if (!rpcResult?.success) throw new Error(rpcResult?.error || "Gagal membuat pegawai");
         // Kirim notif email
         try {
           const API_BASE = "https://siap-ampenan.vercel.app";
