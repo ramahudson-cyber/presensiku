@@ -398,7 +398,7 @@ export default function LoginPage() {
             {/* LOGIN STEP */}
             {step === "login" && (
               <>
-                <h2 className="text-lg font-semibold text-pure-white mb-5 ml-4 sm:ml-5">Masuk</h2>
+                <h2 className="text-lg font-semibold text-pure-white mb-5">Masuk</h2>
                 {error && (
                   <div className="mb-4 p-3 bg-electric-violet/10 rounded-[16px] flex items-start gap-2.5">
                     <AlertCircle size="15" className="text-periwinkle-glow shrink-0 mt-0.5" />
