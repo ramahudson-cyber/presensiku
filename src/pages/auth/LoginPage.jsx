@@ -348,12 +348,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-obsidian relative overflow-hidden">
-      {/* Halo Violet — radial glow from top-left */}
+    <div className="min-h-screen relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(160deg, #6d28d9 0%, #4c1d95 30%, #2e1065 70%, #1a0533 100%)'
+      }}>
+      {/* Halo glow */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(circle farthest-side at 0px -30%, rgb(75,57,239), rgba(6,3,17,0) 84%)'
+          background: 'radial-gradient(circle farthest-side at 0px -30%, rgba(167,139,250,0.25), rgba(124,58,237,0) 84%)'
         }}
       />
 
@@ -395,6 +398,7 @@ export default function LoginPage() {
             {/* LOGIN STEP */}
             {step === "login" && (
               <>
+                <h2 className="text-lg font-semibold text-pure-white mb-5">Masuk</h2>
                 {error && (
                   <div className="mb-4 p-3 bg-electric-violet/10 rounded-[16px] flex items-start gap-2.5">
                     <AlertCircle size="15" className="text-periwinkle-glow shrink-0 mt-0.5" />
@@ -440,7 +444,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => alert("Silahkan hubungi Admin untuk reset password.")}
-                      className="text-xs text-slate-mist hover:text-periwinkle-glow transition-colors"
+                      className="text-xs text-white/55 hover:text-white/80 transition-colors"
                     >
                       Lupa password?
                     </button>
