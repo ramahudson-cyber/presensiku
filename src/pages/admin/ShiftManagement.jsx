@@ -3,7 +3,7 @@ import { supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
 import {
   Clock, Save, RefreshCw, Sun, Moon, CloudSun,
-  Sunset, CheckCircle2, XCircle, Info
+  Sunset, CheckCircle2, XCircle, Info, ArrowRightLeft
 } from "lucide-react";
 
 const DAY_NAMES = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
@@ -30,7 +30,15 @@ export default function TabShift() {
         supabase.from("shift_schedules").select("*").order("day_of_week"),
       ]);
       setShifts(s || []);
-      setSchedules(sc || []);
+      const patched = (sc || []).map(item => ({
+        ...item,
+        crosses_midnight: item.shift_code === "ML" ? true : item.crosses_midnight,
+      }));
+      const needsPatch = patched.some(
+        (item, idx) => item.crosses_midnight !== (sc || [])[idx]?.crosses_midnight
+      );
+      setSchedules(patched);
+      if (needsPatch) setDirty(true);
     } catch { toast.error("Gagal muat data"); }
     finally { setLoading(false); }
   };
@@ -49,7 +57,7 @@ export default function TabShift() {
           start_time: "08:00",
           end_time: "17:00",
           latest_check_in: "08:05",
-          crosses_midnight: false,
+          crosses_midnight: code === "ML",
         }];
       }
       return prev.map(s => {
@@ -159,6 +167,15 @@ export default function TabShift() {
                           <input type="time" value={sched?.end_time || ""}
                             onChange={e => update(shift.code, i, "end_time", e.target.value)}
                             className="flex-1 text-[11px] bg-onyx border border-white/[0.06] rounded-2xl px-2 py-1.5 text-pure-white focus:outline-none focus:ring-2 focus:ring-electric-violet/50" />
+                          <button onClick={() => update(shift.code, i, "crosses_midnight", !sched?.crosses_midnight)}
+                            className={`p-1.5 rounded-full transition-all shrink-0 ${
+                              sched?.crosses_midnight
+                                ? "bg-violet-500/20 text-violet-400"
+                                : "bg-white/5 text-slate-mist hover:bg-white/10"
+                            }`}
+                            title={sched?.crosses_midnight ? "Lintas malam" : "Tidak lintas malam"}>
+                            <ArrowRightLeft size={13} />
+                          </button>
                           <button onClick={() => update(shift.code, i, "is_working_day", false)}
                             className="p-1.5 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all shrink-0">
                             <XCircle size={13} />
