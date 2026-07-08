@@ -7,12 +7,12 @@ import { Outlet } from "react-router-dom";
 function AdminLayout() {
   return (
     <div className="min-h-screen relative overflow-x-hidden bg-white dark:bg-obsidian transition-colors duration-500">
-      {/* Deep Violet Gradient Background — dark mode only */}
-      <div className="fixed inset-0 bg-gradient-to-br from-[#2415c6]/20 via-obsidian to-[#5800fd]/10 animate-gradient-bg pointer-events-none hidden dark:block"></div>
+      {/* Magenta Purple Gradient Background */}
+      <div className="fixed inset-0" style={{ background: 'linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%)', opacity: 0.08, pointerEvents: 'none' }}></div>
 
-      {/* Floating Orbs — DESIGN.md Halo Violet — dark mode only */}
-      <div className="fixed top-[-10%] left-[5%] w-[400px] h-[400px] bg-halo-violet rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-orb pointer-events-none hidden dark:block"></div>
-      <div className="fixed bottom-[-10%] right-[5%] w-[400px] h-[400px] bg-electric-violet rounded-full mix-blend-screen filter blur-[120px] opacity-15 animate-orb animate-orb-delay pointer-events-none hidden dark:block"></div>
+      {/* Floating Orbs — magenta purple — dark mode only */}
+      <div className="fixed top-[-10%] left-[5%] w-[400px] h-[400px] bg-[#BF00FF] rounded-full mix-blend-screen filter blur-[120px] opacity-25 animate-orb pointer-events-none hidden dark:block"></div>
+      <div className="fixed bottom-[-10%] right-[5%] w-[400px] h-[400px] bg-[#BF00FF] rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-orb animate-orb-delay pointer-events-none hidden dark:block"></div>
       <div className="fixed inset-0 professional-ambient-bg pointer-events-none"></div>
       <div className="fixed inset-0 professional-grid-bg pointer-events-none"></div>
 
