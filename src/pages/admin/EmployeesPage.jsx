@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase'; // ✅ FIX: path yang benar
+import { getSetting } from '../../lib/settings';
 import { toast } from 'react-toastify';
 import {
   UserPlus, Pencil, Trash2, X, Search, Users, Mail,
@@ -112,12 +113,13 @@ const EmployeesPage = () => {
         if (error) throw error;
         toast.success('Pegawai berhasil diperbarui');
       } else {
+        const defaultPass = await getSetting('default_password', 'Puskesmas@123');
         // CREATE via RPC
         const { error } = await supabase.rpc('create_employee_with_auth', {
           p_username: formData.username,
           p_full_name: formData.full_name,
           p_email: formData.email,
-          p_password: 'Puskesmas@123',
+          p_password: defaultPass,
           p_role: formData.role,
           p_employee_status: formData.employee_status,
           p_department: null,
@@ -135,7 +137,7 @@ const EmployeesPage = () => {
               to: formData.email,
               username: formData.username,
               full_name: formData.full_name,
-              password: 'Puskesmas@123',
+              password: defaultPass,
             }),
           });
         } catch (emailErr) {

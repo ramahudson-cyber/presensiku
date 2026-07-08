@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
+import { getSetting } from "../../lib/settings";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import {
@@ -739,8 +740,9 @@ function TabManajemenUser() {
 
   const confirmResetPassword = async () => {
     const { user, password: newPassword } = resetModal;
-    if (newPassword.length < 6) {
-      toast.error("Password minimal 6 karakter");
+    const minLen = Number(await getSetting('password_min_length', '6'));
+    if (newPassword.length < minLen) {
+      toast.error(`Password minimal ${minLen} karakter`);
       return;
     }
 
