@@ -132,7 +132,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
         <defs>
           <linearGradient id="gradTotal" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#adff2f" />
-            <stop offset="100%" stopColor="#5800fd" />
+            <stop offset="100%" stopColor="#BF00FF" />
           </linearGradient>
         </defs>
       </svg>
