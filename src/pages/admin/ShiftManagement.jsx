@@ -8,6 +8,12 @@ import {
 
 const DAY_NAMES = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 
+const add5min = t => {
+  const [h, m] = (t || "00:00").split(":").map(Number);
+  let total = h * 60 + m + 5;
+  return `${String(Math.floor(total / 60) % 24).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+};
+
 const SHIFT_META = {
   PG: { icon: Sun, color: "text-amber-400", bg: "bg-amber-500/15", ring: "ring-amber-500/30" },
   SR: { icon: Sunset, color: "text-orange-400", bg: "bg-orange-500/15", ring: "ring-orange-500/30" },
@@ -56,17 +62,18 @@ export default function TabShift() {
           is_working_day: true,
           start_time: "08:00",
           end_time: "17:00",
-          latest_check_in: "08:05",
+          latest_check_in: add5min("08:00"),
           crosses_midnight: code === "ML",
         }];
       }
       return prev.map(s => {
         if (s.shift_code === code && s.day_of_week === day) {
           const updated = { ...s, [field]: value };
+          if (field === "start_time") updated.latest_check_in = add5min(value);
           if (field === "is_working_day" && value === true) {
             updated.start_time = "08:00";
             updated.end_time = "17:00";
-            updated.latest_check_in = "08:05";
+            updated.latest_check_in = add5min("08:00");
           }
           return updated;
         }
@@ -84,7 +91,7 @@ export default function TabShift() {
           day_of_week: s.day_of_week,
           start_time: s.is_working_day ? s.start_time : "00:00",
           end_time: s.is_working_day ? s.end_time : "00:00",
-          latest_check_in: s.is_working_day ? (s.latest_check_in || "00:00") : "00:00",
+          latest_check_in: s.is_working_day ? add5min(s.start_time) : "00:00",
           crosses_midnight: s.crosses_midnight || false,
           is_working_day: s.is_working_day,
         })),
