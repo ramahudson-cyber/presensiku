@@ -350,7 +350,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen relative overflow-hidden"
       style={{
-        background: 'linear-gradient(160deg, #6d28d9 0%, #4c1d95 30%, #2e1065 70%, #1a0533 100%)'
+        background: 'linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%)'
       }}>
       {/* Halo glow */}
       <div
