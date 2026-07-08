@@ -367,26 +367,26 @@ export default function LoginPage() {
       <div className="absolute inset-0 professional-ambient-bg pointer-events-none" />
 
       {/* Content */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6">
+      <div className="relative z-10 min-h-screen flex items-start justify-center pt-[8vh] sm:pt-[12vh] lg:pt-[15vh] p-4 sm:p-6">
         <div className="w-full max-w-[420px] mx-auto">
 
           {/* Hero — rata kiri */}
-          <div className="text-left mb-10 sm:mb-12 px-2">
-            <h1 className="font-urbanist text-5xl sm:text-6xl font-bold tracking-[1.22px] text-pure-white leading-none">
+          <div className="text-left mb-8 sm:mb-10 px-2">
+            <h1 className="font-urbanist text-2xl sm:text-3xl lg:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
               Hadir.Kuy
             </h1>
-            <p className="text-slate-mist text-sm sm:text-base leading-relaxed mt-2 max-w-[320px] tracking-[0.72px]">
+            <p className="text-slate-mist text-xs sm:text-sm leading-relaxed mt-2 tracking-[0.72px]">
               Absen anti ribet, kerja makin greget
             </p>
-            <div className="flex items-center gap-3 mt-5 flex-wrap">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-4">
               <span className="text-periwinkle-glow text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
                 Disiplin
               </span>
-              <span className="text-slate-mist/20 text-xs">—</span>
+              <span className="text-slate-mist/20 text-[10px]">•</span>
               <span className="text-periwinkle-glow text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
                 Akurat
               </span>
-              <span className="text-slate-mist/20 text-xs">—</span>
+              <span className="text-slate-mist/20 text-[10px]">•</span>
               <span className="text-periwinkle-glow text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
                 Optimal
               </span>
