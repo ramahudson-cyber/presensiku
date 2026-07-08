@@ -1,4 +1,4 @@
-# Konfigurasi Proyek — SIAP Puskesmas Ampenan
+# Konfigurasi Proyek — Hadir.Kuy
 
 ## Shift Kerja
 4 shift dengan jadwal per hari:

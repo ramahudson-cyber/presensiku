@@ -373,10 +373,10 @@ export default function LoginPage() {
           {/* Hero — rata kiri */}
           <div className="text-left mb-10 sm:mb-12 px-2">
             <h1 className="font-urbanist text-5xl sm:text-6xl font-bold tracking-[1.22px] text-pure-white leading-none">
-              SIAP
+              Hadir.Kuy
             </h1>
             <p className="text-slate-mist text-sm sm:text-base leading-relaxed mt-2 max-w-[320px] tracking-[0.72px]">
-              Sistem Informasi Administrasi dan Presensi Puskesmas Ampenan
+              Absen anti ribet, kerja makin greget
             </p>
             <div className="flex items-center gap-3 mt-5 flex-wrap">
               <span className="text-periwinkle-glow text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
@@ -654,7 +654,7 @@ export default function LoginPage() {
 
           {/* Footer */}
           <p className="text-center text-[10px] text-slate-mist/50 mt-8 sm:mt-10 tracking-[0.65px]">
-            Puskesmas Ampenan &copy; {new Date().getFullYear()}
+            Hadir.Kuy &copy; {new Date().getFullYear()}
           </p>
         </div>
       </div>

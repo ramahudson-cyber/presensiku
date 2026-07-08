@@ -56,8 +56,8 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
               </svg>
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-wide text-pure-white">SIAP</h1>
-              <p className="text-[10px] text-slate-mist">Puskesmas Ampenan</p>
+              <h1 className="text-lg font-bold tracking-wide text-pure-white">Hadir.Kuy</h1>
+              <p className="text-[10px] text-slate-mist">Absen anti ribet, kerja makin greget</p>
             </div>
           </div>
               <button onClick={() => setMenuOpen(false)} className="xl:hidden border-gradient bg-transparent text-pure-white rounded-lg transition">

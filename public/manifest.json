@@ -1,7 +1,7 @@
 {
-  "name": "SIAP Puskesmas",
-  "short_name": "SIAP",
-  "description": "Sistem Informasi Absensi Pegawai Puskesmas",
+  "name": "Hadir.Kuy",
+  "short_name": "Hadir.Kuy",
+  "description": "Absen anti ribet, kerja makin greget",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

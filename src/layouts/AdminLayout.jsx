@@ -25,7 +25,7 @@ function AdminLayout() {
             <Outlet />
           </div>
           <footer className="text-center text-[10px] text-white/[0.15] pb-2 select-none mt-2">
-            v{getCurrentVersion().version} &mdash; SIAP Puskesmas Ampenan
+            v{getCurrentVersion().version} &mdash; Hadir.Kuy
           </footer>
         </main>
       </div>
