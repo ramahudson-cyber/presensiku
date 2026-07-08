@@ -14,6 +14,7 @@
   --color-true-black: #000000;
   --color-deep-indigo: #2415c6;
   --color-halo-violet: #4b39ef;
+  --color-green-yellow: #adff2f;
 
   --radius-cards: 24px;
   --radius-inputs: 16px;
@@ -430,8 +431,7 @@ html:not(.dark) .text-violet-300\/40 { color: #64748b !important; }
 html:not(.dark) .text-violet-400 { color: var(--accent); }
 html:not(.dark) .text-violet-500 { color: var(--accent-hover); }
 
-html:not(.dark) .text-emerald-300 { color: #059669; }
-html:not(.dark) .text-emerald-400\/70 { color: #059669; }
+html:not(.dark) .text-green-yellow { color: #adff2f; }
 html:not(.dark) .text-amber-300 { color: #d97706; }
 html:not(.dark) .text-orange-300 { color: #ea580c; }
 html:not(.dark) .text-sky-300 { color: #0284c7; }
@@ -441,7 +441,7 @@ html:not(.dark) .text-rose-400 { color: #e11d48; }
 
 html:not(.dark) .bg-violet-500\/10 { background-color: #eef2ff; }
 html:not(.dark) .bg-violet-500\/15 { background-color: #eef2ff; }
-html:not(.dark) .bg-emerald-500\/15 { background-color: #ecfdf5; }
+html:not(.dark) .bg-green-yellow\/15 { background-color: #f7ffd6; }
 html:not(.dark) .bg-amber-500\/15 { background-color: #fffbeb; }
 html:not(.dark) .bg-orange-500\/15 { background-color: #fff7ed; }
 html:not(.dark) .bg-sky-500\/15 { background-color: #f0f9ff; }

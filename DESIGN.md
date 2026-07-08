@@ -18,6 +18,8 @@ FlutterFlow's design system is a midnight workspace for app builders: near-black
 | Slate Mist | `#9ba1ae` | `--color-slate-mist` | Muted body and helper text — descriptions, metadata, secondary nav items. Sits clearly below white in hierarchy while maintaining AAA contrast on the dark canvas |
 | Pure White | `#ffffff` | `--color-pure-white` | Light supporting surface for subtle backgrounds and section separation. Do not promote it to the primary CTA color |
 | True Black | `#000000` | `--color-true-black` | Icon detail in light/banner contexts and SVG illustration fills where maximum contrast is required against white backgrounds |
+| Green Yellow | `#adff2f` | `--color-green-yellow` | Attendance status accent — check-in icons, "Hadir"/"Terlambat" labels, success indicators, and badge highlights. Replaces emerald/amber in attendance flows |
+| Electric Violet (solid) | `#5800fd` | `--color-electric-violet` | Check-out result sheet icon backgrounds, primary CTA buttons. Solid variant of the brand violet for icon containers and confirmation dialogs |
 
 ## Tokens — Typography
 
@@ -207,6 +209,7 @@ primary action: no distinct CTA color
 - Muted text: #9ba1ae (Slate Mist)
 - Brand accent: #5800fd (Electric Violet)
 - Gradient orb: #4b39ef → transparent
+- Attendance status: #adff2f (Green Yellow)
 
 **Example Component Prompts**
 
@@ -261,6 +264,7 @@ Letter-spacing scales with size — small text (13–14px) uses 0.05em (0.65–0
   --color-slate-mist: #9ba1ae;
   --color-pure-white: #ffffff;
   --color-true-black: #000000;
+  --color-green-yellow: #adff2f;
 
   /* Typography — Font Families */
   --font-urbanist: 'Urbanist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -354,6 +358,7 @@ Letter-spacing scales with size — small text (13–14px) uses 0.05em (0.65–0
   --color-slate-mist: #9ba1ae;
   --color-pure-white: #ffffff;
   --color-true-black: #000000;
+  --color-green-yellow: #adff2f;
 
   /* Typography */
   --font-urbanist: 'Urbanist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;

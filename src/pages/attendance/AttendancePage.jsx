@@ -6,6 +6,7 @@ import {
   RefreshCw, Loader2, ShieldAlert, ShieldCheck, LogOut
 } from "lucide-react";
 import LocationMap from "../../components/LocationMap";
+import AttendanceResultSheet from "../../components/AttendanceResultSheet";
 import { getCurrentPosition } from "../../services/geoService";
 import { getPuskesmasLocation, calculateDistance } from "../../services/attendanceService";
 
@@ -57,6 +58,10 @@ export default function AttendancePage() {
   const [saving, setSaving] = useState(false);
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
   const [puskesmasLocation, setPuskesmasLocation] = useState({ latitude: -8.5697, longitude: 116.0821, radius_meter: 200 });
+
+  const [resultSheetOpen, setResultSheetOpen] = useState(false);
+  const [resultType, setResultType] = useState("in");
+  const [resultData, setResultData] = useState(null);
 
   const syncServerTime = async () => {
     try {
@@ -252,7 +257,7 @@ export default function AttendancePage() {
         device_name: deviceName,
       };
 
-      const { error } = await supabase
+      const { data: inserted, error } = await supabase
         .from("attendance")
         .upsert(payload, { onConflict: "user_id,date" })
         .select()
@@ -260,8 +265,10 @@ export default function AttendancePage() {
 
       if (error) throw error;
 
-      setSuccessMsg("Absensi berhasil!");
-      await fetchTodayAttendance();
+      setTodayAttendance(inserted);
+      setResultData(inserted);
+      setResultType("in");
+      setResultSheetOpen(true);
     } catch (err) {
       setError("Gagal absen: " + (err.message || ""));
     } finally {
@@ -280,7 +287,7 @@ export default function AttendancePage() {
       if (timeErr) throw timeErr;
       const now = new Date(serverNow);
 
-      const { error } = await supabase
+      const { data: updated, error } = await supabase
         .from("attendance")
         .update({
           clock_out_time: now.toISOString(),
@@ -295,12 +302,16 @@ export default function AttendancePage() {
           device_visitor_id: deviceVisitorId,
           device_name: deviceName,
         })
-        .eq("id", todayAttendance.id);
+        .eq("id", todayAttendance.id)
+        .select()
+        .single();
 
       if (error) throw error;
 
-      setSuccessMsg("Absen pulang berhasil!");
-      await fetchTodayAttendance();
+      setTodayAttendance(updated);
+      setResultData(updated);
+      setResultType("out");
+      setResultSheetOpen(true);
     } catch (err) {
       setError("Gagal absen pulang: " + (err.message || ""));
     } finally {
@@ -326,7 +337,7 @@ export default function AttendancePage() {
           </div>
           <p className="text-2xl font-bold mt-1 font-mono tabular-nums">{timeStr}</p>
           {!serverTime && (
-            <p className="text-[10px] text-amber-200 mt-1 flex items-center gap-1">
+            <p className="text-[10px] text-green-yellow mt-1 flex items-center gap-1">
               <Loader2 size={10} className="animate-spin" /> Sinkron server...
             </p>
           )}
@@ -336,13 +347,13 @@ export default function AttendancePage() {
       <div className="design-card p-4">
         {todayAttendance ? (
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${todayAttendance.clock_out_time ? "bg-electric-violet/20" : "bg-emerald-500/20"}`}>
-              {todayAttendance.clock_out_time ? <CheckCircle2 size={18} className="text-periwinkle-glow" /> : <CheckCircle2 size={18} className="text-emerald-400" />}
+            <div               className={`w-10 h-10 rounded-2xl flex items-center justify-center ${todayAttendance.clock_out_time ? "bg-electric-violet/20" : "bg-green-yellow/20"}`}>
+              {todayAttendance.clock_out_time ? <CheckCircle2 size={18} className="text-periwinkle-glow" /> : <CheckCircle2 size={18} className="text-green-yellow" />}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-pure-white">
                 {todayAttendance.clock_out_time ? "Sudah Absen (Selesai)" : "Sudah Absen Masuk"}{" "}
-                {todayAttendance.is_late && <span className="text-amber-400 text-[10px]">(Terlambat {todayAttendance.late_minutes}m)</span>}
+                {todayAttendance.is_late && <span className="text-green-yellow text-[10px]">(Terlambat {todayAttendance.late_minutes}m)</span>}
               </p>
               <div className="flex flex-wrap items-center gap-2 mt-1">
                 <div className="flex items-center gap-1">
@@ -361,7 +372,7 @@ export default function AttendancePage() {
                 )}
                 {todayAttendance.shift_code && (
                   <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold
-                    ${todayAttendance.shift_code === "PG" ? "bg-amber-500/15 text-amber-300" : ""}
+                    ${todayAttendance.shift_code === "PG" ? "bg-green-yellow/15 text-green-yellow" : ""}
                     ${todayAttendance.shift_code === "SR" ? "bg-orange-500/15 text-orange-300" : ""}
                     ${todayAttendance.shift_code === "SI" ? "bg-sky-500/15 text-sky-300" : ""}
                     ${todayAttendance.shift_code === "ML" ? "bg-violet-500/15 text-violet-300" : ""}
@@ -382,7 +393,7 @@ export default function AttendancePage() {
               {todaySchedule ? (
                 <div className="flex items-center gap-1.5 mt-1">
                   <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold
-                    ${todaySchedule.code === "PG" ? "bg-amber-500/15 text-amber-300" : ""}
+                    ${todaySchedule.code === "PG" ? "bg-green-yellow/15 text-green-yellow" : ""}
                     ${todaySchedule.code === "SR" ? "bg-orange-500/15 text-orange-300" : ""}
                     ${todaySchedule.code === "SI" ? "bg-sky-500/15 text-sky-300" : ""}
                     ${todaySchedule.code === "ML" ? "bg-violet-500/15 text-violet-300" : ""}
@@ -392,7 +403,7 @@ export default function AttendancePage() {
                   <span className="text-[10px] text-slate-mist">Jadwal hari ini</span>
                 </div>
               ) : (
-                <p className="text-[10px] text-amber-300/70 mt-1">Tidak ada jadwal shift hari ini</p>
+                <p className="text-[10px] text-green-yellow/70 mt-1">Tidak ada jadwal shift hari ini</p>
               )}
             </div>
           </div>
@@ -403,12 +414,12 @@ export default function AttendancePage() {
         <div className="flex items-center justify-between px-4 pt-4 pb-3">
           <div className="flex items-center gap-2.5">
             <div className={`w-8 h-8 rounded-2xl flex items-center justify-center ${
-              locationStatus === "valid" ? "bg-emerald-500/20" :
+              locationStatus === "valid" ? "bg-green-yellow/20" :
               locationStatus === "invalid" ? "bg-red-500/20" :
               "bg-slate-500/20"
             }`}>
               <MapPin size={15} className={
-                locationStatus === "valid" ? "text-emerald-400" :
+                locationStatus === "valid" ? "text-green-yellow" :
                 locationStatus === "invalid" ? "text-red-400" :
                 "text-slate-mist"
               } />
@@ -464,11 +475,18 @@ export default function AttendancePage() {
       )}
 
       {successMsg && (
-        <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2">
-          <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
-          <p className="text-xs text-emerald-300">{successMsg}</p>
+        <div className="p-3 rounded-2xl bg-green-yellow/10 border-green-yellow/30 flex items-center gap-2">
+          <CheckCircle2 size={16} className="text-green-yellow shrink-0" />
+          <p className="text-xs text-green-yellow">{successMsg}</p>
         </div>
       )}
+
+      <AttendanceResultSheet
+        open={resultSheetOpen}
+        onClose={() => setResultSheetOpen(false)}
+        data={resultData}
+        type={resultType}
+      />
 
       {todayAttendance && todayAttendance.clock_out_time ? null : (
         <button
