@@ -90,6 +90,10 @@
    - Biaya: gratis (memanfaatkan Vercel Functions & Supabase yang sudah ada)
    - CATATAN: WebAuthn tidak sesederhana plugin Capacitor — butuh backend endpoint + DB + logika kriptografi.
 
+## Preview Workflow
+- Sebelum commit perubahan UI, buat preview HTML dulu, buka via `Invoke-Item`
+- Tunggu approval user sebelum commit & push
+
 ### Notes
 - `Fingerprint` icon tidak ada di lucide-react v1.18.0
 - Ikon sidik jari di dialog biometric berasal dari sistem OS (Android/iOS), bukan dari aplikasi
