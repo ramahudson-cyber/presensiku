@@ -375,8 +375,8 @@ export default function LoginPage() {
             <h1 className="font-urbanist text-2xl sm:text-3xl lg:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
               Hadir.Kuy
             </h1>
-            <p className="text-slate-mist text-xs sm:text-sm leading-relaxed mt-2 tracking-[0.72px]">
-              Absen anti ribet, kerja makin greget
+            <p className="text-green-yellow text-xs sm:text-sm leading-relaxed mt-2 tracking-[0.72px]">
+              Absen anti ribet, kerja makin greget!
             </p>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-4">
               <span className="text-periwinkle-glow text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
@@ -391,6 +391,7 @@ export default function LoginPage() {
                 Optimal
               </span>
             </div>
+            <p className="text-slate-mist/75 text-[10px] sm:text-xs tracking-[1px] mt-4 uppercase">Puskesmas Ampenan</p>
           </div>
 
           {/* Card — Onyx surface */}
