@@ -375,20 +375,20 @@ export default function LoginPage() {
         {/* RIGHT: Hero — desktop only */}
         <div className="hidden lg:block lg:flex-1">
           <div className="text-left px-2">
-            <h1 className="font-urbanist text-5xl font-bold tracking-[1.22px] text-pure-white leading-none">
+            <h1 className="font-urbanist text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
               Hadir.Kuy
             </h1>
-            <p className="text-green-yellow text-sm leading-relaxed mt-3 tracking-[0.72px]">
+            <p className="text-green-yellow text-base leading-relaxed mt-4 tracking-[0.72px]">
               Absen anti ribet, kerja makin greget!
             </p>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-5">
-              <span className="text-[#c4b5fd] text-xs tracking-[2.5px] uppercase font-semibold">Disiplin</span>
-              <span className="text-slate-mist/20 text-xs">•</span>
-              <span className="text-[#c4b5fd] text-xs tracking-[2.5px] uppercase font-semibold">Akurat</span>
-              <span className="text-slate-mist/20 text-xs">•</span>
-              <span className="text-[#c4b5fd] text-xs tracking-[2.5px] uppercase font-semibold">Optimal</span>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-6">
+              <span className="text-[#c4b5fd] text-sm tracking-[2.5px] uppercase font-semibold">Disiplin</span>
+              <span className="text-slate-mist/20 text-sm">•</span>
+              <span className="text-[#c4b5fd] text-sm tracking-[2.5px] uppercase font-semibold">Akurat</span>
+              <span className="text-slate-mist/20 text-sm">•</span>
+              <span className="text-[#c4b5fd] text-sm tracking-[2.5px] uppercase font-semibold">Optimal</span>
             </div>
-            <p className="text-pure-white text-xs tracking-[1px] mt-5 uppercase">Puskesmas Ampenan</p>
+            <p className="text-pure-white text-sm tracking-[1px] mt-6 uppercase">Puskesmas Ampenan</p>
           </div>
         </div>
 
@@ -400,17 +400,17 @@ export default function LoginPage() {
               <h1 className="font-urbanist text-3xl sm:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
                 Hadir.Kuy
               </h1>
-              <p className="text-green-yellow text-xs sm:text-sm leading-relaxed mt-2 tracking-[0.72px]">
+              <p className="text-green-yellow text-sm sm:text-base leading-relaxed mt-2 tracking-[0.72px]">
                 Absen anti ribet, kerja makin greget!
               </p>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-4">
-                <span className="text-[#c4b5fd] text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">Disiplin</span>
-                <span className="text-slate-mist/20 text-[10px]">•</span>
-                <span className="text-[#c4b5fd] text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">Akurat</span>
-                <span className="text-slate-mist/20 text-[10px]">•</span>
-                <span className="text-[#c4b5fd] text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">Optimal</span>
+                <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Disiplin</span>
+                <span className="text-slate-mist/20 text-xs sm:text-sm">•</span>
+                <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Akurat</span>
+                <span className="text-slate-mist/20 text-xs sm:text-sm">•</span>
+                <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Optimal</span>
               </div>
-              <p className="text-pure-white text-[10px] sm:text-xs tracking-[1px] mt-4 uppercase">Puskesmas Ampenan</p>
+              <p className="text-pure-white text-xs sm:text-sm tracking-[1px] mt-4 uppercase">Puskesmas Ampenan</p>
             </div>
 
             {/* Card */}
