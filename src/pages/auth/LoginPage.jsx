@@ -372,8 +372,28 @@ export default function LoginPage() {
       <div className="relative z-10 min-h-dvh flex items-start justify-center pt-[2vh] sm:pt-[4vh] p-4 sm:p-6">
         <div className="w-full lg:max-w-[1000px] mx-auto flex flex-col lg:flex-row lg:items-center lg:gap-16">
 
+        {/* RIGHT: Hero — desktop only */}
+        <div className="hidden lg:block lg:flex-1">
+          <div className="text-left px-2">
+            <h1 className="font-urbanist text-5xl font-bold tracking-[1.22px] text-pure-white leading-none">
+              Hadir.Kuy
+            </h1>
+            <p className="text-green-yellow text-sm leading-relaxed mt-3 tracking-[0.72px]">
+              Absen anti ribet, kerja makin greget!
+            </p>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-5">
+              <span className="text-[#c4b5fd] text-xs tracking-[2.5px] uppercase font-semibold">Disiplin</span>
+              <span className="text-slate-mist/20 text-xs">•</span>
+              <span className="text-[#c4b5fd] text-xs tracking-[2.5px] uppercase font-semibold">Akurat</span>
+              <span className="text-slate-mist/20 text-xs">•</span>
+              <span className="text-[#c4b5fd] text-xs tracking-[2.5px] uppercase font-semibold">Optimal</span>
+            </div>
+            <p className="text-pure-white text-xs tracking-[1px] mt-5 uppercase">Puskesmas Ampenan</p>
+          </div>
+        </div>
+
           {/* LEFT: Card */}
-          <div className="w-full max-w-[420px] mx-auto lg:mx-0 lg:flex-1 lg:order-1">
+          <div className="w-full max-w-[420px] mx-auto lg:mx-0 lg:flex-1">
 
             {/* Hero — mobile/tablet only */}
             <div className="text-left mb-6 sm:mb-10 lg:hidden px-2">
@@ -656,26 +676,6 @@ export default function LoginPage() {
           <p className="text-center text-[10px] text-pure-white mt-6 sm:mt-8 tracking-[0.65px]">
             Hadir.Kuy v{appVersion}
           </p>
-        </div>
-
-        {/* RIGHT: Hero — desktop only */}
-        <div className="hidden lg:block lg:flex-1 lg:order-2">
-          <div className="text-left px-2">
-            <h1 className="font-urbanist text-5xl font-bold tracking-[1.22px] text-pure-white leading-none">
-              Hadir.Kuy
-            </h1>
-            <p className="text-green-yellow text-sm leading-relaxed mt-3 tracking-[0.72px]">
-              Absen anti ribet, kerja makin greget!
-            </p>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-5">
-              <span className="text-[#c4b5fd] text-xs tracking-[2.5px] uppercase font-semibold">Disiplin</span>
-              <span className="text-slate-mist/20 text-xs">•</span>
-              <span className="text-[#c4b5fd] text-xs tracking-[2.5px] uppercase font-semibold">Akurat</span>
-              <span className="text-slate-mist/20 text-xs">•</span>
-              <span className="text-[#c4b5fd] text-xs tracking-[2.5px] uppercase font-semibold">Optimal</span>
-            </div>
-            <p className="text-pure-white text-xs tracking-[1px] mt-5 uppercase">Puskesmas Ampenan</p>
-          </div>
         </div>
       </div>
     </div>
