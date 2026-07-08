@@ -9,7 +9,7 @@ FlutterFlow's design system is a midnight workspace for app builders: near-black
 
 | Name | Value | Token | Role |
 |------|-------|-------|------|
-| Electric Violet | `#5800fd` | `--color-electric-violet` | Violet supporting accent for decorative details and low-frequency emphasis. Do not promote it to the primary CTA color |
+| Electric Violet | `#5800fd` | `--color-electric-violet` | Primary CTA and brand accent — filled buttons, active states, icon containers, and high-emphasis interactive elements throughout the app |
 | Deep Indigo | `#2415c6` | `--color-deep-indigo` | Saturated brand depth — testimonial card backgrounds, gradient mid-stops, and decorative fills that reinforce violet identity without competing with Electric Violet for attention |
 | Periwinkle Glow | `#7066ed` | `--color-periwinkle-glow` | Soft brand highlight — icon tints, secondary accents, and gradient highlights that lighten the violet palette for hover states and decorative ornament |
 | Halo Violet | `radial-gradient(circle farthest-side at 0px -30%, rgb(75, 57, 239), rgba(6, 3, 17, 0) 84%)` | `--color-halo-violet` | Radial gradient seed — the orb color that radiates from the hero top-left corner and bleeds into card backgrounds, creating atmosphere without flat fill |
@@ -19,7 +19,7 @@ FlutterFlow's design system is a midnight workspace for app builders: near-black
 | Pure White | `#ffffff` | `--color-pure-white` | Light supporting surface for subtle backgrounds and section separation. Do not promote it to the primary CTA color |
 | True Black | `#000000` | `--color-true-black` | Icon detail in light/banner contexts and SVG illustration fills where maximum contrast is required against white backgrounds |
 | Green Yellow | `#adff2f` | `--color-green-yellow` | Attendance status accent — check-in icons, "Hadir"/"Terlambat" labels, success indicators, and badge highlights. Replaces emerald/amber in attendance flows |
-| Electric Violet (solid) | `#5800fd` | `--color-electric-violet` | Check-out result sheet icon backgrounds, primary CTA buttons. Solid variant of the brand violet for icon containers and confirmation dialogs |
+
 
 ## Tokens — Typography
 
@@ -106,7 +106,7 @@ Pure white fill (#ffffff), Obsidian text (#060311), Urbanist 16px weight 500, 99
 ### Filled Hero CTA
 **Role:** High-emphasis primary action on dark hero
 
-Electric Violet fill (#5800fd), white text, Urbanist 18px weight 500, 9999px radius, 16px vertical / 32px horizontal padding. Single bold chromatic moment against the dark canvas — carries the entire color story of the hero.
+Electric Violet fill (#5800fd), white text, Urbanist 18px weight 500, 9999px radius, 16px vertical / 32px horizontal padding. The primary CTA color — used for all filled buttons, active states, and high-emphasis actions across the app.
 
 ### Testimonial Card
 **Role:** Customer quote card in social proof grid
@@ -165,12 +165,12 @@ White column headers (Urbanist 16px weight 600), Slate Mist link items (14px wei
 - Set all CTAs to 9999px pill radius, never square buttons — the pill shape carries the friendly developer-tool personality
 - Apply the radial Halo Violet gradient from the top-left of hero sections to create atmospheric depth without flat color fills
 - Use the three-tier surface stack (Obsidian #060311 → Onyx #161320 → gradient wash) for layering — never add drop shadows for elevation
-- Pair Electric Violet #5800fd with Pure White text only on dark surfaces — the contrast must be 7:1 or higher for accessibility
+- Use Electric Violet #5800fd as the primary CTA color — filled buttons, icon containers, and high-emphasis actions. Pair with Pure White text or black icons depending on context.
 - Set all cards to 24px radius with 40px padding — the generous interior space is part of the spacious devtools feel
 - Use Inter 24px weight 300 with 0.27em tracking for all-caps eyebrow labels above section headlines
 
 ### Don't
-- Don't introduce new colors outside the violet spectrum — the brand is monochromatic dark with a single chromatic accent
+- Don't introduce new colors outside the violet + green-yellow spectrum — the brand is dark with Electric Violet as primary accent and Green Yellow for attendance status
 - Don't use letter-spacing tighter than 0.03em on headlines — the wide tracking is intentional, not a mistake
 - Don't add multi-layered drop shadows — the system uses one shadow token and prefers gradient glows for depth
 - Don't use square or 8px-radius buttons — pill shapes (9999px) are the only button geometry
@@ -201,19 +201,20 @@ The site uses a max-width 1200px centered container for content blocks, but hero
 
 ## Agent Prompt Guide
 
-primary action: no distinct CTA color
+primary action: #5800fd (Electric Violet)
 **Quick Color Reference**
 - Page background: #060311 (Obsidian)
 - Card surface: #161320 (Onyx)
 - Primary text: #ffffff (Pure White)
 - Muted text: #9ba1ae (Slate Mist)
 - Brand accent: #5800fd (Electric Violet)
+- Primary action / CTA: #5800fd (Electric Violet)
 - Gradient orb: #4b39ef → transparent
 - Attendance status: #adff2f (Green Yellow)
 
 **Example Component Prompts**
 
-No distinct primary action color was observed; use the extracted neutral button treatments instead of inventing a filled CTA color.
+Use #5800fd (Electric Violet) as the filled CTA button color with white text — the pill-shaped buttons use this violet for all primary actions: "Absen Sekarang", "Absen Pulang", save/submit buttons. Solid violet backgrounds with black icons for check-out result sheet. Do not introduce other CTA colors.
 
 2. **Build a testimonial card**: Background #2415c6 with gradient to #4b39ef at top-right, 24px radius, 40px padding. Company name in Urbanist 18px weight 600, white, top of card. Quote body in Urbanist 16px weight 400, white at 85% opacity, 24px gap below company name. Author name in Urbanist 14px weight 600, white; role in Urbanist 14px weight 400, #9ba1ae — both bottom of card with 40px gap above.
 
