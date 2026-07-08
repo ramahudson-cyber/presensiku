@@ -368,12 +368,12 @@ export default function LoginPage() {
       <div className="absolute inset-0 professional-ambient-bg pointer-events-none" />
 
       {/* Content */}
-      <div className="relative z-10 min-h-screen flex items-start justify-center pt-[5vh] sm:pt-[10vh] lg:pt-[15vh] p-4 sm:p-6">
+      <div className="relative z-10 min-h-screen flex items-start justify-center pt-[4vh] p-4 sm:p-6">
         <div className="w-full max-w-[420px] mx-auto">
 
           {/* Hero — rata kiri */}
           <div className="text-left mb-10 sm:mb-12 px-2">
-            <h1 className="font-urbanist text-2xl sm:text-3xl lg:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
+            <h1 className="font-urbanist text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[1.22px] text-pure-white leading-none">
               Hadir.Kuy
             </h1>
             <p className="text-green-yellow text-xs sm:text-sm leading-relaxed mt-2 tracking-[0.72px]">
