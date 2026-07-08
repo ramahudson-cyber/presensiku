@@ -4,6 +4,7 @@ import { signIn } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import { isNativePlatform } from "../../lib/devicePlatform";
+import { getCurrentVersion } from "../../services/updateService";
 import {
   getDeviceInfo,
   checkDeviceBinding,
@@ -367,12 +368,12 @@ export default function LoginPage() {
       <div className="absolute inset-0 professional-ambient-bg pointer-events-none" />
 
       {/* Content */}
-      <div className="relative z-10 min-h-screen flex items-start justify-center pt-[8vh] sm:pt-[12vh] lg:pt-[15vh] p-4 sm:p-6">
+      <div className="relative z-10 min-h-screen flex items-start justify-center pt-[5vh] sm:pt-[10vh] lg:pt-[15vh] p-4 sm:p-6">
         <div className="w-full max-w-[420px] mx-auto">
 
           {/* Hero — rata kiri */}
-          <div className="text-left mb-8 sm:mb-10 px-2">
-            <h1 className="font-urbanist text-2xl sm:text-3xl lg:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
+          <div className="text-left mb-10 sm:mb-12 px-2">
+            <h1 className="font-urbanist text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[1.22px] text-pure-white leading-none">
               Hadir.Kuy
             </h1>
             <p className="text-green-yellow text-xs sm:text-sm leading-relaxed mt-2 tracking-[0.72px]">
@@ -391,7 +392,7 @@ export default function LoginPage() {
                 Optimal
               </span>
             </div>
-            <p className="text-slate-mist/75 text-[10px] sm:text-xs tracking-[1px] mt-4 uppercase">Puskesmas Ampenan</p>
+            <p className="text-pure-white text-[10px] sm:text-xs tracking-[1px] mt-4 uppercase">Puskesmas Ampenan</p>
           </div>
 
           {/* Card — Onyx surface */}
@@ -654,8 +655,8 @@ export default function LoginPage() {
           </div>
 
           {/* Footer */}
-          <p className="text-center text-[10px] text-slate-mist/50 mt-8 sm:mt-10 tracking-[0.65px]">
-            Hadir.Kuy &copy; {new Date().getFullYear()}
+          <p className="text-center text-[10px] text-pure-white mt-6 sm:mt-8 tracking-[0.65px]">
+            Hadir.Kuy v{getCurrentVersion().version}
           </p>
         </div>
       </div>
