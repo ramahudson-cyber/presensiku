@@ -49,10 +49,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
         <div className="p-5 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-xl flex items-center justify-center shadow-lg shrink-0">
-              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-white">
-                <path d="M12 2L2 7v10l10 5 10-5V7L12 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-                <path d="M12 22V12M2 7l10 5 10-5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-              </svg>
+              <span className="text-white font-bold text-sm tracking-tight">HK</span>
             </div>
             <div>
               <h1 className="text-lg font-bold tracking-wide text-pure-white">Hadir.Kuy</h1>
