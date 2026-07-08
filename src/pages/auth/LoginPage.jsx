@@ -412,22 +412,24 @@ export default function LoginPage() {
                 )}
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
+                    <label className="block text-[11px] font-medium text-slate-mist uppercase tracking-[0.05em] mb-1.5">Username / Email</label>
                     <input
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Username atau Email"
+                      placeholder="nama@puskesmas.com"
                       required
                       disabled={loading}
                       className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-obsidian border border-onyx rounded-[16px] text-pure-white text-sm placeholder-slate-mist/60 focus:outline-none focus:border-electric-violet/40 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40"
                     />
                   </div>
                   <div className="relative">
+                    <label className="block text-[11px] font-medium text-slate-mist uppercase tracking-[0.05em] mb-1.5">Password</label>
                     <input
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Password"
+                      placeholder="••••••••"
                       required
                       disabled={loading}
                       className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-obsidian border border-onyx rounded-[16px] text-pure-white text-sm placeholder-slate-mist/60 focus:outline-none focus:border-electric-violet/40 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40 pr-11"
