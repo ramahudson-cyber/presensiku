@@ -373,7 +373,7 @@ export default function LoginPage() {
 
           {/* Hero — rata kiri */}
           <div className="text-left mb-10 sm:mb-12 px-2">
-            <h1 className="font-urbanist text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[1.22px] text-pure-white leading-none">
+            <h1 className="font-urbanist text-2xl sm:text-3xl lg:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
               Hadir.Kuy
             </h1>
             <p className="text-green-yellow text-xs sm:text-sm leading-relaxed mt-2 tracking-[0.72px]">
