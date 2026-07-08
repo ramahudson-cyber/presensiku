@@ -6,6 +6,6 @@
     </linearGradient>
   </defs>
   <rect width="512" height="512" rx="96" fill="url(#bg)"/>
-  <text x="50%" y="43%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="120" fill="white" letter-spacing="2">Hadir.Kuy</text>
-  <text x="50%" y="62%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-weight="500" font-size="34" fill="rgba(255,255,255,0.9)" letter-spacing="1">Absen anti ribet, kerja makin greget!</text>
+  <text x="50%" y="44%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="80" fill="white" letter-spacing="1.5">Hadir.Kuy</text>
+  <text x="50%" y="62%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-weight="500" font-size="22" fill="rgba(255,255,255,0.9)" letter-spacing="1">Absen anti ribet, kerja makin greget!</text>
 </svg>
