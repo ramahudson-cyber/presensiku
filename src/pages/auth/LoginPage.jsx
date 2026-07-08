@@ -40,6 +40,7 @@ export default function LoginPage() {
   const [deviceDebug, setDeviceDebug] = useState("");
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("");
+  const appVersion = getCurrentVersion().version;
 
   const navigate = useNavigate();
   const { refreshUser, isAuthenticated } = useAuth();
@@ -369,33 +370,30 @@ export default function LoginPage() {
 
       {/* Content */}
       <div className="relative z-10 min-h-dvh flex items-start justify-center pt-[2vh] sm:pt-[4vh] p-4 sm:p-6">
-        <div className="w-full max-w-[420px] mx-auto">
+        <div className="w-full lg:max-w-[1000px] mx-auto flex flex-col lg:flex-row lg:items-center lg:gap-16">
 
-          {/* Hero — rata kiri */}
-          <div className="text-left mb-6 sm:mb-12 px-2">
-            <h1 className="font-urbanist text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[1.22px] text-pure-white leading-none">
-              Hadir.Kuy
-            </h1>
-            <p className="text-green-yellow text-xs sm:text-sm leading-relaxed mt-2 tracking-[0.72px]">
-              Absen anti ribet, kerja makin greget!
-            </p>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-4">
-              <span className="text-[#c4b5fd] text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
-                Disiplin
-              </span>
-              <span className="text-slate-mist/20 text-[10px]">•</span>
-              <span className="text-[#c4b5fd] text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
-                Akurat
-              </span>
-              <span className="text-slate-mist/20 text-[10px]">•</span>
-              <span className="text-[#c4b5fd] text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
-                Optimal
-              </span>
+          {/* LEFT: Card */}
+          <div className="w-full max-w-[420px] mx-auto lg:mx-0 lg:flex-1 lg:order-1">
+
+            {/* Hero — mobile/tablet only */}
+            <div className="text-left mb-6 sm:mb-10 lg:hidden px-2">
+              <h1 className="font-urbanist text-3xl sm:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
+                Hadir.Kuy
+              </h1>
+              <p className="text-green-yellow text-xs sm:text-sm leading-relaxed mt-2 tracking-[0.72px]">
+                Absen anti ribet, kerja makin greget!
+              </p>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-4">
+                <span className="text-[#c4b5fd] text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">Disiplin</span>
+                <span className="text-slate-mist/20 text-[10px]">•</span>
+                <span className="text-[#c4b5fd] text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">Akurat</span>
+                <span className="text-slate-mist/20 text-[10px]">•</span>
+                <span className="text-[#c4b5fd] text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">Optimal</span>
+              </div>
+              <p className="text-pure-white text-[10px] sm:text-xs tracking-[1px] mt-4 uppercase">Puskesmas Ampenan</p>
             </div>
-            <p className="text-pure-white text-[10px] sm:text-xs tracking-[1px] mt-4 uppercase">Puskesmas Ampenan</p>
-          </div>
 
-          {/* Card — Onyx surface */}
+            {/* Card */}
           <div className="bg-white/[0.04] backdrop-blur-xl rounded-[24px] p-6 sm:p-10 border border-white/[0.06] shadow-2xl">
             {/* LOGIN STEP */}
             {step === "login" && (
@@ -656,10 +654,31 @@ export default function LoginPage() {
 
           {/* Footer */}
           <p className="text-center text-[10px] text-pure-white mt-6 sm:mt-8 tracking-[0.65px]">
-            Hadir.Kuy v{getCurrentVersion().version}
+            Hadir.Kuy v{appVersion}
           </p>
         </div>
+
+        {/* RIGHT: Hero — desktop only */}
+        <div className="hidden lg:block lg:flex-1 lg:order-2">
+          <div className="text-left px-2">
+            <h1 className="font-urbanist text-5xl font-bold tracking-[1.22px] text-pure-white leading-none">
+              Hadir.Kuy
+            </h1>
+            <p className="text-green-yellow text-sm leading-relaxed mt-3 tracking-[0.72px]">
+              Absen anti ribet, kerja makin greget!
+            </p>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-5">
+              <span className="text-[#c4b5fd] text-xs tracking-[2.5px] uppercase font-semibold">Disiplin</span>
+              <span className="text-slate-mist/20 text-xs">•</span>
+              <span className="text-[#c4b5fd] text-xs tracking-[2.5px] uppercase font-semibold">Akurat</span>
+              <span className="text-slate-mist/20 text-xs">•</span>
+              <span className="text-[#c4b5fd] text-xs tracking-[2.5px] uppercase font-semibold">Optimal</span>
+            </div>
+            <p className="text-pure-white text-xs tracking-[1px] mt-5 uppercase">Puskesmas Ampenan</p>
+          </div>
+        </div>
       </div>
+    </div>
     </div>
   );
 }
