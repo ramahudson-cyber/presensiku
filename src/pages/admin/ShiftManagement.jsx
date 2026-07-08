@@ -39,18 +39,32 @@ export default function TabShift() {
 
   const update = (code, day, field, value) => {
     setDirty(true);
-    setSchedules(prev => prev.map(s => {
-      if (s.shift_code === code && s.day_of_week === day) {
-        const updated = { ...s, [field]: value };
-        if (field === "is_working_day" && value === true) {
-          updated.start_time = "08:00";
-          updated.end_time = "17:00";
-          updated.latest_check_in = "08:05";
-        }
-        return updated;
+    setSchedules(prev => {
+      const existing = prev.find(s => s.shift_code === code && s.day_of_week === day);
+      if (!existing) {
+        return [...prev, {
+          shift_code: code,
+          day_of_week: day,
+          is_working_day: true,
+          start_time: "08:00",
+          end_time: "17:00",
+          latest_check_in: "08:05",
+          crosses_midnight: false,
+        }];
       }
-      return s;
-    }));
+      return prev.map(s => {
+        if (s.shift_code === code && s.day_of_week === day) {
+          const updated = { ...s, [field]: value };
+          if (field === "is_working_day" && value === true) {
+            updated.start_time = "08:00";
+            updated.end_time = "17:00";
+            updated.latest_check_in = "08:05";
+          }
+          return updated;
+        }
+        return s;
+      });
+    });
   };
 
   const saveAll = async () => {
