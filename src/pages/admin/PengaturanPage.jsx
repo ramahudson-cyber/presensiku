@@ -36,7 +36,7 @@ const avatarGradient = (name = "") => {
     "from-electric-violet to-deep-indigo",
     "from-sky-500 to-blue-700",
     "from-emerald-500 to-teal-700",
-    "from-amber-500 to-orange-700",
+    "from-green-yellow to-electric-violet",
     "from-rose-500 to-pink-700",
     "from-fuchsia-500 to-purple-700",
   ];
@@ -605,7 +605,7 @@ function TabJamKerja() {
       </div>
 
       {!dbReady && (
-        <div className="flex items-center gap-2 p-3 rounded-3xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
+        <div className="flex items-center gap-2 p-3 rounded-3xl bg-green-yellow/10 border border-green-yellow/20 text-xs text-green-yellow">
           <AlertTriangle size={13} className="shrink-0" />
           Database belum siap. Pengaturan disimpan lokal. Jalankan <code className="px-1 py-0.5 bg-black/30 rounded font-mono">scripts/create-system-settings.sql</code> di Supabase.
         </div>
@@ -904,7 +904,7 @@ function TabManajemenUser() {
                           onClick={() => handleResetPassword(u)}
                           disabled={resettingId === u.id}
                           title="Reset password ke default"
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 rounded-full text-xs font-medium transition-all disabled:opacity-50"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-green-yellow/15 text-green-yellow hover:bg-green-yellow/25 rounded-full text-xs font-medium transition-all disabled:opacity-50"
                         >
                           {resettingId === u.id ? <RefreshCw size={11} className="animate-spin" /> : <Key size={11} />}
                           Password
@@ -1246,17 +1246,17 @@ function TabApprovalDevice() {
           {requests.map((req) => (
             <div
               key={req.id}
-              className={`${cardBase} border-amber-500/30 p-4 md:p-5`}
+              className={`${cardBase} border-green-yellow/30 p-4 md:p-5`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 flex-1 min-w-0">
-                  <div className="p-2.5 rounded-3xl bg-amber-500/15 shrink-0">
-                    <Smartphone size={20} className="text-amber-300" />
+                  <div className="p-2.5 rounded-3xl bg-green-yellow/15 shrink-0">
+                    <Smartphone size={20} className="text-green-yellow" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <p className="font-semibold text-pure-white">{req.user_name}</p>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/15 text-amber-300 text-xs font-medium rounded-full ring-1 ring-amber-500/30">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-yellow/15 text-green-yellow text-xs font-medium rounded-full ring-1 ring-green-yellow/30">
                         <Clock size={10} /> PENDING
                       </span>
                     </div>
@@ -1436,8 +1436,8 @@ function TabAuditLog() {
       UPDATE: "bg-sky-500/15 text-sky-300 ring-sky-500/30",
       DELETE: "bg-rose-500/15 text-rose-300 ring-rose-500/30",
       CLOCK_IN: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
-      CLOCK_OUT: "bg-orange-500/15 text-orange-300 ring-orange-500/30",
-      RESET_PASSWORD: "bg-amber-500/15 text-amber-300 ring-amber-500/30",
+      CLOCK_OUT: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",
+      RESET_PASSWORD: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",
       UPDATE_SETTING: "bg-purple-500/15 text-purple-300 ring-purple-500/30",
       SET_ACTIVE_LOCATION: "bg-cyan-500/15 text-cyan-300 ring-cyan-500/30",
     };

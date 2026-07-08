@@ -84,8 +84,8 @@ export default function EmployeeDashboard() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {[
             { label: "Hadir", value: stats.hadir, icon: CheckCircle, color: "text-emerald-300" },
-            { label: "Izin", value: stats.izin, icon: AlertCircle, color: "text-amber-300" },
-            { label: "Sakit", value: stats.sakit, icon: AlertCircle, color: "text-orange-300" },
+            { label: "Izin", value: stats.izin, icon: AlertCircle, color: "text-green-yellow" },
+            { label: "Sakit", value: stats.sakit, icon: AlertCircle, color: "text-green-yellow" },
             { label: "Alpha", value: stats.alpha, icon: XCircle, color: "text-red-300" },
           ].map((s) => (
             <div key={s.label} className="design-card-hover p-3 text-center shadow-lg">

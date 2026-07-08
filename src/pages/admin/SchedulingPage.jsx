@@ -12,8 +12,8 @@ import BottomSheet from "../../components/BottomSheet";
 import ConfirmSheet from "../../components/ConfirmSheet";
 
 const SHIFTS = [
-  { code: "PG", name: "Pagi", icon: Sun, color: "text-amber-400", bg: "bg-amber-500/15", ring: "ring-amber-500/30" },
-  { code: "SR", name: "Sore", icon: Sunset, color: "text-orange-400", bg: "bg-orange-500/15", ring: "ring-orange-500/30" },
+  { code: "PG", name: "Pagi", icon: Sun, color: "text-green-yellow", bg: "bg-green-yellow/15", ring: "ring-green-yellow/30" },
+  { code: "SR", name: "Sore", icon: Sunset, color: "text-green-yellow", bg: "bg-green-yellow/15", ring: "ring-green-yellow/30" },
   { code: "SI", name: "Siang", icon: CloudSun, color: "text-sky-400", bg: "bg-sky-500/15", ring: "ring-sky-500/30" },
   { code: "ML", name: "Malam", icon: Moon, color: "text-periwinkle-glow", bg: "bg-electric-violet/15", ring: "ring-violet-500/30" },
 ];

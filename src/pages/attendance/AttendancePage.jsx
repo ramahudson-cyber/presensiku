@@ -373,7 +373,7 @@ export default function AttendancePage() {
                 {todayAttendance.shift_code && (
                   <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold
                     ${todayAttendance.shift_code === "PG" ? "bg-green-yellow/15 text-green-yellow" : ""}
-                    ${todayAttendance.shift_code === "SR" ? "bg-orange-500/15 text-orange-300" : ""}
+                    ${todayAttendance.shift_code === "SR" ? "bg-green-yellow/15 text-green-yellow" : ""}
                     ${todayAttendance.shift_code === "SI" ? "bg-sky-500/15 text-sky-300" : ""}
                     ${todayAttendance.shift_code === "ML" ? "bg-violet-500/15 text-violet-300" : ""}
                   `}>
@@ -394,7 +394,7 @@ export default function AttendancePage() {
                 <div className="flex items-center gap-1.5 mt-1">
                   <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold
                     ${todaySchedule.code === "PG" ? "bg-green-yellow/15 text-green-yellow" : ""}
-                    ${todaySchedule.code === "SR" ? "bg-orange-500/15 text-orange-300" : ""}
+                    ${todaySchedule.code === "SR" ? "bg-green-yellow/15 text-green-yellow" : ""}
                     ${todaySchedule.code === "SI" ? "bg-sky-500/15 text-sky-300" : ""}
                     ${todaySchedule.code === "ML" ? "bg-violet-500/15 text-violet-300" : ""}
                   `}>

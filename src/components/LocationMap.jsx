@@ -62,7 +62,7 @@ export default function LocationMap({ userLocation, puskesmasLocation, distance,
     <div className="relative rounded-2xl overflow-hidden border border-white/10" style={{ height: 200 }}>
       <div ref={mapRef} className="w-full h-full" />
       <div className="absolute top-3 left-3 z-[1000] px-2.5 py-1.5 bg-black/60 backdrop-blur-sm rounded-lg flex items-center gap-1.5 text-white text-[11px] font-medium">
-        <span className={`w-1.5 h-1.5 rounded-full ${status === "valid" ? "bg-emerald-400" : status === "invalid" ? "bg-red-400" : "bg-amber-400"}`} />
+        <span className={`w-1.5 h-1.5 rounded-full ${status === "valid" ? "bg-green-yellow" : status === "invalid" ? "bg-red-400" : "bg-green-yellow"}`} />
         {status === "valid" ? `Dalam radius (${distance}m)` : status === "invalid" ? `Di luar radius (${distance}m)` : "Mendeteksi..."}
       </div>
       <style>{`

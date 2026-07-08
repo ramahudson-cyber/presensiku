@@ -179,7 +179,7 @@ const EmployeesPage = () => {
       asn: 'bg-emerald-500/15 text-emerald-300',
       pppk_penuh_waktu: 'bg-sky-500/15 text-sky-300',
       pppk_paruh_waktu: 'bg-sky-500/15 text-sky-300',
-      tpk: 'bg-amber-500/15 text-amber-300',
+      tpk: 'bg-green-yellow/15 text-green-yellow',
     };
     return map[status] || 'bg-white/5 text-slate-200';
   };
@@ -197,7 +197,7 @@ const EmployeesPage = () => {
       'from-electric-violet to-deep-indigo',
       'from-sky-500 to-blue-700',
       'from-emerald-500 to-teal-700',
-      'from-amber-500 to-orange-700',
+      'from-green-yellow to-electric-violet',
       'from-rose-500 to-pink-700',
       'from-fuchsia-500 to-purple-700',
     ];

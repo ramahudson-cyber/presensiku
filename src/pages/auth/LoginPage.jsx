@@ -536,9 +536,9 @@ export default function LoginPage() {
                   <p className="text-slate-mist text-xs sm:text-sm mt-2 tracking-[0.72px]">
                     Kode dikirim ke {userEmail}
                   </p>
-                  <div className="mt-3 p-2 bg-amber-500/10 border border-amber-500/20 rounded-[12px]">
-                    <p className="text-[10px] text-amber-400/70">
-                      Tidak terima email? Gunakan kode: <span className="font-mono font-bold text-amber-300 tracking-wider text-sm">{generatedOtp}</span>
+                  <div className="mt-3 p-2 bg-green-yellow/10 border border-green-yellow/20 rounded-[12px]">
+                    <p className="text-[10px] text-green-yellow/70">
+                      Tidak terima email? Gunakan kode: <span className="font-mono font-bold text-green-yellow tracking-wider text-sm">{generatedOtp}</span>
                     </p>
                   </div>
                 </div>
