@@ -423,24 +423,26 @@ export default function LoginPage() {
                       className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-obsidian border border-onyx rounded-[16px] text-pure-white text-sm placeholder-slate-mist/60 focus:outline-none focus:border-electric-violet/40 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40"
                     />
                   </div>
-                  <div className="relative">
+                  <div>
                     <label className="block text-[11px] font-medium text-slate-mist uppercase tracking-[0.05em] mb-1.5">Password</label>
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      required
-                      disabled={loading}
-                      className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-obsidian border border-onyx rounded-[16px] text-pure-white text-sm placeholder-slate-mist/60 focus:outline-none focus:border-electric-violet/40 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40 pr-11"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-mist hover:text-pure-white transition-colors"
-                    >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        required
+                        disabled={loading}
+                        className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-obsidian border border-onyx rounded-[16px] text-pure-white text-sm placeholder-slate-mist/60 focus:outline-none focus:border-electric-violet/40 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40 pr-11"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-mist hover:text-pure-white transition-colors"
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
                   </div>
                   <div className="flex justify-end">
                     <button
