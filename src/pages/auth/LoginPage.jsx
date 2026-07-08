@@ -394,7 +394,7 @@ export default function LoginPage() {
           </div>
 
           {/* Card — Onyx surface */}
-          <div className="bg-onyx rounded-[24px] p-6 sm:p-10">
+          <div className="bg-white/[0.04] backdrop-blur-xl rounded-[24px] p-6 sm:p-10 border border-white/[0.06] shadow-2xl">
             {/* LOGIN STEP */}
             {step === "login" && (
               <>
@@ -412,7 +412,7 @@ export default function LoginPage() {
                 )}
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-mist uppercase tracking-[0.05em] mb-1.5">Username / Email</label>
+                    <label className="block text-[11px] font-medium text-white/70 uppercase tracking-[0.05em] mb-1.5">Username / Email</label>
                     <input
                       type="text"
                       value={username}
@@ -420,11 +420,11 @@ export default function LoginPage() {
                       placeholder="nama@puskesmas.com"
                       required
                       disabled={loading}
-                      className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-obsidian border border-onyx rounded-[16px] text-pure-white text-sm placeholder-slate-mist/60 focus:outline-none focus:border-electric-violet/40 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40"
+                      className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-white/[0.06] border border-white/[0.08] rounded-[16px] text-pure-white text-sm placeholder-white/30 focus:outline-none focus:border-electric-violet/50 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-mist uppercase tracking-[0.05em] mb-1.5">Password</label>
+                    <label className="block text-[11px] font-medium text-white/70 uppercase tracking-[0.05em] mb-1.5">Password</label>
                     <div className="relative">
                       <input
                         type={showPassword ? "text" : "password"}
@@ -433,7 +433,7 @@ export default function LoginPage() {
                         placeholder="••••••••"
                         required
                         disabled={loading}
-                        className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-obsidian border border-onyx rounded-[16px] text-pure-white text-sm placeholder-slate-mist/60 focus:outline-none focus:border-electric-violet/40 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40 pr-11"
+                        className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-white/[0.06] border border-white/[0.08] rounded-[16px] text-pure-white text-sm placeholder-white/30 focus:outline-none focus:border-electric-violet/50 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40 pr-11"
                       />
                       <button
                         type="button"
