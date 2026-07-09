@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
+import { signOut } from "../../services/authService";
 import {
   Users, UserCheck, UserMinus, UserX,
   TrendingUp, Calendar, Bell, RefreshCw, BellOff, Inbox,
-  Moon, LogOut,
+  Moon, LogOut, Sun,
 } from "lucide-react";
 
 
@@ -56,6 +59,8 @@ const getWitaDateString = (date = new Date()) => {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { darkMode, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalPegawai: 0, hadirHariIni: 0, izinSakit: 0, cuti: 0 });
   const [recentAttendance, setRecentAttendance] = useState([]);
@@ -170,6 +175,11 @@ export default function DashboardPage() {
     return `${dayName}, ${date}`;
   };
 
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   const userInitial = user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "S";
 
   return (
@@ -183,13 +193,27 @@ export default function DashboardPage() {
             <div className="text-[11px] sm:text-xs text-white/50 font-medium mt-0.5">{witaDate()}</div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors">
+            <button
+              onClick={() => navigate("/admin/announcements")}
+              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors"
+            >
               <Bell size={17} className="text-white/70" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-[#9900CC]"></span>
             </button>
-            <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors">
-              <Moon size={17} className="text-white/70" />
+            <button
+              onClick={toggleTheme}
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors"
+            >
+              {darkMode ? (
+                <Sun size={17} className="text-white/70" />
+              ) : (
+                <Moon size={17} className="text-white/70" />
+              )}
             </button>
-            <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors">
+            <button
+              onClick={handleLogout}
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] hover:bg-rose-500/20 transition-colors"
+            >
               <LogOut size={17} className="text-white/70" />
             </button>
           </div>
@@ -224,7 +248,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 lg:gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 lg:gap-5">
           <StatCard title="Total Pegawai" value={stats.totalPegawai} subtitle="Seluruh status kepegawaian" icon={Users} loading={loading} />
           <StatCard title="Hadir Hari Ini" value={stats.hadirHariIni} subtitle="Sudah check-in" icon={UserCheck} accent="from-emerald-500 to-teal-700" loading={loading} />
           <StatCard title="Izin / Sakit" value={stats.izinSakit} subtitle="Hari ini" icon={UserMinus} accent="from-green-yellow to-electric-violet" loading={loading} />
