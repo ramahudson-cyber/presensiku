@@ -807,13 +807,7 @@ function TabManajemenUser() {
   };
 
   const roleBadge = (role) => {
-    const map = {
-      super_admin: "bg-rose-500/15 text-rose-300 ring-rose-500/30",
-      admin_puskesmas: "bg-purple-500/15 text-purple-300 ring-purple-500/30",
-      kepala_unit: "bg-sky-500/15 text-sky-300 ring-sky-500/30",
-      pegawai: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
-    };
-    return map[role] || "bg-white/5 text-slate-mist ring-white/10";
+    return "bg-transparent text-electric-violet ring-0";
   };
 
   const filtered = users.filter(u =>
