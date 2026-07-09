@@ -407,14 +407,14 @@ function TabProfilPuskesmas() {
               <div key={loc.id} className="p-4 md:p-5 hover:bg-white/[0.03] transition-all">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="flex items-start gap-3 flex-1 min-w-0">
-                    <div className={`p-2.5 rounded-3xl shrink-0 ${loc.is_active ? "bg-emerald-500/15" : "bg-white/5"}`}>
-                      <MapPin size={18} className={loc.is_active ? "text-emerald-300" : "text-slate-mist"} />
+                    <div className={`p-2.5 rounded-3xl shrink-0 ${loc.is_active ? "bg-green-yellow/15" : "bg-white/5"}`}>
+                      <MapPin size={18} className={loc.is_active ? "text-green-yellow" : "text-slate-mist"} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <h4 className="font-semibold text-pure-white">{loc.name}</h4>
                         {loc.is_active && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/15 text-emerald-300 text-xs font-medium rounded-full ring-1 ring-emerald-500/30">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-yellow/15 text-green-yellow text-xs font-medium rounded-full ring-1 ring-green-yellow/30">
                             <CheckCircle2 size={10} /> AKTIF
                           </span>
                         )}
@@ -432,7 +432,7 @@ function TabProfilPuskesmas() {
                       <button
                         onClick={() => handleSetActive(loc.id, loc.name)}
                         title="Jadikan aktif"
-                        className="p-2 text-emerald-300 hover:bg-emerald-500/15 rounded-full transition-all hover:scale-110"
+                        className="p-2 text-green-yellow hover:bg-green-yellow/15 rounded-full transition-all hover:scale-110"
                       >
                         <CheckCircle2 size={16} />
                       </button>
