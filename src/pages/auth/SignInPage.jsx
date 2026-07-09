@@ -369,7 +369,7 @@ export default function SignInPage() {
       <div className="absolute inset-0 professional-ambient-bg pointer-events-none" />
 
       {/* Content */}
-      <div className="relative z-10 min-h-dvh flex items-start justify-center pt-[6vh] sm:pt-[10vh] p-4 sm:p-6">
+      <div className="relative z-10 min-h-dvh flex items-start justify-center pt-[14vh] sm:pt-[20vh] p-4 sm:p-6">
         <div className="w-full lg:max-w-[1000px] mx-auto flex flex-col lg:flex-row lg:items-center lg:gap-16">
 
         {/* RIGHT: Hero — desktop only */}
