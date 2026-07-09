@@ -369,7 +369,7 @@ export default function SignInPage() {
       <div className="absolute inset-0 professional-ambient-bg pointer-events-none" />
 
       {/* Content */}
-      <div className="relative z-10 min-h-dvh flex items-start justify-center pt-[2vh] sm:pt-[4vh] p-4 sm:p-6">
+      <div className="relative z-10 min-h-dvh flex items-start justify-center pt-[6vh] sm:pt-[10vh] p-4 sm:p-6">
         <div className="w-full lg:max-w-[1000px] mx-auto flex flex-col lg:flex-row lg:items-center lg:gap-16">
 
         {/* RIGHT: Hero — desktop only */}
@@ -378,7 +378,7 @@ export default function SignInPage() {
             <h1 className="font-urbanist text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
               Hadir.Kuy
             </h1>
-            <p className="text-green-yellow text-base leading-relaxed mt-4 tracking-[0.72px]">
+            <p className="text-green-yellow text-base leading-relaxed mt-8 tracking-[0.72px]">
               Absen anti ribet, kerja makin greget!
             </p>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-6">
@@ -400,7 +400,7 @@ export default function SignInPage() {
               <h1 className="font-urbanist text-3xl sm:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
                 Hadir.Kuy
               </h1>
-              <p className="text-green-yellow text-sm sm:text-base leading-relaxed mt-2 tracking-[0.72px] hidden sm:block">
+              <p className="text-green-yellow text-sm sm:text-base leading-relaxed mt-6 sm:mt-8 tracking-[0.72px] hidden sm:block">
                 Absen anti ribet, kerja makin greget!
               </p>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-4 hidden sm:flex">

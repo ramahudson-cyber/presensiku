@@ -24,9 +24,12 @@
   .container {
     position: relative; z-index: 1;
     width: 100%; max-width: 420px;
-    padding: 2vh 16px 24px;
+    padding: 6vh 16px 24px;
     display: flex; flex-direction: column;
     min-height: 100vh;
+  }
+  @media (min-width: 640px) {
+    .container { padding-top: 10vh; }
   }
   .hero-mobile {
     text-align: left;
@@ -41,8 +44,11 @@
   .hero-hook {
     color: #adff2f;
     font-size: 14px; line-height: 1.4;
-    margin-top: 8px;
+    margin-top: 24px;
     letter-spacing: 0.72px;
+  }
+  @media (min-width: 640px) {
+    .hero-hook { margin-top: 32px; }
   }
   .hero-tagline {
     display: flex; flex-wrap: wrap;
