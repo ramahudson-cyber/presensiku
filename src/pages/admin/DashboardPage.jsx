@@ -185,9 +185,9 @@ export default function DashboardPage() {
   return (
     <div className="animate-fade-in -mx-3 sm:-mx-4 md:-mx-5 lg:-mx-6 xl:-mx-8 -mt-3 sm:-mt-4 md:-mt-5 lg:-mt-6 xl:-mt-8">
       {/* ===== HERO SECTION — Purple Gradient ===== */}
-      <div className="bg-gradient-to-br from-[#BF00FF] via-[#9900CC] via-[#660099] to-[#33004D] px-4 sm:px-6 lg:px-8 pt-4 sm:pt-5 pb-6">
+      <div className="bg-gradient-to-br from-[#BF00FF] via-[#9900CC] via-[#660099] to-[#33004D] px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-4">
         {/* Top Row: Clock + Date | Action Icons */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4">
           <div>
             <div className="text-2xl sm:text-3xl font-bold text-white tracking-wide tabular-nums">{witaTime()}</div>
             <div className="text-[11px] sm:text-xs text-white/50 font-medium mt-0.5">{witaDate()}</div>
@@ -224,9 +224,9 @@ export default function DashboardPage() {
           <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-purple-300 via-purple-400 to-indigo-500 mx-auto border-[3px] border-white/20 shadow-xl flex items-center justify-center">
             <span className="text-3xl sm:text-4xl font-bold text-white">{userInitial}</span>
           </div>
-          <div className="text-white/60 text-xs sm:text-sm font-medium mt-3 sm:mt-4">Selamat datang,</div>
+          <div className="text-white/60 text-xs sm:text-sm font-medium mt-2 sm:mt-3">Selamat datang,</div>
           <div className="text-white text-lg sm:text-xl font-bold mt-0.5">{user?.full_name || "Super Admin"}</div>
-          <div className="text-white/40 text-[11px] sm:text-xs mt-1 flex items-center justify-center gap-1.5">
+          <div className="text-white/40 text-[11px] sm:text-xs mt-0.5 flex items-center justify-center gap-1.5">
             <span className="px-2 py-0.5 rounded-full bg-white/[0.08] text-white/60 text-[10px] font-medium">{user?.role || "super_admin"}</span>
             <span className="text-white/30">•</span>
             <span>{user?.email || "admin@puskesmas"}</span>
@@ -235,7 +235,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ===== CONTENT SECTION — Dark Gradient ===== */}
-      <div className="bg-gradient-to-b from-[#1a0033] via-[#0d001a] to-black px-4 sm:px-6 lg:px-8 -mt-5 pt-6 pb-8 rounded-t-[28px] relative z-10">
+      <div className="bg-gradient-to-b from-[#1a0033] via-[#0d001a] to-black px-4 sm:px-6 lg:px-8 -mt-5 pt-6 pb-28 rounded-t-[28px] relative z-10">
         {/* Refresh */}
         <div className="flex justify-end mb-3">
           <button
