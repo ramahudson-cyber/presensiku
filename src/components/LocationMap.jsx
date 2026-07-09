@@ -29,7 +29,7 @@ export default function LocationMap({ userLocation, puskesmasLocation, distance,
 
     const puskesmasIcon = L.divIcon({
       className: "",
-      html: `<div style="width:32px;height:32px;background:#8b5cf6;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(139,92,246,0.5);font-size:14px;">🏥</div>`,
+      html: `<div style="width:32px;height:32px;background:#adff2f;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(173,255,47,0.5);font-size:14px;">🏥</div>`,
       iconSize: [32, 32],
       iconAnchor: [16, 16],
     });
