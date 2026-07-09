@@ -9,19 +9,11 @@ const DEFAULT_PUSKESMAS_LOCATION = {
 };
 const DEFAULT_RADIUS_METER = 200;
 
-// ✅ Cache lokasi untuk hemat request
-let cachedLocation = null;
-let cachedRadius = null;
-
 /**
  * Ambil lokasi puskesmas aktif dari database
  * @returns {Promise<{latitude, longitude, name, radius_meter}>}
  */
 export async function getPuskesmasLocation() {
-  if (cachedLocation && cachedRadius) {
-    return { ...cachedLocation, radius_meter: cachedRadius };
-  }
-
   try {
     const { data, error } = await supabase.rpc('get_active_location');
 
@@ -29,15 +21,14 @@ export async function getPuskesmasLocation() {
 
     if (data && data.length > 0) {
       const loc = data[0];
-      cachedLocation = {
+      return {
         latitude: parseFloat(loc.latitude),
         longitude: parseFloat(loc.longitude),
         name: loc.name,
+        radius_meter: loc.radius_meter,
       };
-      cachedRadius = loc.radius_meter;
-      return { ...cachedLocation, radius_meter: cachedRadius };
     }
-    
+
     return { ...DEFAULT_PUSKESMAS_LOCATION, radius_meter: DEFAULT_RADIUS_METER };
   } catch (err) {
     console.error("❌ Gagal fetch lokasi dari DB, pakai default:", err.message);
@@ -49,7 +40,6 @@ export async function getPuskesmasLocation() {
  * Ambil radius meter
  */
 export async function getRadiusMeter() {
-  if (cachedRadius !== null) return cachedRadius;
   const loc = await getPuskesmasLocation();
   return loc.radius_meter;
 }
@@ -189,6 +179,26 @@ export async function getAttendanceHistory(userId, limit = 30) {
     .limit(limit);
   if (error) throw error;
   return data || [];
+}
+
+/**
+ * Validasi lokasi di SERVER via RPC
+ * Klien KIRIM koordinat → Server VALIDASI radius → Kembalikan hasil
+ * Tidak bisa diakali dengan manipulasi client-side
+ */
+export async function verifyLocationServer(latitude, longitude, accuracy) {
+  try {
+    const { data, error } = await supabase.rpc('verify_attendance_location', {
+      p_latitude: latitude,
+      p_longitude: longitude,
+      p_accuracy: accuracy,
+    });
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.error("Server location verification failed:", err);
+    return null;
+  }
 }
 
 // ✅ Export untuk kompatibilitas

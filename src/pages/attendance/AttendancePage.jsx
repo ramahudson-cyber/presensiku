@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import {
@@ -8,7 +8,7 @@ import {
 import LocationMap from "../../components/LocationMap";
 import AttendanceResultSheet from "../../components/AttendanceResultSheet";
 import { getCurrentPosition } from "../../services/geoService";
-import { getPuskesmasLocation, calculateDistance } from "../../services/attendanceService";
+import { getPuskesmasLocation, calculateDistance, verifyLocationServer } from "../../services/attendanceService";
 
 const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
 
@@ -58,6 +58,17 @@ export default function AttendancePage() {
   const [saving, setSaving] = useState(false);
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
   const [puskesmasLocation, setPuskesmasLocation] = useState({ latitude: -8.5697, longitude: 116.0821, radius_meter: 200 });
+  const prevDistanceRef = useRef(null);
+  const DISTANCE_THRESHOLD = 5;
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Cooldown & rate-limit anti-refresh-spam
+  const [rejectionCooldown, setRejectionCooldown] = useState(0);
+  const [lastRejectedCoords, setLastRejectedCoords] = useState(null);
+  const lastRefreshTime = useRef(0);
+  const MIN_REFRESH_INTERVAL = 3000;
+  const COOLDOWN_DURATION = 30;
+  const REJECTION_COOLDOWN_DURATION = 60;
 
   const [resultSheetOpen, setResultSheetOpen] = useState(false);
   const [resultType, setResultType] = useState("in");
@@ -87,7 +98,6 @@ export default function AttendancePage() {
 
   useEffect(() => {
     syncServerTime();
-    const t = setInterval(syncServerTime, 5 * 60 * 1000);
     getLocation();
     fetchTodayAttendance();
     fetchTodaySchedule();
@@ -95,7 +105,19 @@ export default function AttendancePage() {
     getPuskesmasLocation().then(loc => {
       if (loc) setPuskesmasLocation(loc);
     });
-    return () => clearInterval(t);
+    const timeSync = setInterval(syncServerTime, 5 * 60 * 1000);
+    const locationCheck = setInterval(() => getLocation(), 30 * 1000);
+
+    // Cooldown countdown
+    const cooldownTimer = setInterval(() => {
+      setRejectionCooldown(prev => prev > 0 ? prev - 1 : 0);
+    }, 1000);
+
+    return () => {
+      clearInterval(timeSync);
+      clearInterval(locationCheck);
+      clearInterval(cooldownTimer);
+    };
   }, []);
 
   const getDeviceVisitorId = async () => {
@@ -149,19 +171,90 @@ export default function AttendancePage() {
     } catch (e) { console.error(e); }
   };
 
-  const getLocation = async () => {
+  const getLocation = async (isManualRefresh = false) => {
+    // Rate-limit: minimal jeda antar refresh
+    const now = Date.now();
+    if (isManualRefresh && (now - lastRefreshTime.current) < MIN_REFRESH_INTERVAL) {
+      return;
+    }
+    lastRefreshTime.current = now;
+
+    // Cooldown: jika sebelumnya ditolak, tunggu
+    if (rejectionCooldown > 0) {
+      setError(`Harap tunggu ${rejectionCooldown} detik sebelum cek lokasi ulang`);
+      return;
+    }
+
     setLocationStatus("checking");
     setIsFakeGPS(false);
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 5000);
     try {
       const loc = await getCurrentPosition();
       setCurrentCoords(loc);
+
+      // Cek apakah koordinat sama persis dengan yang ditolak sebelumnya
+      if (lastRejectedCoords) {
+        const latSame = Math.abs(loc.latitude - lastRejectedCoords.latitude) < 0.0001;
+        const lngSame = Math.abs(loc.longitude - lastRejectedCoords.longitude) < 0.0001;
+        if (latSame && lngSame) {
+          setLocationStatus("invalid");
+          setIsFakeGPS(true);
+          setError("Lokasi masih sama dengan penolakan sebelumnya. Jangan refresh berulang.");
+          setRefreshing(false);
+          return;
+        }
+      }
+
+      // 1. Cek Fake GPS di client (fast check)
       const isFake = (loc.accuracy < 3) && (loc.altitude === null || loc.altitude === 0);
-      if (isFake) { setIsFakeGPS(true); setLocationStatus("invalid"); return; }
-      const dist = calculateDistance(loc.latitude, loc.longitude, puskesmasLocation.latitude, puskesmasLocation.longitude);
-      setDistance(Math.round(dist));
-      setLocationStatus(dist <= (puskesmasLocation.radius_meter || 200) ? "valid" : "invalid");
+      if (isFake) {
+        setIsFakeGPS(true);
+        setLocationStatus("invalid");
+        setRejectionCooldown(COOLDOWN_DURATION);
+        setLastRejectedCoords({ latitude: loc.latitude, longitude: loc.longitude });
+        setRefreshing(false);
+        return;
+      }
+
+      // 2. Validasi radius di SERVER (tidak bisa diakali)
+      const serverResult = await verifyLocationServer(loc.latitude, loc.longitude, loc.accuracy);
+      if (serverResult) {
+        if (!serverResult.valid) {
+          if (serverResult.suspicious_accuracy) {
+            setIsFakeGPS(true);
+          }
+          setLocationStatus("invalid");
+          setDistance(serverResult.distance);
+          setRejectionCooldown(COOLDOWN_DURATION);
+          setLastRejectedCoords({ latitude: loc.latitude, longitude: loc.longitude });
+          setError(serverResult.error);
+          setRefreshing(false);
+          return;
+        }
+        // Server mengatakan valid
+        setDistance(serverResult.distance);
+        setLocationStatus("valid");
+        // Reset cooldown dan lastRejected jika valid
+        setRejectionCooldown(0);
+        setLastRejectedCoords(null);
+      } else {
+        // Fallback ke client-side jika server gagal
+        const dist = calculateDistance(loc.latitude, loc.longitude, puskesmasLocation.latitude, puskesmasLocation.longitude);
+        const rounded = Math.round(dist);
+        const prev = prevDistanceRef.current;
+        if (prev !== null && Math.abs(rounded - prev) < DISTANCE_THRESHOLD) {
+          setLocationStatus(prev <= (puskesmasLocation.radius_meter || 200) ? "valid" : "invalid");
+          setRefreshing(false);
+          return;
+        }
+        prevDistanceRef.current = rounded;
+        setDistance(rounded);
+        setLocationStatus(rounded <= (puskesmasLocation.radius_meter || 200) ? "valid" : "invalid");
+      }
     } catch {
       setLocationStatus("error");
+      setRefreshing(false);
     }
   };
 
@@ -186,11 +279,43 @@ export default function AttendancePage() {
     return data;
   };
 
-  const handleCheckIn = async () => {
+  const validateLocationOnServer = async (latitude, longitude, accuracy) => {
+  const result = await verifyLocationServer(latitude, longitude, accuracy);
+  if (!result) return { valid: false, error: "Gagal validasi server. Coba lagi." };
+  if (!result.valid) {
+    setRejectionCooldown(REJECTION_COOLDOWN_DURATION);
+    setLastRejectedCoords({ latitude, longitude });
+  }
+  return result;
+};
+
+const handleCheckIn = async () => {
     setError("");
     setSuccessMsg("");
     setSaving(true);
     try {
+      const freshLoc = await getCurrentPosition();
+      const isFake = (freshLoc.accuracy < 3) && (freshLoc.altitude === null || freshLoc.altitude === 0);
+      if (isFake) {
+        setIsFakeGPS(true);
+        setError("Terdeteksi Fake GPS! Absen ditolak.");
+        setSaving(false);
+        return;
+      }
+
+      // Validasi SERVER sebelum absen
+      const serverCheck = await validateLocationOnServer(freshLoc.latitude, freshLoc.longitude, freshLoc.accuracy);
+      if (!serverCheck.valid) {
+        setError(serverCheck.error || "Anda di luar radius absen. Silakan mendekat ke Puskesmas.");
+        setIsFakeGPS(!!serverCheck.suspicious_accuracy);
+        setSaving(false);
+        return;
+      }
+
+      setCurrentCoords(freshLoc);
+      setDistance(serverCheck.distance);
+      setLocationStatus("valid");
+
       const deviceName = getDeviceInfoLite();
 
       const { data: serverNow, error: timeErr } = await supabase.rpc("get_server_time");
@@ -237,13 +362,13 @@ export default function AttendancePage() {
         date: today,
         clock_in_time: now.toISOString(),
         clock_out_time: null,
-        location_in: currentCoords ? {
-          latitude: currentCoords.latitude,
-          longitude: currentCoords.longitude,
-          accuracy: currentCoords.accuracy,
-          altitude: currentCoords.altitude,
-          distance_from_puskesmas: distance,
-        } : null,
+        location_in: {
+          latitude: freshLoc.latitude,
+          longitude: freshLoc.longitude,
+          accuracy: freshLoc.accuracy,
+          altitude: freshLoc.altitude,
+          distance_from_puskesmas: serverCheck.distance,
+        },
         location_out: null,
         selfie_in_url: null,
         selfie_out_url: null,
@@ -281,6 +406,28 @@ export default function AttendancePage() {
     setSuccessMsg("");
     setSaving(true);
     try {
+      const freshLoc = await getCurrentPosition();
+      const isFake = (freshLoc.accuracy < 3) && (freshLoc.altitude === null || freshLoc.altitude === 0);
+      if (isFake) {
+        setIsFakeGPS(true);
+        setError("Terdeteksi Fake GPS! Absen pulang ditolak.");
+        setSaving(false);
+        return;
+      }
+
+      // Validasi SERVER sebelum absen pulang
+      const serverCheck = await validateLocationOnServer(freshLoc.latitude, freshLoc.longitude, freshLoc.accuracy);
+      if (!serverCheck.valid) {
+        setError(serverCheck.error || "Anda di luar radius absen. Tidak bisa absen pulang.");
+        setIsFakeGPS(!!serverCheck.suspicious_accuracy);
+        setSaving(false);
+        return;
+      }
+
+      setCurrentCoords(freshLoc);
+      setDistance(serverCheck.distance);
+      setLocationStatus("valid");
+
       const deviceName = getDeviceInfoLite();
 
       const { data: serverNow, error: timeErr } = await supabase.rpc("get_server_time");
@@ -291,13 +438,13 @@ export default function AttendancePage() {
         .from("attendance")
         .update({
           clock_out_time: now.toISOString(),
-          location_out: currentCoords ? {
-            latitude: currentCoords.latitude,
-            longitude: currentCoords.longitude,
-            accuracy: currentCoords.accuracy,
-            altitude: currentCoords.altitude,
-            distance_from_puskesmas: distance,
-          } : null,
+          location_out: {
+            latitude: freshLoc.latitude,
+            longitude: freshLoc.longitude,
+            accuracy: freshLoc.accuracy,
+            altitude: freshLoc.altitude,
+            distance_from_puskesmas: serverCheck.distance,
+          },
           selfie_out_url: null,
           device_visitor_id: deviceVisitorId,
           device_name: deviceName,
@@ -434,9 +581,13 @@ export default function AttendancePage() {
               </p>
             </div>
           </div>
-          <button onClick={getLocation}
-            className="w-8 h-8 rounded-2xl bg-electric-violet text-pure-white flex items-center justify-center hover:brightness-110 active:brightness-90 transition-all duration-200">
-            <RefreshCw size={14} className={locationStatus === "checking" ? "animate-spin" : ""} />
+          <button onClick={() => getLocation(true)} disabled={refreshing || rejectionCooldown > 0}
+            className="w-8 h-8 rounded-2xl bg-electric-violet text-pure-white flex items-center justify-center hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed relative">
+            {rejectionCooldown > 0 ? (
+              <span className="text-[10px] font-mono">{rejectionCooldown}s</span>
+            ) : (
+              <RefreshCw size={14} className={locationStatus === "checking" ? "animate-spin" : ""} />
+            )}
           </button>
         </div>
 

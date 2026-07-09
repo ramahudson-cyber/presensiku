@@ -14,6 +14,7 @@ export async function getCurrentPosition(options = {}) {
     const pos = await Geolocation.getCurrentPosition({
       enableHighAccuracy: true,
       timeout: 15000,
+      maximumAge: 0,
       ...options,
     });
     return {
