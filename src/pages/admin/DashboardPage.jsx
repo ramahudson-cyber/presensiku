@@ -4,25 +4,24 @@ import { useAuth } from "../../context/AuthContext";
 import {
   Users, UserCheck, UserMinus, UserX,
   TrendingUp, Calendar, Bell, RefreshCw, BellOff, Inbox,
-  Moon, LogOut,
 } from "lucide-react";
 
 
 
 function StatCard({ title, value, subtitle, icon: Icon, accent = "from-electric-violet to-deep-indigo", loading }) {
   return (
-    <div className="p-4 sm:p-5 md:p-6 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-lg hover:scale-[1.02] hover:shadow-xl transition-all duration-300 animate-fade-in">
+    <div className={"design-card-hover p-4 sm:p-5 md:p-6 hover:scale-[1.02] hover:shadow-lg animate-fade-in"}>
       <div className="flex items-start justify-between gap-2 md:gap-3">
         <div className="min-w-0">
-          <p className="text-[10px] sm:text-xs text-white/45 uppercase tracking-wider truncate">{title}</p>
+          <p className="text-[10px] sm:text-xs text-slate-mist uppercase tracking-wider truncate">{title}</p>
           {loading ? (
             <div className="h-8 sm:h-10 w-16 sm:w-20 bg-white/[0.06] animate-pulse rounded-lg mt-1 sm:mt-2" />
           ) : (
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mt-0.5 sm:mt-2 tabular-nums">{value}</h3>
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-pure-white mt-0.5 sm:mt-2 tabular-nums">{value}</h3>
           )}
-          <p className="text-[10px] sm:text-xs text-white/30 mt-0.5 sm:mt-2 truncate">{subtitle}</p>
+          <p className="text-[10px] sm:text-xs text-slate-mist/60 mt-0.5 sm:mt-2 truncate">{subtitle}</p>
         </div>
-        <div className={`p-2 sm:p-3 rounded-2xl bg-gradient-to-br ${accent} text-white shadow-lg shrink-0`}>
+        <div className={`p-2 sm:p-3 rounded-2xl bg-gradient-to-br ${accent} text-pure-white shadow-lg shrink-0`}>
           <Icon size={16} className="sm:w-5 sm:h-5" />
         </div>
       </div>
@@ -40,14 +39,13 @@ function AttendanceBadge({ status }) {
     terlambat: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",
   };
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${map[status] || "bg-white/[0.06] text-white/50 ring-white/10"}`}>
+    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${map[status] || "bg-white/[0.06] text-slate-mist ring-white/10"}`}>
       {status?.toUpperCase() || "-"}
     </span>
   );
 }
 
 const DAYS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
-const DAYS_FULL = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
 const getWitaDateString = (date = new Date()) => {
   const witaMs = date.getTime() + (8 * 60 * 60 * 1000);
@@ -55,7 +53,6 @@ const getWitaDateString = (date = new Date()) => {
 };
 
 export default function DashboardPage() {
-  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalPegawai: 0, hadirHariIni: 0, izinSakit: 0, cuti: 0 });
   const [recentAttendance, setRecentAttendance] = useState([]);
@@ -85,6 +82,7 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
+      // ⏰ Pakai server time untuk "today" (anti-cheat)
       let serverDate;
       try {
         const { data: serverNow } = await supabase.rpc("get_server_time");
@@ -94,10 +92,12 @@ export default function DashboardPage() {
       }
       const today = getWitaDateString(serverDate);
 
+      // 1. Total pegawai
       const { count: totalPegawai } = await supabase
         .from("profiles")
         .select("*", { count: "exact", head: true });
 
+      // 2. Absensi hari ini
       const { data: attendanceToday } = await supabase
         .from("attendance")
         .select("*, profiles(full_name, position)")
@@ -112,6 +112,7 @@ export default function DashboardPage() {
       ).length || 0;
       const cuti = attendanceToday?.filter(a => a.attendance_status === "cuti").length || 0;
 
+      // 3. Data mingguan (7 hari terakhir) — pakai server time
       const weekly = [];
       for (let i = 6; i >= 0; i--) {
         const d = new Date(serverDate);
@@ -125,6 +126,7 @@ export default function DashboardPage() {
         weekly.push(count || 0);
       }
 
+      // 4. Pengumuman terbaru
       const { data: announceData } = await supabase
         .from("announcements")
         .select("*")
@@ -143,7 +145,7 @@ export default function DashboardPage() {
       setAnnouncements(announceData || []);
       setLastUpdated(new Date().toLocaleTimeString("id-ID"));
     } catch (err) {
-      console.error("Dashboard error:", err);
+      console.error("❌ Dashboard error:", err);
     } finally {
       setLoading(false);
     }
@@ -158,200 +160,148 @@ export default function DashboardPage() {
   const fmtTime = (iso) =>
     iso ? new Date(iso).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "-";
 
-  const witaTime = () => {
-    const d = new Date(serverNow.getTime() + (8 * 60 * 60 * 1000));
-    return d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false });
-  };
-
-  const witaDate = () => {
-    const d = new Date(serverNow.getTime() + (8 * 60 * 60 * 1000));
-    const dayName = DAYS_FULL[d.getUTCDay()];
-    const date = d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
-    return `${dayName}, ${date}`;
-  };
-
-  const userInitial = user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "S";
-
   return (
-    <div className="animate-fade-in -mx-3 sm:-mx-4 md:-mx-5 lg:-mx-6 xl:-mx-8 -mt-3 sm:-mt-4 md:-mt-5 lg:-mt-6 xl:-mt-8">
-      {/* ===== HERO SECTION — Purple Gradient ===== */}
-      <div className="bg-gradient-to-br from-[#BF00FF] via-[#9900CC] via-[#660099] to-[#33004D] px-4 sm:px-6 lg:px-8 pt-4 sm:pt-5 pb-6">
-        {/* Top Row: Clock + Date | Action Icons */}
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white tracking-wide tabular-nums">{witaTime()}</div>
-            <div className="text-[11px] sm:text-xs text-white/50 font-medium mt-0.5">{witaDate()}</div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors">
-              <Bell size={17} className="text-white/70" />
-            </button>
-            <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors">
-              <Moon size={17} className="text-white/70" />
-            </button>
-            <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors">
-              <LogOut size={17} className="text-white/70" />
-            </button>
-          </div>
-        </div>
-
-        {/* Profile Section */}
-        <div className="text-center">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-purple-300 via-purple-400 to-indigo-500 mx-auto border-[3px] border-white/20 shadow-xl flex items-center justify-center">
-            <span className="text-3xl sm:text-4xl font-bold text-white">{userInitial}</span>
-          </div>
-          <div className="text-white/60 text-xs sm:text-sm font-medium mt-3 sm:mt-4">Selamat datang,</div>
-          <div className="text-white text-lg sm:text-xl font-bold mt-0.5">{user?.full_name || "Super Admin"}</div>
-          <div className="text-white/40 text-[11px] sm:text-xs mt-1 flex items-center justify-center gap-1.5">
-            <span className="px-2 py-0.5 rounded-full bg-white/[0.08] text-white/60 text-[10px] font-medium">{user?.role || "super_admin"}</span>
-            <span className="text-white/30">•</span>
-            <span>{user?.email || "admin@puskesmas"}</span>
-          </div>
-        </div>
+    <div className="space-y-3 sm:space-y-4 md:space-y-6 animate-fade-in">
+      {/* Refresh */}
+      <div className="flex justify-end">
+        <button
+          onClick={fetchDashboardData}
+          className="flex items-center gap-1.5 px-3 py-2 bg-electric-violet text-pure-white rounded-full text-xs hover:brightness-110 active:brightness-90 transition-all duration-200"
+        >
+          <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
+          Refresh
+        </button>
       </div>
 
-      {/* ===== CONTENT SECTION — Dark Gradient ===== */}
-      <div className="bg-gradient-to-b from-[#1a0033] via-[#0d001a] to-black px-4 sm:px-6 lg:px-8 -mt-5 pt-6 pb-8 rounded-t-[28px] relative z-10">
-        {/* Refresh */}
-        <div className="flex justify-end mb-3">
-          <button
-            onClick={fetchDashboardData}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white/[0.06] backdrop-blur border border-white/[0.08] text-white/70 rounded-full text-xs hover:bg-white/[0.1] transition-all duration-200"
-          >
-            <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
-            Refresh
-          </button>
-        </div>
+      {/* Stat Cards - Responsive Grid: 1 col mobile, 2 cols tablet, 4 cols desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 lg:gap-5">
+        <StatCard title="Total Pegawai" value={stats.totalPegawai} subtitle="Seluruh status kepegawaian" icon={Users} loading={loading} />
+        <StatCard title="Hadir Hari Ini" value={stats.hadirHariIni} subtitle="Sudah check-in" icon={UserCheck} accent="from-emerald-500 to-teal-700" loading={loading} />
+        <StatCard title="Izin / Sakit" value={stats.izinSakit} subtitle="Hari ini" icon={UserMinus} accent="from-green-yellow to-electric-violet" loading={loading} />
+        <StatCard title="Cuti" value={stats.cuti} subtitle="Hari ini" icon={UserX} accent="from-sky-500 to-blue-700" loading={loading} />
+      </div>
 
-        {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 lg:gap-5">
-          <StatCard title="Total Pegawai" value={stats.totalPegawai} subtitle="Seluruh status kepegawaian" icon={Users} loading={loading} />
-          <StatCard title="Hadir Hari Ini" value={stats.hadirHariIni} subtitle="Sudah check-in" icon={UserCheck} accent="from-emerald-500 to-teal-700" loading={loading} />
-          <StatCard title="Izin / Sakit" value={stats.izinSakit} subtitle="Hari ini" icon={UserMinus} accent="from-green-yellow to-electric-violet" loading={loading} />
-          <StatCard title="Cuti" value={stats.cuti} subtitle="Hari ini" icon={UserX} accent="from-sky-500 to-blue-700" loading={loading} />
-        </div>
-
-        {/* Grafik + Pengumuman */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5 mt-3 sm:mt-4 md:mt-6">
-          <div className="p-4 sm:p-5 md:p-6 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-2xl lg:col-span-2">
-            <div className="flex items-center justify-between mb-3 md:mb-6">
-              <h2 className="text-sm sm:text-base md:text-lg font-bold text-white">Grafik Presensi 7 Hari</h2>
-              <div className="flex items-center gap-2 text-xs text-white/45">
-                <TrendingUp size={14} /> Kehadiran harian
-              </div>
-            </div>
-            <div className="flex items-end gap-[3px] sm:gap-1 md:gap-2 h-32 sm:h-40 md:h-48">
-              {weeklyData.map((val, i) => {
-                const d = new Date(serverNow);
-                d.setDate(d.getDate() - (6 - i));
-                const isToday = i === 6;
-                return (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1 sm:gap-1.5 group">
-                    <span className="text-[10px] sm:text-xs text-white/80 font-semibold tabular-nums">{val}</span>
-                    <div
-                      className={`w-full rounded-t-lg md:rounded-t-xl transition-all duration-300 group-hover:scale-105 ${
-                        isToday
-                          ? "bg-gradient-to-t from-electric-violet to-periwinkle-glow shadow-lg"
-                          : "bg-gradient-to-t from-violet-700/60 to-purple-500/40 group-hover:from-violet-600 group-hover:to-purple-400"
-                      }`}
-                      style={{ height: `${(val / maxWeekly) * 100}%`, minHeight: val > 0 ? "6px" : "0" }}
-                    />
-                    <span className={`text-[10px] sm:text-xs ${isToday ? "font-bold text-white" : "text-white/45"}`}>
-                      {DAYS[d.getDay()]}
-                    </span>
-                  </div>
-                );
-              })}
+      {/* Grafik + Pengumuman - Responsive: stacked mobile, side-by-side tablet, 2:1 layout desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5">
+        <div className={"design-card-hover p-4 sm:p-5 md:p-6 lg:col-span-2"}>
+          <div className="flex items-center justify-between mb-3 md:mb-6">
+            <h2 className="text-sm sm:text-base md:text-lg font-bold text-pure-white">Grafik Presensi 7 Hari</h2>
+            <div className="flex items-center gap-2 text-xs text-slate-mist">
+              <TrendingUp size={14} /> Kehadiran harian
             </div>
           </div>
-
-          <div className="p-4 sm:p-5 md:p-6 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-2xl">
-            <div className="flex items-center justify-between mb-3 md:mb-4">
-              <h2 className="text-sm sm:text-base md:text-lg font-bold text-white">Pengumuman</h2>
-              <div className="p-1.5 rounded-lg bg-electric-violet/15">
-                <Bell size={16} className="text-white" />
-              </div>
-            </div>
-            {loading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => <div key={i} className="h-16 bg-white/[0.06] animate-pulse rounded-2xl" />)}
-              </div>
-            ) : announcements.length === 0 ? (
-              <div className="text-center py-6 sm:py-8 flex flex-col items-center gap-1.5 sm:gap-2">
-                <div className="p-2 sm:p-3 rounded-2xl bg-white/[0.04]">
-                  <BellOff size={18} className="sm:w-6 sm:h-6 text-white/40" />
+          <div className="flex items-end gap-[3px] sm:gap-1 md:gap-2 h-32 sm:h-40 md:h-48">
+            {weeklyData.map((val, i) => {
+              const d = new Date(serverNow);
+              d.setDate(d.getDate() - (6 - i));
+              const isToday = i === 6;
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1 sm:gap-1.5 group">
+                  <span className="text-[10px] sm:text-xs text-pure-white/80 font-semibold tabular-nums">{val}</span>
+                  <div
+                    className={`w-full rounded-t-lg md:rounded-t-xl transition-all duration-300 group-hover:scale-105 ${
+                      isToday
+                        ? "bg-gradient-to-t from-electric-violet to-periwinkle-glow shadow-lg"
+                        : "bg-gradient-to-t from-violet-700/60 to-purple-500/40 group-hover:from-violet-600 group-hover:to-purple-400"
+                    }`}
+                    style={{ height: `${(val / maxWeekly) * 100}%`, minHeight: val > 0 ? "6px" : "0" }}
+                  />
+                  <span className={`text-[10px] sm:text-xs ${isToday ? "font-bold text-pure-white" : "text-slate-mist"}`}>
+                    {DAYS[d.getDay()]}
+                  </span>
                 </div>
-                <p className="text-white/40 text-xs sm:text-sm">Belum ada pengumuman</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {announcements.map((a) => (
-                  <div key={a.id} className="p-3 bg-white/[0.04] backdrop-blur border border-white/[0.06] rounded-2xl hover:scale-[1.02] transition-all">
-                    <p className="text-sm font-semibold text-white line-clamp-1">{a.title}</p>
-                    <p className="text-xs text-white/60 mt-1 line-clamp-2">{a.content}</p>
-                    <p className="text-xs text-periwinkle-glow mt-1.5 font-medium">
-                      {new Date(a.created_at).toLocaleDateString("id-ID")}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
+              );
+            })}
           </div>
         </div>
 
-        {/* Tabel Absensi Terkini */}
-        <div className="p-4 sm:p-5 md:p-6 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-2xl mt-3 sm:mt-4 md:mt-6">
+        <div className="design-card-hover p-4 sm:p-5 md:p-6">
           <div className="flex items-center justify-between mb-3 md:mb-4">
-            <h2 className="text-sm sm:text-base md:text-lg font-bold text-white">Absensi Terkini Hari Ini</h2>
-            <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-white/45">
-              <Calendar size={12} className="sm:w-[14px] sm:h-[14px]" /> {lastUpdated && `Update: ${lastUpdated}`}
+            <h2 className="text-sm sm:text-base md:text-lg font-bold text-pure-white">Pengumuman</h2>
+            <div className="p-1.5 rounded-lg bg-electric-violet/15">
+              <Bell size={16} className="text-pure-white" />
             </div>
           </div>
-
           {loading ? (
             <div className="space-y-3">
-              {[1, 2, 3, 4].map((i) => <div key={i} className="h-12 bg-white/[0.06] animate-pulse rounded-2xl" />)}
+              {[1, 2, 3].map((i) => <div key={i} className="h-16 bg-white/[0.06] animate-pulse rounded-2xl" />)}
             </div>
-          ) : recentAttendance.length === 0 ? (
-            <div className="text-center py-8 sm:py-12 flex flex-col items-center gap-2 sm:gap-3">
-              <div className="p-3 sm:p-4 bg-white/[0.04] rounded-2xl">
-                <Inbox size={24} className="sm:w-8 sm:h-8 text-white/40" />
+          ) : announcements.length === 0 ? (
+            <div className="text-center py-6 sm:py-8 flex flex-col items-center gap-1.5 sm:gap-2">
+              <div className="p-2 sm:p-3 rounded-2xl design-empty-icon">
+                <BellOff size={18} className="sm:w-6 sm:h-6 text-slate-mist" />
               </div>
-              <div>
-                <p className="text-white/60 font-medium text-sm sm:text-base">Belum ada absensi hari ini</p>
-                <p className="text-white/40 text-[11px] sm:text-xs mt-0.5 sm:mt-1">Data akan muncul setelah pegawai melakukan check-in</p>
-              </div>
+              <p className="text-slate-mist text-xs sm:text-sm">Belum ada pengumuman</p>
             </div>
           ) : (
-            <div className="-mx-3 md:-mx-3">
-              <table className="w-full text-xs sm:text-sm">
-                <thead>
-                  <tr className="border-b border-white/[0.06]">
-                    <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">Nama</th>
-                    <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">Masuk</th>
-                    <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider hidden md:table-cell">Pulang</th>
-                    <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.04]">
-                  {recentAttendance.map((a) => (
-                    <tr key={a.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="py-2.5 px-3">
-                        <div>
-                          <p className="font-medium text-white text-xs sm:text-sm">{a.profiles?.full_name || "-"}</p>
-                        </div>
-                      </td>
-                      <td className="py-2.5 px-3 text-emerald-300 font-mono tabular-nums text-[11px] sm:text-sm">{fmtTime(a.clock_in_time)}</td>
-                      <td className="py-2.5 px-3 text-rose-300 font-mono tabular-nums text-[11px] sm:text-sm hidden md:table-cell">{fmtTime(a.clock_out_time)}</td>
-                      <td className="py-2.5 px-3"><AttendanceBadge status={a.attendance_status} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="space-y-3">
+              {announcements.map((a) => (
+                <div key={a.id} className="p-3 bg-electric-violet/10 rounded-2xl border border-electric-violet/20 hover:scale-[1.02] transition-all">
+                  <p className="text-sm font-semibold text-pure-white line-clamp-1">{a.title}</p>
+                  <p className="text-xs text-pure-white/60 mt-1 line-clamp-2">{a.content}</p>
+                  <p className="text-xs text-periwinkle-glow mt-1.5 font-medium">
+                    {new Date(a.created_at).toLocaleDateString("id-ID")}
+                  </p>
+                </div>
+              ))}
             </div>
           )}
         </div>
       </div>
+
+      {/* Tabel Absensi Terkini */}
+      <div className="design-card-hover p-4 sm:p-5 md:p-6">
+          <div className="flex items-center justify-between mb-3 md:mb-4">
+          <h2 className="text-sm sm:text-base md:text-lg font-bold text-pure-white">Absensi Terkini Hari Ini</h2>
+          <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-slate-mist">
+            <Calendar size={12} className="sm:w-[14px] sm:h-[14px]" /> {lastUpdated && `Update: ${lastUpdated}`}
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="space-y-3">
+            {[1, 2, 3, 4].map((i) => <div key={i} className="h-12 bg-white/[0.06] animate-pulse rounded-2xl" />)}
+          </div>
+        ) : recentAttendance.length === 0 ? (
+          <div className="text-center py-8 sm:py-12 flex flex-col items-center gap-2 sm:gap-3">
+            <div className="p-3 sm:p-4 design-empty-icon">
+              <Inbox size={24} className="sm:w-8 sm:h-8 text-slate-mist" />
+            </div>
+            <div>
+              <p className="text-pure-white/60 font-medium text-sm sm:text-base">Belum ada absensi hari ini</p>
+              <p className="text-slate-mist text-[11px] sm:text-xs mt-0.5 sm:mt-1">Data akan muncul setelah pegawai melakukan check-in</p>
+            </div>
+          </div>
+        ) : (
+          <div className="-mx-3 md:-mx-3">
+            <table className="w-full text-xs sm:text-sm">
+              <thead>
+                <tr className="design-table-header">
+                  <th className="text-left py-2.5 px-3 font-semibold text-slate-mist text-[10px] sm:text-xs uppercase tracking-wider">Nama</th>
+                  <th className="text-left py-2.5 px-3 font-semibold text-slate-mist text-[10px] sm:text-xs uppercase tracking-wider">Masuk</th>
+                  <th className="text-left py-2.5 px-3 font-semibold text-slate-mist text-[10px] sm:text-xs uppercase tracking-wider hidden md:table-cell">Pulang</th>
+                  <th className="text-left py-2.5 px-3 font-semibold text-slate-mist text-[10px] sm:text-xs uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/[0.06]">
+                {recentAttendance.map((a) => (
+                  <tr key={a.id} className="design-table-row">
+                    <td className="py-2.5 px-3">
+                      <div>
+                        <p className="font-medium text-pure-white text-xs sm:text-sm">{a.profiles?.full_name || "-"}</p>
+                      </div>
+                    </td>
+                    <td className="py-2.5 px-3 text-emerald-300 font-mono tabular-nums text-[11px] sm:text-sm">{fmtTime(a.clock_in_time)}</td>
+                    <td className="py-2.5 px-3 text-rose-300 font-mono tabular-nums text-[11px] sm:text-sm hidden md:table-cell">{fmtTime(a.clock_out_time)}</td>
+                    <td className="py-2.5 px-3"><AttendanceBadge status={a.attendance_status} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
