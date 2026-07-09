@@ -400,10 +400,10 @@ export default function SignInPage() {
               <h1 className="font-urbanist text-3xl sm:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
                 Hadir.Kuy
               </h1>
-              <p className="text-green-yellow text-sm sm:text-base leading-relaxed mt-2 tracking-[0.72px]">
+              <p className="text-green-yellow text-sm sm:text-base leading-relaxed mt-2 tracking-[0.72px] hidden sm:block">
                 Absen anti ribet, kerja makin greget!
               </p>
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-4">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-4 hidden sm:flex">
                 <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Disiplin</span>
                 <span className="text-slate-mist/20 text-xs sm:text-sm">•</span>
                 <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Akurat</span>

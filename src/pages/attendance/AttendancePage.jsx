@@ -188,12 +188,15 @@ export default function AttendancePage() {
         }
         setDistance(serverResult.distance);
         setLocationStatus("valid");
+        setError("");
       } else {
         const dist = calculateDistance(loc.latitude, loc.longitude, puskesmasLocation.latitude, puskesmasLocation.longitude);
         const rounded = Math.round(dist);
         prevDistanceRef.current = rounded;
         setDistance(rounded);
-        setLocationStatus(rounded <= ((puskesmasLocation.radius_meter || 200) + (loc.accuracy || 0)) ? "valid" : "invalid");
+        const isValid = rounded <= ((puskesmasLocation.radius_meter || 200) + (loc.accuracy || 0));
+        setLocationStatus(isValid ? "valid" : "invalid");
+        if (isValid) setError("");
       }
     } catch {
       setLocationStatus("error");
@@ -555,8 +558,8 @@ const handleCheckIn = async () => {
       </div>
 
       {error && (
-        <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/30">
-          <p className="text-xs text-red-300">{error}</p>
+        <div className="p-3">
+          <p className="text-xs text-pure-white">{error}</p>
         </div>
       )}
 

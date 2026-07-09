@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Preview — SignInPage</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .orb {
+    position: fixed; width: 300px; height: 300px; border-radius: 50%;
+    background: #BF00FF; filter: blur(100px); opacity: 0.25;
+    pointer-events: none; z-index: 0;
+  }
+  .orb-1 { top: -10%; left: 5%; }
+  .orb-2 { bottom: -10%; right: 5%; }
+  .container {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 420px;
+    padding: 2vh 16px 24px;
+    display: flex; flex-direction: column;
+    min-height: 100vh;
+  }
+  .hero-mobile {
+    text-align: left;
+    margin-bottom: 24px;
+    padding: 0 8px;
+  }
+  .hero-title {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 30px; font-weight: 700;
+    letter-spacing: 1.22px; color: #ffffff;
+  }
+  .hero-hook {
+    color: #adff2f;
+    font-size: 14px; line-height: 1.4;
+    margin-top: 8px;
+    letter-spacing: 0.72px;
+  }
+  .hero-tagline {
+    display: flex; flex-wrap: wrap;
+    align-items: center; gap: 4px 8px;
+    margin-top: 16px;
+  }
+  .hero-tagline span {
+    font-size: 12px; letter-spacing: 2.5px;
+    text-transform: uppercase; font-weight: 600;
+  }
+  .hero-tagline .dot {
+    color: rgba(148, 163, 184, 0.2); font-size: 12px;
+  }
+  .hero-puskesmas {
+    color: #ffffff; font-size: 12px;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-top: 16px;
+  }
+  .card {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 24px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .card-title {
+    font-size: 18px; font-weight: 600;
+    color: #ffffff; margin-bottom: 20px;
+  }
+  .input-group { margin-bottom: 16px; }
+  .input-group label {
+    display: block; font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 6px; letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .input-field {
+    width: 100%; padding: 12px 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; color: #ffffff;
+    font-size: 14px; outline: none;
+  }
+  .input-field:focus { border-color: #5800fd; }
+  .btn-primary {
+    width: 100%; padding: 14px;
+    background: #5800fd; color: #ffffff;
+    border: none; border-radius: 9999px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; margin-top: 8px;
+  }
+  .footer {
+    text-align: center;
+    font-size: 10px; color: rgba(255,255,255,0.6);
+    margin-top: 24px;
+    letter-spacing: 0.65px;
+  }
+
+  /* Mobile (< 640px): hide hook & tagline */
+  @media (max-width: 639px) {
+    .hero-hook { display: none; }
+    .hero-tagline { display: none; }
+  }
+
+  /* Tablet (640px+): show hook & tagline normally */
+  @media (min-width: 640px) {
+    .hero-title { font-size: 36px; }
+    .hero-hook { font-size: 16px; }
+    .hero-tagline span { font-size: 14px; }
+    .hero-tagline .dot { font-size: 14px; }
+    .hero-puskesmas { font-size: 14px; }
+    .card { padding: 40px; }
+  }
+
+  .badge {
+    position: fixed; top: 12px; right: 12px; z-index: 10;
+    background: rgba(0,0,0,0.5); color: #fff;
+    padding: 6px 12px; border-radius: 20px;
+    font-size: 11px; backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+</style>
+</head>
+<body>
+  <div class="badge">Resize to &lt;640px to see mobile view</div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="container">
+    <!-- Hero: mobile/tablet -->
+    <div class="hero-mobile">
+      <h1 class="hero-title">Hadir.Kuy</h1>
+      <p class="hero-hook">Absen anti ribet, kerja makin greget!</p>
+      <div class="hero-tagline">
+        <span style="color:#c4b5fd">Disiplin</span>
+        <span class="dot">•</span>
+        <span style="color:#c4b5fd">Akurat</span>
+        <span class="dot">•</span>
+        <span style="color:#c4b5fd">Optimal</span>
+      </div>
+      <p class="hero-puskesmas">Puskesmas Ampenan</p>
+    </div>
+
+    <!-- Card Login -->
+    <div class="card">
+      <h2 class="card-title">Masuk</h2>
+      <div class="input-group">
+        <label>Username</label>
+        <input class="input-field" type="text" placeholder="Masukkan username" disabled>
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input class="input-field" type="password" placeholder="Masukkan password" disabled>
+      </div>
+      <button class="btn-primary" disabled>Masuk</button>
+    </div>
+
+    <p class="footer">Hadir.Kuy v1.6.9</p>
+  </div>
+</body>
+</html>
