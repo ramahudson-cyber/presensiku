@@ -62,13 +62,7 @@ export default function AttendancePage() {
   const DISTANCE_THRESHOLD = 5;
   const [refreshing, setRefreshing] = useState(false);
 
-  // Cooldown & rate-limit anti-refresh-spam
-  const [rejectionCooldown, setRejectionCooldown] = useState(0);
-  const [lastRejectedCoords, setLastRejectedCoords] = useState(null);
-  const lastRefreshTime = useRef(0);
-  const MIN_REFRESH_INTERVAL = 3000;
-  const COOLDOWN_DURATION = 30;
-  const REJECTION_COOLDOWN_DURATION = 60;
+
 
   const [resultSheetOpen, setResultSheetOpen] = useState(false);
   const [resultType, setResultType] = useState("in");
@@ -106,17 +100,11 @@ export default function AttendancePage() {
       if (loc) setPuskesmasLocation(loc);
     });
     const timeSync = setInterval(syncServerTime, 5 * 60 * 1000);
-    const locationCheck = setInterval(() => getLocation(), 30 * 1000);
-
-    // Cooldown countdown
-    const cooldownTimer = setInterval(() => {
-      setRejectionCooldown(prev => prev > 0 ? prev - 1 : 0);
-    }, 1000);
+    const locationCheck = setInterval(getLocation, 5 * 1000);
 
     return () => {
       clearInterval(timeSync);
       clearInterval(locationCheck);
-      clearInterval(cooldownTimer);
     };
   }, []);
 
@@ -171,20 +159,7 @@ export default function AttendancePage() {
     } catch (e) { console.error(e); }
   };
 
-  const getLocation = async (isManualRefresh = false) => {
-    // Rate-limit: minimal jeda antar refresh
-    const now = Date.now();
-    if (isManualRefresh && (now - lastRefreshTime.current) < MIN_REFRESH_INTERVAL) {
-      return;
-    }
-    lastRefreshTime.current = now;
-
-    // Cooldown: jika sebelumnya ditolak, tunggu
-    if (rejectionCooldown > 0) {
-      setError(`Harap tunggu ${rejectionCooldown} detik sebelum cek lokasi ulang`);
-      return;
-    }
-
+  const getLocation = async () => {
     setLocationStatus("checking");
     setIsFakeGPS(false);
     setRefreshing(true);
@@ -193,69 +168,37 @@ export default function AttendancePage() {
       const loc = await getCurrentPosition();
       setCurrentCoords(loc);
 
-      // Cek apakah koordinat sama persis dengan yang ditolak sebelumnya
-      if (lastRejectedCoords) {
-        const latSame = Math.abs(loc.latitude - lastRejectedCoords.latitude) < 0.0001;
-        const lngSame = Math.abs(loc.longitude - lastRejectedCoords.longitude) < 0.0001;
-        if (latSame && lngSame) {
-          setLocationStatus("invalid");
-          setIsFakeGPS(true);
-          setError("Lokasi masih sama dengan penolakan sebelumnya. Jangan refresh berulang.");
-          setRefreshing(false);
-          return;
-        }
-      }
-
-      // 1. Cek Fake GPS di client (fast check)
       const isFake = (loc.accuracy < 3) && (loc.altitude === null || loc.altitude === 0);
       if (isFake) {
         setIsFakeGPS(true);
         setLocationStatus("invalid");
-        setRejectionCooldown(COOLDOWN_DURATION);
-        setLastRejectedCoords({ latitude: loc.latitude, longitude: loc.longitude });
         setRefreshing(false);
         return;
       }
 
-      // 2. Validasi radius di SERVER (tidak bisa diakali)
       const serverResult = await verifyLocationServer(loc.latitude, loc.longitude, loc.accuracy);
       if (serverResult) {
         if (!serverResult.valid) {
-          if (serverResult.suspicious_accuracy) {
-            setIsFakeGPS(true);
-          }
+          if (serverResult.suspicious_accuracy) setIsFakeGPS(true);
           setLocationStatus("invalid");
           setDistance(serverResult.distance);
-          setRejectionCooldown(COOLDOWN_DURATION);
-          setLastRejectedCoords({ latitude: loc.latitude, longitude: loc.longitude });
           setError(serverResult.error);
           setRefreshing(false);
           return;
         }
-        // Server mengatakan valid
         setDistance(serverResult.distance);
         setLocationStatus("valid");
-        // Reset cooldown dan lastRejected jika valid
-        setRejectionCooldown(0);
-        setLastRejectedCoords(null);
       } else {
-        // Fallback ke client-side jika server gagal
         const dist = calculateDistance(loc.latitude, loc.longitude, puskesmasLocation.latitude, puskesmasLocation.longitude);
         const rounded = Math.round(dist);
-        const prev = prevDistanceRef.current;
-        if (prev !== null && Math.abs(rounded - prev) < DISTANCE_THRESHOLD) {
-          setLocationStatus(prev <= (puskesmasLocation.radius_meter || 200) ? "valid" : "invalid");
-          setRefreshing(false);
-          return;
-        }
         prevDistanceRef.current = rounded;
         setDistance(rounded);
         setLocationStatus(rounded <= (puskesmasLocation.radius_meter || 200) ? "valid" : "invalid");
       }
     } catch {
       setLocationStatus("error");
-      setRefreshing(false);
     }
+    setRefreshing(false);
   };
 
   const getTodayScheduleInfo = async (witaDate, userId) => {
@@ -282,10 +225,6 @@ export default function AttendancePage() {
   const validateLocationOnServer = async (latitude, longitude, accuracy) => {
   const result = await verifyLocationServer(latitude, longitude, accuracy);
   if (!result) return { valid: false, error: "Gagal validasi server. Coba lagi." };
-  if (!result.valid) {
-    setRejectionCooldown(REJECTION_COOLDOWN_DURATION);
-    setLastRejectedCoords({ latitude, longitude });
-  }
   return result;
 };
 
@@ -581,13 +520,9 @@ const handleCheckIn = async () => {
               </p>
             </div>
           </div>
-          <button onClick={() => getLocation(true)} disabled={refreshing || rejectionCooldown > 0}
-            className="w-8 h-8 rounded-2xl bg-electric-violet text-pure-white flex items-center justify-center hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed relative">
-            {rejectionCooldown > 0 ? (
-              <span className="text-[10px] font-mono">{rejectionCooldown}s</span>
-            ) : (
-              <RefreshCw size={14} className={locationStatus === "checking" ? "animate-spin" : ""} />
-            )}
+          <button onClick={getLocation} disabled={refreshing}
+            className="w-8 h-8 rounded-2xl bg-electric-violet text-pure-white flex items-center justify-center hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed">
+            <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
           </button>
         </div>
 
