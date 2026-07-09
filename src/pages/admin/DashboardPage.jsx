@@ -32,11 +32,11 @@ function StatCard({ title, value, subtitle, icon: Icon, accent = "from-electric-
 function AttendanceBadge({ status }) {
   const map = {
     hadir:  "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
-    izin:   "bg-amber-500/15 text-amber-300 ring-amber-500/30",
-    sakit:  "bg-orange-500/15 text-orange-300 ring-orange-500/30",
+    izin:   "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",
+    sakit:  "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",
     cuti:   "bg-sky-500/15 text-sky-300 ring-sky-500/30",
     alpha:  "bg-rose-500/15 text-rose-300 ring-rose-500/30",
-    terlambat: "bg-amber-500/15 text-amber-300 ring-amber-500/30",
+    terlambat: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",
   };
   return (
     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${map[status] || "bg-white/[0.06] text-slate-mist ring-white/10"}`}>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 lg:gap-5">
         <StatCard title="Total Pegawai" value={stats.totalPegawai} subtitle="Seluruh status kepegawaian" icon={Users} loading={loading} />
         <StatCard title="Hadir Hari Ini" value={stats.hadirHariIni} subtitle="Sudah check-in" icon={UserCheck} accent="from-emerald-500 to-teal-700" loading={loading} />
-        <StatCard title="Izin / Sakit" value={stats.izinSakit} subtitle="Hari ini" icon={UserMinus} accent="from-amber-500 to-orange-700" loading={loading} />
+        <StatCard title="Izin / Sakit" value={stats.izinSakit} subtitle="Hari ini" icon={UserMinus} accent="from-green-yellow to-electric-violet" loading={loading} />
         <StatCard title="Cuti" value={stats.cuti} subtitle="Hari ini" icon={UserX} accent="from-sky-500 to-blue-700" loading={loading} />
       </div>
 

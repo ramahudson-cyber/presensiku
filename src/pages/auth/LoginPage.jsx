@@ -4,6 +4,7 @@ import { signIn } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import { isNativePlatform } from "../../lib/devicePlatform";
+import { getCurrentVersion } from "../../services/updateService";
 import {
   getDeviceInfo,
   checkDeviceBinding,
@@ -39,6 +40,7 @@ export default function LoginPage() {
   const [deviceDebug, setDeviceDebug] = useState("");
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("");
+  const appVersion = getCurrentVersion().version;
 
   const navigate = useNavigate();
   const { refreshUser, isAuthenticated } = useAuth();
@@ -348,12 +350,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-obsidian relative overflow-hidden">
-      {/* Halo Violet — radial glow from top-left */}
+    <div className="min-h-screen relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%)'
+      }}>
+      {/* Halo glow */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(circle farthest-side at 0px -30%, rgb(75,57,239), rgba(6,3,17,0) 84%)'
+          background: 'radial-gradient(circle farthest-side at 0px -30%, rgba(167,139,250,0.25), rgba(124,58,237,0) 84%)'
         }}
       />
 
@@ -364,37 +369,56 @@ export default function LoginPage() {
       <div className="absolute inset-0 professional-ambient-bg pointer-events-none" />
 
       {/* Content */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6">
-        <div className="w-full max-w-[420px] mx-auto">
+      <div className="relative z-10 min-h-dvh flex items-start justify-center pt-[2vh] sm:pt-[4vh] p-4 sm:p-6">
+        <div className="w-full lg:max-w-[1000px] mx-auto flex flex-col lg:flex-row lg:items-center lg:gap-16">
 
-          {/* Hero — rata kiri */}
-          <div className="text-left mb-10 sm:mb-12 px-2">
-            <h1 className="font-urbanist text-5xl sm:text-6xl font-bold tracking-[1.22px] text-pure-white leading-none">
-              SIAP
+        {/* RIGHT: Hero — desktop only */}
+        <div className="hidden lg:block lg:flex-1">
+          <div className="text-left px-2">
+            <h1 className="font-urbanist text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
+              Hadir.Kuy
             </h1>
-            <p className="text-slate-mist text-sm sm:text-base leading-relaxed mt-2 max-w-[320px] tracking-[0.72px]">
-              Sistem Informasi Administrasi dan Presensi Puskesmas Ampenan
+            <p className="text-green-yellow text-base leading-relaxed mt-4 tracking-[0.72px]">
+              Absen anti ribet, kerja makin greget!
             </p>
-            <div className="flex items-center gap-3 mt-5 flex-wrap">
-              <span className="text-periwinkle-glow text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
-                Disiplin
-              </span>
-              <span className="text-slate-mist/20 text-xs">—</span>
-              <span className="text-periwinkle-glow text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
-                Akurat
-              </span>
-              <span className="text-slate-mist/20 text-xs">—</span>
-              <span className="text-periwinkle-glow text-[10px] sm:text-xs tracking-[2.5px] uppercase font-semibold">
-                Optimal
-              </span>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-6">
+              <span className="text-[#c4b5fd] text-sm tracking-[2.5px] uppercase font-semibold">Disiplin</span>
+              <span className="text-slate-mist/20 text-sm">•</span>
+              <span className="text-[#c4b5fd] text-sm tracking-[2.5px] uppercase font-semibold">Akurat</span>
+              <span className="text-slate-mist/20 text-sm">•</span>
+              <span className="text-[#c4b5fd] text-sm tracking-[2.5px] uppercase font-semibold">Optimal</span>
             </div>
+            <p className="text-pure-white text-sm tracking-[1px] mt-6 uppercase">Puskesmas Ampenan</p>
           </div>
+        </div>
 
-          {/* Card — Onyx surface */}
-          <div className="bg-onyx rounded-[24px] p-6 sm:p-10">
+          {/* LEFT: Card */}
+          <div className="w-full max-w-[420px] mx-auto lg:mx-0 lg:flex-1">
+
+            {/* Hero — mobile/tablet only */}
+            <div className="text-left mb-6 sm:mb-10 lg:hidden px-2">
+              <h1 className="font-urbanist text-3xl sm:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
+                Hadir.Kuy
+              </h1>
+              <p className="text-green-yellow text-sm sm:text-base leading-relaxed mt-2 tracking-[0.72px]">
+                Absen anti ribet, kerja makin greget!
+              </p>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-4">
+                <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Disiplin</span>
+                <span className="text-slate-mist/20 text-xs sm:text-sm">•</span>
+                <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Akurat</span>
+                <span className="text-slate-mist/20 text-xs sm:text-sm">•</span>
+                <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Optimal</span>
+              </div>
+              <p className="text-pure-white text-xs sm:text-sm tracking-[1px] mt-4 uppercase">Puskesmas Ampenan</p>
+            </div>
+
+            {/* Card */}
+          <div className="bg-white/[0.04] backdrop-blur-xl rounded-[24px] p-6 sm:p-10 border border-white/[0.06] shadow-2xl">
             {/* LOGIN STEP */}
             {step === "login" && (
               <>
+                <h2 className="text-lg font-semibold text-pure-white mb-5">Masuk</h2>
                 {error && (
                   <div className="mb-4 p-3 bg-electric-violet/10 rounded-[16px] flex items-start gap-2.5">
                     <AlertCircle size="15" className="text-periwinkle-glow shrink-0 mt-0.5" />
@@ -408,39 +432,43 @@ export default function LoginPage() {
                 )}
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
+                    <label className="block text-[11px] font-medium text-white/70 uppercase tracking-[0.05em] mb-1.5">Username / Email</label>
                     <input
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Username atau Email"
+                      placeholder="nama@puskesmas.com"
                       required
                       disabled={loading}
-                      className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-obsidian border border-onyx rounded-[16px] text-pure-white text-sm placeholder-slate-mist/60 focus:outline-none focus:border-electric-violet/40 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40"
+                      className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-white/[0.06] border border-white/[0.08] rounded-[16px] text-pure-white text-sm placeholder-white/30 focus:outline-none focus:border-electric-violet/50 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40"
                     />
                   </div>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Password"
-                      required
-                      disabled={loading}
-                      className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-obsidian border border-onyx rounded-[16px] text-pure-white text-sm placeholder-slate-mist/60 focus:outline-none focus:border-electric-violet/40 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40 pr-11"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-mist hover:text-pure-white transition-colors"
-                    >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
+                  <div>
+                    <label className="block text-[11px] font-medium text-white/70 uppercase tracking-[0.05em] mb-1.5">Password</label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        required
+                        disabled={loading}
+                        className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-white/[0.06] border border-white/[0.08] rounded-[16px] text-pure-white text-sm placeholder-white/30 focus:outline-none focus:border-electric-violet/50 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40 pr-11"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-mist hover:text-pure-white transition-colors"
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
                   </div>
                   <div className="flex justify-end">
                     <button
                       type="button"
                       onClick={() => alert("Silahkan hubungi Admin untuk reset password.")}
-                      className="text-xs text-slate-mist hover:text-periwinkle-glow transition-colors"
+                      className="text-xs text-white/55 hover:text-white/80 transition-colors"
                     >
                       Lupa password?
                     </button>
@@ -536,9 +564,9 @@ export default function LoginPage() {
                   <p className="text-slate-mist text-xs sm:text-sm mt-2 tracking-[0.72px]">
                     Kode dikirim ke {userEmail}
                   </p>
-                  <div className="mt-3 p-2 bg-amber-500/10 border border-amber-500/20 rounded-[12px]">
-                    <p className="text-[10px] text-amber-400/70">
-                      Tidak terima email? Gunakan kode: <span className="font-mono font-bold text-amber-300 tracking-wider text-sm">{generatedOtp}</span>
+                  <div className="mt-3 p-2 bg-green-yellow/10 border border-green-yellow/20 rounded-[12px]">
+                    <p className="text-[10px] text-green-yellow/70">
+                      Tidak terima email? Gunakan kode: <span className="font-mono font-bold text-green-yellow tracking-wider text-sm">{generatedOtp}</span>
                     </p>
                   </div>
                 </div>
@@ -645,11 +673,12 @@ export default function LoginPage() {
           </div>
 
           {/* Footer */}
-          <p className="text-center text-[10px] text-slate-mist/50 mt-8 sm:mt-10 tracking-[0.65px]">
-            Puskesmas Ampenan &copy; {new Date().getFullYear()}
+          <p className="text-center text-[10px] text-pure-white mt-6 sm:mt-8 tracking-[0.65px]">
+            Hadir.Kuy v{appVersion}
           </p>
         </div>
       </div>
+    </div>
     </div>
   );
 }

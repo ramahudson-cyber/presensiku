@@ -15,10 +15,10 @@ export default function BlockPage() {
               Akses Terbatas
             </h1>
             <p className="text-slate-mist mb-4">
-              Halaman ini hanya bisa diakses melalui Aplikasi <strong>SIAP Puskesmas</strong>.
+              Halaman ini hanya bisa diakses melalui Aplikasi <strong>Hadir.Kuy</strong>.
             </p>
             <p className="text-slate-mist text-sm">
-              Silakan login melalui Aplikasi SIAP Puskesmas yang sudah terinstall di HP Android Anda.
+              Silakan login melalui Aplikasi Hadir.Kuy yang sudah terinstall di HP Android Anda.
             </p>
           </>
         ) : (
@@ -28,10 +28,10 @@ export default function BlockPage() {
               Akses Terbatas
             </h1>
             <p className="text-slate-mist mb-4">
-              Halaman ini hanya bisa diakses melalui Aplikasi <strong>SIAP Puskesmas</strong> di HP Android.
+              Halaman ini hanya bisa diakses melalui Aplikasi <strong>Hadir.Kuy</strong> di HP Android.
             </p>
             <p className="text-slate-mist text-sm">
-              Akses dari laptop/desktop hanya untuk Admin. Silakan buka melalui HP Android yang sudah terinstall aplikasi SIAP Puskesmas.
+              Akses dari laptop/desktop hanya untuk Admin. Silakan buka melalui HP Android yang sudah terinstall aplikasi Hadir.Kuy.
             </p>
           </>
         )}

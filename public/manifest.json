@@ -1,12 +1,12 @@
 {
-  "name": "SIAP Puskesmas",
-  "short_name": "SIAP",
-  "description": "Sistem Informasi Absensi Pegawai Puskesmas",
+  "name": "Hadir.Kuy",
+  "short_name": "Hadir.Kuy",
+  "description": "Absen anti ribet, kerja makin greget!",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#7C3AED",
+  "theme_color": "#BF00FF",
   "orientation": "portrait",
   "permissions": ["camera"],
   "icons": [

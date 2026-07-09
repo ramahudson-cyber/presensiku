@@ -74,8 +74,8 @@ export default function ChangePasswordPage() {
 
           {/* Hero — rata kiri */}
           <div className="text-left mb-8 sm:mb-10 px-2">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 mb-4">
-              <Shield size={22} className="text-amber-400" />
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-yellow/10 mb-4">
+              <Shield size={22} className="text-green-yellow" />
             </div>
             <h1 className="font-urbanist text-3xl sm:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
               Ubah Password

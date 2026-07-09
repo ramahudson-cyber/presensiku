@@ -21,9 +21,9 @@ const STATUS_OPTIONS = [
 
 const STATUS_STYLE = {
   hadir:  { bg: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30", icon: <CheckCircle2 size={11} /> },
-  terlambat: { bg: "bg-amber-500/15 text-amber-300 ring-amber-500/30", icon: <Clock size={11} /> },
-  izin:   { bg: "bg-amber-500/15 text-amber-300 ring-amber-500/30",       icon: <Clock size={11} />         },
-  sakit:  { bg: "bg-orange-500/15 text-orange-300 ring-orange-500/30",    icon: <AlertTriangle size={11} /> },
+  terlambat: { bg: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30", icon: <Clock size={11} /> },
+  izin:   { bg: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",       icon: <Clock size={11} />         },
+  sakit:  { bg: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",    icon: <AlertTriangle size={11} /> },
   cuti:   { bg: "bg-sky-500/15 text-sky-300 ring-sky-500/30",             icon: <Calendar size={11} />      },
   alpha:  { bg: "bg-rose-500/15 text-rose-300 ring-rose-500/30",           icon: <XCircle size={11} />       },
 };
@@ -62,7 +62,7 @@ const avatarGradient = (name = "") => {
     "from-electric-violet to-deep-indigo",
     "from-sky-500 to-blue-700",
     "from-emerald-500 to-teal-700",
-    "from-amber-500 to-orange-700",
+    "from-green-yellow to-electric-violet",
     "from-rose-500 to-pink-700",
     "from-fuchsia-500 to-purple-700",
   ];
@@ -235,8 +235,8 @@ export default function AttendanceHistoryPage() {
       {/* Summary Cards - Responsive: 2 cols mobile, 3 cols tablet, 4 cols desktop */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
         <SummaryCard label="Hadir"  value={summary.hadir}  accent="from-emerald-500 to-teal-700"  icon={CheckCircle2}   />
-        <SummaryCard label="Izin"   value={summary.izin}   accent="from-amber-500 to-orange-700" icon={Clock}          />
-        <SummaryCard label="Sakit"  value={summary.sakit}  accent="from-orange-500 to-rose-700"  icon={AlertTriangle}  />
+        <SummaryCard label="Izin"   value={summary.izin}   accent="from-green-yellow to-electric-violet" icon={Clock}          />
+        <SummaryCard label="Sakit"  value={summary.sakit}  accent="from-green-yellow to-electric-violet"  icon={AlertTriangle}  />
         <SummaryCard label="Alpha"  value={summary.alpha}  accent="from-rose-500 to-pink-700"    icon={XCircle}        />
       </div>
 
@@ -360,7 +360,7 @@ export default function AttendanceHistoryPage() {
                       </td>
                       <td className="py-3 px-4">
                         {r.is_late ? (
-                          <span className="text-xs text-amber-300 font-medium">
+                          <span className="text-xs text-green-yellow font-medium">
                             +{r.late_minutes} menit
                           </span>
                         ) : (
@@ -403,7 +403,7 @@ export default function AttendanceHistoryPage() {
                         </div>
                       </div>
                       {r.is_late && (
-                        <p className="text-xs text-amber-300 mt-2 font-medium">
+                        <p className="text-xs text-green-yellow mt-2 font-medium">
                           ⚠ Terlambat +{r.late_minutes} menit
                         </p>
                       )}
