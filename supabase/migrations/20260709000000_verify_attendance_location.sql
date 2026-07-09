@@ -50,8 +50,9 @@ BEGIN
     )
   );
 
-  -- 3. Validasi radius
-  v_within_radius := v_distance <= v_radius;
+  -- 3. Validasi radius dengan toleransi akurasi GPS
+  -- distance <= (radius + accuracy) — mencegah fluktuasi kecil GPS
+  v_within_radius := v_distance <= (v_radius + COALESCE(p_accuracy, 0));
 
   -- 4. Anti-fake-GPS: accuracy terlalu sempurna (< 5m) = curiga
   IF p_accuracy IS NOT NULL AND p_accuracy < 5 THEN

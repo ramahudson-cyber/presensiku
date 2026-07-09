@@ -193,7 +193,7 @@ export default function AttendancePage() {
         const rounded = Math.round(dist);
         prevDistanceRef.current = rounded;
         setDistance(rounded);
-        setLocationStatus(rounded <= (puskesmasLocation.radius_meter || 200) ? "valid" : "invalid");
+        setLocationStatus(rounded <= ((puskesmasLocation.radius_meter || 200) + (loc.accuracy || 0)) ? "valid" : "invalid");
       }
     } catch {
       setLocationStatus("error");
