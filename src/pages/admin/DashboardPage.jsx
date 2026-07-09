@@ -183,7 +183,8 @@ export default function DashboardPage() {
   const userInitial = user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "S";
 
   return (
-    <div className="animate-fade-in -mx-3 sm:-mx-4 md:-mx-5 lg:-mx-6 xl:-mx-8 -mt-3 sm:-mt-4 md:-mt-5 lg:-mt-6 xl:-mt-8">
+      <div className="flex flex-col h-full -mx-3 sm:-mx-4 md:-mx-5 lg:-mx-6 xl:-mx-8 -mt-3 sm:-mt-4 md:-mt-5 lg:-mt-6 xl:-mt-8">
+
       {/* ===== HERO SECTION — Purple Gradient ===== */}
       <div className="bg-gradient-to-br from-[#BF00FF] via-[#9900CC] via-[#660099] to-[#33004D] px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-4">
         {/* Top Row: Clock + Date | Action Icons */}
@@ -235,7 +236,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ===== CONTENT SECTION — Dark Gradient ===== */}
-      <div className="bg-gradient-to-b from-[#1a0033] via-[#0d001a] to-black px-4 sm:px-6 lg:px-8 -mt-5 pt-6 pb-28 rounded-t-[28px] relative z-10">
+      <div className="bg-gradient-to-b from-[#1a0033] via-[#0d001a] to-black px-4 sm:px-6 lg:px-8 -mt-5 pt-6 pb-24 md:pb-0 rounded-t-[28px] relative z-10 flex-1">
         {/* Refresh */}
         <div className="flex justify-end mb-3">
           <button
