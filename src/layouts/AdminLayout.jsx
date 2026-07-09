@@ -26,10 +26,10 @@ function AdminLayout() {
         <main className="flex-1 w-full min-w-0 overflow-x-hidden p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8 pb-24 md:pb-6">
           <div className="mx-auto max-w-[2000px] w-full">
             <Outlet />
+            <footer className="text-center text-[10px] text-white/[0.15] pb-2 select-none mt-2">
+              v{getCurrentVersion().version} &mdash; Hadir.Kuy
+            </footer>
           </div>
-          <footer className="text-center text-[10px] text-white/[0.15] pb-2 select-none mt-2">
-            v{getCurrentVersion().version} &mdash; Hadir.Kuy
-          </footer>
         </main>
       </div>
 
