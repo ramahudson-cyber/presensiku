@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { getCurrentVersion } from "../../services/updateService";
 
-export default function LoginPage() {
+export default function WelcomePage() {
   const navigate = useNavigate();
   const appVersion = getCurrentVersion().version;
 
@@ -11,17 +11,25 @@ export default function LoginPage() {
       style={{
         background: 'linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%)'
       }}>
+      {/* Halo glow */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background: 'radial-gradient(circle farthest-side at 0px -30%, rgba(167,139,250,0.25), rgba(124,58,237,0) 84%)'
         }}
       />
+
+      {/* Subtle grid overlay */}
       <div className="absolute inset-0 professional-grid-bg pointer-events-none" />
+
+      {/* Ambient sweep */}
       <div className="absolute inset-0 professional-ambient-bg pointer-events-none" />
+
+      {/* Floating orbs */}
       <div className="fixed top-[-10%] left-[5%] w-[300px] h-[300px] bg-[#BF00FF] rounded-full mix-blend-screen filter blur-[120px] opacity-25 animate-orb pointer-events-none"></div>
       <div className="fixed bottom-[-10%] right-[5%] w-[300px] h-[300px] bg-[#BF00FF] rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-orb animate-orb-delay pointer-events-none"></div>
 
+      {/* Content */}
       <div className="relative z-10 min-h-dvh flex items-center justify-center p-6">
         <div className="w-full max-w-[400px] flex flex-col min-h-[85vh]">
           <div className="flex-1 flex flex-col justify-center">

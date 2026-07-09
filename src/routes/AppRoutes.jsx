@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "../pages/auth/LoginPage";
+import SignInPage from "../pages/auth/SignInPage";
 import ChangePasswordPage from "../pages/auth/ChangePasswordPage";
 import DashboardPage from "../pages/admin/DashboardPage";
 import EmployeesPage from "../pages/admin/EmployeesPage";
@@ -23,6 +24,7 @@ function AppRoutes() {
     <Routes>
       {/* PUBLIC */}
       <Route path="/" element={<LoginPage />} />
+      <Route path="/login" element={<SignInPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route path="/block" element={<BlockPage />} />
 
