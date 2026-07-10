@@ -24,9 +24,9 @@ function AdminLayout() {
       <div className="relative z-10 w-full xl:w-[calc(100%-260px)] xl:ml-[260px] min-h-screen flex flex-col min-w-0">
         {!isDashboard && <Header />}
         <main className="flex-1 w-full min-w-0 overflow-x-hidden p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8 pb-24 md:pb-6">
-          <div className="mx-auto max-w-[2000px] w-full">
+          <div className="mx-auto max-w-[2000px] w-full space-y-6">
             <Outlet />
-            <footer className="text-center text-[10px] text-white/[0.15] pb-2 select-none mt-2">
+            <footer className="text-center text-[10px] text-white/[0.15] pb-2 select-none">
               v{getCurrentVersion().version} &mdash; Hadir.Kuy
             </footer>
           </div>
