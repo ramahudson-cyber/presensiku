@@ -8,7 +8,7 @@ import { getCurrentVersion } from "../../services/updateService";
 import {
   Users, UserCheck, UserMinus, UserX,
   TrendingUp, Calendar, Bell, RefreshCw, BellOff, Inbox,
-  Moon, LogOut, Sun,
+  Moon, LogOut, Sun, Sunset, CloudSun,
 } from "lucide-react";
 
 
@@ -37,11 +37,11 @@ function StatCard({ title, value, subtitle, icon: Icon, accent = "from-electric-
 function AttendanceBadge({ status }) {
   const map = {
     hadir:  "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
-    izin:   "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",
-    sakit:  "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",
+    izin:   "bg-amber-400/15 text-amber-400 ring-amber-400/30",
+    sakit:  "bg-rose-400/15 text-rose-400 ring-rose-400/30",
     cuti:   "bg-sky-500/15 text-sky-300 ring-sky-500/30",
     alpha:  "bg-rose-500/15 text-rose-300 ring-rose-500/30",
-    terlambat: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",
+    terlambat: "bg-orange-400/15 text-orange-400 ring-orange-400/30",
   };
   return (
     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${map[status] || "bg-white/[0.06] text-white/50 ring-white/10"}`}>
@@ -52,6 +52,13 @@ function AttendanceBadge({ status }) {
 
 const DAYS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 const DAYS_FULL = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+
+const SHIFT_META = {
+  PG: { icon: Sun, color: "text-green-yellow", bg: "bg-green-yellow/15", border: "border-green-yellow/25", badge: "bg-green-yellow/20" },
+  SR: { icon: Sunset, color: "text-green-yellow", bg: "bg-green-yellow/15", border: "border-green-yellow/25", badge: "bg-green-yellow/20" },
+  SI: { icon: CloudSun, color: "text-sky-400", bg: "bg-sky-500/15", border: "border-sky-500/25", badge: "bg-sky-500/20" },
+  ML: { icon: Moon, color: "text-violet-400", bg: "bg-violet-500/15", border: "border-violet-500/25", badge: "bg-violet-500/20" },
+};
 
 const getWitaDateString = (date = new Date()) => {
   const witaMs = date.getTime() + (8 * 60 * 60 * 1000);
@@ -68,6 +75,8 @@ export default function DashboardPage() {
   const [weeklyData, setWeeklyData] = useState([0, 0, 0, 0, 0, 0, 0]);
   const [announcements, setAnnouncements] = useState([]);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [mySchedule, setMySchedule] = useState(null);
+  const [myScheduleLoading, setMyScheduleLoading] = useState(true);
 
   // ⏰ SERVER TIME STATE (anti-cheat)
   const [serverNow, setServerNow] = useState(new Date());
@@ -138,6 +147,40 @@ export default function DashboardPage() {
         .order("created_at", { ascending: false })
         .limit(3);
 
+      // Jadwal shift pribadi admin hari ini
+      setMyScheduleLoading(true);
+      try {
+        const witaDay = new Date(serverDate.getTime() + (8 * 60 * 60 * 1000)).getUTCDay();
+        const pgDayOfWeek = witaDay === 0 ? 6 : witaDay - 1;
+        const { data: sched } = await supabase
+          .from("employee_schedules")
+          .select("shift_code")
+          .eq("user_id", user.id)
+          .eq("date", today)
+          .maybeSingle();
+        if (sched) {
+          const [{ data: shiftInfo }, { data: scheduleDetail }] = await Promise.all([
+            supabase.from("shifts").select("name").eq("code", sched.shift_code).single(),
+            supabase.from("shift_schedules")
+              .select("start_time, end_time, latest_check_in, is_working_day")
+              .eq("shift_code", sched.shift_code)
+              .eq("day_of_week", pgDayOfWeek)
+              .single(),
+          ]);
+          setMySchedule({
+            code: sched.shift_code,
+            name: shiftInfo?.name || sched.shift_code,
+            ...scheduleDetail,
+          });
+        } else {
+          setMySchedule(null);
+        }
+      } catch {
+        setMySchedule(null);
+      } finally {
+        setMyScheduleLoading(false);
+      }
+
       setStats({
         totalPegawai: totalPegawai || 0,
         hadirHariIni: hadir,
@@ -188,11 +231,43 @@ export default function DashboardPage() {
 
       {/* ===== HERO SECTION — Purple Gradient ===== */}
       <div className="bg-gradient-to-br from-[#BF00FF] via-[#9900CC] via-[#660099] to-[#33004D] px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-4">
-        {/* Top Row: Clock + Date | Action Icons */}
-        <div className="flex justify-between items-center mb-4">
+        {/* Top Row: Clock + Date + Shift Badge | Action Icons */}
+        <div className="flex justify-between items-start mb-4">
           <div>
             <div className="text-2xl sm:text-3xl font-bold text-white tracking-wide tabular-nums">{witaTime()}</div>
             <div className="text-[11px] sm:text-xs text-white/50 font-medium mt-0.5">{witaDate()}</div>
+
+            {/* Shift Badge — Loading */}
+            {myScheduleLoading && (
+              <div className="h-5 w-28 bg-white/[0.08] animate-pulse rounded-full mt-2" />
+            )}
+
+            {/* Shift Badge — Kosong */}
+            {!myScheduleLoading && !mySchedule && (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 mt-2 rounded-full bg-white/[0.06] border border-white/[0.06]">
+                <Calendar size={10} className="text-white/30" />
+                <span className="text-[10px] text-white/40">Tidak ada jadwal</span>
+              </div>
+            )}
+
+            {/* Shift Badge — Ada shift */}
+            {!myScheduleLoading && mySchedule?.code && (() => {
+              const meta = SHIFT_META[mySchedule.code] || SHIFT_META.PG;
+              const Icon = meta.icon;
+              return (
+                <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 mt-2 rounded-full ${meta.bg} border ${meta.border}`}>
+                  <Icon size={12} className={meta.color} />
+                  <span className={`text-[10px] font-semibold ${meta.color}`}>{mySchedule.name}</span>
+                  <span className={`text-[10px] font-bold ${meta.color} ${meta.badge} px-1 rounded`}>{mySchedule.code}</span>
+                  <span className="text-[10px] text-white/40 mx-0.5">|</span>
+                  <span className="text-[10px] text-white/70 tabular-nums">{mySchedule.start_time?.slice(0,5)} – {mySchedule.end_time?.slice(0,5)}</span>
+                  {mySchedule.latest_check_in && (
+                    <span className={`text-[10px] ${meta.color}/70 tabular-nums`}>⌛{mySchedule.latest_check_in?.slice(0,5)}</span>
+                  )}
+                </div>
+              );
+            })()}
+
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <button

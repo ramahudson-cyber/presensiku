@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { CheckCircle, XCircle, AlertCircle, ChevronRight, Calendar, Bell } from "lucide-react";
+import { CheckCircle, XCircle, AlertCircle, ChevronRight, Calendar, Bell, Clock, ArrowRight } from "lucide-react";
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0 });
+  const [recentHistory, setRecentHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { fetchData(); }, []);
@@ -19,10 +20,11 @@ export default function EmployeeDashboard() {
       const monthStart = new Date(); monthStart.setDate(1);
       const monthStr = monthStart.toISOString().split("T")[0];
 
-      const [attRes, monthRes, annRes] = await Promise.all([
+      const [attRes, monthRes, annRes, histRes] = await Promise.all([
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("attendance").select("attendance_status").eq("user_id", user.id).gte("date", monthStr),
-        supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3)
+        supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3),
+        supabase.from("attendance").select("date, attendance_status, clock_in_time, clock_out_time").eq("user_id", user.id).order("date", { ascending: false }).limit(7)
       ]);
 
       setTodayAttendance(attRes.data);
@@ -30,6 +32,7 @@ export default function EmployeeDashboard() {
       monthRes.data?.forEach(a => { if (s[a.attendance_status] !== undefined) s[a.attendance_status]++; });
       setStats(s);
       setAnnouncements(annRes.data || []);
+      setRecentHistory(histRes.data || []);
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
@@ -114,6 +117,59 @@ export default function EmployeeDashboard() {
                   <p className="text-xs text-slate-mist mt-1">{a.content}</p>
                 </div>
               ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Riwayat Absensi */}
+      <div>
+        <p className="text-[10px] font-bold text-slate-mist uppercase tracking-widest mb-2 px-1">Riwayat Absensi</p>
+        <div className="design-card-hover p-4 shadow-lg">
+          {recentHistory.length === 0 ? (
+            <div className="text-center py-4">
+              <Clock size={20} className="mx-auto text-slate-mist mb-1" />
+              <p className="text-xs text-slate-mist">Belum ada riwayat</p>
+            </div>
+          ) : (
+            <div className="space-y-0">
+              {/* Header Row */}
+              <div className="grid grid-cols-[8px_1fr_1fr_1fr_50px] gap-2 items-center py-1.5 border-b border-white/[0.08] mb-1">
+                <div></div>
+                <p className="text-[9px] font-bold text-slate-mist uppercase tracking-wider">Tanggal</p>
+                <p className="text-[9px] font-bold text-slate-mist uppercase tracking-wider text-center">Masuk</p>
+                <p className="text-[9px] font-bold text-slate-mist uppercase tracking-wider text-center">Pulang</p>
+                <p className="text-[9px] font-bold text-slate-mist uppercase tracking-wider text-right">Status</p>
+              </div>
+              {recentHistory.map((r, i) => {
+                const d = new Date(r.date + "T00:00:00");
+                const dayName = d.toLocaleDateString("id-ID", { weekday: "long" });
+                const dateStr = d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+                const statusMap = {
+                  hadir: { label: "Hadir", color: "text-green-yellow", dot: "bg-green-yellow" },
+                  izin: { label: "Izin", color: "text-amber-400", dot: "bg-amber-400" },
+                  sakit: { label: "Sakit", color: "text-rose-400", dot: "bg-rose-400" },
+                  alpha: { label: "Alpha", color: "text-red-300", dot: "bg-red-300" },
+                };
+                const s = statusMap[r.attendance_status] || { label: r.attendance_status, color: "text-slate-mist", dot: "bg-slate-mist" };
+                const clockIn = r.clock_in_time ? new Date(r.clock_in_time).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "—";
+                const clockOut = r.clock_out_time ? new Date(r.clock_out_time).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "—";
+                return (
+                  <div key={r.id || i} className="grid grid-cols-[8px_1fr_1fr_1fr_50px] gap-2 items-center py-2.5 border-b border-white/[0.04] last:border-b-0">
+                    <div className={`w-2 h-2 rounded-full ${s.dot} ${s.dot === "bg-green-yellow" ? "shadow-[0_0_6px_rgba(173,255,47,0.4)]" : ""}`}></div>
+                    <div>
+                      <p className="text-[11px] text-slate-mist font-semibold">{dayName}</p>
+                      <p className="text-[10px] text-white/40">{dateStr}</p>
+                    </div>
+                    <p className="text-[11px] text-slate-mist font-mono text-center">{clockIn}</p>
+                    <p className="text-[11px] text-slate-mist font-mono text-center">{clockOut}</p>
+                    <p className={`text-[11px] font-semibold text-right ${s.color}`}>{s.label}</p>
+                  </div>
+                );
+              })}
+              <Link to="/employee/attendance" className="flex items-center justify-center gap-1 pt-2 text-[11px] text-periwinkle-glow hover:text-electric-violet transition-colors">
+                Lihat Semua <ArrowRight size={12} />
+              </Link>
             </div>
           )}
         </div>
