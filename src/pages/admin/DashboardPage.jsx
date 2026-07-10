@@ -237,7 +237,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ===== CONTENT SECTION — Dark Gradient ===== */}
-      <div className="bg-onyx px-4 sm:px-6 lg:px-8 -mt-5 pt-6 pb-24 md:pb-0 rounded-t-[28px] relative z-10 flex-1">
+      <div className="bg-onyx px-4 sm:px-6 lg:px-8 -mt-5 pt-6 pb-40 rounded-t-[28px] relative z-10 flex-1">
         {/* Refresh */}
         <div className="flex justify-end mb-3">
           <button
