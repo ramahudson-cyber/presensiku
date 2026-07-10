@@ -237,7 +237,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ===== CONTENT SECTION — Dark Gradient ===== */}
-      <div className="bg-gradient-to-b from-[#1a0033] via-[#0d001a] to-black px-4 sm:px-6 lg:px-8 -mt-5 pt-6 pb-24 md:pb-0 rounded-t-[28px] relative z-10 flex-1">
+      <div className="bg-onyx px-4 sm:px-6 lg:px-8 -mt-5 pt-6 pb-24 md:pb-0 rounded-t-[28px] relative z-10 flex-1">
         {/* Refresh */}
         <div className="flex justify-end mb-3">
           <button
@@ -355,7 +355,7 @@ export default function DashboardPage() {
                   <tr className="border-b border-white/[0.06]">
                     <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">Nama</th>
                     <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">Masuk</th>
-                    <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider hidden md:table-cell">Pulang</th>
+                    <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">Pulang</th>
                     <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">Status</th>
                   </tr>
                 </thead>
@@ -368,7 +368,13 @@ export default function DashboardPage() {
                         </div>
                       </td>
                       <td className="py-2.5 px-3 text-emerald-300 font-mono tabular-nums text-[11px] sm:text-sm">{fmtTime(a.clock_in_time)}</td>
-                      <td className="py-2.5 px-3 text-rose-300 font-mono tabular-nums text-[11px] sm:text-sm hidden md:table-cell">{fmtTime(a.clock_out_time)}</td>
+                      <td className="py-2.5 px-3">
+                        {a.clock_out_time ? (
+                          <span className="text-rose-300 font-mono tabular-nums text-[11px] sm:text-sm">{fmtTime(a.clock_out_time)}</span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/[0.06] text-white/30">Belum</span>
+                        )}
+                      </td>
                       <td className="py-2.5 px-3"><AttendanceBadge status={a.attendance_status} /></td>
                     </tr>
                   ))}
