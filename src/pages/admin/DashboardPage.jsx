@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { signOut } from "../../services/authService";
+import { getCurrentVersion } from "../../services/updateService";
 import {
   Users, UserCheck, UserMinus, UserX,
   TrendingUp, Calendar, Bell, RefreshCw, BellOff, Inbox,
@@ -376,6 +377,11 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
+
+        {/* Versi Aplikasi */}
+        <footer className="text-center text-[10px] text-white/[0.15] pb-2 select-none mt-6">
+          v{getCurrentVersion().version} &mdash; Hadir.Kuy
+        </footer>
       </div>
     </div>
   );
