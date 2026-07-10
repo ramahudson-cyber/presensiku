@@ -184,7 +184,7 @@ export default function DashboardPage() {
   const userInitial = user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "S";
 
   return (
-      <div className="flex flex-col h-full -mx-3 sm:-mx-4 md:-mx-5 lg:-mx-6 xl:-mx-8 -mt-3 sm:-mt-4 md:-mt-5 lg:-mt-6 xl:-mt-8">
+      <div className="flex flex-col flex-1 -mx-3 sm:-mx-4 md:-mx-5 lg:-mx-6 xl:-mx-8 -mt-3 sm:-mt-4 md:-mt-5 lg:-mt-6 xl:-mt-8">
 
       {/* ===== HERO SECTION — Purple Gradient ===== */}
       <div className="bg-gradient-to-br from-[#BF00FF] via-[#9900CC] via-[#660099] to-[#33004D] px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-4">
