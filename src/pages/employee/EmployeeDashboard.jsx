@@ -11,8 +11,13 @@ export default function EmployeeDashboard() {
   const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0 });
   const [recentHistory, setRecentHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [liveTime, setLiveTime] = useState(new Date());
 
   useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    const t = setInterval(() => setLiveTime(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -46,23 +51,39 @@ export default function EmployeeDashboard() {
     );
   }
 
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+  const now = liveTime;
+  const h = now.getHours();
+  let greeting = "Selamat Malam";
+  if (h >= 3 && h < 12) greeting = "Selamat Pagi";
+  else if (h >= 12 && h < 15) greeting = "Selamat Siang";
+  else if (h >= 15 && h < 18) greeting = "Selamat Sore";
+
+  const timeStr = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   const dateStr = now.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).replace(/\b\w/g, c => c.toUpperCase());
+  const initials = (user?.full_name || user?.user_metadata?.full_name || user?.email || "U").split(" ").map(s => s[0]).join("").toUpperCase().slice(0, 2);
+  const fullName = user?.full_name || user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
 
   return (
-    <div className="space-y-3 animate-fade-in">
-      {/* Hero - Glassmorphism Card */}
+    <div className="space-y-3 animate-fade-in max-w-lg mx-auto">
+      {/* Hero — Greeting + Avatar + Live Clock + Absen */}
       <div className="design-card-hover p-5 shadow-lg">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[10px] text-slate-mist uppercase tracking-wider font-medium">{dateStr}</p>
-            <p className="text-2xl font-bold text-pure-white mt-1">{timeStr}</p>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex-1">
+            <p className="text-[10px] text-slate-mist uppercase tracking-wider font-medium">{greeting}</p>
+            <p className="text-lg font-bold text-pure-white mt-0.5">{fullName}</p>
           </div>
-          <Link to="/employee/attendance" className="bg-electric-violet/20 hover:bg-electric-violet/30 backdrop-blur-sm text-pure-white px-4 py-2 rounded-full text-xs font-semibold border border-electric-violet/20 transition">
-            Absen
-          </Link>
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#BF00FF] to-[#7b00cc] flex items-center justify-center text-base font-bold text-white border-2 border-white/[0.15] shadow-lg shadow-[#BF00FF]/30 flex-shrink-0">
+            {initials}
+          </div>
         </div>
+        <div>
+          <p className="text-2xl font-bold text-pure-white font-mono tracking-tight">{timeStr}</p>
+          <p className="text-[10px] text-slate-mist mt-0.5">{dateStr}</p>
+        </div>
+        <Link to="/employee/attendance" className="mt-4 block w-full py-3 bg-[#BF00FF] text-white rounded-full text-sm font-semibold text-center hover:brightness-110 transition-all">
+          <span className="inline-block w-2 h-2 rounded-full bg-[#adff2f] mr-2 align-middle animate-pulse"></span>
+          Absen Sekarang
+        </Link>
       </div>
 
       {/* Status */}
@@ -81,7 +102,7 @@ export default function EmployeeDashboard() {
         </div>
       </Link>
 
-      {/* Stats - Glassmorphism */}
+      {/* Stats — Bulan Ini */}
       <div>
         <p className="text-[10px] font-bold text-slate-mist uppercase tracking-widest mb-2 px-1">Bulan Ini</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -100,7 +121,7 @@ export default function EmployeeDashboard() {
         </div>
       </div>
 
-      {/* Pengumuman - Glassmorphism */}
+      {/* Pengumuman */}
       <div>
         <p className="text-[10px] font-bold text-slate-mist uppercase tracking-widest mb-2 px-1">Pengumuman</p>
         <div className="design-card-hover p-4 shadow-lg">
@@ -147,10 +168,10 @@ export default function EmployeeDashboard() {
                 const dateStr = d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
                 const raw = (r.attendance_status || "").toLowerCase();
                 const statusMap = {
-                  hadir: { label: "Hadir", textColor: "#adff2f", dotColor: "#adff2f", shadow: "0 0 6px rgba(173,255,47,0.4)", bg: "rgba(173,255,47,0.1)" },
-                  izin: { label: "Izin", textColor: "#fbbf24", dotColor: "#fbbf24", shadow: "", bg: "rgba(251,191,36,0.1)" },
-                  sakit: { label: "Sakit", textColor: "#fb7185", dotColor: "#fb7185", shadow: "", bg: "rgba(251,113,133,0.1)" },
-                  alpha: { label: "Alpha", textColor: "#fca5a5", dotColor: "#fca5a5", shadow: "", bg: "rgba(252,165,165,0.1)" },
+                  hadir: { label: "Hadir", textColor: "#adff2f", dotColor: "#adff2f", shadow: "0 0 6px rgba(173,255,47,0.4)", bg: "rgba(173,255,47,0.08)" },
+                  izin: { label: "Izin", textColor: "#fbbf24", dotColor: "#fbbf24", shadow: "", bg: "rgba(251,191,36,0.08)" },
+                  sakit: { label: "Sakit", textColor: "#fb7185", dotColor: "#fb7185", shadow: "", bg: "rgba(251,113,133,0.08)" },
+                  alpha: { label: "Alpha", textColor: "#fca5a5", dotColor: "#fca5a5", shadow: "", bg: "rgba(252,165,165,0.08)" },
                 };
                 const s = statusMap[raw] || { label: r.attendance_status || "—", textColor: "#9ba1ae", dotColor: "#9ba1ae", shadow: "", bg: "transparent" };
                 const clockIn = r.clock_in_time ? new Date(r.clock_in_time).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "—";
@@ -173,6 +194,18 @@ export default function EmployeeDashboard() {
               </Link>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Upload Foto */}
+      <div className="design-card-hover p-4 shadow-lg" style={{ border: "1px solid rgba(191,0,255,0.2)", background: "rgba(191,0,255,0.05)" }}>
+        <p className="text-[10px] font-bold text-slate-mist uppercase tracking-widest mb-2 px-1">🔧 Pengaturan Foto</p>
+        <div className="flex items-center gap-3 px-1">
+          <div className="w-12 h-12 rounded-full bg-onyx border-2 border-dashed border-[#BF00FF] flex items-center justify-center text-lg text-[#BF00FF] flex-shrink-0">📷</div>
+          <div>
+            <p className="text-sm font-semibold text-pure-white">Upload Foto Profil</p>
+            <p className="text-[11px] text-slate-mist">Tap untuk upload dari galeri atau kamera</p>
+          </div>
         </div>
       </div>
     </div>
