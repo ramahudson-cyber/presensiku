@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { CheckCircle, XCircle, AlertCircle, ChevronRight, Calendar, Bell, Clock, ArrowRight } from "lucide-react";
+import { CheckCircle, XCircle, AlertCircle, ChevronRight, Calendar, Bell, Clock, ArrowRight, LogOut } from "lucide-react";
+import { signOut } from "../../services/authService";
+import ThemeToggle from "../../components/ThemeToggle";
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0 });
@@ -39,6 +42,11 @@ export default function EmployeeDashboard() {
       setAnnouncements(annRes.data || []);
       setRecentHistory(histRes.data || []);
     } catch (e) { console.error(e); } finally { setLoading(false); }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
   };
 
   if (loading) {
@@ -95,12 +103,15 @@ export default function EmployeeDashboard() {
               <span style={{fontSize:"10px",color:"rgba(255,255,255,0.7)"}}>07:00 – 15:00</span>
             </div>
           </div>
-          <div style={{display:"flex",gap:"8px"}}>
-            <div style={{width:"36px",height:"36px",borderRadius:"50%",background:"rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",cursor:"pointer",color:"rgba(255,255,255,0.7)",position:"relative"}}>
-              🔔<div style={{position:"absolute",top:"5px",right:"5px",width:"7px",height:"7px",background:"#f43f5e",borderRadius:"50%",border:"2px solid #9900CC"}}></div>
-            </div>
-            <div style={{width:"36px",height:"36px",borderRadius:"50%",background:"rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",cursor:"pointer",color:"rgba(255,255,255,0.7)"}}>🌙</div>
-            <div style={{width:"36px",height:"36px",borderRadius:"50%",background:"rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",cursor:"pointer",color:"rgba(255,255,255,0.7)"}}>🚪</div>
+          <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
+            <button style={{width:"36px",height:"36px",borderRadius:"50%",background:"rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",cursor:"pointer",color:"rgba(255,255,255,0.7)",position:"relative",border:"none",padding:0}} aria-label="Notifications">
+              <Bell size={16} />
+              <div style={{position:"absolute",top:"8px",right:"8px",width:"7px",height:"7px",background:"#f43f5e",borderRadius:"50%",border:"2px solid #9900CC"}}></div>
+            </button>
+            <ThemeToggle />
+            <button onClick={handleLogout} style={{width:"36px",height:"36px",borderRadius:"50%",background:"rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",cursor:"pointer",color:"rgba(255,255,255,0.7)",border:"none",padding:0}} aria-label="Logout">
+              <LogOut size={16} />
+            </button>
           </div>
         </div>
         
