@@ -95,10 +95,15 @@ export default function EmployeeDashboard() {
             </div>
             <div>
               <p className="text-sm font-semibold text-pure-white">{todayAttendance ? "Sudah Absen" : "Belum Absen"}</p>
-              <p className="text-[11px] text-slate-mist">{todayAttendance ? `Masuk: ${new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}` : "Tap untuk absen"}</p>
+              <p className="text-[11px] text-slate-mist">{todayAttendance ? `Masuk: ${new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})} · Pulang: ${todayAttendance.clock_out_time ? new Date(todayAttendance.clock_out_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"}) : "—"}` : "Tap untuk absen"}</p>
             </div>
           </div>
-          <ChevronRight size={18} className="text-slate-mist" />
+          {todayAttendance && (() => {
+            const raw = (todayAttendance.attendance_status || "").toLowerCase();
+            const badgeMap = { hadir: { label: "✅ Hadir", color: "#adff2f" }, izin: { label: "📋 Izin", color: "#fbbf24" }, sakit: { label: "🤒 Sakit", color: "#fb7185" }, alpha: { label: "❌ Alpha", color: "#fca5a5" } };
+            const b = badgeMap[raw] || { label: raw, color: "#9ba1ae" };
+            return <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full" style={{ background: b.color + "20", color: b.color }}>{b.label}</span>;
+          })() || <ChevronRight size={18} className="text-slate-mist" />}
         </div>
       </Link>
 
