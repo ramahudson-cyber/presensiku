@@ -7,6 +7,7 @@ import { Outlet, useLocation } from "react-router-dom";
 function AdminLayout() {
   const location = useLocation();
   const isDashboard = location.pathname === "/admin";
+  const isEmployee = location.pathname === "/employee";
 
   return (
     <div className="min-h-screen relative overflow-x-hidden bg-white dark:bg-obsidian transition-colors duration-500">
@@ -22,7 +23,7 @@ function AdminLayout() {
       <Sidebar menuOpen={false} />
 
       <div className="relative z-10 w-full xl:w-[calc(100%-260px)] xl:ml-[260px] min-h-screen flex flex-col min-w-0">
-        {!isDashboard && <Header />}
+        {!(isDashboard || isEmployee) && <Header />}
         <main className={`flex-1 w-full min-w-0 overflow-x-hidden p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8 ${isDashboard ? 'pb-0' : 'pb-24 md:pb-6'} flex flex-col`}>
           <div className="mx-auto max-w-[2000px] w-full flex-1 flex flex-col">
             <Outlet />
