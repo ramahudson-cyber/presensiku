@@ -11,12 +11,12 @@
     min-height: 100vh; display: flex; align-items: flex-start; justify-content: center;
     padding: 24px; background: #1a1a2e; gap: 24px; flex-wrap: wrap;
   }
-  .phone-frame {
-    width: 390px; height: 844px;
-    background: #000; border-radius: 48px; padding: 12px;
-    box-shadow: 0 25px 80px rgba(0,0,0,0.6), 0 0 0 2px #2a2a3e, 0 0 0 12px #1a1a2e;
-    position: relative; flex-shrink: 0;
-  }
+	  .phone-frame {
+	    width: 390px; height: 844px;
+	    background: #000; border-radius: 48px; padding: 12px 0;
+	    box-shadow: 0 25px 80px rgba(0,0,0,0.6), 0 0 0 2px #2a2a3e, 0 0 0 12px #1a1a2e;
+	    position: relative; flex-shrink: 0;
+	  }
   .phone-frame::before {
     content: ''; position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
     width: 110px; height: 28px; background: #000; border-radius: 0 0 18px 18px; z-index: 100;
@@ -133,7 +133,7 @@
 	        </div>
 
         <!-- ===== CONTENT BG ===== -->
-        <div style="background:linear-gradient(to bottom,#1a0033,#0d001a,#000);margin:-24px -16px 0 -16px;padding:24px 16px 80px;border-radius:28px 28px 0 0;flex:1;min-height:100%;">
+        <div style="background:linear-gradient(to bottom,#1a0033,#0d001a,#000);margin:-24px 0 0 0;padding:24px 16px 80px;border-radius:28px 28px 0 0;flex:1;min-height:100%;">
 
         <!-- ===== STATUS ===== -->
         <a href="#" style="display:block;text-decoration:none;">
@@ -320,8 +320,8 @@
         </div>
       </div>
 
-      <!-- CONTENT ADMIN -->
-      <div style="background:linear-gradient(to bottom,#1a0033,#0d001a,#000);margin:-20px -12px 0 -12px;padding:24px 16px 80px;border-radius:28px 28px 0 0;flex:1;overflow-y:auto;">
+	      <!-- CONTENT ADMIN -->
+	      <div style="background:linear-gradient(to bottom,#1a0033,#0d001a,#000);margin:-20px 0 0 0;padding:24px 16px 80px;border-radius:28px 28px 0 0;flex:1;overflow-y:auto;">
         <div style="display:flex;align-items:center;gap:6px;margin-left:auto;width:fit-content;padding:8px 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:9999px;color:rgba(255,255,255,0.7);font-size:12px;margin-bottom:12px;">🔄 Refresh</div>
 
         <!-- Stat Cards -->
