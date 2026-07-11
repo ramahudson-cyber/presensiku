@@ -35,16 +35,18 @@ function StatCard({ title, value, subtitle, icon: Icon, accent = "from-electric-
 }
 
 function AttendanceBadge({ status }) {
-  const map = {
-    hadir:  "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
-    izin:   "bg-amber-400/15 text-amber-400 ring-amber-400/30",
-    sakit:  "bg-rose-400/15 text-rose-400 ring-rose-400/30",
-    cuti:   "bg-sky-500/15 text-sky-300 ring-sky-500/30",
-    alpha:  "bg-rose-500/15 text-rose-300 ring-rose-500/30",
-    terlambat: "bg-orange-400/15 text-orange-400 ring-orange-400/30",
+  const palette = {
+    hadir:  { bg: "rgba(16,185,129,0.15)", text: "#6ee7b7", border: "rgba(16,185,129,0.3)" },
+    izin:   { bg: "rgba(251,191,36,0.15)", text: "#fbbf24", border: "rgba(251,191,36,0.3)" },
+    sakit:  { bg: "rgba(251,114,133,0.15)", text: "#fb7185", border: "rgba(251,114,133,0.3)" },
+    cuti:   { bg: "rgba(14,165,233,0.15)", text: "#38bdf8", border: "rgba(14,165,233,0.3)" },
+    alpha:  { bg: "rgba(244,63,94,0.15)", text: "#fca5a5", border: "rgba(244,63,94,0.3)" },
+    terlambat: { bg: "rgba(251,146,60,0.15)", text: "#fb923c", border: "rgba(251,146,60,0.3)" },
   };
+  const c = palette[status] || { bg: "rgba(255,255,255,0.06)", text: "rgba(255,255,255,0.5)", border: "rgba(255,255,255,0.1)" };
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${map[status] || "bg-white/[0.06] text-white/50 ring-white/10"}`}>
+    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
+      style={{ backgroundColor: c.bg, color: c.text, border: `1px solid ${c.border}` }}>
       {status?.toUpperCase() || "-"}
     </span>
   );

@@ -146,24 +146,24 @@ export default function EmployeeDashboard() {
                 const dayName = d.toLocaleDateString("id-ID", { weekday: "long" });
                 const dateStr = d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
                 const statusMap = {
-                  hadir: { label: "Hadir", color: "text-green-yellow", dot: "bg-green-yellow" },
-                  izin: { label: "Izin", color: "text-amber-400", dot: "bg-amber-400" },
-                  sakit: { label: "Sakit", color: "text-rose-400", dot: "bg-rose-400" },
-                  alpha: { label: "Alpha", color: "text-red-300", dot: "bg-red-300" },
+                  hadir: { label: "Hadir", textColor: "#adff2f", dotColor: "#adff2f", shadow: "0 0 6px rgba(173,255,47,0.4)" },
+                  izin: { label: "Izin", textColor: "#fbbf24", dotColor: "#fbbf24", shadow: "" },
+                  sakit: { label: "Sakit", textColor: "#fb7185", dotColor: "#fb7185", shadow: "" },
+                  alpha: { label: "Alpha", textColor: "#fca5a5", dotColor: "#fca5a5", shadow: "" },
                 };
-                const s = statusMap[r.attendance_status] || { label: r.attendance_status, color: "text-slate-mist", dot: "bg-slate-mist" };
+                const s = statusMap[r.attendance_status] || { label: r.attendance_status, textColor: "#9ba1ae", dotColor: "#9ba1ae", shadow: "" };
                 const clockIn = r.clock_in_time ? new Date(r.clock_in_time).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "—";
                 const clockOut = r.clock_out_time ? new Date(r.clock_out_time).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "—";
                 return (
                   <div key={r.id || i} className="grid grid-cols-[8px_1fr_1fr_1fr_50px] gap-2 items-center py-2.5 border-b border-white/[0.04] last:border-b-0">
-                    <div className={`w-2 h-2 rounded-full ${s.dot} ${s.dot === "bg-green-yellow" ? "shadow-[0_0_6px_rgba(173,255,47,0.4)]" : ""}`}></div>
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: s.dotColor, boxShadow: s.shadow || "none" }}></div>
                     <div>
                       <p className="text-[11px] text-slate-mist font-semibold">{dayName}</p>
                       <p className="text-[10px] text-white/40">{dateStr}</p>
                     </div>
                     <p className="text-[11px] text-slate-mist font-mono text-center">{clockIn}</p>
                     <p className="text-[11px] text-slate-mist font-mono text-center">{clockOut}</p>
-                    <p className={`text-[11px] font-semibold text-right ${s.color}`}>{s.label}</p>
+                    <p className="text-[11px] font-semibold text-right" style={{ color: s.textColor }}>{s.label}</p>
                   </div>
                 );
               })}
