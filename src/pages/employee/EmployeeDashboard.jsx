@@ -29,7 +29,7 @@ export default function EmployeeDashboard() {
 
       setTodayAttendance(attRes.data);
       const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
-      monthRes.data?.forEach(a => { if (s[a.attendance_status] !== undefined) s[a.attendance_status]++; });
+      monthRes.data?.forEach(a => { const k = (a.attendance_status || "").toLowerCase(); if (s[k] !== undefined) s[k]++; });
       setStats(s);
       setAnnouncements(annRes.data || []);
       setRecentHistory(histRes.data || []);
@@ -145,17 +145,18 @@ export default function EmployeeDashboard() {
                 const d = new Date(r.date + "T00:00:00");
                 const dayName = d.toLocaleDateString("id-ID", { weekday: "long" });
                 const dateStr = d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+                const raw = (r.attendance_status || "").toLowerCase();
                 const statusMap = {
-                  hadir: { label: "Hadir", textColor: "#adff2f", dotColor: "#adff2f", shadow: "0 0 6px rgba(173,255,47,0.4)" },
-                  izin: { label: "Izin", textColor: "#fbbf24", dotColor: "#fbbf24", shadow: "" },
-                  sakit: { label: "Sakit", textColor: "#fb7185", dotColor: "#fb7185", shadow: "" },
-                  alpha: { label: "Alpha", textColor: "#fca5a5", dotColor: "#fca5a5", shadow: "" },
+                  hadir: { label: "Hadir", textColor: "#adff2f", dotColor: "#adff2f", shadow: "0 0 6px rgba(173,255,47,0.4)", bg: "rgba(173,255,47,0.1)" },
+                  izin: { label: "Izin", textColor: "#fbbf24", dotColor: "#fbbf24", shadow: "", bg: "rgba(251,191,36,0.1)" },
+                  sakit: { label: "Sakit", textColor: "#fb7185", dotColor: "#fb7185", shadow: "", bg: "rgba(251,113,133,0.1)" },
+                  alpha: { label: "Alpha", textColor: "#fca5a5", dotColor: "#fca5a5", shadow: "", bg: "rgba(252,165,165,0.1)" },
                 };
-                const s = statusMap[r.attendance_status] || { label: r.attendance_status, textColor: "#9ba1ae", dotColor: "#9ba1ae", shadow: "" };
+                const s = statusMap[raw] || { label: r.attendance_status || "—", textColor: "#9ba1ae", dotColor: "#9ba1ae", shadow: "", bg: "transparent" };
                 const clockIn = r.clock_in_time ? new Date(r.clock_in_time).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "—";
                 const clockOut = r.clock_out_time ? new Date(r.clock_out_time).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "—";
                 return (
-                  <div key={r.id || i} className="grid grid-cols-[8px_1fr_1fr_1fr_50px] gap-2 items-center py-2.5 border-b border-white/[0.04] last:border-b-0">
+                  <div key={r.id || i} className="grid grid-cols-[8px_1fr_1fr_1fr_50px] gap-2 items-center py-2.5 border-b border-white/[0.04] last:border-b-0 rounded-xl px-2" style={{ background: s.bg || "transparent" }}>
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: s.dotColor, boxShadow: s.shadow || "none" }}></div>
                     <div>
                       <p className="text-[11px] text-slate-mist font-semibold">{dayName}</p>
