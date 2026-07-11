@@ -161,8 +161,8 @@ export default function EmployeeDashboard() {
                       <p className="text-[11px] text-slate-mist font-semibold">{dayName}</p>
                       <p className="text-[10px] text-white/40">{dateStr}</p>
                     </div>
-                    <p className="text-[11px] text-slate-mist font-mono text-center">{clockIn}</p>
-                    <p className="text-[11px] text-slate-mist font-mono text-center">{clockOut}</p>
+                    <p className="text-[11px] font-mono text-center font-semibold" style={{ color: s.textColor }}>{clockIn}</p>
+                    <p className="text-[11px] font-mono text-center font-semibold" style={{ color: s.textColor }}>{clockOut}</p>
                     <p className="text-[11px] font-semibold text-right" style={{ color: s.textColor }}>{s.label}</p>
                   </div>
                 );
