@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Preview — Admin Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh; display: flex; align-items: flex-start; justify-content: center;
+    padding: 24px; background: #1a1a2e; gap: 24px; flex-wrap: wrap;
+  }
+  .phone-frame {
+    width: 390px; height: 844px;
+    background: #000; border-radius: 48px; padding: 12px;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.6), 0 0 0 2px #2a2a3e, 0 0 0 12px #1a1a2e;
+    position: relative; flex-shrink: 0;
+  }
+  .phone-frame::before {
+    content: ''; position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+    width: 110px; height: 28px; background: #000; border-radius: 0 0 18px 18px;
+  }
+  .phone-screen {
+    width: 100%; height: 100%; background: #0d001a;
+    border-radius: 36px; overflow-y: auto; overflow-x: hidden; position: relative;
+  }
+  .phone-screen::-webkit-scrollbar { display: none; }
+
+  /* iOS Status Bar */
+  .status-bar {
+    height: 44px; display: flex; justify-content: space-between; align-items: center;
+    padding: 0 28px 0 32px; color: #fff; font-size: 14px; font-weight: 600;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .status-bar .right { display: flex; gap: 6px; align-items: center; font-size: 12px; }
+  .battery { width:24px; height:12px; border:1.5px solid rgba(255,255,255,0.6); border-radius:3px; padding:1.5px; position:relative; }
+  .battery::after { content:''; position:absolute; right:-3px; top:3px; width:2px; height:4px; background:rgba(255,255,255,0.6); border-radius:0 1px 1px 0; }
+  .battery-fill { width:80%; height:100%; background:#fff; border-radius:1px; }
+
+  .home-indicator {
+    position: sticky; bottom: 8px; left: 50%; transform: translateX(-50%);
+    width: 134px; height: 5px; background: rgba(255,255,255,0.4); border-radius: 3px;
+    margin: 0 auto;
+  }
+  .phone-wrap { position: relative; }
+  .label-tag {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: #BF00FF; color: #fff; padding: 4px 12px; border-radius: 9999px;
+    font-size: 11px; font-weight: 600; white-space: nowrap;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, #BF00FF, #9900CC, #660099, #33004D);
+    padding: 8px 16px 20px;
+  }
+  .hero-top {
+    display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;
+  }
+  .hero-clock { font-size: 24px; font-weight: 700; color: #fff; letter-spacing: 0.025em; }
+  .hero-date { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+  .hero-shift {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 8px; padding: 4px 10px;
+    background: rgba(173,255,47,0.15); border: 1px solid rgba(173,255,47,0.25);
+    border-radius: 9999px;
+  }
+  .hero-shift span { font-size: 10px; color: #adff2f; font-weight: 600; }
+  .hero-actions { display: flex; gap: 8px; }
+  .hero-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.7); font-size: 16px; cursor: pointer;
+  }
+  .hero-btn.notif { position: relative; }
+  .notif-dot {
+    position: absolute; top: 5px; right: 5px;
+    width: 7px; height: 7px; background: #f43f5e; border-radius: 50%;
+    border: 2px solid #9900CC;
+  }
+
+  .profile { text-align: center; }
+  .avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: linear-gradient(135deg, #d8b4fe, #a78bfa, #6366f1);
+    margin: 0 auto; border: 3px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 700; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .profile-greeting { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 8px; }
+  .profile-name { font-size: 18px; font-weight: 700; color: #fff; margin-top: 2px; }
+  .profile-role {
+    font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .role-badge {
+    padding: 2px 8px; border-radius: 9999px;
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); font-size: 10px;
+  }
+
+  /* ===== CONTENT ===== */
+  .content {
+    background: linear-gradient(to bottom, #1a0033, #0d001a, #000);
+    margin-top: -20px; padding: 24px 16px 80px; border-radius: 28px 28px 0 0;
+    position: relative; z-index: 10;
+  }
+
+  .refresh-btn {
+    display: flex; align-items: center; gap: 6px; margin-left: auto; width: fit-content;
+    padding: 8px 12px; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 9999px;
+    color: rgba(255,255,255,0.7); font-size: 12px; cursor: pointer; margin-bottom: 12px;
+  }
+
+  /* Stat Cards */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-card {
+    padding: 16px; background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .stat-label { font-size: 10px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-value { font-size: 28px; font-weight: 700; color: #fff; margin-top: 4px; }
+  .stat-sub { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; }
+  .stat-icon-box {
+    width: 40px; height: 40px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .stat-icon-box.violet { background: linear-gradient(135deg, #BF00FF, #9900CC); }
+  .stat-icon-box.emerald { background: linear-gradient(135deg, #10b981, #047857); }
+  .stat-icon-box.green { background: linear-gradient(135deg, #adff2f, #7c9e1a); }
+  .stat-icon-box.sky { background: linear-gradient(135deg, #0ea5e9, #0369a1); }
+
+  /* Chart */
+  .chart-card {
+    padding: 20px; background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; margin-top: 12px;
+  }
+  .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .chart-title { font-size: 14px; font-weight: 700; color: #fff; }
+  .chart-sub { font-size: 11px; color: rgba(255,255,255,0.45); display: flex; align-items: center; gap: 4px; }
+  .chart-bars { display: flex; align-items: flex-end; gap: 4px; height: 120px; }
+  .chart-col {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .chart-val { font-size: 10px; color: rgba(255,255,255,0.8); font-weight: 600; }
+  .chart-bar {
+    width: 100%; border-radius: 8px 8px 4px 4px; transition: all 0.3s;
+    min-height: 4px;
+  }
+  .chart-bar.today { background: linear-gradient(to top, #BF00FF, #7066ed); box-shadow: 0 0 12px rgba(191,0,255,0.3); }
+  .chart-bar.other { background: linear-gradient(to top, rgba(109,40,217,0.6), rgba(168,85,247,0.4)); }
+  .chart-day { font-size: 10px; color: rgba(255,255,255,0.45); }
+  .chart-day.today { font-weight: 700; color: #fff; }
+
+  /* Announcements + Pengumuman side-by-side in mobile = stacked */
+  .two-col { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+
+  /* Table */
+  .table-card {
+    padding: 20px; background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; margin-top: 12px;
+  }
+  .table-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    text-align: left; padding: 10px 8px;
+    font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.4);
+    text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  td { padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.8); }
+  tr:last-child td { border-bottom: none; }
+  .td-name { font-weight: 500; color: #fff; }
+  .td-in { color: #6ee7b7; font-family: monospace; }
+  .td-out { color: #fca5a5; font-family: monospace; }
+  .badge { display: inline; padding: 0; border: none; font-size: 11px; font-weight: 600; }
+  .badge-hadir { color: #adff2f; }
+  .badge-izin { color: #fbbf24; }
+  .badge-sakit { color: #fb7185; }
+  .badge-alpha { color: #fca5a5; }
+
+  .empty-state { text-align: center; padding: 32px 0; color: rgba(255,255,255,0.4); }
+</style>
+</head>
+<body>
+
+<!-- ===== HP KIRI: PRODUCTION (Vercel) ===== -->
+<div class="phone-wrap">
+  <div class="label-tag">✅ Admin Dashboard</div>
+  <div class="phone-frame">
+    <div class="phone-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="right">
+          <span>📶</span><span>📡</span>
+          <div class="battery"><div class="battery-fill"></div></div>
+        </div>
+      </div>
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="hero-clock">09:41</div>
+            <div class="hero-date">Jumat, 11 Juli 2026</div>
+            <div class="hero-shift">
+              <span>☀️ Pagi</span>
+              <span style="opacity:0.6;">PG</span>
+              <span style="color:rgba(255,255,255,0.4);">|</span>
+              <span style="color:rgba(255,255,255,0.7);">07:00 – 15:00</span>
+            </div>
+          </div>
+          <div class="hero-actions">
+            <div class="hero-btn notif">
+              🔔
+              <div class="notif-dot"></div>
+            </div>
+            <div class="hero-btn">🌙</div>
+            <div class="hero-btn">🚪</div>
+          </div>
+        </div>
+
+        <div class="profile">
+          <div class="avatar">S</div>
+          <div class="profile-greeting">Selamat datang,</div>
+          <div class="profile-name">Super Admin</div>
+          <div class="profile-role">
+            <span class="role-badge">super_admin</span>
+            <span>•</span>
+            <span>admin@puskesmas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="content">
+        <div class="refresh-btn">🔄 Refresh</div>
+
+        <!-- Stat Cards -->
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div>
+              <div class="stat-label">Total Pegawai</div>
+              <div class="stat-value">42</div>
+              <div class="stat-sub">Seluruh status</div>
+            </div>
+            <div class="stat-icon-box violet">👥</div>
+          </div>
+          <div class="stat-card">
+            <div>
+              <div class="stat-label">Hadir Hari Ini</div>
+              <div class="stat-value">28</div>
+              <div class="stat-sub">Sudah check-in</div>
+            </div>
+            <div class="stat-icon-box emerald">✓</div>
+          </div>
+          <div class="stat-card">
+            <div>
+              <div class="stat-label">Izin / Sakit</div>
+              <div class="stat-value">5</div>
+              <div class="stat-sub">Hari ini</div>
+            </div>
+            <div class="stat-icon-box green">📋</div>
+          </div>
+          <div class="stat-card">
+            <div>
+              <div class="stat-label">Cuti</div>
+              <div class="stat-value">2</div>
+              <div class="stat-sub">Hari ini</div>
+            </div>
+            <div class="stat-icon-box sky">✈️</div>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">Grafik Presensi 7 Hari</div>
+            <div class="chart-sub">📈 Kehadiran harian</div>
+          </div>
+          <div class="chart-bars">
+            <div class="chart-col">
+              <div class="chart-val">18</div>
+              <div class="chart-bar other" style="height:60%"></div>
+              <div class="chart-day">Min</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-val">25</div>
+              <div class="chart-bar other" style="height:83%"></div>
+              <div class="chart-day">Sen</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-val">22</div>
+              <div class="chart-bar other" style="height:73%"></div>
+              <div class="chart-day">Sel</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-val">27</div>
+              <div class="chart-bar other" style="height:90%"></div>
+              <div class="chart-day">Rab</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-val">30</div>
+              <div class="chart-bar other" style="height:100%"></div>
+              <div class="chart-day">Kam</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-val">14</div>
+              <div class="chart-bar today" style="height:47%"></div>
+              <div class="chart-day today">Jum</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Announcements -->
+        <div class="two-col">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Pengumuman</div>
+              <div style="padding:6px;background:rgba(191,0,255,0.15);border-radius:8px;">🔔</div>
+            </div>
+            <div class="empty-state">
+              <div style="font-size:24px;margin-bottom:8px;">🔔</div>
+              <p>Belum ada pengumuman</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div class="table-title">Absensi Terkini Hari Ini</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.45);">📅 Update: 09:41</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Masuk</th>
+                  <th>Pulang</th>
+                  <th style="text-align:right;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="td-name">Lalu Rama</td><td class="td-in">07:55</td><td style="color:#fca5a5;font-family:monospace;font-size:11px;text-align:center;">16:30</td><td style="text-align:right;"><span class="badge badge-hadir">Hadir</span></td></tr>
+                <tr><td class="td-name">Siti Aisyah</td><td class="td-in">08:00</td><td style="color:#fca5a5;font-family:monospace;font-size:11px;text-align:center;">—</td><td style="text-align:right;"><span class="badge badge-hadir">Hadir</span></td></tr>
+                <tr><td class="td-name">Bambang Suprapto</td><td class="td-in">08:10</td><td style="color:#fca5a5;font-family:monospace;font-size:11px;text-align:center;">—</td><td style="text-align:right;"><span class="badge badge-hadir">Hadir</span></td></tr>
+                <tr><td class="td-name">Dewi Sartika</td><td class="td-in">—</td><td style="color:#fca5a5;font-family:monospace;font-size:11px;text-align:center;">—</td><td style="text-align:right;"><span class="badge badge-izin">Izin</span></td></tr>
+                <tr><td class="td-name">Ahmad Fauzi</td><td class="td-in">—</td><td style="color:#fca5a5;font-family:monospace;font-size:11px;text-align:center;">—</td><td style="text-align:right;"><span class="badge badge-sakit">Sakit</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HP KANAN: EXISTING PREVIEW LAMA ===== -->
+<div class="phone-wrap">
+  <div class="label-tag" style="background:#64748b;">❌ Employee (Lama)</div>
+  <div class="phone-frame">
+    <div class="phone-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="right">
+          <span>📶</span><span>📡</span>
+          <div class="battery"><div class="battery-fill"></div></div>
+        </div>
+      </div>
+
+      <div class="content" style="background:#060311;margin-top:0;border-radius:0;padding:0 12px 24px;">
+        <!-- Hero lama -->
+        <div style="background:#161320;border-radius:24px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-top:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:10px;color:#9ba1ae;text-transform:uppercase;letter-spacing:0.05em;">Selamat Pagi</div>
+              <div style="font-size:20px;font-weight:700;color:#fff;margin-top:2px;">Lalu Rama! 🌞</div>
+            </div>
+            <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#5800fd,#2415c6);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;border:2px solid rgba(255,255,255,0.15);box-shadow:0 4px 20px rgba(88,0,253,0.3);">LR</div>
+          </div>
+          <div style="margin-top:12px;">
+            <div style="font-size:36px;font-weight:700;color:#fff;font-family:'Courier New',monospace;">12:30:45</div>
+            <div style="font-size:11px;color:#9ba1ae;margin-top:2px;">Kamis, 9 Juli 2026</div>
+          </div>
+          <button style="margin-top:16px;width:100%;padding:14px;background:#5800fd;color:#fff;border:none;border-radius:9999px;font-size:15px;font-weight:600;text-align:center;">
+            <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#adff2f;margin-right:8px;vertical-align:middle;animation:pulse 1.5s infinite;"></span>Absen Sekarang
+          </button>
+          <style>@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(1.3)}}</style>
+        </div>
+
+        <!-- Status -->
+        <div style="background:#161320;border-radius:24px;padding:16px;border:1px solid rgba(255,255,255,0.06);margin-top:12px;">
+          <div style="font-size:10px;font-weight:700;color:#9ba1ae;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">Status Hari Ini</div>
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:44px;height:44px;border-radius:16px;background:rgba(173,255,47,0.15);color:#adff2f;display:flex;align-items:center;justify-content:center;font-size:20px;">✅</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:600;color:#fff;">Sudah Absen Masuk</div>
+              <div style="font-size:12px;color:#9ba1ae;margin-top:2px;">Masuk 08:00 · Pulang —</div>
+            </div>
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(173,255,47,0.15);color:#adff2f;border-radius:9999px;font-size:10px;font-weight:600;">✅ Hadir</span>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div style="background:#161320;border-radius:24px;padding:16px;border:1px solid rgba(255,255,255,0.06);margin-top:12px;">
+          <div style="font-size:10px;font-weight:700;color:#9ba1ae;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">Statistik Bulan Ini</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+            <div style="text-align:center;"><div style="font-size:18px;color:#adff2f;">✅</div><div style="font-size:20px;font-weight:700;color:#fff;">12</div><div style="font-size:9px;color:#9ba1ae;text-transform:uppercase;">Hadir</div></div>
+            <div style="text-align:center;"><div style="font-size:18px;color:#adff2f;">📋</div><div style="font-size:20px;font-weight:700;color:#fff;">2</div><div style="font-size:9px;color:#9ba1ae;text-transform:uppercase;">Izin</div></div>
+            <div style="text-align:center;"><div style="font-size:18px;color:#adff2f;">🤒</div><div style="font-size:20px;font-weight:700;color:#fff;">1</div><div style="font-size:9px;color:#9ba1ae;text-transform:uppercase;">Sakit</div></div>
+            <div style="text-align:center;"><div style="font-size:18px;color:#5800fd;">❌</div><div style="font-size:20px;font-weight:700;color:#fff;">0</div><div style="font-size:9px;color:#9ba1ae;text-transform:uppercase;">Alpha</div></div>
+          </div>
+        </div>
+
+        <div style="text-align:center;font-size:10px;color:rgba(255,255,255,0.1);padding:16px 0;">v1.6.9 — Hadir.Kuy</div>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

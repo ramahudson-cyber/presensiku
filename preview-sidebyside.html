@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview — Side-by-side Desktop</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .container {
+    display: flex; width: 100%; max-width: 1000px; align-items: center; gap: 60px;
+  }
+  /* LEFT — Hero */
+  .hero { flex: 1; text-align: left; }
+  .hero h1 {
+    font-size: 56px; font-weight: 800; letter-spacing: 1.22px; color: white; line-height: 1.1;
+  }
+  .hero .tagline {
+    color: #adff2f; font-size: 16px; margin-top: 12px; letter-spacing: 0.72px;
+  }
+  .hero .tags {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 4px 8px; margin-top: 20px;
+  }
+  .hero .tags span { color: #c4b5fd; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 600; }
+  .hero .tags .dot { color: rgba(255,255,255,0.15); font-size: 11px; }
+  .hero .puskesmas {
+    color: white; font-size: 11px; letter-spacing: 1px; margin-top: 20px; text-transform: uppercase;
+  }
+
+  /* RIGHT — Card */
+  .card-wrap { flex: 1; max-width: 400px; }
+  .card {
+    background: rgba(255,255,255,0.04); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.06); border-radius: 24px; padding: 40px 32px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+  }
+  .field { margin-bottom: 20px; }
+  label {
+    display: block; font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.7);
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;
+  }
+  input {
+    width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; color: white; font-size: 14px;
+    font-family: inherit; outline: none;
+  }
+  input::placeholder { color: rgba(255,255,255,0.3); }
+  input:focus { border-color: rgba(191,0,255,0.5); box-shadow: 0 0 0 3px rgba(191,0,255,0.1); }
+  .pw-wrap { position: relative; }
+  .pw-wrap input { padding-right: 44px; }
+  .eye-btn {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: rgba(255,255,255,0.35); cursor: pointer;
+  }
+  .forgot { text-align: right; margin: 8px 0 24px; }
+  .forgot button {
+    background: none; border: none; font-size: 12px; color: rgba(255,255,255,0.55); cursor: pointer;
+    font-family: inherit;
+  }
+  .btn {
+    width: 100%; padding: 14px; background: #BF00FF; color: white; font-size: 14px; font-weight: 500;
+    border: none; border-radius: 999px; cursor: pointer; font-family: inherit;
+    box-shadow: 0 4px 20px rgba(191,0,255,0.3);
+  }
+  .btn:hover { filter: brightness(1.1); }
+  .footer { text-align: center; margin-top: 28px; font-size: 10px; color: white; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <!-- LEFT: Card -->
+    <div class="card-wrap">
+      <div class="card">
+        <div style="margin-bottom:20px">
+          <label>Username / Email</label>
+          <input type="text" placeholder="nama@puskesmas.com">
+        </div>
+        <div style="margin-bottom:20px">
+          <label>Password</label>
+          <div class="pw-wrap">
+            <input type="password" placeholder="••••••••">
+            <button class="eye-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="forgot"><button>Lupa password?</button></div>
+        <button class="btn">Masuk</button>
+      </div>
+      <div class="footer">Hadir.Kuy v1.6.6</div>
+    </div>
+
+    <!-- RIGHT: Hero -->
+    <div class="hero">
+      <div class="card">
+        <div style="margin-bottom:20px">
+          <label>Username / Email</label>
+          <input type="text" placeholder="nama@puskesmas.com">
+        </div>
+        <div style="margin-bottom:20px">
+          <label>Password</label>
+          <div class="pw-wrap">
+            <input type="password" placeholder="••••••••">
+            <button class="eye-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="forgot"><button>Lupa password?</button></div>
+        <button class="btn">Masuk</button>
+      </div>
+      <div class="footer">Hadir.Kuy v1.6.6</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preview — Shift Badge Dashboard Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "electric-violet": "#8B5CF6",
+            "deep-indigo": "#4C1D95",
+            "periwinkle-glow": "#A78BFA",
+            "green-yellow": "#9ACD32",
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    * { font-family: 'Inter', system-ui, sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0d001a; display: flex; justify-content: center; padding: 40px 16px; }
+    .container { width: 100%; max-width: 480px; }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- ===== HERO SECTION ===== -->
+    <div class="bg-gradient-to-br from-[#BF00FF] via-[#9900CC] via-[#660099] to-[#33004D] px-5 pt-4 pb-5 rounded-t-[24px]">
+
+      <!-- Top Row: Clock + Date + Shift Badge | Action Icons -->
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <!-- Clock -->
+          <div class="text-3xl font-bold text-white tracking-wide tabular-nums" id="clock">10:45</div>
+          <!-- Date -->
+          <div class="text-xs text-white/50 font-medium mt-0.5">Jumat, 10 Juli 2026</div>
+
+          <!-- ────────── SHIFT BADGE ────────── -->
+
+          <!-- Loading state (skeleton) -->
+          <!-- <div class="h-5 w-28 bg-white/[0.08] animate-pulse rounded-full mt-2" /> -->
+
+          <!-- Kosong (tidak ada jadwal) -->
+          <!-- <div class="inline-flex items-center gap-1.5 px-2.5 py-1 mt-2 rounded-full bg-white/[0.06] border border-white/[0.06]">
+            <svg class="w-[10px] h-[10px] text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <span class="text-[10px] text-white/40">Tidak ada jadwal</span>
+          </div> -->
+
+          <!-- Shift Pagi (PG) -->
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 mt-2 rounded-full bg-green-yellow/15 border border-green-yellow/25">
+            <svg class="w-3 h-3 text-green-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <span class="text-[10px] font-semibold text-green-yellow">Shift Pagi</span>
+            <span class="text-[10px] font-bold text-green-yellow bg-green-yellow/20 px-1 rounded">PG</span>
+            <span class="text-[10px] text-white/40 mx-0.5">|</span>
+            <span class="text-[10px] text-white/70 tabular-nums">07:30 – 11:00</span>
+            <span class="text-[10px] text-green-yellow/70 tabular-nums">⌛07:35</span>
+          </div>
+
+          <!-- Shift Siang (SI) — contoh alternatif -->
+          <!--
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 mt-2 rounded-full bg-sky-500/15 border border-sky-500/25">
+            <svg class="w-3 h-3 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+            </svg>
+            <span class="text-[10px] font-semibold text-sky-400">Shift Siang</span>
+            <span class="text-[10px] font-bold text-sky-400 bg-sky-500/20 px-1 rounded">SI</span>
+            <span class="text-[10px] text-white/40 mx-0.5">|</span>
+            <span class="text-[10px] text-white/70 tabular-nums">11:00 – 20:00</span>
+            <span class="text-[10px] text-sky-400/70 tabular-nums">⌛11:05</span>
+          </div>
+          -->
+
+          <!-- Shift Malam (ML) — contoh alternatif -->
+          <!--
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 mt-2 rounded-full bg-violet-500/15 border border-violet-500/25">
+            <svg class="w-3 h-3 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+            <span class="text-[10px] font-semibold text-violet-400">Shift Malam</span>
+            <span class="text-[10px] font-bold text-violet-400 bg-violet-500/20 px-1 rounded">ML</span>
+            <span class="text-[10px] text-white/40 mx-0.5">|</span>
+            <span class="text-[10px] text-white/70 tabular-nums">20:00 – 07:00</span>
+            <span class="text-[10px] text-violet-400/70 tabular-nums">⌛20:05</span>
+          </div>
+          -->
+
+        </div>
+
+        <!-- Action Icons -->
+        <div class="flex items-center gap-2 shrink-0">
+          <div class="w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center">
+            <svg class="w-[17px] h-[17px] text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          </div>
+          <div class="w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center">
+            <svg class="w-[17px] h-[17px] text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          </div>
+          <div class="w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center">
+            <svg class="w-[17px] h-[17px] text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Section -->
+      <div class="text-center">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-300 via-purple-400 to-indigo-500 mx-auto border-[3px] border-white/20 shadow-xl flex items-center justify-center">
+          <span class="text-3xl font-bold text-white">S</span>
+        </div>
+        <div class="text-white/60 text-xs font-medium mt-2">Selamat datang,</div>
+        <div class="text-white text-lg font-bold mt-0.5">Super Admin</div>
+        <div class="text-white/40 text-[11px] mt-0.5 flex items-center justify-center gap-1.5">
+          <span class="px-2 py-0.5 rounded-full bg-white/[0.08] text-white/60 text-[10px] font-medium">super_admin</span>
+          <span class="text-white/30">•</span>
+          <span>admin@puskesmas</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== mock content ===== -->
+    <div class="bg-gradient-to-b from-[#1a0033] via-[#0d001a] to-black px-5 -mt-5 pt-6 pb-12 rounded-[28px]">
+      <div class="flex justify-end mb-3">
+        <div class="flex items-center gap-1.5 px-3 py-2 bg-white/[0.06] text-white/70 rounded-full text-xs border border-white/[0.08]">
+          <svg class="w-[13px] h-[13px]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Refresh
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="p-4 bg-white/[0.06] rounded-2xl border border-white/[0.08]">
+          <p class="text-[10px] text-white/45 uppercase tracking-wider">Total Pegawai</p>
+          <h3 class="text-3xl font-bold text-white mt-2 tabular-nums">42</h3>
+          <p class="text-[10px] text-white/30 mt-2">Seluruh status kepegawaian</p>
+        </div>
+        <div class="p-4 bg-white/[0.06] rounded-2xl border border-white/[0.08]">
+          <p class="text-[10px] text-white/45 uppercase tracking-wider">Hadir Hari Ini</p>
+          <h3 class="text-3xl font-bold text-white mt-2 tabular-nums">28</h3>
+          <p class="text-[10px] text-white/30 mt-2">Sudah check-in</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const wita = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+      document.getElementById('clock').textContent =
+        wita.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>

@@ -221,10 +221,7 @@ Use #5800fd (Electric Violet) as the filled CTA button color with white text —
 3. **Build a ghost navigation button**: Transparent background, 1px white border, white text, Urbanist 16px weight 500, 9999px radius, 12px/24px padding. Hover state: background #ffffff, text #060311.
 
 4. **Build a widget tree row**: Background #161320, 40px height, 16px horizontal padding, icon at left (16px, white at 60% opacity), label in Urbanist 14px weight 400, white. Active state: background #5800fd at 15% opacity, white text at 100%.
-
-5. **Build an eyebrow label**: Inter 24px weight 300, white at 70% opacity, 0.27em letter-spacing, all-caps. Sits 16px above the heading it introduces, centered or left-aligned to match the section.
-
-## Gradient System
+DE
 
 Gradients are the primary atmospheric tool — used in place of shadows, background colors, and decorative graphics. Three gradient recipes:
 
