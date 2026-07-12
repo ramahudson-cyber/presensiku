@@ -29,8 +29,8 @@ export default function EmployeeDashboard() {
   const greeting = hour < 12 ? "Selamat Pagi," : hour < 18 ? "Selamat Siang," : "Selamat Malam,";
 
   return (
-    <div className="w-full max-w-lg mx-auto bg-[#050505] min-h-screen text-white">
-      <div className="bg-gradient-to-b from-[#6d28d9] to-[#4338ca] rounded-b-[40px] p-[50px_24px_30px_24px]">
+    <div className="w-full max-w-lg mx-auto bg-[#050505] min-h-screen text-white flex flex-col">
+      <div className="bg-gradient-to-b from-[#6d28d9] to-[#4338ca] rounded-b-[40px] p-[50px_24px_30px_24px] flex-grow">
         <div className="flex items-center gap-4 mb-5">
           <div className="w-[70px] h-[70px] rounded-full bg-[#4338ca] flex items-center justify-center text-2xl font-bold border-4 border-white/20 shrink-0">
             {initials}
@@ -52,9 +52,9 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <button onClick={() => navigate("/employee/attendance")} className="bg-white/15 p-3 rounded-[16px] text-center text-[12px] font-semibold">Absen Sekarang</button>
-          <button onClick={() => navigate("/employee/history")} className="bg-white/15 p-3 rounded-[16px] text-center text-[12px] font-semibold">Riwayat</button>
+        <div className="grid grid-cols-2 gap-3 mt-auto">
+          <button onClick={() => navigate("/employee/attendance")} className="bg-white/15 p-4 rounded-[20px] text-center text-[12px] font-semibold hover:bg-white/20 transition-all">Absen Sekarang</button>
+          <button onClick={() => navigate("/employee/history")} className="bg-white/15 p-4 rounded-[20px] text-center text-[12px] font-semibold hover:bg-white/20 transition-all">Riwayat</button>
         </div>
       </div>
     </div>
