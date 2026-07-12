@@ -22,7 +22,6 @@ export default function BottomNav() {
   // Menu untuk Admin — 4 main + 4 di "More"
   const adminMain = [
     { path: "/admin", label: "Home", icon: LayoutDashboard, end: true },
-    { path: "/admin/attendance", label: "Absensi", icon: CalendarCheck },
     { path: "/admin/employees", label: "Pegawai", icon: Users },
     { path: "/admin/attendance-history", label: "Riwayat", icon: History },
   ];
@@ -65,20 +64,22 @@ export default function BottomNav() {
         </div>
 
         {/* Cutout Notch — blends with app background */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-32 h-8 bg-[#0d001a] z-10 rounded-b-2xl"></div>
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-32 h-8 z-10 rounded-b-2xl"
+             style={{ background: "rgba(22, 19, 32, 0.85)" }}></div>
 
         {/* Navbar Base — Glassmorphism */}
         <div
-          className="w-full h-[70px] rounded-t-2xl flex justify-around items-center px-3 shadow-lg"
+          className="w-full h-[85px] rounded-t-3xl flex justify-around items-center px-3 shadow-[0_-8px_30px_rgba(0,0,0,0.3)] border-t border-white/10"
           style={{
-            background: "rgba(22, 19, 32, 0.85)",
-            backdropFilter: "blur(16px)",
-            borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+            background: "linear-gradient(180deg, rgba(22, 19, 32, 0.95), rgba(10, 5, 20, 0.98))",
+            backdropFilter: "blur(20px)",
           }}
         >
           {displayMenus.map((item, i) => {
             if (item === null) {
-              return <div key="center-placeholder" className="flex-1 h-full" />;
+              return (
+                <div key="center-placeholder" className="flex-1 h-full" />
+              );
             }
             const Icon = item.icon;
             return (

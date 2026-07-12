@@ -39,8 +39,8 @@ export default function EmployeeDashboard() {
         </div>
       </div>
 
-      <div className="relative bg-white/5 border border-violet-500/30 rounded-2xl overflow-hidden mb-5">
-        <div className="absolute top-0 left-0 right-0 h-[100px] bg-gradient-to-b from-violet-500/40 to-transparent pointer-events-none" />
+      <div className="vevox-card relative bg-white/5 border border-violet-500/30 rounded-2xl overflow-hidden mb-5">
+        <div className="absolute top-0 left-0 right-0 h-[100px] bg-[radial-gradient(circle_at_50%_-20%,rgba(139,92,246,0.5),transparent_70%)] pointer-events-none" />
         <div className="p-5 text-[13px] font-semibold text-white/60 uppercase tracking-wider relative">Status Absensi</div>
         <div className="p-5 pt-0 flex flex-col items-start relative">
            <span className="text-[#adff2f] font-bold text-[13px] mb-1">● {todayAttendance ? "Sudah Absen" : "Belum Absen"}</span>
