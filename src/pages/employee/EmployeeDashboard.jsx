@@ -262,19 +262,7 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* Upload Foto */}
-        <div style={{marginTop:"16px", border: "1px solid rgba(191,0,255,0.2)", background: "rgba(191,0,255,0.05)" }} className="design-card-hover p-4 shadow-lg">
-          <p className="text-[10px] font-bold text-slate-mist uppercase tracking-widest mb-2 px-1">🔧 Pengaturan Foto</p>
-          <div className="flex items-center gap-3 px-1">
-            <div className="w-12 h-12 rounded-full bg-onyx border-2 border-dashed border-[#BF00FF] flex items-center justify-center text-lg text-[#BF00FF] flex-shrink-0">📷</div>
-            <div>
-              <p className="text-sm font-semibold text-pure-white">Upload Foto Profil</p>
-              <p className="text-[11px] text-slate-mist">Tap untuk upload dari galeri atau kamera</p>
-            </div>
-          </div>
-        </div>
-
-      </div>{/* end content wrapper */}
+	      </div>{/* end content wrapper */}
     </div>
   );
 }
