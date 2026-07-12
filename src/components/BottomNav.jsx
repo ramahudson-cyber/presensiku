@@ -1,8 +1,9 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
-  LayoutDashboard, Users, CalendarCheck, History,
-  CalendarDays, FileText, Megaphone, Settings, MoreHorizontal
+  LayoutDashboard, CalendarCheck, CalendarDays,
+  Users, History, FileText, Megaphone, Settings, MoreHorizontal,
+  FingerprintPattern,
 } from "lucide-react";
 import { useState } from "react";
 import BottomSheet from "./BottomSheet";
@@ -12,7 +13,7 @@ export default function BottomNav() {
   const [moreOpen, setMoreOpen] = useState(false);
   const userRole = user?.role || "pegawai";
 
-  // Menu untuk Pegawai
+  // Menu untuk Pegawai — 3 items
   const pegawaiMenus = [
     { path: "/employee", label: "Home", icon: LayoutDashboard, end: true },
     { path: "/employee/attendance", label: "Absensi", icon: CalendarCheck },
@@ -37,15 +38,48 @@ export default function BottomNav() {
   const mainMenus = userRole === "pegawai" ? pegawaiMenus : adminMain;
   const moreMenus = userRole === "pegawai" ? [] : adminMore;
 
+  // Insert placeholder at index 2 for center floating button
+  const displayMenus = mainMenus.slice(0, 2).concat(null, mainMenus.slice(2));
+
+  const centerPath = userRole === "pegawai"
+    ? "/employee/attendance"
+    : "/admin/attendance";
+
   return (
     <>
-      {/* Bottom Navigation Bar — Mobile Only */}
+      {/* Bottom Navigation Bar — Crypto Wallet Style */}
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-onyx/95 backdrop-blur-xl border-t border-white/[0.06]"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        className="md:hidden fixed bottom-0 left-0 right-0 z-30"
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
-        <div className="flex items-center justify-around h-16 px-1">
-          {mainMenus.map((item) => {
+        {/* Center Floating Button — Fingerprint / Presensi */}
+        <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-center z-20">
+          <NavLink
+            to={centerPath}
+            className="w-16 h-16 rounded-full flex items-center justify-center text-white text-3xl shadow-lg shadow-purple-500/50 border-4 border-[#0d001a]"
+            style={{ background: "linear-gradient(135deg, #BF00FF, #6366f1)" }}
+          >
+            <FingerprintPattern size={28} />
+          </NavLink>
+          <p className="text-xs text-slate-mist mt-1 font-medium">Presensi</p>
+        </div>
+
+        {/* Cutout Notch — blends with app background */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-32 h-8 bg-[#0d001a] z-10 rounded-b-2xl"></div>
+
+        {/* Navbar Base — Glassmorphism */}
+        <div
+          className="w-full h-[70px] rounded-t-2xl flex justify-around items-center px-3 shadow-lg"
+          style={{
+            background: "rgba(22, 19, 32, 0.85)",
+            backdropFilter: "blur(16px)",
+            borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+          }}
+        >
+          {displayMenus.map((item, i) => {
+            if (item === null) {
+              return <div key="center-placeholder" className="flex-1 h-full" />;
+            }
             const Icon = item.icon;
             return (
               <NavLink
@@ -53,39 +87,39 @@ export default function BottomNav() {
                 to={item.path}
                 end={item.end}
                 className={({ isActive }) =>
-                  `flex flex-col items-center justify-center gap-0.5 flex-1 py-2 transition-all ${
+                  `flex flex-col items-center justify-center gap-0.5 flex-1 h-full pt-2 transition-all ${
                     isActive ? "text-electric-violet" : "text-slate-mist"
                   }`
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <div className={`p-1.5 rounded-2xl transition-all ${isActive ? "bg-electric-violet/15 scale-110" : ""}`}>
+                    <div className={`p-1 rounded-xl transition-all ${isActive ? "bg-electric-violet/15 scale-110" : ""}`}>
                       <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                     </div>
-                    <span className={`text-[10px] ${isActive ? "font-semibold" : "font-medium"}`}>{item.label}</span>
+                    <span className={`text-xs mt-0.5 ${isActive ? "font-semibold" : "font-medium"}`}>{item.label}</span>
                   </>
                 )}
               </NavLink>
             );
           })}
 
-          {/* More Button — only show if there are more menus */}
+          {/* More Button — only admin */}
           {moreMenus.length > 0 && (
             <button
               onClick={() => setMoreOpen(true)}
-              className="flex flex-col items-center justify-center gap-0.5 flex-1 py-2 text-slate-mist hover:text-electric-violet transition"
+              className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full pt-2 text-slate-mist hover:text-electric-violet transition"
             >
-              <div className="p-1.5 rounded-2xl">
+              <div className="p-1 rounded-xl">
                 <MoreHorizontal size={22} strokeWidth={2} />
               </div>
-              <span className="text-[10px] font-medium">Lainnya</span>
+              <span className="text-xs mt-0.5 font-medium">Lainnya</span>
             </button>
           )}
         </div>
       </nav>
 
-      {/* More Sheet */}
+      {/* More Sheet — Admin Only */}
       <BottomSheet open={moreOpen} onClose={() => setMoreOpen(false)} title="Menu Lainnya">
         <div className="grid grid-cols-3 gap-3">
           {moreMenus.map((item) => {
