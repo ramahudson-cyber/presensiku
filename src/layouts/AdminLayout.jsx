@@ -28,7 +28,7 @@ function AdminLayout() {
           <div className="mx-auto max-w-[2000px] w-full flex-1 flex flex-col">
             <Outlet />
             {!isDashboard && (
-              <footer className="text-center text-[10px] text-white/[0.15] pb-2 select-none mt-2">
+              <footer className="text-center text-[10px] text-white/[0.15] pb-2 select-none mt-2 bg-onyx/80">
                 v{getCurrentVersion().version} &mdash; Hadir.Kuy
               </footer>
             )}
