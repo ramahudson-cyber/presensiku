@@ -144,6 +144,7 @@ export default function EmployeeDashboard() {
 	        marginRight: "-16px",
 	        padding: "32px 16px 80px",
 	        borderRadius: "28px 28px 0 0",
+	        flex: 1,
 	      }}>
         
         {/* Status */}
