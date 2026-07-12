@@ -136,15 +136,15 @@ export default function EmployeeDashboard() {
         </Link>
       </div>
 
-      {/* ===== CONTENT WRAPPER — Overlap Hero ===== */}
-      <div style={{
-        background: "linear-gradient(to bottom,#1a0033,#0d001a,#000)",
-        marginTop: "-24px",
-        marginLeft: "-16px",
-        marginRight: "-16px",
-        padding: "32px 16px 80px",
-        borderRadius: "28px 28px 0 0",
-      }}>
+	      {/* ===== CONTENT WRAPPER — Overlap Hero ===== */}
+	      <div style={{
+	        background: "var(--color-onyx)",
+	        marginTop: "-24px",
+	        marginLeft: "-16px",
+	        marginRight: "-16px",
+	        padding: "32px 16px 80px",
+	        borderRadius: "28px 28px 0 0",
+	      }}>
         
         {/* Status */}
         <Link to="/employee/attendance" className="block" style={{textDecoration:"none"}}>
