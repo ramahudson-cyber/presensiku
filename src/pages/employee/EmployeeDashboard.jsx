@@ -29,13 +29,13 @@ export default function EmployeeDashboard() {
   const greeting = hour < 12 ? "Selamat Pagi," : hour < 18 ? "Selamat Siang," : "Selamat Malam,";
 
   return (
-    <div className="w-full max-w-lg mx-auto min-h-screen text-white p-6" style={{ background: 'radial-gradient(circle at 50% 0%, #4c1d95 0%, #050505 70%)' }}>
+    <div className="w-full max-w-lg mx-auto min-h-screen text-white p-6" style={{ background: 'linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #7B1FA2 70%, #4A148C 100%)' }}>
       <div className="flex items-center gap-4 mb-8 relative z-10">
-        <div className="w-[70px] h-[70px] rounded-full bg-violet-900 flex items-center justify-center text-2xl font-bold border-2 border-white/10 shrink-0 shadow-lg">{initials}</div>
+        <div className="w-[70px] h-[70px] rounded-full bg-violet-600 flex items-center justify-center text-2xl font-bold border-2 border-white/10 shrink-0 shadow-lg">{initials}</div>
         <div>
           <div className="text-[13px] opacity-90 mb-[2px]">{greeting}</div>
           <div className="text-[18px] font-bold mb-[2px]">{fullName}</div>
-          <div className="text-[#a78bfa] text-[13px] font-medium">{role}</div>
+          <div className="text-[#adff2f] text-[13px] font-medium">{role}</div>
         </div>
       </div>
 
