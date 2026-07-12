@@ -13,10 +13,9 @@ export default function BottomNav() {
   const [moreOpen, setMoreOpen] = useState(false);
   const userRole = user?.role || "pegawai";
 
-  // Menu untuk Pegawai — 3 items
+  // Menu untuk Pegawai — 2 items (Absensi diganti floating button)
   const pegawaiMenus = [
     { path: "/employee", label: "Home", icon: LayoutDashboard, end: true },
-    { path: "/employee/attendance", label: "Absensi", icon: CalendarCheck },
     { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
   ];
 
@@ -38,8 +37,9 @@ export default function BottomNav() {
   const mainMenus = userRole === "pegawai" ? pegawaiMenus : adminMain;
   const moreMenus = userRole === "pegawai" ? [] : adminMore;
 
-  // Insert placeholder at index 2 for center floating button
-  const displayMenus = mainMenus.slice(0, 2).concat(null, mainMenus.slice(2));
+  // Insert placeholder at middle index for center floating button
+  const midIndex = Math.ceil(mainMenus.length / 2);
+  const displayMenus = mainMenus.slice(0, midIndex).concat(null, mainMenus.slice(midIndex));
 
   const centerPath = userRole === "pegawai"
     ? "/employee/attendance"
@@ -53,7 +53,7 @@ export default function BottomNav() {
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         {/* Center Floating Button — Fingerprint / Presensi */}
-        <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-center z-20">
+        <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-center z-20">
           <NavLink
             to={centerPath}
             className="w-16 h-16 rounded-full flex items-center justify-center text-white text-3xl shadow-lg shadow-purple-500/50 border-4 border-[#0d001a]"
