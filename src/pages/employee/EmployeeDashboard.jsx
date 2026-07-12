@@ -79,7 +79,7 @@ export default function EmployeeDashboard() {
   if (h >= 18) { shiftIcon = "🌙"; shiftLabel = "Malam"; shiftAbbr = "ML"; }
 
   return (
-    <div className="animate-fade-in relative left-1/2 -translate-x-1/2 w-screen max-w-lg flex flex-col">
+	    <div className="animate-fade-in relative left-1/2 -translate-x-1/2 w-screen max-w-lg flex flex-1 flex-col">
       
       {/* ===== HERO — Gradient Purple (Mirror Preview) ===== */}
       <div style={{
