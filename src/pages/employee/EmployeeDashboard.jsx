@@ -81,71 +81,41 @@ export default function EmployeeDashboard() {
   return (
     <div className="animate-fade-in relative left-1/2 -translate-x-1/2 w-screen max-w-lg flex flex-1 flex-col h-full">
       
-      {/* ===== HERO — Gradient Purple (Mirror Preview) ===== */}
-      <div style={{
-        background: "linear-gradient(135deg,#BF00FF,#9900CC,#660099,#33004D)",
-        borderRadius: "24px 24px 0 0",
-        padding: "16px 16px 30px",
-      }}>
-        {/* Top row: clock left, icons right */}
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"12px"}}>
-          <div>
-            <p style={{fontSize:"24px",fontWeight:700,color:"#fff",letterSpacing:"0.025em",fontFamily:"monospace"}}>
-              {timeStr}
-            </p>
-            <p style={{fontSize:"11px",color:"rgba(255,255,255,0.5)",marginTop:"2px"}}>
-              {dateStr}
-            </p>
-            <div style={{display:"inline-flex",alignItems:"center",gap:"4px",marginTop:"8px",padding:"4px 10px",background:"rgba(173,255,47,0.15)",border:"1px solid rgba(173,255,47,0.25)",borderRadius:"9999px"}}>
-              <span style={{fontSize:"10px",color:"#adff2f",fontWeight:600}}>{shiftIcon} {shiftLabel}</span>
-              <span style={{fontSize:"10px",color:"rgba(173,255,47,0.7)",fontWeight:600}}>{shiftAbbr}</span>
-              <span style={{fontSize:"10px",color:"rgba(255,255,255,0.4)"}}>|</span>
-              <span style={{fontSize:"10px",color:"rgba(255,255,255,0.7)"}}>07:00 – 15:00</span>
+      {/* ===== HERO SECTION — Modern Profile ===== */}
+      <div className="relative overflow-hidden" style={{ borderRadius: "0 0 28px 28px" }}>
+        {/* Abstract Gradient Background */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(45deg, #FF0080, #7928CA, #0070F3)", filter: "blur(40px)", opacity: 0.6 }} />
+        
+        <div className="relative p-6 pt-10 pb-8 flex flex-col items-start">
+          {/* Profile Pic + Ring */}
+          <div className="w-20 h-20 rounded-full border-4 border-onyx bg-gray-800 shadow-xl flex items-center justify-center text-3xl font-bold text-white overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=200&fit=crop" alt="User" className="w-full h-full object-cover" />
+          </div>
+
+          {/* Name & Handle */}
+          <h2 className="text-xl font-bold text-white mt-4">{fullName}</h2>
+          <p className="text-slate-400 text-sm">@{email.split('@')[0]}</p>
+
+          {/* Stats Row */}
+          <div className="flex gap-8 mt-6">
+            <div className="text-left">
+              <div className="text-lg font-bold text-white">28</div>
+              <div className="text-xs text-slate-400 uppercase tracking-wider">Cerita</div>
+            </div>
+            <div className="text-left">
+              <div className="text-lg font-bold text-white">164</div>
+              <div className="text-xs text-slate-400 uppercase tracking-wider">Followers</div>
             </div>
           </div>
-          <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
-            <button style={{width:"36px",height:"36px",borderRadius:"50%",background:"rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",cursor:"pointer",color:"rgba(255,255,255,0.7)",position:"relative",border:"none",padding:0}} aria-label="Notifications">
-              <Bell size={16} />
-              <div style={{position:"absolute",top:"8px",right:"8px",width:"7px",height:"7px",background:"#f43f5e",borderRadius:"50%",border:"2px solid #9900CC"}}></div>
-            </button>
-            <ThemeToggle />
-            <button onClick={handleLogout} style={{width:"36px",height:"36px",borderRadius:"50%",background:"rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",cursor:"pointer",color:"rgba(255,255,255,0.7)",border:"none",padding:0}} aria-label="Logout">
-              <LogOut size={16} />
-            </button>
-          </div>
         </div>
-        
-        {/* Profile center */}
-        <div style={{textAlign:"center"}}>
-          <div style={{width:"72px",height:"72px",borderRadius:"50%",background:"linear-gradient(135deg,#d8b4fe,#a78bfa,#6366f1)",margin:"0 auto",border:"3px solid rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"28px",fontWeight:700,color:"#fff",boxShadow:"0 4px 20px rgba(0,0,0,0.3)"}}>
-            {initials}
-          </div>
-          <p style={{fontSize:"12px",color:"rgba(255,255,255,0.6)",marginTop:"8px"}}>{greeting}</p>
-          <p style={{fontSize:"18px",fontWeight:700,color:"#fff",marginTop:"2px"}}>{fullName}</p>
-          <div style={{fontSize:"11px",color:"rgba(255,255,255,0.4)",marginTop:"4px",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px"}}>
-            <span style={{padding:"2px 8px",borderRadius:"9999px",background:"rgba(255,255,255,0.08)",color:"rgba(255,255,255,0.6)",fontSize:"10px"}}>{role}</span>
-            <span>•</span>
-            <span>{email}</span>
-          </div>
-        </div>
-        
-        {/* Absen Button */}
-        <Link to="/employee/attendance" style={{marginTop:"16px",width:"100%",display:"block",padding:"14px",background:"rgba(255,255,255,0.12)",backdropFilter:"blur(8px)",color:"#fff",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"9999px",fontSize:"14px",fontWeight:600,cursor:"pointer",textAlign:"center",textDecoration:"none"}}>
-          <span style={{display:"inline-block",width:"10px",height:"10px",borderRadius:"50%",background:"#adff2f",marginRight:"8px",verticalAlign:"middle",boxShadow:"0 0 8px rgba(173,255,47,0.5)"}}></span>
-          Absen Sekarang
-        </Link>
       </div>
 
-	      {/* ===== CONTENT WRAPPER — Overlap Hero ===== */}
-	      <div style={{
-	        background: "var(--color-onyx)",
-	        marginTop: "-24px",
-	        marginLeft: "-16px",
-	        marginRight: "-16px",
-	        padding: "32px 16px 80px",
-	        borderRadius: "28px 28px 0 0",
-	        flex: 1,
-	      }}>
+      {/* ===== CONTENT WRAPPER ===== */}
+      <div style={{
+        background: "var(--color-onyx)",
+        padding: "32px 16px 80px",
+        flex: 1,
+      }}>
         
         {/* Status */}
         <Link to="/employee/attendance" className="block" style={{textDecoration:"none"}}>
