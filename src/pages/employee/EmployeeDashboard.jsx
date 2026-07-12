@@ -83,10 +83,16 @@ export default function EmployeeDashboard() {
       
       {/* ===== HERO SECTION — Modern Profile ===== */}
       <div className="relative overflow-hidden" style={{ borderRadius: "0 0 28px 28px" }}>
-        {/* Abstract Gradient Background */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(45deg, #FF0080, #7928CA, #0070F3)", filter: "blur(40px)", opacity: 0.6 }} />
+        {/* Page Background */}
+        <div className="absolute inset-0" 
+          style={{ background: 'linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%)' }} 
+        />
+        {/* Overlay Abstract */}
+        <div className="absolute inset-0" 
+          style={{ background: 'radial-gradient(circle farthest-side at 0px -30%, rgba(167,139,250,0.25), rgba(124,58,237,0) 84%)' }} 
+        />
         
-        <div className="relative p-6 pt-10 pb-8 flex flex-col items-start">
+        <div className="relative p-6 pt-10 pb-8 flex flex-col items-start backdrop-blur-[2px]">
           {/* Profile Pic + Ring */}
           <div className="w-20 h-20 rounded-full border-4 border-onyx bg-gray-800 shadow-xl flex items-center justify-center text-3xl font-bold text-white overflow-hidden">
             <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=200&fit=crop" alt="User" className="w-full h-full object-cover" />
@@ -94,17 +100,17 @@ export default function EmployeeDashboard() {
 
           {/* Name & Handle */}
           <h2 className="text-xl font-bold text-white mt-4">{fullName}</h2>
-          <p className="text-slate-400 text-sm">@{email.split('@')[0]}</p>
+          <p className="text-white/70 text-sm">@{email.split('@')[0]}</p>
 
           {/* Stats Row */}
           <div className="flex gap-8 mt-6">
             <div className="text-left">
               <div className="text-lg font-bold text-white">28</div>
-              <div className="text-xs text-slate-400 uppercase tracking-wider">Cerita</div>
+              <div className="text-xs text-white/50 uppercase tracking-wider">Cerita</div>
             </div>
             <div className="text-left">
               <div className="text-lg font-bold text-white">164</div>
-              <div className="text-xs text-slate-400 uppercase tracking-wider">Followers</div>
+              <div className="text-xs text-white/50 uppercase tracking-wider">Followers</div>
             </div>
           </div>
         </div>
