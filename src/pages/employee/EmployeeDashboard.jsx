@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { CheckCircle, XCircle, AlertCircle, ChevronRight, Calendar, Bell, Clock, ArrowRight, LogOut, BookOpen, UserCheck, Star } from "lucide-react";
+import { CheckCircle, XCircle, AlertCircle, Bell, LogOut } from "lucide-react";
 import { signOut } from "../../services/authService";
-import ThemeToggle from "../../components/ThemeToggle";
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
@@ -33,50 +32,50 @@ export default function EmployeeDashboard() {
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
-  const initials = (user?.full_name || user?.user_metadata?.full_name || user?.email || "U").split(" ").map(s => s[0]).join("").toUpperCase().slice(0, 2);
   const fullName = user?.full_name || user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
   const role = user?.role || user?.user_metadata?.role || "Pegawai";
 
   return (
-    <div className="animate-fade-in relative w-full max-w-lg mx-auto flex flex-1 flex-col bg-[#161320] min-h-screen">
-      {/* Hero */}
-      <div className="relative h-44 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#BF00FF] via-[#660099] to-[#33004D]" />
-        <div className="absolute inset-0 bg-black/20" />
+    <div className="relative w-full max-w-lg mx-auto min-h-screen bg-[#0a0e1a] text-white p-6">
+      {/* Ambient Glows */}
+      <div className="absolute top-0 left-0 w-64 h-64 bg-violet-600/20 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
+
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8 relative z-10">
+        <div className="flex items-center gap-4">
+           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center font-bold shadow-lg">
+             {fullName.substring(0,2).toUpperCase()}
+           </div>
+           <div>
+             <h1 className="font-bold text-lg">{fullName}</h1>
+             <p className="text-xs text-slate-400">{role}</p>
+           </div>
+        </div>
+        <button onClick={() => signOut()} className="p-2 bg-white/5 rounded-full border border-white/10"><LogOut size={18}/></button>
       </div>
 
-      <div className="px-6 pb-8 relative">
-        {/* Avatar & Stats */}
-        <div className="flex items-end -mt-12 mb-4 gap-5">
-          <div className="w-24 h-24 rounded-full border-4 border-[#161320] bg-gray-800 shadow-xl overflow-hidden">
-             <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-white bg-gradient-to-br from-violet-500 to-indigo-600">
-               {initials}
+      {/* Content Card */}
+      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl relative z-10">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-widest">Status Hari Ini</h2>
+          <span className={`px-3 py-1 rounded-full text-xs font-bold ${todayAttendance ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
+            {todayAttendance ? "Hadir" : "Belum Absen"}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mb-8">
+           {[ {l:"Hadir",v:stats.hadir,c:"text-emerald-400"}, {l:"Izin",v:stats.izin,c:"text-amber-400"}, {l:"Sakit",v:stats.sakit,c:"text-blue-400"}, {l:"Alpha",v:stats.alpha,c:"text-rose-400"} ].map(i => (
+             <div key={i.l} className="bg-black/20 p-4 rounded-2xl border border-white/5 text-center">
+               <div className={`text-xl font-bold ${i.c}`}>{i.v}</div>
+               <div className="text-[10px] text-slate-400 uppercase">{i.l}</div>
              </div>
-          </div>
-          <div className="flex gap-6 mb-2">
-            <div className="text-center"><div className="text-xl font-bold text-white">{stats.hadir + stats.izin + stats.sakit}</div><div className="text-xs text-white/60">Total</div></div>
-            <div className="text-center"><div className="text-xl font-bold text-white">{stats.hadir}</div><div className="text-xs text-white/60">Hadir</div></div>
-          </div>
+           ))}
         </div>
 
-        {/* Profile Info */}
-        <h2 className="text-2xl font-bold text-white">{fullName}</h2>
-        <p className="text-[#adff2f] font-medium text-sm mb-6">{role}</p>
-        
-        {/* Actions */}
-        <div className="flex gap-3 mb-6">
-          <button onClick={() => navigate("/employee/profile")} className="flex-1 bg-white/5 border border-white/10 text-white text-xs py-3 rounded-2xl font-semibold">Edit Profil</button>
-          <button onClick={() => navigate("/employee/attendance")} className="flex-1 bg-[#7c3aed] text-white text-xs py-3 rounded-2xl font-semibold shadow-lg shadow-violet-900/20">Absen Sekarang</button>
-        </div>
-
-        {/* Status */}
-        <div className="bg-black/20 border border-white/5 p-4 rounded-2xl flex justify-between items-center text-sm text-white/70">
-           <span>Status Hari Ini:</span>
-           <span className="text-[#adff2f] font-bold flex items-center gap-2">
-             <div className="w-2 h-2 rounded-full bg-[#adff2f] animate-pulse"></div>
-             {todayAttendance ? "Hadir" : "Belum Absen"}
-           </span>
-        </div>
+        <Link to="/employee/attendance" className="block w-full py-4 bg-emerald-500 hover:bg-emerald-600 rounded-2xl text-center font-bold text-sm transition-all">
+          {todayAttendance ? "Lihat Absensi" : "Absen Sekarang"}
+        </Link>
       </div>
     </div>
   );
