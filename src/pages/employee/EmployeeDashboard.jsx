@@ -30,7 +30,12 @@ export default function EmployeeDashboard() {
 
   const fetchData = async () => {
     try {
-      const today = new Date().toISOString().split("T")[0];
+      // Pake server time + WITA — samain kaya AttendancePage
+      const { data: serverNow } = await supabase.rpc("get_server_time").catch(() => ({ data: new Date().toISOString() }));
+      const serverDate = new Date(serverNow || new Date().toISOString());
+      const witaMs = serverDate.getTime() + (8 * 60 * 60 * 1000);
+      const witaDate = new Date(witaMs);
+      const today = witaDate.toISOString().split("T")[0];
       const thisMonth = today.slice(0, 7); // YYYY-MM
 
       const [attendanceRes, historyRes, schedRes, statsRes, profileRes] = await Promise.all([
@@ -48,8 +53,7 @@ export default function EmployeeDashboard() {
       // Schedule
       if (schedRes.data) {
         const { data: shiftInfo } = await supabase.from("shifts").select("name").eq("code", schedRes.data.shift_code).single();
-        const pgDay = new Date().getDay(); // 0=Sun
-        const dayOfWeek = pgDay === 0 ? 6 : pgDay - 1; // convert to Mon=0..Sun=6
+        const pgDayOfWeek = (witaDate.getUTCDay() + 6) % 7; // Senin=0..Minggu=6
         const { data: schedTime } = await supabase
           .from("shift_schedules")
           .select("start_time, end_time")
