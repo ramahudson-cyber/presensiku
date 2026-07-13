@@ -132,7 +132,7 @@ export default function EmployeeDashboard() {
             {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 3).map(att => (
               <div key={att.id} className="grid grid-cols-4 gap-2 items-center text-[10px] bg-white/5 p-3 rounded-2xl">
                 <div className="font-medium text-[9px] leading-tight">
-                  {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' })}
+                  {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
                   <span className="block opacity-40 capitalize">Shift Pagi</span>
                 </div>
                 <div className="text-center">{att.clock_in_time ? att.clock_in_time.substring(0, 5) : '-'}</div>
