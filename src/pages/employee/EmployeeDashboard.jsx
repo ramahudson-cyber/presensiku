@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
 import {
-  CheckCircle, XCircle, AlertCircle, Calendar, Bell, Settings, LogOut, ChevronRight
+  CheckCircle, XCircle, AlertCircle, Calendar, Bell, Settings, LogOut, PieChart, History
 } from "lucide-react";
 
 export default function EmployeeDashboard() {
@@ -81,7 +81,7 @@ export default function EmployeeDashboard() {
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
           <div className="flex justify-between items-center mb-6">
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Statistik Bulan Ini</div>
-            <BarChart3 size={16} className="text-[#BF00FF]"/>
+            <PieChart size={16} className="text-[#BF00FF]"/>
           </div>
           <div className="grid grid-cols-4 gap-2">
             {[ {v:stats.hadir, l:'Hadir'}, {v:stats.izin, l:'Izin'}, {v:stats.sakit, l:'Sakit'}, {v:stats.alpha, l:'Alpha'} ].map((s,i) => (

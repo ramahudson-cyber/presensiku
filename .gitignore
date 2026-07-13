@@ -1,1 +1,50 @@
-nul
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Sensitive files
+*.keystore
+keystore.properties
+bundle.zip
+.opencode/vercel_token.txt
+.opencode/github_token.txt
+.opencode/keystore_*.txt
+
+.env
+
+.vercel
+
+# Screenshots
+Screenshot*.png
+
+# Android
+android/.kotlin/
+
+gh-logs
+gh-logs.zip
+gh-logs2
+
+# APK (terlalu besar untuk git, upload manual ke Vercel)
+public/SIAP-Puskesmas.apk
+.env*
