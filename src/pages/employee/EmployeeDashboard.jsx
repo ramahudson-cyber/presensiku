@@ -52,10 +52,11 @@ export default function EmployeeDashboard() {
     return 'text-white';
   };
 
-  const formatTime = (isoString) => {
-    if (!isoString) return '-';
-    const date = new Date(isoString);
-    return date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+  const formatTime = (timeStr) => {
+    if (!timeStr) return '-';
+    // If it's an ISO timestamp, extract time part, otherwise assume it's "HH:MM:SS"
+    if (timeStr.includes('T')) return timeStr.split('T')[1].substring(0, 5);
+    return timeStr.substring(0, 5);
   };
 
   return (
@@ -135,8 +136,8 @@ export default function EmployeeDashboard() {
                   {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
                   <span className="block opacity-40 capitalize">Shift Pagi</span>
                 </div>
-                <div className="text-center">{att.clock_in_time ? att.clock_in_time.substring(0, 5) : '-'}</div>
-                <div className="text-center">{att.clock_out_time ? att.clock_out_time.substring(0, 5) : '-'}</div>
+                <div className="text-center">{formatTime(att.clock_in_time)}</div>
+                <div className="text-center">{formatTime(att.clock_out_time)}</div>
                 <div className="text-right font-bold uppercase opacity-80 truncate">{att.attendance_status}</div>
               </div>
             )) : <div className="text-xs opacity-60 text-center py-4">Belum ada riwayat.</div>}
