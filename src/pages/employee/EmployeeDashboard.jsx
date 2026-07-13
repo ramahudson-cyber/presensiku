@@ -17,7 +17,7 @@ export default function EmployeeDashboard() {
 
   const fetchData = async () => {
     try {
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toLocaleString("sv-SE", {timeZone: "Asia/Makassar"}).split(" ")[0];
       const { data: att } = await supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle();
       setTodayAttendance(att);
       const monthStart = new Date(); monthStart.setDate(1);
