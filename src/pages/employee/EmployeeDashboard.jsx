@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 export default function EmployeeDashboard() {
   const { user } = useAuth();
   const [todayAttendance, setTodayAttendance] = useState(null);
+  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [clock, setClock] = useState(new Date());
 
@@ -14,16 +15,33 @@ export default function EmployeeDashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  const formatTime = (iso) => iso ? new Date(iso).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"}) : "—";
+  const statusMeta = (status) => {
+    if (status === "hadir" || status === "present") return { label: "Hadir", icon: "✅", cls: "hadir" };
+    if (status === "telat" || status === "late") return { label: "Telat", icon: "⚠️", cls: "terlambat" };
+    return { label: status || "—", icon: "◻️", cls: "" };
+  };
+
   const fetchData = async () => {
     try {
       const today = new Date().toISOString().split("T")[0];
-      const { data } = await supabase
-        .from("attendance")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("date", today)
-        .maybeSingle();
-      setTodayAttendance(data);
+      const [attendanceRes, historyRes] = await Promise.all([
+        supabase
+          .from("attendance")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("date", today)
+          .maybeSingle(),
+        supabase
+          .from("attendance")
+          .select("*")
+          .eq("user_id", user.id)
+          .neq("date", today)
+          .order("date", { ascending: false })
+          .limit(5)
+      ]);
+      setTodayAttendance(attendanceRes.data);
+      setHistory(historyRes.data || []);
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
@@ -34,16 +52,8 @@ export default function EmployeeDashboard() {
   const hour = clock.getHours();
   const greeting = hour < 12 ? "Selamat Pagi" : hour < 15 ? "Selamat Siang" : hour < 18 ? "Selamat Sore" : "Selamat Malam";
 
-  const timeStr = clock.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-  const dateStr = clock.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-
-  const historyData = [
-    { day: "Sabtu", date: "12 Jul", status: "Hadir", statusClass: "hadir", clockIn: "07:48", clockOut: "16:30", dot: "hadir" },
-    { day: "Jumat", date: "11 Jul", status: "Hadir", statusClass: "hadir", clockIn: "07:52", clockOut: "16:15", dot: "hadir" },
-    { day: "Kamis", date: "10 Jul", status: "Hadir", statusClass: "hadir", clockIn: "07:55", clockOut: "16:00", dot: "hadir" },
-    { day: "Rabu", date: "9 Jul", status: "Telat", statusClass: "terlambat", clockIn: "08:12", clockOut: "16:20", dot: "terlambat" },
-    { day: "Selasa", date: "8 Jul", status: "Hadir", statusClass: "hadir", clockIn: "07:50", clockOut: "16:30", dot: "hadir" },
-  ];
+	  const timeStr = clock.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+	  const dateStr = clock.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   if (loading) {
     return (
@@ -191,22 +201,37 @@ export default function EmployeeDashboard() {
             <p className="text-[9px] font-bold text-slate-mist uppercase tracking-[0.5px] text-right">Status</p>
           </div>
           <div>
-            {historyData.map((item, i) => (
-              <div key={i} className="py-2.5 border-b last:border-b-0"
-                   style={{ display: "grid", gridTemplateColumns: "8px 1.5fr 1fr 1fr 1.5fr", gap: "8px", alignItems: "center", borderColor: "rgba(255,255,255,0.04)" }}>
-                <div className="w-2 h-2 rounded-full shrink-0"
-                     style={{ background: item.dot === "hadir" ? "#adff2f" : "#fbbf24", boxShadow: item.dot === "hadir" ? "0 0 8px rgba(173,255,47,0.5)" : "none" }} />
-                <div className="text-[11px] text-slate-mist text-left">
-                  {item.day}
-                  <div className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>{item.date}</div>
-                </div>
-                <div className="text-[11px] font-mono text-left" style={{ color: item.status === "Telat" ? "#fbbf24" : "#6ee7b7" }}>{item.clockIn}</div>
-                <div className="text-[11px] font-mono text-left" style={{ color: "#9ba1ae" }}>{item.clockOut}</div>
-                <div className="text-[11px] font-semibold text-right" style={{ color: item.status === "Hadir" ? "#adff2f" : "#fbbf24" }}>
-                  {item.status === "Hadir" ? "✅ Hadir" : "⚠️ Telat"}
-                </div>
+            {history.length === 0 ? (
+              <div className="text-center py-4">
+                <div className="text-[24px] mb-1.5 opacity-50">📋</div>
+                <div className="text-[12px] text-slate-mist">Belum ada riwayat absensi</div>
               </div>
-            ))}
+            ) : (
+              history.map((item, i) => {
+                const d = new Date(item.date + "T00:00:00");
+                const dayName = d.toLocaleDateString("id-ID", { weekday: "long" });
+                const dateStr = d.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+                const status = statusMeta(item.attendance_status);
+                return (
+                <div key={i} className="py-2.5 border-b last:border-b-0"
+                     style={{ display: "grid", gridTemplateColumns: "8px 1.5fr 1fr 1fr 1.5fr", gap: "8px", alignItems: "center", borderColor: "rgba(255,255,255,0.04)" }}>
+                  <div className="w-2 h-2 rounded-full shrink-0"
+                       style={{ background: status.cls === "hadir" ? "#adff2f" : "#fbbf24", boxShadow: status.cls === "hadir" ? "0 0 8px rgba(173,255,47,0.5)" : "none" }} />
+                  <div className="text-[11px] text-slate-mist text-left">
+                    {dayName}
+                    <div className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>{dateStr}</div>
+                  </div>
+                  <div className="text-[11px] font-mono text-left"
+                       style={{ color: status.cls === "terlambat" ? "#fbbf24" : "#6ee7b7" }}>{formatTime(item.clock_in_time)}</div>
+                  <div className="text-[11px] font-mono text-left" style={{ color: "#9ba1ae" }}>{formatTime(item.clock_out_time)}</div>
+                  <div className="text-[11px] font-semibold text-right"
+                       style={{ color: status.cls === "hadir" ? "#adff2f" : "#fbbf24" }}>
+                    {status.icon} {status.label}
+                  </div>
+                </div>
+                );
+              })
+            )}
           </div>
           <div className="text-center pt-2.5">
             <a href="#" className="text-[11px] flex items-center justify-center gap-1 no-underline" style={{ color: "#7066ed" }}>
