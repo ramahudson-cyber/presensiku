@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
-import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, AlertCircle } from "lucide-react";
+import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock } from "lucide-react";
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
@@ -12,6 +12,7 @@ export default function EmployeeDashboard() {
   const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0 });
   const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [shift, setShift] = useState(null);
 
   useEffect(() => { fetchData(); }, []);
 
@@ -20,6 +21,10 @@ export default function EmployeeDashboard() {
       const today = new Date().toLocaleString("sv-SE", {timeZone: "Asia/Makassar"}).split(" ")[0];
       const { data: att } = await supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle();
       setTodayAttendance(att);
+      
+      const { data: shiftData } = await supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle();
+      setShift(shiftData?.shift_code || "N/A");
+
       const monthStart = new Date(); monthStart.setDate(1);
       const { data: monthData } = await supabase.from("attendance").select("attendance_status").eq("user_id", user.id).gte("date", monthStart.toISOString().split("T")[0]);
       const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
@@ -49,12 +54,14 @@ export default function EmployeeDashboard() {
             <div>
               <div className="text-[11px] uppercase tracking-[0.2em] opacity-60">Selamat Pagi,</div>
               <div className="text-2xl font-bold">{user?.full_name || "Rama Hudson"}</div>
+              <div className="text-xs opacity-70 mt-0.5">{user?.role || "Pegawai"}</div>
             </div>
           </div>
           <div className="flex justify-between items-end">
             <div>
               <div className="text-4xl font-bold">{now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</div>
               <div className="text-xs opacity-50 mt-1">{now.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
+              <div className="text-[10px] mt-2 bg-white/10 px-2 py-0.5 rounded inline-block font-semibold">Shift: {shift}</div>
             </div>
             <Link to="/employee/attendance" className="bg-white text-[#660099] px-8 py-3 rounded-xl font-bold text-sm">Absen</Link>
           </div>
