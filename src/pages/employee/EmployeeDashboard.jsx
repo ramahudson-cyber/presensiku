@@ -8,7 +8,9 @@ import { signOut } from "../../services/authService";
 export default function EmployeeDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [todayAttendance, setTodayAttendance] = useState(null);
   const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => { 
     fetchData(); 
