@@ -36,7 +36,14 @@ export default function EmployeeDashboard() {
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-screen bg-[#060311] text-white">Loading...</div>;
+  if (loading) return (
+    <div className="fixed inset-0 bg-[#060311] flex items-center justify-center z-50">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-4 border-[#660099] border-t-transparent rounded-full animate-spin"></div>
+        <div className="text-white/50 text-xs tracking-widest uppercase">Memuat...</div>
+      </div>
+    </div>
+  );
 
   const now = new Date();
   const getStatusColor = (status) => {
