@@ -47,8 +47,11 @@ export default function EmployeeDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-obsidian text-white">
-        <p className="font-inter">Memuat...</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#060311" }}>
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "rgba(173,255,47,0.3)", borderTopColor: "#adff2f" }} />
+          <p className="text-sm text-slate-mist font-inter">Memuat...</p>
+        </div>
       </div>
     );
   }
@@ -102,7 +105,7 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Absen Button */}
-          <button className="mt-4 w-full py-3.5 text-white font-semibold text-[15px] relative z-10 border-none cursor-pointer"
+          <button className="mt-4 w-full py-3.5 text-white font-semibold text-[15px] relative z-10 border-none cursor-pointer transition-all duration-200 hover:brightness-110"
                   style={{ background: "#5800fd", borderRadius: "9999px" }}>
             <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-yellow mr-2 align-middle"
                   style={{ animation: "pulse 1.5s infinite" }} />
@@ -135,7 +138,7 @@ export default function EmployeeDashboard() {
         </div>
 
         {/* STATUS HARI INI */}
-        <div className="design-card p-4">
+        <div className="design-card p-5">
           <div className="card-title" style={{ color: "#c8ccd4" }}>Status Hari Ini</div>
           <div className="flex items-center gap-3.5">
             <div className="w-11 h-11 rounded-[16px] flex items-center justify-center text-xl shrink-0"
@@ -158,7 +161,7 @@ export default function EmployeeDashboard() {
         </div>
 
         {/* STATISTIK BULAN INI */}
-        <div className="design-card p-4">
+        <div className="design-card p-5">
           <div className="card-title" style={{ color: "#c8ccd4" }}>Statistik Bulan Ini</div>
           <div className="grid grid-cols-4 gap-2">
             {[
@@ -177,7 +180,7 @@ export default function EmployeeDashboard() {
         </div>
 
         {/* RIWAYAT ABSENSI */}
-        <div className="design-card p-4">
+        <div className="design-card p-5">
           <div className="card-title" style={{ color: "#c8ccd4" }}>Riwayat Absensi</div>
           <div className="grid gap-2 border-b pb-2 mb-1"
                style={{ gridTemplateColumns: "8px 1.5fr 1fr 1fr 1.5fr", gap: "8px", borderColor: "rgba(255,255,255,0.08)" }}>
@@ -213,7 +216,7 @@ export default function EmployeeDashboard() {
         </div>
 
         {/* PENGUMUMAN */}
-        <div className="design-card p-4">
+        <div className="design-card p-5">
           <div className="card-title" style={{ color: "#c8ccd4" }}>Pengumuman</div>
           <div className="text-center py-4">
             <div className="text-[24px] mb-1.5 opacity-50">🔔</div>
