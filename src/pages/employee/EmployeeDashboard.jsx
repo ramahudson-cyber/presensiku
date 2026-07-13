@@ -70,9 +70,9 @@ export default function EmployeeDashboard() {
     <div className="min-h-screen p-3" style={{ background: "#060311", fontFamily: "Inter, sans-serif" }}>
       <div className="w-full max-w-[400px] mx-auto flex flex-col gap-3">
 
-        {/* HERO */}
-        <div className="relative overflow-hidden rounded-[24px] p-6 border"
-             style={{ background: "linear-gradient(135deg, #0d0015 0%, #000 40%, #0a0011 100%)", borderColor: "rgba(150,0,255,0.2)", boxShadow: "0 8px 40px rgba(150,0,255,0.15)" }}>
+        {/* HERO — full bleed samain preview */}
+        <div className="relative overflow-hidden rounded-none rounded-b-[24px] p-6 -mx-3"
+             style={{ background: "linear-gradient(135deg, #0d0015 0%, #000 40%, #0a0011 100%)", borderBottom: "1px solid rgba(150,0,255,0.2)", boxShadow: "0 8px 40px rgba(150,0,255,0.15)" }}>
           <div className="absolute top-[-80px] right-[-80px] w-[280px] h-[280px] rounded-full pointer-events-none"
                style={{ background: "radial-gradient(circle, rgba(180,0,255,0.35), transparent 70%)" }} />
           <div className="absolute bottom-[-100px] left-[-100px] w-[300px] h-[300px] rounded-full pointer-events-none"
