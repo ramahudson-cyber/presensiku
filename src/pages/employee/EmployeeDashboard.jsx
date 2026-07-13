@@ -52,6 +52,12 @@ export default function EmployeeDashboard() {
     return 'text-white';
   };
 
+  const formatTime = (isoString) => {
+    if (!isoString) return '-';
+    const date = new Date(isoString);
+    return date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+  };
+
   return (
     <div className="min-h-screen w-full bg-[#060311] text-white font-sans absolute top-0 left-0 pb-24">
       <div className="w-full bg-gradient-to-br from-[#660099] to-[#060311] p-8 pt-12 shadow-2xl border-b border-white/5 rounded-b-[40px]">
@@ -85,7 +91,7 @@ export default function EmployeeDashboard() {
                 <div className="text-[10px] opacity-60 uppercase">Masuk</div>
                 {todayAttendance?.clock_in_time ? (
                   <>
-                    <div className="font-bold text-sm">{new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}</div>
+                    <div className="font-bold text-sm">{formatTime(todayAttendance.clock_in_time)}</div>
                     <div className={`text-[10px] font-medium ${getStatusColor(todayAttendance.check_in_status)}`}>{todayAttendance.check_in_status || 'Tepat Waktu'}</div>
                   </>
                 ) : <div className="text-xs opacity-40">--:--</div>}
@@ -94,7 +100,7 @@ export default function EmployeeDashboard() {
                 <div className="text-[10px] opacity-60 uppercase">Pulang</div>
                 {todayAttendance?.clock_out_time ? (
                   <>
-                    <div className="font-bold text-sm">{new Date(todayAttendance.clock_out_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}</div>
+                    <div className="font-bold text-sm">{formatTime(todayAttendance.clock_out_time)}</div>
                     <div className="text-[10px] text-emerald-400 font-medium">Selesai</div>
                   </>
                 ) : <div className="text-xs opacity-40">Belum Absen</div>}
