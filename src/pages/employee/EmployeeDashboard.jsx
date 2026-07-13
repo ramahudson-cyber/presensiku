@@ -69,10 +69,10 @@ export default function EmployeeDashboard() {
       </div>
 
       <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
+        {/* Status Card */}
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#BF00FF] to-transparent rounded-t-3xl"></div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Status Hari Ini <Clock size={14}/></div>
-          
           <div className="grid grid-cols-2 gap-4">
              <div className="space-y-1">
                 <div className="text-[10px] opacity-60 uppercase">Masuk</div>
@@ -95,6 +95,7 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
+        {/* Stats */}
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-6 flex justify-between">Statistik Bulan Ini <PieChart size={14}/></div>
           <div className="grid grid-cols-4 gap-2">
@@ -107,6 +108,7 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
+        {/* History */}
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Riwayat Absensi <History size={14}/></div>
           <div className="space-y-3">
@@ -116,6 +118,19 @@ export default function EmployeeDashboard() {
                 <div className="text-[10px] font-bold uppercase opacity-60 bg-white/5 px-2 py-1 rounded">{att.attendance_status}</div>
               </div>
             )) : <div className="text-xs opacity-60">Belum ada riwayat.</div>}
+          </div>
+        </div>
+
+        {/* Announcement */}
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Pengumuman <Megaphone size={14}/></div>
+          <div className="space-y-3">
+            {announcements.length > 0 ? announcements.map(a => (
+              <div key={a.id} className="p-3 bg-white/5 rounded-2xl">
+                <div className="text-sm font-semibold">{a.title}</div>
+                <div className="text-xs opacity-60 mt-1">{a.content}</div>
+              </div>
+            )) : <div className="text-xs opacity-60">Tidak ada pengumuman.</div>}
           </div>
         </div>
       </div>
