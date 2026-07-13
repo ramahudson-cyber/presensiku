@@ -1,29 +1,29 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { LogOut } from "lucide-react";
-import { signOut } from "../../services/authService";
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [todayAttendance, setTodayAttendance] = useState(null);
-  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [clock, setClock] = useState(new Date());
 
-  useEffect(() => { 
-    fetchData(); 
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(() => setClock(new Date()), 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchData = async () => {
     try {
-      // Dummy data sesuai PRD
-      setTodayAttendance({ clock_in_time: new Date().toISOString() });
-      setHistory([
-        { date: '2026-07-12', status: 'Hadir' },
-        { date: '2026-07-11', status: 'Hadir' }
-      ]);
+      const today = new Date().toISOString().split("T")[0];
+      const { data } = await supabase
+        .from("attendance")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("date", today)
+        .maybeSingle();
+      setTodayAttendance(data);
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
@@ -31,40 +31,80 @@ export default function EmployeeDashboard() {
   const role = user?.role || user?.user_metadata?.role || "Pegawai";
   const initials = fullName.split(" ").map(s => s[0]).join("").toUpperCase().slice(0, 2);
   
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Selamat Pagi," : hour < 18 ? "Selamat Siang," : "Selamat Malam,";
+  const hour = clock.getHours();
+  const greeting = hour < 12 ? "Selamat Pagi" : hour < 15 ? "Selamat Siang" : hour < 18 ? "Selamat Sore" : "Selamat Malam";
+  
+  const timeStr = clock.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const dateStr = clock.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#060311] text-white">
+        <p style={{ fontFamily: "Inter, sans-serif" }}>Memuat...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full max-w-lg mx-auto min-h-screen text-white p-6" style={{ background: 'linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #7B1FA2 70%, #4A148C 100%)' }}>
-      <div className="flex items-center gap-4 mb-8 relative z-10">
-        <div className="w-[70px] h-[70px] rounded-full bg-violet-600 flex items-center justify-center text-2xl font-bold border-2 border-white/10 shrink-0 shadow-lg">{initials}</div>
-        <div>
-          <div className="text-[13px] opacity-90 mb-[2px]">{greeting}</div>
-          <div className="text-[18px] font-bold mb-[2px]">{fullName}</div>
-          <div className="text-[#adff2f] text-[13px] font-medium">{role}</div>
+    <div style={{ background: "#060311", minHeight: "100vh", padding: "12px", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+      <div style={{ width: "100%", maxWidth: "400px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "12px" }}>
+        
+        {/* Hero */}
+        <div style={{ background: "#161320", borderRadius: "24px", padding: "20px", border: "1px solid rgba(255,255,255,0.06)", position: "relative", overflow: "hidden" }}>
+          <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "180px", height: "180px", background: "radial-gradient(circle, rgba(75,57,239,0.3), transparent 70%)", borderRadius: "50%", pointerEvents: "none" }}></div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
+            <div>
+              <div style={{ fontSize: "11px", color: "#9ba1ae", letterSpacing: "1px", textTransform: "uppercase" }}>{greeting}</div>
+              <div style={{ fontSize: "20px", fontWeight: 700, color: "#fff", marginTop: "2px" }}>{fullName}!</div>
+            </div>
+            <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "linear-gradient(135deg, #5800fd, #2415c6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px", fontWeight: 700, color: "#fff", border: "2px solid rgba(255,255,255,0.15)", boxShadow: "0 4px 20px rgba(88,0,253,0.3)", flexShrink: 0 }}>{initials}</div>
+          </div>
+          <div style={{ marginTop: "12px", position: "relative", zIndex: 1 }}>
+            <div style={{ fontSize: "36px", fontWeight: 700, color: "#fff", fontFamily: "monospace", letterSpacing: "-1px" }}>{timeStr}</div>
+            <div style={{ fontSize: "11px", color: "#9ba1ae", marginTop: "2px", textTransform: "capitalize" }}>{dateStr}</div>
+          </div>
+          <button style={{ marginTop: "16px", display: "block", width: "100%", padding: "14px", background: "#5800fd", color: "#fff", border: "none", borderRadius: "9999px", fontSize: "15px", fontWeight: 600, cursor: "pointer", position: "relative", zIndex: 1 }}>
+            <span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", background: "#adff2f", marginRight: "8px", verticalAlign: "middle", animation: "pulse 1.5s infinite" }}></span>
+            {todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
+          </button>
         </div>
-      </div>
 
-      <div className="vevox-card relative bg-white/5 border border-violet-500/30 rounded-2xl overflow-hidden mb-5">
-        <div className="absolute top-0 left-0 right-0 h-[100px] bg-[radial-gradient(circle_at_50%_-20%,rgba(139,92,246,0.5),transparent_70%)] pointer-events-none" />
-        <div className="p-5 text-[13px] font-semibold text-white/60 uppercase tracking-wider relative">Status Absensi</div>
-        <div className="p-5 pt-0 flex flex-col items-start relative">
-           <span className="text-[#adff2f] font-bold text-[13px] mb-1">● {todayAttendance ? "Sudah Absen" : "Belum Absen"}</span>
-           <span className="text-[13px] font-semibold text-white/80">{todayAttendance ? `Masuk: ${new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}` : "Silakan absen segera"}</span>
+        {/* Status Hari Ini */}
+        <div style={{ background: "#161320", borderRadius: "24px", padding: "16px", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <div style={{ fontSize: "10px", fontWeight: 700, color: "#9ba1ae", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "12px" }}>Status Hari Ini</div>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <div style={{ width: "44px", height: "44px", borderRadius: "16px", background: todayAttendance ? "rgba(173,255,47,0.15)" : "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", color: todayAttendance ? "#adff2f" : "#9ba1ae", flexShrink: 0 }}>{todayAttendance ? "✅" : "⏳"}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: "14px", fontWeight: 600, color: "#fff" }}>{todayAttendance ? "Sudah Absen" : "Belum Absen"}</div>
+              <div style={{ fontSize: "12px", color: "#9ba1ae", marginTop: "2px" }}>{todayAttendance ? `Masuk ${new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}` : "Silakan absen sekarang"}</div>
+            </div>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "4px 10px", background: todayAttendance ? "rgba(173,255,47,0.15)" : "rgba(255,255,255,0.05)", color: todayAttendance ? "#adff2f" : "#9ba1ae", borderRadius: "9999px", fontSize: "10px", fontWeight: 600 }}>
+              {todayAttendance ? "✅ Hadir" : "⏳ Menunggu"}
+            </span>
+          </div>
         </div>
-      </div>
 
-      {/* Tambahan Data PRD */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-5 mb-5">
-          <div className="text-[13px] font-semibold text-white/60 mb-3">Jadwal Shift Hari Ini</div>
-          <div className="text-[15px] font-bold">Shift Pagi (07:00 - 14:00)</div>
-          <div className="text-[12px] text-white/50 mt-1">Puskesmas Ampenan</div>
-      </div>
+        {/* Statistik */}
+        <div style={{ background: "#161320", borderRadius: "24px", padding: "16px", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <div style={{ fontSize: "10px", fontWeight: 700, color: "#9ba1ae", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "12px" }}>Statistik Bulan Ini</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px" }}>
+            {[
+              { icon: "✅", value: "14", label: "Hadir", color: "#adff2f" },
+              { icon: "📋", value: "2", label: "Izin", color: "#adff2f" },
+              { icon: "🤒", value: "1", label: "Sakit", color: "#adff2f" },
+              { icon: "❌", value: "0", label: "Alpha", color: "#5800fd" },
+            ].map((s, i) => (
+              <div key={i} style={{ textAlign: "center", padding: "12px 4px" }}>
+                <div style={{ fontSize: "18px", marginBottom: "4px", color: s.color }}>{s.icon}</div>
+                <div style={{ fontSize: "20px", fontWeight: 700, color: "#fff" }}>{s.value}</div>
+                <div style={{ fontSize: "9px", color: "#9ba1ae", marginTop: "2px", textTransform: "uppercase", letterSpacing: "0.5px" }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-      
-      <div className="grid grid-cols-2 gap-3">
-          <button onClick={() => navigate("/employee/attendance")} className="bg-white/10 p-4 rounded-2xl text-center text-sm font-bold hover:bg-white/20 transition">Absen</button>
-          <button onClick={() => navigate("/employee/history")} className="bg-white/10 p-4 rounded-2xl text-center text-sm font-bold hover:bg-white/20 transition">Riwayat</button>
+        {/* Footer */}
+        <div style={{ textAlign: "center", fontSize: "10px", color: "rgba(255,255,255,0.1)", padding: "8px 0 16px" }}>v1.6.9 — Hadir.Kuy</div>
       </div>
     </div>
   );

@@ -131,6 +131,12 @@ if (Capacitor.isNativePlatform()) {
 
 ---
 
+## ⚠️ CATATAN PENGEMBANGAN (STATUS PROTEKSI)
+- [x] Proteksi Rute `/employee` (ProtectedRoute & PlatformGuard) saat ini **DIMATIKAN** untuk testing.
+- [ ] **HARUS DI-AKTIFKAN KEMBALI** sebelum aplikasi siap untuk produksi.
+
+---
+
 ## Cara Lanjut Besok
 
 Buka folder project lalu bilang ke AI:
