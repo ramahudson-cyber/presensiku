@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
+import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
 import {
   CheckCircle, XCircle, AlertCircle, Bell, ChevronRight, Calendar
@@ -11,6 +12,7 @@ export default function EmployeeDashboard() {
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0 });
+  const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,6 +52,9 @@ export default function EmployeeDashboard() {
         .order("created_at", { ascending: false })
         .limit(3);
       setAnnouncements(ann || []);
+
+      const history = await getAttendanceHistory(user.id);
+      setAttendanceHistory(history);
     } catch (e) {
       console.error(e);
     } finally {
@@ -135,6 +140,29 @@ export default function EmployeeDashboard() {
             <p className="text-base font-bold text-gray-800 dark:text-white">{stats.alpha}</p>
             <p className="text-[9px] text-gray-400">Alpha</p>
           </div>
+        </div>
+      </div>
+
+      {/* Riwayat Absensi */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 mb-2 px-1">Riwayat Absensi</p>
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-800 space-y-3">
+          {attendanceHistory.length > 0 ? (
+            attendanceHistory.map(att => (
+              <div key={att.id} className="flex justify-between items-center text-sm">
+                <span className="font-semibold">{new Date(att.date).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'short' })}</span>
+                <span className={`capitalize text-xs font-bold px-2 py-1 rounded-full ${
+                  att.attendance_status === 'hadir' ? 'bg-emerald-100 text-emerald-800' :
+                  att.attendance_status === 'izin' ? 'bg-amber-100 text-amber-800' :
+                  att.attendance_status === 'sakit' ? 'bg-orange-100 text-orange-800' : 'bg-red-100 text-red-800'
+                }`}>
+                  {att.attendance_status}
+                </span>
+              </div>
+            ))
+          ) : (
+            <p className="text-xs text-gray-400 text-center py-3">Belum ada riwayat absensi.</p>
+          )}
         </div>
       </div>
 
