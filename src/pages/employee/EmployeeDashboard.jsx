@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
-import { CheckCircle, PieChart, History, Megaphone, Clock, Calendar } from "lucide-react";
+import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, AlertCircle } from "lucide-react";
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
@@ -34,9 +34,14 @@ export default function EmployeeDashboard() {
   if (loading) return <div className="flex items-center justify-center h-screen bg-[#060311] text-white">Loading...</div>;
 
   const now = new Date();
+  const getStatusColor = (status) => {
+    if (status === 'tepat waktu') return 'text-emerald-400';
+    if (status === 'terlambat') return 'text-amber-400';
+    return 'text-white';
+  };
+
   return (
     <div className="min-h-screen w-full bg-[#060311] text-white font-sans absolute top-0 left-0 pb-24">
-      {/* Hero */}
       <div className="w-full bg-gradient-to-br from-[#660099] to-[#060311] p-8 pt-12 shadow-2xl border-b border-white/5 rounded-b-[40px]">
         <div className="max-w-md mx-auto">
           <div className="flex items-center gap-4 mb-8">
@@ -57,27 +62,32 @@ export default function EmployeeDashboard() {
       </div>
 
       <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
-        {/* Status */}
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#BF00FF] to-transparent rounded-t-3xl"></div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Status Hari Ini <Clock size={14}/></div>
-          {todayAttendance ? (
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-400"><CheckCircle size={24}/></div>
-              <div>
-                <div className="font-bold text-sm">Sudah Absen</div>
-                <div className="text-[10px] opacity-60">Masuk: {new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}</div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-violet-500/10 rounded-2xl text-violet-400"><Calendar size={24}/></div>
-              <div className="text-sm opacity-60">Belum melakukan absensi hari ini.</div>
-            </div>
-          )}
+          
+          <div className="grid grid-cols-2 gap-4">
+             <div className="space-y-1">
+                <div className="text-[10px] opacity-60 uppercase">Masuk</div>
+                {todayAttendance?.clock_in_time ? (
+                  <>
+                    <div className="font-bold text-sm">{new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}</div>
+                    <div className={`text-[10px] font-medium ${getStatusColor(todayAttendance.check_in_status)}`}>{todayAttendance.check_in_status || 'Tepat Waktu'}</div>
+                  </>
+                ) : <div className="text-xs opacity-40">--:--</div>}
+             </div>
+             <div className="space-y-1">
+                <div className="text-[10px] opacity-60 uppercase">Pulang</div>
+                {todayAttendance?.clock_out_time ? (
+                  <>
+                    <div className="font-bold text-sm">{new Date(todayAttendance.clock_out_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}</div>
+                    <div className="text-[10px] text-emerald-400 font-medium">Selesai</div>
+                  </>
+                ) : <div className="text-xs opacity-40">Belum Absen</div>}
+             </div>
+          </div>
         </div>
 
-        {/* Stats */}
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-6 flex justify-between">Statistik Bulan Ini <PieChart size={14}/></div>
           <div className="grid grid-cols-4 gap-2">
@@ -90,7 +100,6 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* Riwayat */}
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Riwayat Absensi <History size={14}/></div>
           <div className="space-y-3">
