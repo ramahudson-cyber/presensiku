@@ -37,10 +37,10 @@ export default function EmployeeDashboard() {
 
   const now = new Date();
   return (
-    <div className="min-h-screen bg-[#060311] text-white font-sans p-4">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#33004D,#060311)] text-white font-sans p-4">
       <div className="max-w-md mx-auto space-y-6">
         {/* Hero */}
-        <div className="bg-gradient-to-br from-[#660099] to-[#060311] rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#660099] to-[#060311] rounded-3xl p-6 shadow-2xl relative overflow-hidden border border-white/5">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-full bg-white/10 border border-white/10 flex items-center justify-center font-bold text-xl">RH</div>
             <div>
@@ -65,12 +65,15 @@ export default function EmployeeDashboard() {
             <div className="flex items-center gap-4">
               <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-400"><CheckCircle size={24}/></div>
               <div>
-                <div className="font-bold">Sudah Absen</div>
-                <div className="text-xs opacity-60">Masuk: {new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}</div>
+                <div className="font-bold text-sm">Sudah Absen</div>
+                <div className="text-[10px] opacity-60">Masuk: {new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}</div>
               </div>
             </div>
           ) : (
-            <div className="text-sm opacity-60">Belum melakukan absensi hari ini.</div>
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-violet-500/10 rounded-2xl text-violet-400"><Calendar size={24}/></div>
+              <div className="text-sm opacity-60">Belum melakukan absensi hari ini.</div>
+            </div>
           )}
         </div>
 
