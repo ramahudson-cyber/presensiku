@@ -69,10 +69,10 @@ export default function EmployeeDashboard() {
       </div>
 
       <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
-        {/* Status Card */}
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#BF00FF] to-transparent rounded-t-3xl"></div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Status Hari Ini <Clock size={14}/></div>
+          
           <div className="grid grid-cols-2 gap-4">
              <div className="space-y-1">
                 <div className="text-[10px] opacity-60 uppercase">Masuk</div>
@@ -95,7 +95,6 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-6 flex justify-between">Statistik Bulan Ini <PieChart size={14}/></div>
           <div className="grid grid-cols-4 gap-2">
@@ -108,20 +107,26 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* History */}
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Riwayat Absensi <History size={14}/></div>
+          <div className="grid grid-cols-4 gap-1 text-[9px] uppercase tracking-wider opacity-50 mb-2 border-b border-white/5 pb-2">
+              <div>Tanggal</div>
+              <div>Masuk</div>
+              <div>Pulang</div>
+              <div className="text-right">Status</div>
+          </div>
           <div className="space-y-3">
             {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 3).map(att => (
-              <div key={att.id} className="flex justify-between items-center text-sm border-b border-white/5 pb-2">
-                <div className="text-xs">{new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' })}</div>
-                <div className="text-[10px] font-bold uppercase opacity-60 bg-white/5 px-2 py-1 rounded">{att.attendance_status}</div>
+              <div key={att.id} className="grid grid-cols-4 gap-1 items-center text-[10px] border-b border-white/5 pb-2">
+                <div className="font-medium text-[9px]">{new Date(att.date).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                <div>{att.clock_in_time ? att.clock_in_time.slice(0,5) : '-'}</div>
+                <div>{att.clock_out_time ? att.clock_out_time.slice(0,5) : '-'}</div>
+                <div className="text-right font-bold uppercase opacity-80">{att.attendance_status}</div>
               </div>
             )) : <div className="text-xs opacity-60">Belum ada riwayat.</div>}
           </div>
         </div>
 
-        {/* Announcement */}
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Pengumuman <Megaphone size={14}/></div>
           <div className="space-y-3">
