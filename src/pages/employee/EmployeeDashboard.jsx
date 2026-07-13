@@ -6,9 +6,6 @@ export default function EmployeeDashboard() {
   const { user } = useAuth();
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [history, setHistory] = useState([]);
-  const [todaySchedule, setTodaySchedule] = useState(null);
-  const [monthlyStats, setMonthlyStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0 });
-  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [clock, setClock] = useState(new Date());
 
@@ -22,63 +19,29 @@ export default function EmployeeDashboard() {
   const statusMeta = (status) => {
     if (status === "hadir" || status === "present") return { label: "Hadir", icon: "✅", cls: "hadir" };
     if (status === "telat" || status === "late") return { label: "Telat", icon: "⚠️", cls: "terlambat" };
-    if (status === "izin") return { label: "Izin", icon: "📋", cls: "izin" };
-    if (status === "sakit") return { label: "Sakit", icon: "🤒", cls: "sakit" };
-    if (status === "alpha" || status === "absent") return { label: "Alpha", icon: "❌", cls: "alpha" };
     return { label: status || "—", icon: "◻️", cls: "" };
   };
 
   const fetchData = async () => {
     try {
-      // Pake server time + WITA — samain kaya AttendancePage
-      const { data: serverNow } = await supabase.rpc("get_server_time").catch(() => ({ data: new Date().toISOString() }));
-      const serverDate = new Date(serverNow || new Date().toISOString());
-      const witaMs = serverDate.getTime() + (8 * 60 * 60 * 1000);
-      const witaDate = new Date(witaMs);
-      const today = witaDate.toISOString().split("T")[0];
-      const thisMonth = today.slice(0, 7); // YYYY-MM
-
-      const [attendanceRes, historyRes, schedRes, statsRes, profileRes] = await Promise.all([
-        supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
-        supabase.from("attendance").select("*").eq("user_id", user.id).neq("date", today).order("date", { ascending: false }).limit(5),
-        supabase.from("employee_schedules").select("shift_code, date").eq("user_id", user.id).eq("date", today).maybeSingle(),
-        supabase.from("attendance").select("attendance_status").eq("user_id", user.id).gte("date", `${thisMonth}-01`).lte("date", today),
-        supabase.from("profiles").select("*").eq("id", user.id).single().catch(() => null)
+      const today = new Date().toISOString().split("T")[0];
+      const [attendanceRes, historyRes] = await Promise.all([
+        supabase
+          .from("attendance")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("date", today)
+          .maybeSingle(),
+        supabase
+          .from("attendance")
+          .select("*")
+          .eq("user_id", user.id)
+          .neq("date", today)
+          .order("date", { ascending: false })
+          .limit(5)
       ]);
-
       setTodayAttendance(attendanceRes.data);
       setHistory(historyRes.data || []);
-      setProfile(profileRes?.data || null);
-
-      // Schedule
-      if (schedRes.data) {
-        const { data: shiftInfo } = await supabase.from("shifts").select("name").eq("code", schedRes.data.shift_code).single();
-        const pgDayOfWeek = (witaDate.getUTCDay() + 6) % 7; // Senin=0..Minggu=6
-        const { data: schedTime } = await supabase
-          .from("shift_schedules")
-          .select("start_time, end_time")
-          .eq("shift_code", schedRes.data.shift_code)
-          .eq("day_of_week", dayOfWeek)
-          .maybeSingle();
-        setTodaySchedule({
-          name: shiftInfo?.name || schedRes.data.shift_code,
-          start: schedTime?.start_time?.slice(0,5) || "—",
-          end: schedTime?.end_time?.slice(0,5) || "—"
-        });
-      }
-
-      // Monthly stats
-      const rows = statsRes.data || [];
-      const stats = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
-      rows.forEach(r => {
-        const s = r.attendance_status;
-        if (s === "hadir" || s === "present") stats.hadir++;
-        else if (s === "telat" || s === "late") stats.hadir++; // telat counted as hadir
-        else if (s === "izin") stats.izin++;
-        else if (s === "sakit") stats.sakit++;
-        else if (s === "alpha" || s === "absent") stats.alpha++;
-      });
-      setMonthlyStats(stats);
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
@@ -165,8 +128,8 @@ export default function EmployeeDashboard() {
           <div className="design-card p-4 flex justify-between items-start">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-[1.5px] mb-2" style={{ color: "#c8ccd4" }}>SHIFT HARI INI</div>
-              <div className="text-[18px] font-bold text-white font-urbanist">{todaySchedule?.name || "—"}</div>
-              <div className="text-[12px] text-slate-mist mt-0.5">{todaySchedule ? `${todaySchedule.start} - ${todaySchedule.end}` : "—"}</div>
+              <div className="text-[18px] font-bold text-white font-urbanist">Pagi</div>
+              <div className="text-[12px] text-slate-mist mt-0.5">07:00 - 15:00</div>
             </div>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#adff2f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mt-1 shrink-0 opacity-90">
               <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
@@ -175,8 +138,8 @@ export default function EmployeeDashboard() {
           <div className="design-card p-4 flex justify-between items-start">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-[1.5px] mb-2" style={{ color: "#c8ccd4" }}>LOKASI</div>
-              <div className="text-[18px] font-bold text-white font-urbanist">{profile?.unit_kerja || profile?.location || "Puskesmas"}</div>
-              <div className="text-[12px] text-slate-mist mt-0.5">{profile?.instansi || profile?.position || "—"}</div>
+              <div className="text-[18px] font-bold text-white font-urbanist">Ampenan</div>
+              <div className="text-[12px] text-slate-mist mt-0.5">Puskesmas</div>
             </div>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#adff2f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mt-1 shrink-0 opacity-90">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
@@ -212,10 +175,10 @@ export default function EmployeeDashboard() {
           <div className="card-title" style={{ color: "#c8ccd4" }}>Statistik Bulan Ini</div>
           <div className="grid grid-cols-4 gap-2">
             {[
-              { icon: "✅", value: monthlyStats.hadir, label: "Hadir", color: "#adff2f" },
-              { icon: "📋", value: monthlyStats.izin, label: "Izin", color: "#adff2f" },
-              { icon: "🤒", value: monthlyStats.sakit, label: "Sakit", color: "#adff2f" },
-              { icon: "❌", value: monthlyStats.alpha, label: "Alpha", color: "#5800fd" },
+              { icon: "✅", value: "14", label: "Hadir", color: "#adff2f" },
+              { icon: "📋", value: "2", label: "Izin", color: "#adff2f" },
+              { icon: "🤒", value: "1", label: "Sakit", color: "#adff2f" },
+              { icon: "❌", value: "0", label: "Alpha", color: "#5800fd" },
             ].map((s, i) => (
               <div key={i} className="text-center p-3">
                 <div className="text-[18px] mb-1" style={{ color: s.color }}>{s.icon}</div>
