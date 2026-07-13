@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
 import {
-  CheckCircle, Calendar, PieChart, History, Megaphone
+  CheckCircle, Calendar, PieChart, History, Megaphone, Clock
 } from "lucide-react";
 
 export default function EmployeeDashboard() {
@@ -38,7 +38,6 @@ export default function EmployeeDashboard() {
   const now = new Date();
   return (
     <div className="min-h-screen w-full bg-[#060311] text-white font-sans absolute top-0 left-0 pb-24">
-      {/* Hero Full */}
       <div className="w-full bg-gradient-to-br from-[#660099] to-[#060311] p-8 pt-12 shadow-2xl border-b border-white/5 rounded-b-[40px]">
         <div className="max-w-md mx-auto">
           <div className="flex items-center gap-4 mb-8">
@@ -59,10 +58,13 @@ export default function EmployeeDashboard() {
       </div>
 
       <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
-        {/* Status Card */}
+        {/* Status Card - Premium Look */}
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#BF00FF] to-transparent"></div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4">Status Hari Ini</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">
+             <span>Status Hari Ini</span>
+             <Clock size={14} className="opacity-40" />
+          </div>
           {todayAttendance ? (
             <div className="flex items-center gap-4">
               <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-400"><CheckCircle size={24}/></div>
@@ -95,35 +97,38 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* History & Announcement */}
-        <div className="grid grid-cols-1 gap-6">
-          <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-            <div className="flex justify-between items-center mb-4">
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Riwayat</div>
-              <History size={16} className="text-[#BF00FF]"/>
-            </div>
-            <div className="space-y-4">
-              {attendanceHistory.slice(0, 3).map(att => (
-                <div key={att.id} className="flex justify-between items-center">
-                  <div className="text-xs font-medium">{new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long' })}</div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider opacity-60">{att.attendance_status}</div>
-                </div>
-              ))}
-            </div>
+        {/* History */}
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Riwayat Absensi</div>
+            <History size={16} className="text-[#BF00FF]"/>
           </div>
-          <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-            <div className="flex justify-between items-center mb-4">
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Pengumuman</div>
-              <Megaphone size={16} className="text-[#BF00FF]"/>
-            </div>
-            <div className="space-y-4">
-              {announcements.length > 0 ? announcements.map(a => (
-                <div key={a.id} className="p-3 bg-white/5 rounded-2xl">
-                  <div className="text-sm font-semibold">{a.title}</div>
-                  <div className="text-xs opacity-60 mt-1">{a.content}</div>
+          <div className="space-y-4">
+            {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 3).map(att => (
+              <div key={att.id} className="flex justify-between items-center py-2 border-b border-white/5 last:border-none">
+                <div className="text-xs font-medium">
+                  {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long' })}
+                  <span className="block text-[9px] opacity-40 capitalize">Shift Pagi</span>
                 </div>
-              )) : <div className="text-xs opacity-60">Tidak ada pengumuman.</div>}
-            </div>
+                <div className="text-[10px] font-bold uppercase tracking-wider opacity-80 bg-white/5 px-2 py-1 rounded-lg">{att.attendance_status}</div>
+              </div>
+            )) : <div className="text-xs opacity-60">Belum ada riwayat.</div>}
+          </div>
+        </div>
+
+        {/* Announcement */}
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Pengumuman</div>
+            <Megaphone size={16} className="text-[#BF00FF]"/>
+          </div>
+          <div className="space-y-4">
+            {announcements.length > 0 ? announcements.map(a => (
+              <div key={a.id} className="p-3 bg-white/5 rounded-2xl">
+                <div className="text-sm font-semibold">{a.title}</div>
+                <div className="text-xs opacity-60 mt-1">{a.content}</div>
+              </div>
+            )) : <div className="text-xs opacity-60">Tidak ada pengumuman.</div>}
           </div>
         </div>
       </div>
