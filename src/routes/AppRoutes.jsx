@@ -49,10 +49,16 @@ function AppRoutes() {
         <Route path="settings" element={<PengaturanPage />} />
       </Route>
 
-      {/* PEGAWAI - DETEKSI DEVICE DINONAKTIFKAN SEMENTARA */}
+      {/* PEGAWAI */}
       <Route
         path="/employee"
-        element={<AdminLayout />}
+        element={
+          <ProtectedRoute allowedRoles={["pegawai"]}>
+            <PlatformGuard>
+              <AdminLayout />
+            </PlatformGuard>
+          </ProtectedRoute>
+        }
       >
         <Route index element={<EmployeeDashboard />} />
         <Route path="attendance" element={<AttendancePage />} />
