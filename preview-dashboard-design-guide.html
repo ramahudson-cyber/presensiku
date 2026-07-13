@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #060311; color: #ffffff; font-family: 'Inter', sans-serif; }
+        .onyx-card { background-color: #161320; border: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-md mx-auto">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-10">
+            <div>
+                <p class="text-[#9ba1ae] text-sm mb-1">Selamat Pagi,</p>
+                <h1 class="text-2xl font-semibold tracking-tight">Rama Hudson</h1>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-[#161320] border border-[#5800fd] flex items-center justify-center font-bold text-[#5800fd]">RH</div>
+        </div>
+
+        <!-- Status Card -->
+        <div class="onyx-card rounded-3xl p-6 mb-6">
+            <div class="text-[#9ba1ae] text-xs font-bold uppercase tracking-widest mb-4">Status Absensi</div>
+            <div class="text-4xl font-bold mb-2">07:30</div>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#adff2f]"></span>
+                <span class="text-[#adff2f] text-sm font-medium">Sudah Absen Masuk</span>
+            </div>
+        </div>
+        
+        <!-- Grid -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="onyx-card p-5 rounded-3xl">
+                <p class="text-[#9ba1ae] text-xs mb-1">Shift</p>
+                <p class="font-bold">Pagi</p>
+            </div>
+            <div class="onyx-card p-5 rounded-3xl">
+                <p class="text-[#9ba1ae] text-xs mb-1">Lokasi</p>
+                <p class="font-bold">Ampenan</p>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="onyx-card rounded-3xl p-6">
+            <h3 class="text-lg font-bold mb-4">Riwayat Terakhir</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between border-b border-white/5 pb-3">
+                    <span class="text-[#9ba1ae]">12 Jul</span>
+                    <span class="text-[#adff2f] text-sm">Hadir</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-[#9ba1ae]">11 Jul</span>
+                    <span class="text-[#adff2f] text-sm">Hadir</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="fixed bottom-6 left-6 right-6">
+            <button class="w-full bg-[#5800fd] text-white font-bold py-4 rounded-full shadow-lg shadow-[#5800fd]/20">
+                Absen Masuk
+            </button>
+        </div>
+    </div>
+</body>
+</html>

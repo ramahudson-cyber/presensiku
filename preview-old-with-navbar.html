@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            min-height: 100vh; display: flex; align-items: center; justify-content: center; 
+            background: #1a1a2e; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+        }
+        .iphone {
+            width: 390px; height: 844px; background: #000; border-radius: 48px; 
+            padding: 12px; box-shadow: 0 25px 80px rgba(0,0,0,0.6), 0 0 0 2px #2a2a3e, 0 0 0 12px #1a1a2e;
+            position: relative; flex-shrink: 0;
+        }
+        .iphone::before {
+            content: ''; position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+            width: 110px; height: 28px; background: #000; border-radius: 0 0 18px 18px; z-index: 100;
+        }
+        .screen {
+            width: 100%; height: 100%; background: #060311; border-radius: 36px; 
+            overflow-y: auto; overflow-x: hidden; position: relative; display: flex; flex-direction: column;
+        }
+        .screen::-webkit-scrollbar { display: none; }
+        .status-bar {
+            height: 44px; display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 28px; color: #fff; font-size: 14px; font-weight: 600; flex-shrink: 0;
+        }
+        .status-right { display: flex; gap: 6px; align-items: center; font-size: 12px; }
+        .battery { width:24px; height:12px; border:1.5px solid rgba(255,255,255,0.6); border-radius:3px; padding:1.5px; position:relative; }
+        .battery::after { content:''; position:absolute; right:-3px; top:3px; width:2px; height:4px; background:rgba(255,255,255,0.6); border-radius:0 1px 1px 0; }
+        .battery-fill { width:80%; height:100%; background:#fff; border-radius:1px; }
+        .home-indicator { 
+            position: sticky; bottom: 6px; left: 50%; transform: translateX(-50%);
+            width: 134px; height: 5px; background: rgba(255,255,255,0.4); border-radius: 3px; flex-shrink: 0;
+        }
+        .content { flex: 1; overflow-y: auto; padding: 16px 16px 0; display: flex; flex-direction: column; }
+        .content::-webkit-scrollbar { display: none; }
+        .font-urbanist { font-family: 'Urbanist', sans-serif; }
+    </style>
+</head>
+<body>
+    <div class="iphone">
+        <div class="screen">
+            <div class="status-bar">
+                <span>9:41</span>
+                <div class="status-right">
+                    <span>📶</span><span>📡</span>
+                    <div class="battery"><div class="battery-fill"></div></div>
+                </div>
+            </div>
+            <div class="content">
+                <!-- Header -->
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#d8b4fe] to-[#6366f1] flex items-center justify-center text-lg font-semibold border-2 border-white/10 shrink-0" style="font-family:'Urbanist',sans-serif;">RH</div>
+                    <div>
+                        <p class="text-sm text-[#9ba1ae]">Selamat Pagi,</p>
+                        <p class="text-lg font-semibold" style="font-family:'Urbanist',sans-serif;">Rama Hudson</p>
+                        <p class="text-xs font-medium text-[#adff2f]">Pegawai</p>
+                    </div>
+                </div>
+
+                <!-- Status Card -->
+                <div class="bg-[#161320] border border-white/5 rounded-3xl p-6 mb-6">
+                    <p class="text-xs font-bold text-[#9ba1ae] uppercase tracking-[0.1em] mb-3">Status Absensi</p>
+                    <p class="text-5xl font-semibold mb-3" style="font-family:'Urbanist',sans-serif;letter-spacing:0.03em;">07:30</p>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#adff2f] animate-pulse"></span>
+                        <span class="text-[#adff2f] text-sm font-medium">Sudah Absen</span>
+                    </div>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-[#161320] border border-white/5 rounded-3xl p-5">
+                        <p class="text-xs text-[#9ba1ae] mb-1">Shift</p>
+                        <p class="font-semibold" style="font-family:'Urbanist',sans-serif;">Pagi</p>
+                        <p class="text-xs text-[#9ba1ae]">07:00 - 15:00</p>
+                    </div>
+                    <div class="bg-[#161320] border border-white/5 rounded-3xl p-5">
+                        <p class="text-xs text-[#9ba1ae] mb-1">Lokasi</p>
+                        <p class="font-semibold" style="font-family:'Urbanist',sans-serif;">Ampenan</p>
+                        <p class="text-xs text-[#9ba1ae]">Puskesmas</p>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <button class="bg-[#5800fd] py-4 rounded-full font-semibold text-sm text-white" style="font-family:'Urbanist',sans-serif;letter-spacing:0.045em;">Absen Masuk</button>
+                    <button class="bg-[#161320] border border-white/10 py-4 rounded-full font-semibold text-sm text-white" style="font-family:'Urbanist',sans-serif;">Riwayat</button>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-4 gap-3">
+                    <div class="bg-[#161320] rounded-3xl p-4 text-center">
+                        <p class="text-lg font-semibold text-[#6ee7b7]" style="font-family:'Urbanist',sans-serif;">12</p>
+                        <p class="text-[10px] font-medium text-[#9ba1ae] uppercase tracking-[0.05em]">Hadir</p>
+                    </div>
+                    <div class="bg-[#161320] rounded-3xl p-4 text-center">
+                        <p class="text-lg font-semibold text-[#adff2f]" style="font-family:'Urbanist',sans-serif;">2</p>
+                        <p class="text-[10px] font-medium text-[#9ba1ae] uppercase tracking-[0.05em]">Izin</p>
+                    </div>
+                    <div class="bg-[#161320] rounded-3xl p-4 text-center">
+                        <p class="text-lg font-semibold text-[#adff2f]" style="font-family:'Urbanist',sans-serif;">1</p>
+                        <p class="text-[10px] font-medium text-[#9ba1ae] uppercase tracking-[0.05em]">Sakit</p>
+                    </div>
+                    <div class="bg-[#161320] rounded-3xl p-4 text-center">
+                        <p class="text-lg font-semibold text-[#fca5a5]" style="font-family:'Urbanist',sans-serif;">0</p>
+                        <p class="text-[10px] font-medium text-[#9ba1ae] uppercase tracking-[0.05em]">Alpha</p>
+                    </div>
+                </div>
+            </div><!-- end content -->
+
+            </div><!-- end content -->
+
+            <!-- Bottom Navbar -->
+            <div class="bg-[#161320]/95 backdrop-blur-lg border-t border-white/5 flex justify-around items-center py-2 px-4 flex-shrink-0">
+                <a href="#" class="flex flex-col items-center gap-1 text-[#BF00FF]"><span class="text-lg">🏠</span><span class="text-[10px]">Home</span></a>
+                <a href="#" class="flex flex-col items-center gap-1 text-slate-400"><span class="text-lg">📅</span><span class="text-[10px]">Jadwal</span></a>
+                <a href="#" class="flex flex-col items-center gap-1 text-slate-400"><span class="text-lg">👤</span><span class="text-[10px]">Profil</span></a>
+            </div>
+
+            <div class="home-indicator"></div>
+        </div><!-- end screen -->
+    </div><!-- end iphone -->
+</body>
+</html>

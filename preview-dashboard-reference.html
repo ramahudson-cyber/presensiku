@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background: linear-gradient(135deg, #4f1d96, #2d0a5f, #1e073d); 
+            color: white; 
+            min-height: 100vh; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+        }
+        .glass { 
+            background: rgba(255, 255, 255, 0.06); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-md mx-auto space-y-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center mt-4">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-slate-700 border-2 border-violet-400 shadow-lg"></div>
+                <div>
+                    <p class="text-sm text-slate-300">Selamat Pagi,</p>
+                    <p class="font-bold text-lg">Rama Hudson</p>
+                </div>
+            </div>
+            <div class="w-10 h-10 rounded-full glass flex items-center justify-center text-xl">🔔</div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="glass rounded-[32px] p-8">
+            <p class="text-slate-300 text-xs font-bold uppercase tracking-widest mb-3">Status Absensi</p>
+            <h1 class="text-6xl font-black mb-6 tracking-tighter">07:30</h1>
+            <div class="flex items-center gap-2 text-[#adff2f] font-bold bg-white/10 w-fit px-4 py-2 rounded-full">
+                <span class="w-2 h-2 rounded-full bg-[#adff2f] animate-pulse"></span> Sudah Absen
+            </div>
+        </div>
+
+        <!-- Grid Cards -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="glass rounded-[24px] p-5">
+                <p class="text-slate-400 text-xs mb-1">Shift</p>
+                <p class="font-bold text-lg">07:00 - 14:00</p>
+            </div>
+            <div class="glass rounded-[24px] p-5">
+                <p class="text-slate-400 text-xs mb-1">Lokasi</p>
+                <p class="font-bold text-lg">Ampenan</p>
+            </div>
+        </div>
+
+        <!-- CTA Bar -->
+        <button class="w-full bg-[#5800fd] py-5 rounded-[24px] font-bold text-lg shadow-2xl shadow-violet-600/30 hover:bg-[#6a1af1] transition-all">
+            Absen Masuk
+        </button>
+    </div>
+</body>
+</html>
