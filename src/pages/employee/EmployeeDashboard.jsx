@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
 import {
-  CheckCircle, XCircle, AlertCircle, Bell, ChevronRight, Calendar
+  CheckCircle, XCircle, AlertCircle, Calendar, Clock, BarChart3, History, Bell, Settings, LogOut
 } from "lucide-react";
 
 export default function EmployeeDashboard() {
@@ -22,7 +22,6 @@ export default function EmployeeDashboard() {
   const fetchData = async () => {
     try {
       const today = new Date().toISOString().split("T")[0];
-      
       const { data: att } = await supabase
         .from("attendance")
         .select("*")
@@ -40,9 +39,7 @@ export default function EmployeeDashboard() {
         .gte("date", monthStart.toISOString().split("T")[0]);
 
       const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
-      monthData?.forEach(a => {
-        if (s[a.attendance_status] !== undefined) s[a.attendance_status]++;
-      });
+      monthData?.forEach(a => { if (s[a.attendance_status] !== undefined) s[a.attendance_status]++; });
       setStats(s);
 
       const { data: ann } = await supabase
@@ -55,133 +52,88 @@ export default function EmployeeDashboard() {
 
       const history = await getAttendanceHistory(user.id);
       setAttendanceHistory(history);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+    } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
+  if (loading) return <div className="flex items-center justify-center h-screen bg-[#060311] text-white">Loading...</div>;
 
   const now = new Date();
-  const timeStr = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-  const dateStr = now.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-
   return (
-    <div className="space-y-4">
-      {/* Hero - Simple & Elegant */}
-      <div className="bg-gradient-to-br from-violet-600 to-purple-700 rounded-2xl p-5 text-white shadow-lg">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs opacity-80">{dateStr}</p>
-            <p className="text-lg font-bold mt-1">{timeStr}</p>
-          </div>
-          <Link to="/employee/attendance" className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl text-xs font-semibold hover:bg-white/30 transition">
-            Absen
-          </Link>
-        </div>
-      </div>
-
-      {/* Status Hari Ini */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-800">
-        <p className="text-xs font-semibold text-gray-500 mb-3">Status Hari Ini</p>
-        {todayAttendance ? (
-          <div className="flex items-center gap-3">
-            <CheckCircle size={20} className="text-emerald-500" />
-            <div>
-              <p className="text-sm font-semibold text-gray-800 dark:text-white">Sudah Absen</p>
-              <p className="text-xs text-gray-400">
-                Masuk: {todayAttendance.clock_in_time ? new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"}) : "-"}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <Link to="/employee/attendance" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-              <Calendar size={18} className="text-violet-600" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-gray-800 dark:text-white">Belum Absen</p>
-              <p className="text-xs text-gray-400">Tap untuk absen sekarang</p>
-            </div>
-            <ChevronRight size={18} className="text-gray-300 group-hover:text-violet-500" />
-          </Link>
-        )}
-      </div>
-
-      {/* Stats Bulan Ini */}
-      <div>
-        <p className="text-xs font-semibold text-gray-500 mb-2 px-1">Bulan Ini</p>
-        <div className="grid grid-cols-4 gap-2">
-          <div className="bg-white dark:bg-slate-900 rounded-xl p-3 text-center shadow-sm border border-gray-100 dark:border-slate-800">
-            <CheckCircle size={14} className="mx-auto text-emerald-500 mb-1" />
-            <p className="text-base font-bold text-gray-800 dark:text-white">{stats.hadir}</p>
-            <p className="text-[9px] text-gray-400">Hadir</p>
-          </div>
-          <div className="bg-white dark:bg-slate-900 rounded-xl p-3 text-center shadow-sm border border-gray-100 dark:border-slate-800">
-            <AlertCircle size={14} className="mx-auto text-amber-500 mb-1" />
-            <p className="text-base font-bold text-gray-800 dark:text-white">{stats.izin}</p>
-            <p className="text-[9px] text-gray-400">Izin</p>
-          </div>
-          <div className="bg-white dark:bg-slate-900 rounded-xl p-3 text-center shadow-sm border border-gray-100 dark:border-slate-800">
-            <AlertCircle size={14} className="mx-auto text-orange-500 mb-1" />
-            <p className="text-base font-bold text-gray-800 dark:text-white">{stats.sakit}</p>
-            <p className="text-[9px] text-gray-400">Sakit</p>
-          </div>
-          <div className="bg-white dark:bg-slate-900 rounded-xl p-3 text-center shadow-sm border border-gray-100 dark:border-slate-800">
-            <XCircle size={14} className="mx-auto text-red-500 mb-1" />
-            <p className="text-base font-bold text-gray-800 dark:text-white">{stats.alpha}</p>
-            <p className="text-[9px] text-gray-400">Alpha</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Riwayat Absensi */}
-      <div>
-        <p className="text-xs font-semibold text-gray-500 mb-2 px-1">Riwayat Absensi</p>
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-800 space-y-3">
-          {attendanceHistory.length > 0 ? (
-            attendanceHistory.map(att => (
-              <div key={att.id} className="flex justify-between items-center text-sm">
-                <span className="font-semibold">{new Date(att.date).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'short' })}</span>
-                <span className={`capitalize text-xs font-bold px-2 py-1 rounded-full ${
-                  att.attendance_status === 'hadir' ? 'bg-emerald-100 text-emerald-800' :
-                  att.attendance_status === 'izin' ? 'bg-amber-100 text-amber-800' :
-                  att.attendance_status === 'sakit' ? 'bg-orange-100 text-orange-800' : 'bg-red-100 text-red-800'
-                }`}>
-                  {att.attendance_status}
-                </span>
+    <div className="min-h-screen bg-[#060311] text-white p-5 font-sans">
+      <div className="max-w-md mx-auto space-y-6">
+        {/* Header */}
+        <div className="bg-gradient-to-br from-[#660099] to-[#060311] rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-white/10 border border-white/10 flex items-center justify-center font-bold text-xl">RH</div>
+              <div>
+                <div className="text-[10px] uppercase tracking-widest opacity-60">Selamat Pagi,</div>
+                <div className="text-xl font-bold">{user?.full_name || "Rama Hudson"}</div>
               </div>
-            ))
+            </div>
+            <div className="flex gap-2">
+              <Bell size={20} className="opacity-60" />
+              <Settings size={20} className="opacity-60" />
+              <LogOut size={20} className="opacity-60" />
+            </div>
+          </div>
+          <div className="pt-4 border-t border-white/10 flex justify-between items-center">
+            <div>
+              <div className="text-2xl font-semibold">{now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</div>
+              <div className="text-xs opacity-50">{now.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
+            </div>
+            <Link to="/employee/attendance" className="bg-white/5 px-5 py-2.5 rounded-full text-xs font-bold border border-white/10">Absen</Link>
+          </div>
+        </div>
+
+        {/* Status Card */}
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4">Status Hari Ini</div>
+          {todayAttendance ? (
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-400"><CheckCircle size={24}/></div>
+              <div>
+                <div className="font-bold">Sudah Absen</div>
+                <div className="text-xs opacity-60">Masuk: {new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}</div>
+              </div>
+            </div>
           ) : (
-            <p className="text-xs text-gray-400 text-center py-3">Belum ada riwayat absensi.</p>
+            <div className="text-sm opacity-60">Belum melakukan absensi hari ini.</div>
           )}
         </div>
-      </div>
 
-      {/* Pengumuman */}
-      <div>
-        <p className="text-xs font-semibold text-gray-500 mb-2 px-1">Pengumuman</p>
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-800">
-          {announcements.length === 0 ? (
-            <p className="text-xs text-gray-400 text-center py-3">Belum ada pengumuman</p>
-          ) : (
-            <div className="space-y-2">
-              {announcements.map(a => (
-                <div key={a.id} className="p-3 bg-violet-50 dark:bg-violet-900/20 rounded-xl">
-                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{a.title}</p>
-                  <p className="text-xs text-gray-500 mt-1">{a.content}</p>
+        {/* Stats */}
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
+          <div className="flex justify-between items-center mb-6">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Statistik Bulan Ini</div>
+            <BarChart3 size={16} className="text-[#BF00FF]"/>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {[ {v:stats.hadir, l:'Hadir'}, {v:stats.izin, l:'Izin'}, {v:stats.sakit, l:'Sakit'}, {v:stats.alpha, l:'Alpha'} ].map((s,i) => (
+              <div key={i} className="bg-white/5 rounded-2xl p-3 text-center">
+                <div className="text-xl font-light">{s.v}</div>
+                <div className="text-[8px] uppercase tracking-wider opacity-50">{s.l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* History */}
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Riwayat Absensi</div>
+            <History size={16} className="text-[#BF00FF]"/>
+          </div>
+          <div className="space-y-4">
+            {attendanceHistory.slice(0, 3).map(att => (
+              <div key={att.id} className="flex justify-between items-center text-sm">
+                <div>
+                  <div className="text-xs">{new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long' })}</div>
                 </div>
-              ))}
-            </div>
-          )}
+                <div className="text-[10px] font-bold uppercase tracking-wider opacity-50">{att.attendance_status}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
