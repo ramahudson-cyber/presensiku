@@ -37,7 +37,7 @@ export default function EmployeeDashboard() {
 
   const now = new Date();
   return (
-    <div className="min-h-screen w-full bg-[#060311] text-white font-sans p-4 absolute top-0 left-0">
+    <div className="min-h-screen w-full bg-[#060311] text-white font-sans p-4 absolute top-0 left-0 pb-24">
       <div className="max-w-md mx-auto space-y-6">
         {/* Hero */}
         <div className="bg-gradient-to-br from-[#660099] to-[#060311] rounded-3xl p-6 shadow-2xl relative overflow-hidden border border-white/5">
