@@ -30,81 +30,199 @@ export default function EmployeeDashboard() {
   const fullName = user?.full_name || user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
   const role = user?.role || user?.user_metadata?.role || "Pegawai";
   const initials = fullName.split(" ").map(s => s[0]).join("").toUpperCase().slice(0, 2);
-  
+
   const hour = clock.getHours();
   const greeting = hour < 12 ? "Selamat Pagi" : hour < 15 ? "Selamat Siang" : hour < 18 ? "Selamat Sore" : "Selamat Malam";
-  
+
   const timeStr = clock.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   const dateStr = clock.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
+  const historyData = [
+    { day: "Sabtu", date: "12 Jul", status: "Hadir", statusClass: "hadir", clockIn: "07:48", clockOut: "16:30", dot: "hadir" },
+    { day: "Jumat", date: "11 Jul", status: "Hadir", statusClass: "hadir", clockIn: "07:52", clockOut: "16:15", dot: "hadir" },
+    { day: "Kamis", date: "10 Jul", status: "Hadir", statusClass: "hadir", clockIn: "07:55", clockOut: "16:00", dot: "hadir" },
+    { day: "Rabu", date: "9 Jul", status: "Telat", statusClass: "terlambat", clockIn: "08:12", clockOut: "16:20", dot: "terlambat" },
+    { day: "Selasa", date: "8 Jul", status: "Hadir", statusClass: "hadir", clockIn: "07:50", clockOut: "16:30", dot: "hadir" },
+  ];
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#060311] text-white">
-        <p style={{ fontFamily: "Inter, sans-serif" }}>Memuat...</p>
+      <div className="min-h-screen flex items-center justify-center bg-obsidian text-white">
+        <p className="font-inter">Memuat...</p>
       </div>
     );
   }
 
   return (
-    <div style={{ background: "#060311", minHeight: "100vh", padding: "12px", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-      <div style={{ width: "100%", maxWidth: "400px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "12px" }}>
-        
-        {/* Hero */}
-        <div style={{ background: "#161320", borderRadius: "24px", padding: "20px", border: "1px solid rgba(255,255,255,0.06)", position: "relative", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "180px", height: "180px", background: "radial-gradient(circle, rgba(75,57,239,0.3), transparent 70%)", borderRadius: "50%", pointerEvents: "none" }}></div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
-            <div>
-              <div style={{ fontSize: "11px", color: "#9ba1ae", letterSpacing: "1px", textTransform: "uppercase" }}>{greeting}</div>
-              <div style={{ fontSize: "20px", fontWeight: 700, color: "#fff", marginTop: "2px" }}>{fullName}!</div>
+    <div className="min-h-screen p-3" style={{ background: "#060311", fontFamily: "Inter, sans-serif" }}>
+      <div className="w-full max-w-[400px] mx-auto flex flex-col gap-3">
+
+        {/* HERO */}
+        <div className="relative overflow-hidden rounded-[24px] p-6 border"
+             style={{ background: "linear-gradient(135deg, #0d0015 0%, #000 40%, #0a0011 100%)", borderColor: "rgba(150,0,255,0.2)", boxShadow: "0 8px 40px rgba(150,0,255,0.15)" }}>
+          <div className="absolute top-[-80px] right-[-80px] w-[280px] h-[280px] rounded-full pointer-events-none"
+               style={{ background: "radial-gradient(circle, rgba(180,0,255,0.35), transparent 70%)" }} />
+          <div className="absolute bottom-[-100px] left-[-100px] w-[300px] h-[300px] rounded-full pointer-events-none"
+               style={{ background: "radial-gradient(circle, rgba(120,0,255,0.25), transparent 70%)" }} />
+
+          {/* Top row: avatar + greeting + icons */}
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center text-[28px] font-bold text-white shrink-0 border-2"
+                 style={{ background: "linear-gradient(135deg, #5800fd, #2415c6)", borderColor: "rgba(255,255,255,0.15)", boxShadow: "0 4px 20px rgba(88,0,253,0.3)" }}>
+              {initials}
             </div>
-            <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "linear-gradient(135deg, #5800fd, #2415c6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px", fontWeight: 700, color: "#fff", border: "2px solid rgba(255,255,255,0.15)", boxShadow: "0 4px 20px rgba(88,0,253,0.3)", flexShrink: 0 }}>{initials}</div>
+            <div className="flex-1">
+              <div className="text-[11px] text-slate-mist uppercase tracking-[1px]">{greeting}</div>
+              <div className="text-[20px] font-bold text-white mt-0.5 font-urbanist">{fullName}!</div>
+            </div>
+            {/* Icons */}
+            <div className="flex items-center gap-1">
+              <button className="p-1.5 rounded-xl text-slate-mist hover:text-white transition-colors" aria-label="Notifikasi">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                </svg>
+              </button>
+              <button className="p-1.5 rounded-xl text-slate-mist hover:text-white transition-colors" aria-label="Toggle tema">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+                </svg>
+              </button>
+              <button className="p-1.5 rounded-xl text-slate-mist hover:text-white transition-colors" aria-label="Logout">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>
+                </svg>
+              </button>
+            </div>
           </div>
-          <div style={{ marginTop: "12px", position: "relative", zIndex: 1 }}>
-            <div style={{ fontSize: "36px", fontWeight: 700, color: "#fff", fontFamily: "monospace", letterSpacing: "-1px" }}>{timeStr}</div>
-            <div style={{ fontSize: "11px", color: "#9ba1ae", marginTop: "2px", textTransform: "capitalize" }}>{dateStr}</div>
+
+          {/* Time & Date */}
+          <div className="mt-3 relative z-10">
+            <div className="text-[36px] font-bold text-white font-urbanist tracking-[-1px]">{timeStr}</div>
+            <div className="text-[11px] text-slate-mist mt-0.5 capitalize">{dateStr}</div>
           </div>
-          <button style={{ marginTop: "16px", display: "block", width: "100%", padding: "14px", background: "#5800fd", color: "#fff", border: "none", borderRadius: "9999px", fontSize: "15px", fontWeight: 600, cursor: "pointer", position: "relative", zIndex: 1 }}>
-            <span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", background: "#adff2f", marginRight: "8px", verticalAlign: "middle", animation: "pulse 1.5s infinite" }}></span>
+
+          {/* Absen Button */}
+          <button className="mt-4 w-full py-3.5 text-white font-semibold text-[15px] relative z-10 border-none cursor-pointer"
+                  style={{ background: "#5800fd", borderRadius: "9999px" }}>
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-yellow mr-2 align-middle"
+                  style={{ animation: "pulse 1.5s infinite" }} />
             {todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
           </button>
         </div>
 
-        {/* Status Hari Ini */}
-        <div style={{ background: "#161320", borderRadius: "24px", padding: "16px", border: "1px solid rgba(255,255,255,0.06)" }}>
-          <div style={{ fontSize: "10px", fontWeight: 700, color: "#9ba1ae", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "12px" }}>Status Hari Ini</div>
-          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-            <div style={{ width: "44px", height: "44px", borderRadius: "16px", background: todayAttendance ? "rgba(173,255,47,0.15)" : "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", color: todayAttendance ? "#adff2f" : "#9ba1ae", flexShrink: 0 }}>{todayAttendance ? "✅" : "⏳"}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: "14px", fontWeight: 600, color: "#fff" }}>{todayAttendance ? "Sudah Absen" : "Belum Absen"}</div>
-              <div style={{ fontSize: "12px", color: "#9ba1ae", marginTop: "2px" }}>{todayAttendance ? `Masuk ${new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}` : "Silakan absen sekarang"}</div>
+        {/* SHIFT & LOKASI */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="design-card p-4 flex justify-between items-start">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[1.5px] mb-2" style={{ color: "#c8ccd4" }}>SHIFT HARI INI</div>
+              <div className="text-[18px] font-bold text-white font-urbanist">Pagi</div>
+              <div className="text-[12px] text-slate-mist mt-0.5">07:00 - 15:00</div>
             </div>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "4px 10px", background: todayAttendance ? "rgba(173,255,47,0.15)" : "rgba(255,255,255,0.05)", color: todayAttendance ? "#adff2f" : "#9ba1ae", borderRadius: "9999px", fontSize: "10px", fontWeight: 600 }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#adff2f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mt-1 shrink-0 opacity-90">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div className="design-card p-4 flex justify-between items-start">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[1.5px] mb-2" style={{ color: "#c8ccd4" }}>LOKASI</div>
+              <div className="text-[18px] font-bold text-white font-urbanist">Ampenan</div>
+              <div className="text-[12px] text-slate-mist mt-0.5">Puskesmas</div>
+            </div>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#adff2f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mt-1 shrink-0 opacity-90">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+        </div>
+
+        {/* STATUS HARI INI */}
+        <div className="design-card p-4">
+          <div className="card-title" style={{ color: "#c8ccd4" }}>Status Hari Ini</div>
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-[16px] flex items-center justify-center text-xl shrink-0"
+                 style={{ background: todayAttendance ? "rgba(173,255,47,0.15)" : "rgba(255,255,255,0.05)", color: todayAttendance ? "#adff2f" : "#9ba1ae" }}>
+              {todayAttendance ? "✅" : "⏳"}
+            </div>
+            <div className="flex-1">
+              <div className="text-[14px] font-semibold text-white">{todayAttendance ? "Sudah Absen Masuk" : "Belum Absen"}</div>
+              <div className="text-[12px] text-slate-mist mt-0.5">
+                {todayAttendance
+                  ? `Masuk ${new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})} · Pulang —`
+                  : "Silakan absen sekarang"}
+              </div>
+            </div>
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold"
+                  style={{ background: todayAttendance ? "rgba(173,255,47,0.15)" : "rgba(255,255,255,0.05)", color: todayAttendance ? "#adff2f" : "#9ba1ae" }}>
               {todayAttendance ? "✅ Hadir" : "⏳ Menunggu"}
             </span>
           </div>
         </div>
 
-        {/* Statistik */}
-        <div style={{ background: "#161320", borderRadius: "24px", padding: "16px", border: "1px solid rgba(255,255,255,0.06)" }}>
-          <div style={{ fontSize: "10px", fontWeight: 700, color: "#9ba1ae", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "12px" }}>Statistik Bulan Ini</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px" }}>
+        {/* STATISTIK BULAN INI */}
+        <div className="design-card p-4">
+          <div className="card-title" style={{ color: "#c8ccd4" }}>Statistik Bulan Ini</div>
+          <div className="grid grid-cols-4 gap-2">
             {[
               { icon: "✅", value: "14", label: "Hadir", color: "#adff2f" },
               { icon: "📋", value: "2", label: "Izin", color: "#adff2f" },
               { icon: "🤒", value: "1", label: "Sakit", color: "#adff2f" },
               { icon: "❌", value: "0", label: "Alpha", color: "#5800fd" },
             ].map((s, i) => (
-              <div key={i} style={{ textAlign: "center", padding: "12px 4px" }}>
-                <div style={{ fontSize: "18px", marginBottom: "4px", color: s.color }}>{s.icon}</div>
-                <div style={{ fontSize: "20px", fontWeight: 700, color: "#fff" }}>{s.value}</div>
-                <div style={{ fontSize: "9px", color: "#9ba1ae", marginTop: "2px", textTransform: "uppercase", letterSpacing: "0.5px" }}>{s.label}</div>
+              <div key={i} className="text-center p-3">
+                <div className="text-[18px] mb-1" style={{ color: s.color }}>{s.icon}</div>
+                <div className="text-[20px] font-bold text-white font-urbanist">{s.value}</div>
+                <div className="text-[9px] text-slate-mist mt-0.5 uppercase tracking-[0.5px]">{s.label}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Footer */}
-        <div style={{ textAlign: "center", fontSize: "10px", color: "rgba(255,255,255,0.1)", padding: "8px 0 16px" }}>v1.6.9 — Hadir.Kuy</div>
+        {/* RIWAYAT ABSENSI */}
+        <div className="design-card p-4">
+          <div className="card-title" style={{ color: "#c8ccd4" }}>Riwayat Absensi</div>
+          <div className="grid gap-2 border-b pb-2 mb-1"
+               style={{ gridTemplateColumns: "8px 1.5fr 1fr 1fr 1.5fr", gap: "8px", borderColor: "rgba(255,255,255,0.08)" }}>
+            <div></div>
+            <p className="text-[9px] font-bold text-slate-mist uppercase tracking-[0.5px] text-left">Tanggal</p>
+            <p className="text-[9px] font-bold text-slate-mist uppercase tracking-[0.5px] text-left">Masuk</p>
+            <p className="text-[9px] font-bold text-slate-mist uppercase tracking-[0.5px] text-left">Pulang</p>
+            <p className="text-[9px] font-bold text-slate-mist uppercase tracking-[0.5px] text-right">Status</p>
+          </div>
+          <div>
+            {historyData.map((item, i) => (
+              <div key={i} className="py-2.5 border-b last:border-b-0"
+                   style={{ display: "grid", gridTemplateColumns: "8px 1.5fr 1fr 1fr 1.5fr", gap: "8px", alignItems: "center", borderColor: "rgba(255,255,255,0.04)" }}>
+                <div className="w-2 h-2 rounded-full shrink-0"
+                     style={{ background: item.dot === "hadir" ? "#adff2f" : "#fbbf24", boxShadow: item.dot === "hadir" ? "0 0 8px rgba(173,255,47,0.5)" : "none" }} />
+                <div className="text-[11px] text-slate-mist text-left">
+                  {item.day}
+                  <div className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>{item.date}</div>
+                </div>
+                <div className="text-[11px] font-mono text-left" style={{ color: item.status === "Telat" ? "#fbbf24" : "#6ee7b7" }}>{item.clockIn}</div>
+                <div className="text-[11px] font-mono text-left" style={{ color: "#9ba1ae" }}>{item.clockOut}</div>
+                <div className="text-[11px] font-semibold text-right" style={{ color: item.status === "Hadir" ? "#adff2f" : "#fbbf24" }}>
+                  {item.status === "Hadir" ? "✅ Hadir" : "⚠️ Telat"}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="text-center pt-2.5">
+            <a href="#" className="text-[11px] flex items-center justify-center gap-1 no-underline" style={{ color: "#7066ed" }}>
+              Lihat Semua →
+            </a>
+          </div>
+        </div>
+
+        {/* PENGUMUMAN */}
+        <div className="design-card p-4">
+          <div className="card-title" style={{ color: "#c8ccd4" }}>Pengumuman</div>
+          <div className="text-center py-4">
+            <div className="text-[24px] mb-1.5 opacity-50">🔔</div>
+            <div className="text-[12px] text-slate-mist">Belum ada pengumuman</div>
+          </div>
+        </div>
+
+        {/* FOOTER */}
+        <div className="text-center text-[10px] py-2 pb-4" style={{ color: "rgba(255,255,255,0.1)" }}>v1.6.9 — Hadir.Kuy</div>
       </div>
     </div>
   );
