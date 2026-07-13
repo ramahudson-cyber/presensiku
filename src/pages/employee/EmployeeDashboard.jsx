@@ -116,21 +116,24 @@ export default function EmployeeDashboard() {
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Riwayat Absensi <History size={14}/></div>
-          <div className="grid grid-cols-4 gap-1 text-[9px] uppercase tracking-wider opacity-50 mb-2 border-b border-white/5 pb-2">
-              <div>Tanggal</div>
-              <div>Masuk</div>
-              <div>Pulang</div>
+          <div className="grid grid-cols-4 gap-2 text-[9px] uppercase tracking-wider opacity-40 mb-3 px-1">
+              <div className="col-span-1">Tanggal</div>
+              <div className="text-center">Masuk</div>
+              <div className="text-center">Pulang</div>
               <div className="text-right">Status</div>
           </div>
           <div className="space-y-3">
             {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 3).map(att => (
-              <div key={att.id} className="grid grid-cols-4 gap-1 items-center text-[10px] border-b border-white/5 pb-2">
-                <div className="font-medium text-[9px]">{new Date(att.date).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
-                <div>{att.clock_in_time ? att.clock_in_time.slice(0,5) : '-'}</div>
-                <div>{att.clock_out_time ? att.clock_out_time.slice(0,5) : '-'}</div>
-                <div className="text-right font-bold uppercase opacity-80">{att.attendance_status}</div>
+              <div key={att.id} className="grid grid-cols-4 gap-2 items-center text-[10px] bg-white/5 p-3 rounded-2xl">
+                <div className="font-medium text-[9px] leading-tight">
+                  {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' })}
+                  <span className="block opacity-40 capitalize">Shift Pagi</span>
+                </div>
+                <div className="text-center">{att.clock_in_time ? att.clock_in_time.slice(0,5) : '-'}</div>
+                <div className="text-center">{att.clock_out_time ? att.clock_out_time.slice(0,5) : '-'}</div>
+                <div className="text-right font-bold uppercase opacity-80 truncate">{att.attendance_status}</div>
               </div>
-            )) : <div className="text-xs opacity-60">Belum ada riwayat.</div>}
+            )) : <div className="text-xs opacity-60 text-center py-4">Belum ada riwayat.</div>}
           </div>
         </div>
 
