@@ -8,16 +8,20 @@ import { signOut } from "../../services/authService";
 export default function EmployeeDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [todayAttendance, setTodayAttendance] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [history, setHistory] = useState([]);
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { 
+    fetchData(); 
+  }, []);
 
   const fetchData = async () => {
     try {
-      const today = new Date().toISOString().split("T")[0];
-      const { data } = await supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle();
-      setTodayAttendance(data);
+      // Dummy data sesuai PRD
+      setTodayAttendance({ clock_in_time: new Date().toISOString() });
+      setHistory([
+        { date: '2026-07-12', status: 'Hadir' },
+        { date: '2026-07-11', status: 'Hadir' }
+      ]);
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
@@ -47,6 +51,14 @@ export default function EmployeeDashboard() {
            <span className="text-[13px] font-semibold text-white/80">{todayAttendance ? `Masuk: ${new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}` : "Silakan absen segera"}</span>
         </div>
       </div>
+
+      {/* Tambahan Data PRD */}
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-5 mb-5">
+          <div className="text-[13px] font-semibold text-white/60 mb-3">Jadwal Shift Hari Ini</div>
+          <div className="text-[15px] font-bold">Shift Pagi (07:00 - 14:00)</div>
+          <div className="text-[12px] text-white/50 mt-1">Puskesmas Ampenan</div>
+      </div>
+
       
       <div className="grid grid-cols-2 gap-3">
           <button onClick={() => navigate("/employee/attendance")} className="bg-white/10 p-4 rounded-2xl text-center text-sm font-bold hover:bg-white/20 transition">Absen</button>
