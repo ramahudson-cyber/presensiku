@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
 import {
-  CheckCircle, XCircle, AlertCircle, Calendar, Bell, Settings, LogOut, PieChart, History
+  CheckCircle, XCircle, AlertCircle, Calendar, Bell, Settings, LogOut, PieChart, History, Megaphone
 } from "lucide-react";
 
 export default function EmployeeDashboard() {
@@ -106,6 +106,22 @@ export default function EmployeeDashboard() {
                 <div className="text-[10px] font-bold uppercase tracking-wider opacity-60">{att.attendance_status}</div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Announcement */}
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Pengumuman</div>
+            <Megaphone size={16} className="text-[#BF00FF]"/>
+          </div>
+          <div className="space-y-4">
+            {announcements.length > 0 ? announcements.map(a => (
+              <div key={a.id} className="p-3 bg-white/5 rounded-2xl">
+                <div className="text-sm font-semibold">{a.title}</div>
+                <div className="text-xs opacity-60 mt-1">{a.content}</div>
+              </div>
+            )) : <div className="text-xs opacity-60">Tidak ada pengumuman saat ini.</div>}
           </div>
         </div>
       </div>
