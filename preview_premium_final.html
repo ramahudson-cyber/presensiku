@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { 
+    background: #060311; /* Warna background gelap */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #fff;
+    padding: 20px;
+  }
+  .container { max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+  
+  /* Wrapper Premium Style */
+  .wrapper {
+    background: #0b0817; /* Warna wrapper */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 28px;
+    padding: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .label-text {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .content-box {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .icon-holder {
+    width: 48px;
+    height: 48px;
+    background: #141122;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .title-text { font-size: 15px; font-weight: 600; color: #fff; }
+  .desc-text { font-size: 12px; color: rgba(255, 255, 255, 0.4); margin-top: 4px; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="wrapper">
+      <div class="label-text">Status Hari Ini</div>
+      <div class="content-box">
+        <div class="icon-holder">
+          <svg width="24" height="24" fill="none" stroke="#BF00FF" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div>
+          <div class="title-text">Belum Absen</div>
+          <div class="desc-text">Tap untuk absen sekarang</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

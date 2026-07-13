@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview Hero Premium</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: #060311;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    color: white;
+    box-shadow: 0 8px 32px rgba(191, 0, 255, 0.3);
+    background: linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%);
+  }
+
+  /* Orb kiri atas */
+  .orb-1 {
+    position: absolute;
+    top: -48px;
+    right: -48px;
+    width: 192px;
+    height: 192px;
+    background: #BF00FF;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    filter: blur(100px);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  /* Orb kanan bawah */
+  .orb-2 {
+    position: absolute;
+    bottom: -40px;
+    left: -40px;
+    width: 144px;
+    height: 144px;
+    background: #BF00FF;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    filter: blur(100px);
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  /* Grid pattern overlay */
+  .grid-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.15;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .content {
+    position: relative;
+    z-index: 10;
+    padding: 20px;
+  }
+
+  .profile-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .avatar-wrapper {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .avatar {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    border: 2px solid rgba(255,255,255,0.25);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  .online-dot {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 16px;
+    height: 16px;
+    background: #34d399;
+    border-radius: 50%;
+    border: 2px solid #33004D;
+  }
+
+  .info { flex: 1; min-width: 0; }
+
+  .greeting {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .name {
+    font-size: 20px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.25;
+    margin-top: 2px;
+  }
+
+  .role-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .role {
+    font-size: 11px;
+    font-weight: 600;
+    color: #adff2f;
+  }
+
+  .separator {
+    color: rgba(255,255,255,0.2);
+  }
+
+  .time {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .bottom-bar {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .date {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .btn-absen {
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    padding: 6px 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: white;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-absen:hover {
+    background: rgba(255,255,255,0.25);
+  }
+
+  .btn-absen:active {
+    transform: scale(0.95);
+  }
+
+  .simulated-screen {
+    background: #0d001a;
+    border-radius: 24px;
+    padding: 16px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 0 60px rgba(191,0,255,0.15);
+  }
+
+  .simulated-screen .status-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 16px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .status-card .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 12px;
+  }
+
+  .status-card .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .status-card .icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f0fdf4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .status-card .icon-circle svg { width: 18px; height: 18px; color: #10b981; }
+
+  .status-card .text-group p:first-child {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .status-card .text-group p:last-child {
+    font-size: 12px;
+    color: #9ca3af;
+  }
+</style>
+</head>
+<body>
+
+<div class="simulated-screen">
+  <!-- Hero Card -->
+  <div class="card">
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="content">
+      <!-- Profile Row -->
+      <div class="profile-row">
+        <div class="avatar-wrapper">
+          <div class="avatar">RH</div>
+          <div class="online-dot"></div>
+        </div>
+        <div class="info">
+          <div class="greeting">Selamat Siang,</div>
+          <div class="name">Rama Hudson</div>
+          <div class="role-row">
+            <span class="role">Admin Puskesmas</span>
+            <span class="separator">•</span>
+            <span class="time">14:30</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="bottom-bar">
+        <div class="date">Minggu, 13 Juli 2026</div>
+        <button class="btn-absen">Absen Sekarang</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Simulated next card -->
+  <div class="status-card">
+    <div class="label">Status Hari Ini</div>
+    <div class="row">
+      <div class="icon-circle">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div class="text-group">
+        <p>Belum Absen</p>
+        <p>Tap untuk absen sekarang</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

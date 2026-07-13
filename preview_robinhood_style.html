@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { 
+    background: #000; 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #fff;
+    display: flex; justify-content: center; padding: 20px;
+  }
+  .app-container {
+    width: 100%; max-width: 375px;
+    background: radial-gradient(circle at top left, #1a2a6c, #000 60%);
+    border-radius: 40px; padding: 24px; min-height: 800px;
+    position: relative; overflow: hidden;
+  }
+  
+  /* Cards Grid */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+  
+  /* Default Card */
+  .card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px; padding: 16px;
+    transition: all 0.3s;
+  }
+  
+  /* Active Card (Blue Glow) */
+  .card.active {
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+    border: none;
+    box-shadow: 0 4px 20px rgba(30, 64, 175, 0.4);
+  }
+
+  .label { font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+  .value { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .sub { font-size: 11px; color: rgba(255,255,255,0.4); }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <div style="font-size: 20px; font-weight: 600;">Tracker</div>
+  
+  <div class="grid">
+    <!-- Active Card -->
+    <div class="card active">
+      <div class="label" style="color:rgba(255,255,255,0.8)">Draft</div>
+      <div class="value">0 =</div>
+      <div class="sub" style="color:rgba(255,255,255,0.6)">Previous: 0</div>
+    </div>
+    <!-- Passive Card -->
+    <div class="card">
+      <div class="label">Pending invite</div>
+      <div class="value">3 ↑</div>
+      <div class="sub">Previous: 3</div>
+    </div>
+    <!-- Passive Card -->
+    <div class="card">
+      <div class="label">Invited</div>
+      <div class="value">4 ↑</div>
+      <div class="sub">Previous: 0</div>
+    </div>
+    <!-- Passive Card -->
+    <div class="card">
+      <div class="label">Active</div>
+      <div class="value">8 =</div>
+      <div class="sub">Previous: 8</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

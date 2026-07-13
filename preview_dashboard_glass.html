@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Premium — Dark Glass</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: #060311;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  .phone { max-width:420px; width:100%; border-radius:32px; overflow:hidden; box-shadow:0 0 60px rgba(191,0,255,0.1); }
+  .dash { background:#0a0015; padding:12px 12px 24px; display:flex; flex-direction:column; gap:16px; min-height:600px; }
+
+  /* HERO */
+  .hero { position:relative; overflow:hidden; border-radius:16px; color:white; box-shadow:0 8px 32px rgba(191,0,255,0.3); background:linear-gradient(160deg,#BF00FF 0%,#9900CC 30%,#660099 70%,#33004D 100%); }
+  .h-o1 { position:absolute; top:-48px; right:-48px; width:192px; height:192px; background:#BF00FF; border-radius:50%; mix-blend-mode:screen; filter:blur(100px); opacity:0.3; pointer-events:none; }
+  .h-o2 { position:absolute; bottom:-40px; left:-40px; width:144px; height:144px; background:#BF00FF; border-radius:50%; mix-blend-mode:screen; filter:blur(100px); opacity:0.2; pointer-events:none; }
+  .h-gr { position:absolute; inset:0; pointer-events:none; opacity:0.15; background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px); background-size:40px 40px; }
+  .hc { position:relative; z-index:10; padding:20px; }
+  .pr { display:flex; align-items:center; gap:16px; }
+  .aw { position:relative; flex-shrink:0; }
+  .av { width:62px; height:62px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(12px); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; border:2px solid rgba(255,255,255,0.25); box-shadow:0 4px 12px rgba(0,0,0,0.3); }
+  .dot { position:absolute; bottom:-2px; right:-2px; width:16px; height:16px; background:#34d399; border-radius:50%; border:2px solid #33004D; }
+  .gr { font-size:11px; color:rgba(255,255,255,0.6); font-weight:500; letter-spacing:0.5px; }
+  .nm { font-size:20px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.25; margin-top:2px; }
+  .rr { display:flex; align-items:center; gap:8px; margin-top:4px; }
+  .rl { font-size:11px; font-weight:600; color:#adff2f; }
+  .sp { color:rgba(255,255,255,0.2); }
+  .tm { font-size:11px; color:rgba(255,255,255,0.5); }
+  .bb { margin-top:16px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:space-between; }
+  .dt { font-size:11px; color:rgba(255,255,255,0.5); }
+  .bp { font-size:11px; font-weight:600; background:rgba(255,255,255,0.15); backdrop-filter:blur(8px); padding:6px 16px; border-radius:999px; color:white; cursor:pointer; border:none; transition:all 0.2s; }
+  .bp:hover { background:rgba(255,255,255,0.25); }
+
+  /* GLASS CARD */
+  .gc { background:rgba(255,255,255,0.04); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:16px; border:1px solid rgba(255,255,255,0.06); box-shadow:0 4px 24px rgba(0,0,0,0.2); }
+  .lb { font-size:11px; font-weight:600; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.5px; }
+
+  /* Status Card */
+  .sc-top { position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#BF00FF,#a78bfa,transparent); border-radius:16px 16px 0 0; }
+  .sc-in { padding:16px; }
+  .sr { display:flex; align-items:center; gap:16px; }
+  .ic-r { position:relative; flex-shrink:0; }
+  .ic { width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .ic-g { position:absolute; inset:-4px; border-radius:50%; filter:blur(6px); z-index:-1; }
+  .sr-t { flex:1; }
+  .sr-t p:first-child { font-size:16px; font-weight:700; color:rgba(255,255,255,0.9); }
+  .sr-t p:last-child { font-size:12px; color:rgba(255,255,255,0.4); margin-top:2px; }
+
+  /* Stats Grid */
+  .sg { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .st { position:relative; overflow:hidden; background:rgba(255,255,255,0.04); backdrop-filter:blur(12px); border-radius:12px; border:1px solid rgba(255,255,255,0.06); }
+  .st-b { height:2px; border-radius:12px 12px 0 0; }
+  .st-in { padding:12px; text-align:center; }
+  .st-ic { width:16px; height:16px; margin:0 auto 8px; }
+  .st-n { font-size:18px; font-weight:700; color:rgba(255,255,255,0.9); }
+  .st-l { font-size:10px; font-weight:500; color:rgba(255,255,255,0.3); margin-top:2px; }
+
+  /* Timeline */
+  .tl { position:relative; }
+  .tl-l { position:absolute; left:15px; top:8px; bottom:8px; width:1px; background:rgba(255,255,255,0.06); }
+  .tl-it { position:relative; display:flex; align-items:flex-start; gap:16px; padding-bottom:16px; }
+  .tl-it:last-child { padding-bottom:0; }
+  .tl-d { margin-top:4px; flex-shrink:0; width:30px; display:flex; justify-content:center; }
+  .tl-d-d { width:10px; height:10px; border-radius:50%; border:2px solid; }
+  .tl-c { flex:1; display:flex; align-items:center; justify-content:space-between; min-width:0; }
+  .tl-c span:first-child { font-size:14px; font-weight:600; color:rgba(255,255,255,0.8); }
+  .bdg { font-size:10px; font-weight:700; padding:4px 10px; border-radius:999px; text-transform:capitalize; }
+
+  /* Announcement */
+  .an-it { position:relative; overflow:hidden; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid rgba(255,255,255,0.06); }
+  .an-bar { position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg,#BF00FF,#a78bfa); }
+  .an-in { padding:14px 14px 14px 20px; }
+  .an-t { font-size:14px; font-weight:700; color:rgba(255,255,255,0.9); }
+  .an-d { font-size:12px; color:rgba(255,255,255,0.4); margin-top:4px; line-height:1.5; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="dash">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="h-o1"></div><div class="h-o2"></div><div class="h-gr"></div>
+      <div class="hc">
+        <div class="pr">
+          <div class="aw"><div class="av">RH</div><div class="dot"></div></div>
+          <div style="flex:1;min-width:0">
+            <div class="gr">Selamat Siang,</div>
+            <div class="nm">Rama Hudson</div>
+            <div class="rr"><span class="rl">Admin Puskesmas</span><span class="sp">•</span><span class="tm">14:30</span></div>
+          </div>
+        </div>
+        <div class="bb"><div class="dt">Minggu, 13 Juli 2026</div><button class="bp">Absen Sekarang</button></div>
+      </div>
+    </div>
+
+    <!-- STATUS -->
+    <div class="gc" style="position:relative;overflow:hidden">
+      <div class="sc-top"></div>
+      <div class="sc-in">
+        <div class="lb" style="margin-bottom:12px">Status Hari Ini</div>
+        <a href="#" style="text-decoration:none;color:inherit;display:block">
+          <div class="sr">
+            <div class="ic-r">
+              <div class="ic" style="background:rgba(191,0,255,0.2)">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="ic-g" style="background:rgba(191,0,255,0.1)"></div>
+            </div>
+            <div class="sr-t"><p>Belum Absen</p><p>Tap untuk absen sekarang</p></div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div>
+      <div class="lb" style="padding-left:4px;margin-bottom:12px">Bulan Ini</div>
+      <div class="sg">
+        <!-- Hadir - BadgeCheck -->
+        <div class="st">
+          <div class="st-b" style="background:linear-gradient(90deg,#34d399,#6ee7b7)"></div>
+          <div class="st-in">
+            <svg class="st-ic" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <div class="st-n">18</div>
+            <div class="st-l">Hadir</div>
+          </div>
+        </div>
+        <!-- Izin - FileText -->
+        <div class="st">
+          <div class="st-b" style="background:linear-gradient(90deg,#fbbf24,#fcd34d)"></div>
+          <div class="st-in">
+            <svg class="st-ic" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <div class="st-n">2</div>
+            <div class="st-l">Izin</div>
+          </div>
+        </div>
+        <!-- Sakit - Heart -->
+        <div class="st">
+          <div class="st-b" style="background:linear-gradient(90deg,#fb923c,#fdba74)"></div>
+          <div class="st-in">
+            <svg class="st-ic" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            <div class="st-n">1</div>
+            <div class="st-l">Sakit</div>
+          </div>
+        </div>
+        <!-- Alpha - XCircle -->
+        <div class="st">
+          <div class="st-b" style="background:linear-gradient(90deg,#f87171,#fca5a5)"></div>
+          <div class="st-in">
+            <svg class="st-ic" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            <div class="st-n">0</div>
+            <div class="st-l">Alpha</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div>
+      <div class="lb" style="padding-left:4px;margin-bottom:12px">Riwayat Absensi</div>
+      <div class="gc" style="padding:16px">
+        <div class="tl">
+          <div class="tl-l"></div>
+          <div class="tl-it"><div class="tl-d"><div class="tl-d-d" style="background:#34d399;border-color:rgba(52,211,153,0.3)"></div></div><div class="tl-c"><span>Senin, 13 Jul</span><span class="bdg" style="background:rgba(52,211,153,0.15);color:#6ee7b7">hadir</span></div></div>
+          <div class="tl-it"><div class="tl-d"><div class="tl-d-d" style="background:#34d399;border-color:rgba(52,211,153,0.3)"></div></div><div class="tl-c"><span>Sabtu, 12 Jul</span><span class="bdg" style="background:rgba(52,211,153,0.15);color:#6ee7b7">hadir</span></div></div>
+          <div class="tl-it"><div class="tl-d"><div class="tl-d-d" style="background:#fbbf24;border-color:rgba(251,191,36,0.3)"></div></div><div class="tl-c"><span>Jumat, 11 Jul</span><span class="bdg" style="background:rgba(251,191,36,0.15);color:#fcd34d">izin</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENGUMUMAN -->
+    <div>
+      <div class="lb" style="padding-left:4px;margin-bottom:12px">Pengumuman</div>
+      <div class="gc" style="padding:16px">
+        <div class="an-it"><div class="an-bar"></div><div class="an-in"><div class="an-t">Jadwal Posyandu Minggu Ini</div><div class="an-d">Posyandu dilaksanakan hari Rabu pukul 08.00 WITA di ruang serbaguna.</div></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
