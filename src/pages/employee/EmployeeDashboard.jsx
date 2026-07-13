@@ -129,8 +129,8 @@ export default function EmployeeDashboard() {
                   {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' })}
                   <span className="block opacity-40 capitalize">Shift Pagi</span>
                 </div>
-                <div className="text-center">{att.clock_in_time ? att.clock_in_time.split(":")[0] + ":" + att.clock_in_time.split(":")[1] : '-'}</div>
-                <div className="text-center">{att.clock_out_time ? att.clock_out_time.split(":")[0] + ":" + att.clock_out_time.split(":")[1] : '-'}</div>
+                <div className="text-center">{att.clock_in_time ? att.clock_in_time.substring(0, 5) : '-'}</div>
+                <div className="text-center">{att.clock_out_time ? att.clock_out_time.substring(0, 5) : '-'}</div>
                 <div className="text-right font-bold uppercase opacity-80 truncate">{att.attendance_status}</div>
               </div>
             )) : <div className="text-xs opacity-60 text-center py-4">Belum ada riwayat.</div>}
