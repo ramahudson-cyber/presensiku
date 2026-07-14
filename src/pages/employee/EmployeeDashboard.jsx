@@ -47,7 +47,7 @@ export default function EmployeeDashboard() {
 
   const now = new Date();
   const getStatusColor = (status) => {
-    if (status === 'tepat waktu') return 'text-emerald-400';
+    if (status === 'hadir' || status === 'tepat waktu') return 'text-emerald-400';
     if (status === 'terlambat') return 'text-amber-400';
     return 'text-white';
   };
@@ -100,7 +100,7 @@ export default function EmployeeDashboard() {
                 {todayAttendance?.clock_in_time ? (
                   <>
                     <div className="font-bold text-sm">{formatTime(todayAttendance.clock_in_time)}</div>
-                    <div className={`text-[10px] font-medium ${getStatusColor(todayAttendance.check_in_status)}`}>{todayAttendance.check_in_status || 'Tepat Waktu'}</div>
+                    <div className={`text-[10px] font-medium ${getStatusColor(todayAttendance.attendance_status)}`}>{todayAttendance.attendance_status || 'Tepat Waktu'}</div>
                   </>
                 ) : <div className="text-xs opacity-40">--:--</div>}
              </div>
