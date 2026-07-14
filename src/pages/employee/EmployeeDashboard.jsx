@@ -148,10 +148,10 @@ export default function EmployeeDashboard() {
                   <div className="text-[10px] opacity-40 capitalize">Shift</div>
                 </div>
                 <div className="flex items-center gap-5 shrink-0">
-                  <div className="text-center">
+                  <div className="text-center min-w-[40px]">
                     <div className="text-xs font-medium tabular-nums">{formatTime(att.clock_in_time)}</div>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center min-w-[40px]">
                     <div className="text-xs font-medium tabular-nums">{formatTime(att.clock_out_time)}</div>
                   </div>
                   <div className={`text-xs font-bold uppercase px-2.5 py-1 rounded-full whitespace-nowrap ${
