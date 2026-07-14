@@ -130,7 +130,7 @@ export default function EmployeeDashboard() {
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Riwayat Absensi <History size={14}/></div>
-          <div className="grid grid-cols-[1fr_70px_70px_110px] gap-4 mb-2 text-[9px] uppercase tracking-wider opacity-40">
+          <div className="grid grid-cols-[1fr_55px_55px_90px] gap-3 mb-2 text-[9px] uppercase tracking-wider opacity-40">
             <div>Tanggal</div>
             <div className="text-center">Masuk</div>
             <div className="text-center">Pulang</div>
@@ -138,7 +138,7 @@ export default function EmployeeDashboard() {
           </div>
           <div className="space-y-3">
             {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 5).map(att => (
-              <div key={att.id} className="grid grid-cols-[1fr_70px_70px_110px] gap-4 items-center bg-[#2a1050]/80 rounded-2xl py-3">
+              <div key={att.id} className="grid grid-cols-[1fr_55px_55px_90px] gap-3 items-center bg-white/5 rounded-2xl py-3">
                 <div>
                   <div className="text-xs font-semibold">
                     {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
