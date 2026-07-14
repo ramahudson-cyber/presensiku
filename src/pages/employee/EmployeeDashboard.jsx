@@ -149,11 +149,9 @@ export default function EmployeeDashboard() {
                 </div>
                 <div className="flex items-center gap-5 shrink-0">
                   <div className="text-center">
-                    <div className="text-[8px] uppercase tracking-wider opacity-40 mb-0.5">Masuk</div>
                     <div className="text-xs font-medium tabular-nums">{formatTime(att.clock_in_time)}</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-[8px] uppercase tracking-wider opacity-40 mb-0.5">Pulang</div>
                     <div className="text-xs font-medium tabular-nums">{formatTime(att.clock_out_time)}</div>
                   </div>
                   <div className={`text-xs font-bold uppercase px-2.5 py-1 rounded-full whitespace-nowrap ${
