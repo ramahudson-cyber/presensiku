@@ -136,9 +136,9 @@ export default function EmployeeDashboard() {
             <div className="text-center">Pulang</div>
             <div className="text-right">Status</div>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-1">
             {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 5).map(att => (
-              <div key={att.id} className="grid grid-cols-[1fr_55px_55px_90px] gap-3 items-center bg-white/5 rounded-2xl py-3">
+              <div key={att.id} className="grid grid-cols-[1fr_55px_55px_90px] gap-3 items-center bg-white/5 -mx-6 px-6 py-3">
                 <div>
                   <div className="text-xs font-semibold">
                     {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
