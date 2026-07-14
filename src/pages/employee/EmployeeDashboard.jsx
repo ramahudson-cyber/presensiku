@@ -129,25 +129,35 @@ export default function EmployeeDashboard() {
         </div>
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Riwayat Absensi <History size={14}/></div>
-          <div className="grid grid-cols-4 gap-2 text-[9px] uppercase tracking-wider opacity-40 mb-3 px-1">
-              <div className="col-span-1">Tanggal</div>
-              <div className="text-center">Masuk</div>
-              <div className="text-center">Pulang</div>
-              <div className="text-right">Status</div>
-          </div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-5 flex justify-between">Riwayat Absensi <History size={14}/></div>
           <div className="space-y-3">
-            {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 3).map(att => (
-              <div key={att.id} className="grid grid-cols-4 gap-2 items-center text-[10px] bg-white/5 p-3 rounded-2xl">
-                <div className="font-medium text-[9px] leading-tight">
-                  {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
-                  <span className="block opacity-40 capitalize">Shift Pagi</span>
+            {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 5).map(att => (
+              <div key={att.id} className="flex items-center bg-white/5 rounded-2xl px-4 py-3">
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-semibold">
+                    {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </div>
+                  <div className="text-[10px] opacity-40 capitalize">Shift Pagi</div>
                 </div>
-                <div className="text-center">{formatTime(att.clock_in_time)}</div>
-                <div className="text-center">{formatTime(att.clock_out_time)}</div>
-                <div className={`text-right font-bold uppercase truncate ${att.attendance_status === 'terlambat' ? 'text-amber-400' : att.attendance_status === 'hadir' ? 'text-emerald-400' : 'opacity-80'}`}>{att.attendance_status}</div>
+                <div className="flex items-center gap-5 shrink-0">
+                  <div className="text-center">
+                    <div className="text-[8px] uppercase tracking-wider opacity-40 mb-0.5">Masuk</div>
+                    <div className="text-xs font-medium tabular-nums">{formatTime(att.clock_in_time)}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[8px] uppercase tracking-wider opacity-40 mb-0.5">Pulang</div>
+                    <div className="text-xs font-medium tabular-nums">{formatTime(att.clock_out_time)}</div>
+                  </div>
+                  <div className={`text-xs font-bold uppercase px-2.5 py-1 rounded-full whitespace-nowrap ${
+                    att.attendance_status === 'terlambat' ? 'bg-amber-400/15 text-amber-400' :
+                    att.attendance_status === 'hadir' ? 'bg-emerald-400/15 text-emerald-400' :
+                    'bg-white/10 opacity-80'
+                  }`}>
+                    {att.attendance_status}
+                  </div>
+                </div>
               </div>
-            )) : <div className="text-xs opacity-60 text-center py-4">Belum ada riwayat.</div>}
+            )) : <div className="text-xs opacity-60 text-center py-6">Belum ada riwayat.</div>}
           </div>
         </div>
 
