@@ -145,7 +145,7 @@ export default function EmployeeDashboard() {
                 </div>
                 <div className="text-center">{formatTime(att.clock_in_time)}</div>
                 <div className="text-center">{formatTime(att.clock_out_time)}</div>
-                <div className="text-right font-bold uppercase opacity-80 truncate">{att.attendance_status}</div>
+                <div className={`text-right font-bold uppercase truncate ${att.attendance_status === 'terlambat' ? 'text-amber-400' : att.attendance_status === 'hadir' ? 'text-emerald-400' : 'opacity-80'}`}>{att.attendance_status}</div>
               </div>
             )) : <div className="text-xs opacity-60 text-center py-4">Belum ada riwayat.</div>}
           </div>
