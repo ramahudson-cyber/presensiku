@@ -54,8 +54,15 @@ export default function EmployeeDashboard() {
 
   const formatTime = (timeStr) => {
     if (!timeStr) return '-';
-    // If it's an ISO timestamp, extract time part, otherwise assume it's "HH:MM:SS"
-    if (timeStr.includes('T')) return timeStr.split('T')[1].substring(0, 5);
+    // If it's an ISO timestamp, convert from UTC to local WITA (Asia/Makassar)
+    if (timeStr.includes('T')) {
+      return new Date(timeStr).toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Asia/Makassar",
+      });
+    }
+    // Plain "HH:MM:SS" string — display as-is
     return timeStr.substring(0, 5);
   };
 
