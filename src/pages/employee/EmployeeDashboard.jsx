@@ -129,7 +129,15 @@ export default function EmployeeDashboard() {
         </div>
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-5 flex justify-between">Riwayat Absensi <History size={14}/></div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Riwayat Absensi <History size={14}/></div>
+          <div className="flex items-center px-4 mb-2 text-[9px] uppercase tracking-wider opacity-40">
+            <div className="flex-1">Tanggal</div>
+            <div className="flex items-center gap-5 shrink-0">
+              <div className="text-center min-w-[40px]">Masuk</div>
+              <div className="text-center min-w-[40px]">Pulang</div>
+              <div className="text-center min-w-[80px]">Status</div>
+            </div>
+          </div>
           <div className="space-y-3">
             {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 5).map(att => (
               <div key={att.id} className="flex items-center bg-white/5 rounded-2xl px-4 py-3">
