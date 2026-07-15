@@ -73,11 +73,19 @@ export default function EmployeeDashboard() {
       <div className="hero-card-bg w-full p-8 pt-12 shadow-2xl border-b border-white/5 rounded-b-[40px]" style={{ background: 'linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)' }}>
         <div className="max-w-md mx-auto">
           <div className="flex items-center gap-4 mb-8">
+<<<<<<< Updated upstream
             <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center font-bold text-2xl">RH</div>
             <div className="flex-1">
               <div className="text-[11px] uppercase tracking-[0.2em] opacity-60">Selamat Pagi,</div>
               <div className="text-2xl font-bold">{user?.full_name || "Rama Hudson"}</div>
               <div className="text-xs opacity-70 mt-0.5">{user?.role || "Pegawai"}</div>
+=======
+            <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center font-bold text-2xl text-white">RH</div>
+            <div className="flex-1">
+              <div className="text-[11px] uppercase tracking-[0.2em] opacity-60 text-white">Selamat Pagi,</div>
+              <div className="text-2xl font-bold text-white">{user?.full_name || "Rama Hudson"}</div>
+              <div className="text-xs opacity-70 mt-0.5 text-white">{user?.role || "Pegawai"}</div>
+>>>>>>> Stashed changes
             </div>
             <button
               onClick={toggleTheme}
@@ -90,9 +98,15 @@ export default function EmployeeDashboard() {
           </div>
           <div className="flex justify-between items-end">
             <div>
+<<<<<<< Updated upstream
               <div className="text-4xl font-bold">{now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</div>
               <div className="text-xs opacity-50 mt-1">{now.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
               <div className="text-[10px] mt-2 bg-white/10 px-2 py-0.5 rounded inline-block font-semibold">Shift: {shift}</div>
+=======
+              <div className="text-4xl font-bold text-white">{now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</div>
+              <div className="text-xs opacity-50 mt-1 text-white">{now.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
+              <div className="text-[10px] mt-2 bg-white/10 px-2 py-0.5 rounded inline-block font-semibold text-white">Shift: {shift}</div>
+>>>>>>> Stashed changes
             </div>
             <Link to="/employee/attendance" className="bg-white text-[#660099] px-8 py-3 rounded-xl font-bold text-sm">Absen</Link>
           </div>
@@ -128,7 +142,11 @@ export default function EmployeeDashboard() {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   {todayAttendance.attendance_status || 'Tepat Waktu'}
                 </div>
+<<<<<<< Updated upstream
                 <div className="text-[8px] opacity-40 mt-2">Tepat waktu</div>
+=======
+                <div className="text-[11px] opacity-100 mt-2 font-medium">Tepat waktu</div>
+>>>>>>> Stashed changes
               </>
             ) : (
               <>
@@ -154,18 +172,27 @@ export default function EmployeeDashboard() {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   Selesai
                 </div>
+<<<<<<< Updated upstream
                 <div className="text-[8px] opacity-40 mt-2">Shift selesai</div>
+=======
+                <div className="text-[11px] opacity-100 mt-2 font-medium">Shift selesai</div>
+>>>>>>> Stashed changes
               </>
             ) : (
               <>
                 <div className="text-base font-bold leading-none opacity-40 mb-2">Belum Absen</div>
                 <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-black/5 px-2.5 py-1 rounded-full opacity-40">—</div>
+<<<<<<< Updated upstream
                 <div className="text-[8px] opacity-30 mt-2">Belum clock-out</div>
+=======
+                <div className="text-[11px] opacity-100 mt-2 font-medium">Belum clock-out</div>
+>>>>>>> Stashed changes
               </>
             )}
           </div>
         </div>
 
+<<<<<<< Updated upstream
         {/* SECTION TITLE */}
         <div className="px-4 flex items-center gap-2 mb-4">
           <div className="w-8 h-8 flex items-center justify-center shrink-0">
@@ -262,6 +289,18 @@ export default function EmployeeDashboard() {
               </>
             );
           })()}
+=======
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70 mb-6 flex justify-between">Statistik Bulan Ini <PieChart size={14}/></div>
+          <div className="grid grid-cols-4 gap-2">
+            {[ {v:stats.hadir, l:'Hadir'}, {v:stats.izin, l:'Izin'}, {v:stats.sakit, l:'Sakit'}, {v:stats.alpha, l:'Alpha'} ].map((s,i) => (
+              <div key={i} className="bg-white/5 rounded-2xl p-3 text-center border border-white/5">
+                <div className="text-xl font-light">{s.v}</div>
+                <div className="text-[8px] uppercase tracking-wider opacity-70">{s.l}</div>
+              </div>
+            ))}
+          </div>
+>>>>>>> Stashed changes
         </div>
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
