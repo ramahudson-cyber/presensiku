@@ -229,6 +229,9 @@ export default function EmployeeSchedule() {
         </div>
         <p>Jadwal ini ditetapkan oleh admin. Hubungi admin jika ada perubahan shift.</p>
       </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
