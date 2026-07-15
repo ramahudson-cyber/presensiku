@@ -8,10 +8,10 @@ import {
 } from "lucide-react";
 
 const SHIFTS = [
-  { code: "PG", name: "Pagi", icon: Sun, color: "text-green-yellow", bg: "bg-green-yellow/15", ring: "ring-green-yellow/30" },
-  { code: "SR", name: "Sore", icon: Sunset, color: "text-green-yellow", bg: "bg-green-yellow/15", ring: "ring-green-yellow/30" },
-  { code: "SI", name: "Siang", icon: CloudSun, color: "text-sky-400", bg: "bg-sky-500/15", ring: "ring-sky-500/30" },
-  { code: "ML", name: "Malam", icon: Moon, color: "text-violet-400", bg: "bg-violet-500/15", ring: "ring-violet-500/30" },
+  { code: "PG", name: "Pagi", icon: Sun, premiumClass: "cal-premium-pg", badgeClass: "cal-badge-pg", textColor: "text-white" },
+  { code: "SR", name: "Sore", icon: Sunset, premiumClass: "cal-premium-sr", badgeClass: "cal-badge-sr", textColor: "text-white" },
+  { code: "SI", name: "Siang", icon: CloudSun, premiumClass: "cal-premium-si", badgeClass: "cal-badge-si", textColor: "text-[#1a2e05]" },
+  { code: "ML", name: "Malam", icon: Moon, premiumClass: "cal-premium-ml", badgeClass: "cal-badge-ml", textColor: "text-white" },
 ];
 
 const SHIFT_MAP = Object.fromEntries(SHIFTS.map(s => [s.code, s]));
@@ -218,13 +218,13 @@ function getDaysInMonth(year, month) {
 
 
             {/* LEGEND */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[9px] font-semibold text-slate-500 dark:text-slate-mist uppercase tracking-wider mr-1">Shift</span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[8px] font-semibold text-slate-500 dark:text-slate-mist uppercase tracking-wider mr-0.5">Shift</span>
               {SHIFTS.map(s => {
                 const Icon = s.icon;
                 return (
-                  <span key={s.code} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium ${s.bg} ${s.color} ring-1 ${s.ring}`}>
-                    <Icon size={11} /> {s.name}
+                  <span key={s.code} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold ${s.badgeClass}`}>
+                    <Icon size={10} /> {s.name}
                   </span>
                 );
               })}
@@ -240,15 +240,14 @@ function getDaysInMonth(year, month) {
         </div>
       ) : (
         <div className="design-card p-3 md:p-5 overflow-x-auto">
-          <div className="min-w-[600px]">
-            <div className="grid grid-cols-7 gap-2 mb-2">
+            <div className="grid grid-cols-7 gap-1.5 mb-1.5">
               {DAY_SHORT.map(d => (
-                <div key={d} className="text-center text-[10px] font-bold text-slate-mist uppercase tracking-widest py-1">
+                <div key={d} className="text-center text-[9px] font-bold text-slate-mist dark:text-slate-mist uppercase tracking-widest py-1">
                   {d}
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-7 gap-1.5">
               {days.map((day, i) => {
                 const key = dateStr(day);
                 const sched = key ? schedules[key] : undefined;
@@ -259,58 +258,64 @@ function getDaysInMonth(year, month) {
 
                 return (
                   <div key={i}
-                    className={`relative aspect-[4/3] rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 text-xs
+                    className={`relative aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-200 cursor-default select-none
                       ${!day ? "invisible" : ""}
-                      ${isToday ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-white dark:ring-offset-onyx" : ""}
-                      ${!shiftInfo
-                        ? isWeekend
-                          ? "bg-slate-100 dark:bg-white/[0.01]"
-                          : "bg-slate-50 dark:bg-white/[0.02]"
-                        : `${shiftInfo.bg}`
+                      ${shiftInfo 
+                        ? shiftInfo.premiumClass
+                        : isWeekend
+                          ? "bg-slate-100 dark:bg-white/[0.02]"
+                          : "bg-slate-50 dark:bg-white/[0.03]"
                       }
-                    `}>
-                    <span className={`text-[11px] font-bold leading-none ${isToday ? "text-violet-500" : isWeekend && !shiftInfo ? "text-slate-400 dark:text-slate-mist" : "text-slate-600 dark:text-slate-mist"}`}>
+                      ${isToday && !shiftInfo ? "ring-2 ring-violet-500 ring-offset-1 ring-offset-white dark:ring-offset-onyx" : ""}
+                      ${isToday && shiftInfo ? "cal-today-premium" : ""}
+                    `}
+                    style={!shiftInfo && isToday ? { border: '2px solid #6366f1', boxShadow: '0 0 12px rgba(99,102,241,0.3)' } : {}}>
+                    <span className={`text-[10px] font-bold leading-none ${
+                      shiftInfo 
+                        ? ""  /* color inherited from premium class */
+                        : isToday 
+                          ? "text-violet-500" 
+                          : isWeekend 
+                            ? "text-slate-400 dark:text-slate-mist" 
+                            : "text-slate-600 dark:text-slate-mist"
+                    }`}>
                       {day}
                     </span>
                     {shiftInfo && (
-                      <div className={`flex items-center gap-0.5 mt-0.5 ${shiftInfo.color}`}>
-                        <shiftInfo.icon size={9} />
-                        <span className="text-[7px] font-bold tracking-wider">{shiftInfo.name}</span>
-                      </div>
+                      <shiftInfo.icon size={9} className="mt-0.5" style={{ color: 'inherit' }} />
                     )}
                     {!shiftInfo && isWeekend && (
-                      <span className="text-[6px] text-slate-mist mt-0.5">Libur</span>
+                      <span className="text-[5px] text-slate-mist mt-0.5 leading-none">Libur</span>
                     )}
                   </div>
                 );
               })}
             </div>
-          </div>
         </div>
       )}
 
-	      {/* SUMMARY CARDS */}
-	      {!loading && stats.total > 0 && (
-	        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-	          {SHIFTS.map(s => {
-	            const Icon = s.icon;
-	            const count = stats[s.code] || 0;
-	            if (count === 0) return null;
-	            return (
-	              <div key={s.code} className={`${s.bg} border ${s.ring.replace("ring", "border").replace("/30", "/20")} rounded-xl p-3 flex flex-col items-center text-center gap-2`}>
-	                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${s.bg}`}>
-	                  <Icon size={16} className={s.color} />
-	                </div>
-	                <div>
-	                  <p className="text-xl font-extrabold text-slate-900 dark:text-pure-white leading-none">{count}</p>
-	                  <p className="text-[10px] font-medium text-slate-500 dark:text-slate-mist mt-0.5">hari kerja</p>
-	                </div>
-	                <p className={`text-[9px] font-bold uppercase tracking-wider ${s.color}`}>Shift {s.name}</p>
-	              </div>
-	            );
-	          })}
-	        </div>
-	      )}
+		      {/* SUMMARY CARDS */}
+		      {!loading && stats.total > 0 && (
+		        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+		          {SHIFTS.map(s => {
+		            const Icon = s.icon;
+		            const count = stats[s.code] || 0;
+		            if (count === 0) return null;
+		            return (
+		              <div key={s.code} className={`${s.badgeClass} rounded-xl p-3 flex flex-col items-center text-center gap-2`}>
+		                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-black/10">
+		                  <Icon size={16} />
+		                </div>
+		                <div>
+		                  <p className="text-xl font-extrabold leading-none opacity-90">{count}</p>
+		                  <p className="text-[10px] font-medium mt-0.5 opacity-70">hari kerja</p>
+		                </div>
+		                <p className="text-[9px] font-bold uppercase tracking-wider opacity-80">Shift {s.name}</p>
+		              </div>
+		            );
+		          })}
+		        </div>
+		      )}
 
       {/* FOOTER INFO */}
       <div className="flex items-center gap-2 p-3.5 rounded-xl bg-gradient-to-r from-sky-500/5 to-violet-500/5 border border-sky-500/10 text-[11px] text-slate-mist">

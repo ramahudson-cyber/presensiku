@@ -672,3 +672,39 @@ html:not(.dark) .ring-white.dark\:ring-\[\#0f0524\] { --tw-ring-color: #ffffff; 
   background: rgba(255,255,255,0.15);
   border-radius: 4px;
 }
+
+/* ===================================================================
+   PREMIUM CALENDAR — SOLID SHIFT CELLS
+   =================================================================== */
+.cal-premium-pg { background: #1e40af !important; color: #ffffff !important; }
+.cal-premium-si { background: #adff2f !important; color: #1a2e05 !important; }
+.cal-premium-sr { background: #f97316 !important; color: #ffffff !important; }
+.cal-premium-ml { background: #8b5cf6 !important; color: #ffffff !important; }
+
+.cal-today-premium {
+  border: 3px solid #000 !important;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+html.dark .cal-today-premium {
+  border-color: #fff !important;
+  box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+/* Light mode — premium cells inside design-card preserve colors */
+html:not(.dark) .cal-premium-pg,
+html:not(.dark) .cal-premium-si,
+html:not(.dark) .cal-premium-sr,
+html:not(.dark) .cal-premium-ml {
+  /* keep solid colors, override light-mode design-card overrides */
+}
+html:not(.dark) .cal-premium-pg { background: #1e40af !important; color: #ffffff !important; }
+html:not(.dark) .cal-premium-si { background: #adff2f !important; color: #1a2e05 !important; }
+html:not(.dark) .cal-premium-sr { background: #f97316 !important; color: #ffffff !important; }
+html:not(.dark) .cal-premium-ml { background: #8b5cf6 !important; color: #ffffff !important; }
+html:not(.dark) .cal-today-premium { border-color: #000 !important; }
+
+/* Legend/summary badge variants */
+.cal-badge-pg { background: #1e40af !important; color: #ffffff !important; }
+.cal-badge-si { background: #adff2f !important; color: #1a2e05 !important; }
+.cal-badge-sr { background: #f97316 !important; color: #ffffff !important; }
+.cal-badge-ml { background: #8b5cf6 !important; color: #ffffff !important; }
