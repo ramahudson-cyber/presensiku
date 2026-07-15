@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
-import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Moon } from "lucide-react";
+import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, Moon } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 
 export default function EmployeeDashboard() {
@@ -99,29 +99,70 @@ export default function EmployeeDashboard() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
-        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative overflow-hidden">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70 mb-4 flex justify-between">Status Hari Ini <Clock size={14}/></div>
-          
-          <div className="grid grid-cols-2 gap-4">
-             <div className="space-y-1">
-                <div className="text-[10px] opacity-80 uppercase">Masuk</div>
-                {todayAttendance?.clock_in_time ? (
-                  <>
-                    <div className="font-bold text-sm">{formatTime(todayAttendance.clock_in_time)}</div>
-                    <div className={`text-[10px] font-medium ${getStatusColor(todayAttendance.attendance_status)}`}>{todayAttendance.attendance_status || 'Tepat Waktu'}</div>
-                  </>
-                ) : <div className="text-xs opacity-60">--:--</div>}
-             </div>
-             <div className="space-y-1">
-                <div className="text-[10px] opacity-80 uppercase">Pulang</div>
-                {todayAttendance?.clock_out_time ? (
-                  <>
-                    <div className="font-bold text-sm">{formatTime(todayAttendance.clock_out_time)}</div>
-                    <div className="text-[10px] text-emerald-400 font-medium">Selesai</div>
-                  </>
-                ) : <div className="text-xs opacity-60">Belum Absen</div>}
-             </div>
+	      <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
+
+        {/* STATUS HEADER — di luar card */}
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70">Status Hari Ini</span>
+          </div>
+          <span className="text-[9px] font-semibold text-periwinkle-glow bg-electric-violet/10 px-2.5 py-1 rounded-full">
+            {now.toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}
+          </span>
+        </div>
+
+        {/* 2 CARDS: MASUK & PULANG */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* MASUK — Purple Gradient */}
+          <div className="bg-gradient-to-br from-electric-violet to-deep-indigo rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-electric-violet/25">
+            <div className="text-[9px] uppercase tracking-[0.2em] opacity-70 font-semibold mb-3 flex items-center gap-1.5">
+              <Sun size={13} /> Masuk
+            </div>
+            {todayAttendance?.clock_in_time ? (
+              <>
+                <div className="text-[28px] font-extrabold leading-none tracking-tight mb-2">
+                  {formatTime(todayAttendance.clock_in_time)}
+                </div>
+                <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/15 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  {todayAttendance.attendance_status || 'Tepat Waktu'}
+                </div>
+                <div className="text-[8px] opacity-40 mt-2">Tepat waktu</div>
+              </>
+            ) : (
+              <>
+                <div className="text-[20px] font-bold leading-none opacity-50 mb-2">--:--</div>
+                <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/10 px-2.5 py-1 rounded-full opacity-50">
+                  Belum Absen
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* PULANG — Green-Yellow Gradient */}
+          <div className="bg-gradient-to-br from-green-yellow to-[#85c600] rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-green-500/20" style={{ color: '#1a2e05' }}>
+            <div className="text-[9px] uppercase tracking-[0.2em] opacity-60 font-semibold mb-3 flex items-center gap-1.5">
+              <Sunset size={13} /> Pulang
+            </div>
+            {todayAttendance?.clock_out_time ? (
+              <>
+                <div className="text-[28px] font-extrabold leading-none tracking-tight mb-2">
+                  {formatTime(todayAttendance.clock_out_time)}
+                </div>
+                <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-black/10 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Selesai
+                </div>
+                <div className="text-[8px] opacity-40 mt-2">Shift selesai</div>
+              </>
+            ) : (
+              <>
+                <div className="text-base font-bold leading-none opacity-40 mb-2">Belum Absen</div>
+                <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-black/5 px-2.5 py-1 rounded-full opacity-40">—</div>
+                <div className="text-[8px] opacity-30 mt-2">Belum clock-out</div>
+              </>
+            )}
           </div>
         </div>
 
