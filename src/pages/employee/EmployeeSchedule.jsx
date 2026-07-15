@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import {
-  ChevronLeft, ChevronRight, Calendar, Sun, Moon, Sunset, CloudSun,
+  ChevronLeft, ChevronRight, ChevronDown, Calendar, Sun, Moon, Sunset, CloudSun,
   Loader2, Info
 } from "lucide-react";
 
@@ -37,6 +37,11 @@ function getDaysInMonth(year, month) {
   const [schedules, setSchedules] = useState({});
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, PG: 0, SR: 0, SI: 0, ML: 0 });
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const scrollRef = useRef(null);
+  const touchStartY = useRef(0);
+  const isPulling = useRef(false);
 
   const days = getDaysInMonth(year, month);
   const lastDay = new Date(year, month + 1, 0).getDate();
@@ -88,6 +93,61 @@ function getDaysInMonth(year, month) {
   const now = new Date();
   const isCurrentMonth = year === now.getFullYear() && month === now.getMonth();
 
+  // Pull-to-refresh
+  const handleRefresh = useCallback(async () => {
+    if (!user?.id) return;
+    setIsRefreshing(true);
+    try {
+      const s = `${year}-${String(month + 1).padStart(2, "0")}-01`;
+      const e = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+      const { data } = await supabase
+        .from("employee_schedules")
+        .select("date, shift_code")
+        .eq("user_id", user.id)
+        .gte("date", s)
+        .lte("date", e);
+      const m = {};
+      const count = { total: 0, PG: 0, SR: 0, SI: 0, ML: 0 };
+      (data || []).forEach(x => {
+        m[x.date] = x;
+        count.total++;
+        if (count[x.shift_code] !== undefined) count[x.shift_code]++;
+      });
+      setSchedules(m);
+      setStats(count);
+    } catch (e) {
+      console.error("Gagal refresh jadwal", e);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [user?.id, year, month, lastDay]);
+
+  const handleTouchStart = (e) => {
+    if (scrollRef.current && scrollRef.current.scrollTop === 0 && !isRefreshing) {
+      touchStartY.current = e.touches[0].clientY;
+      isPulling.current = true;
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isPulling.current || isRefreshing) return;
+    const diff = e.touches[0].clientY - touchStartY.current;
+    if (diff > 0) {
+      setPullDistance(Math.min(diff / 2.5, 80));
+    } else {
+      if (pullDistance > 0) setPullDistance(0);
+      isPulling.current = false;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pullDistance >= 55) {
+      handleRefresh();
+    }
+    setPullDistance(0);
+    isPulling.current = false;
+  };
+
   return (
 			    <div className="h-screen overflow-hidden bg-transparent">
 			      {/* TOP HEADER - fixed, gak bisa scroll */}
@@ -114,8 +174,25 @@ function getDaysInMonth(year, month) {
       <div className="fixed bottom-0 left-0 w-full z-20 h-[85vh] bg-white dark:bg-onyx border-t border-slate-200 dark:border-white/10 rounded-t-[32px] shadow-[0_-20px_40px_-10px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden transition-colors duration-500">
         <div className="w-12 h-1.5 bg-slate-300 dark:bg-white/20 rounded-full mx-auto my-4 shrink-0" />
         
-        <div className="flex-1 overflow-y-auto px-6 pb-24 scrollbar-thin">
-	          <div className="max-w-md mx-auto space-y-4">
+	        <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 pb-24 scrollbar-thin"
+	          onTouchStart={handleTouchStart}
+	          onTouchMove={handleTouchMove}
+	          onTouchEnd={handleTouchEnd}
+	        >
+	          {/* Pull to refresh indicator */}
+	          <div className="flex items-center justify-center overflow-hidden transition-all duration-300"
+	            style={{
+	              height: pullDistance > 0 ? `${pullDistance}px` : '0px',
+	              opacity: Math.min(pullDistance / 55, 1)
+	            }}
+	          >
+	            {isRefreshing ? (
+	              <Loader2 size={20} className="animate-spin text-electric-violet" />
+	            ) : (
+	              <ChevronDown size={20} className={`text-electric-violet transition-transform duration-300 ${pullDistance >= 55 ? 'rotate-180' : ''}`} />
+	            )}
+	          </div>
+		          <div className="max-w-md mx-auto space-y-4">
 	
 	            {/* NAV + STATS */}
             <div className="flex flex-col sm:flex-row gap-3">
