@@ -399,6 +399,21 @@ html:not(.dark) .bg-black\/50:focus { border-color: var(--accent); }
 html:not(.dark) .bg-black\/50::placeholder { color: var(--text-muted); }
 
 html:not(.dark) .text-white { color: var(--text-primary) !important; }
+
+/* Protect hero card (dark gradient bg) from light mode overrides */
+html:not(.dark) .hero-card-bg,
+html:not(.dark) .hero-card-bg .text-white { color: #ffffff !important; }
+html:not(.dark) .hero-card-bg .bg-white\/5,
+html:not(.dark) .hero-card-bg .bg-white\/\[0\.05\] { background-color: rgba(255,255,255,0.05) !important; }
+html:not(.dark) .hero-card-bg .bg-white\/10,
+html:not(.dark) .hero-card-bg .bg-white\/\[0\.1\] { background-color: rgba(255,255,255,0.1) !important; }
+html:not(.dark) .hero-card-bg .bg-white\/20 { background-color: rgba(255,255,255,0.2) !important; }
+html:not(.dark) .hero-card-bg .border-white\/5,
+html:not(.dark) .hero-card-bg .border-white\/10,
+html:not(.dark) .hero-card-bg .border-white\/15,
+html:not(.dark) .hero-card-bg .border-white\/20 { border-color: rgba(255,255,255,0.1) !important; }
+html:not(.dark) .hero-card-bg .backdrop-blur-md { backdrop-filter: blur(12px); }
+
 html:not(.dark) .text-slate-100 { color: var(--text-primary); }
 html:not(.dark) .text-slate-200 { color: var(--text-secondary); }
 html:not(.dark) .text-slate-300 { color: var(--text-muted); }

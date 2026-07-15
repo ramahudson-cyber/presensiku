@@ -70,7 +70,7 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="min-h-screen w-full bg-transparent text-white font-sans absolute top-0 left-0 pb-24">
-      <div className="w-full p-8 pt-12 shadow-2xl border-b border-white/5 rounded-b-[40px]" style={{ background: 'linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)' }}>
+      <div className="hero-card-bg w-full p-8 pt-12 shadow-2xl border-b border-white/5 rounded-b-[40px]" style={{ background: 'linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)' }}>
         <div className="max-w-md mx-auto">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center font-bold text-2xl">RH</div>
