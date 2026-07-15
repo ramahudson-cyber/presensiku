@@ -1,9 +1,9 @@
 {
-  "version": "1.6.9",
-  "versionCode": 21,
-  "apkUrl": "https://github.com/ramahudson-cyber/siap-ampenan/releases/download/v1.6.9/app-debug.apk",
+  "version": "1.6.10",
+  "versionCode": 22,
+  "apkUrl": "https://github.com/ramahudson-cyber/siap-ampenan/releases/download/v1.6.10/app-debug.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/siap-ampenan/releases/latest/download/app-debug.apk",
-  "changelog": "Fix: latest_check_in otomatis start_time+5m, default_password baca dari Jam Kerja, error handling create employee",
+  "changelog": "Fix: PWA update mechanism, stats header alignment and responsiveness.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }
