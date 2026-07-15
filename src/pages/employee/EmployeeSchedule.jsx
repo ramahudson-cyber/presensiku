@@ -212,27 +212,28 @@ function getDaysInMonth(year, month) {
         </div>
       )}
 
-      {/* SUMMARY CARDS */}
-      {!loading && stats.total > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {SHIFTS.map(s => {
-            const Icon = s.icon;
-            const count = stats[s.code] || 0;
-            if (count === 0) return null;
-            return (
-              <div key={s.code} className={`${s.bg} border ${s.ring.replace("ring", "border").replace("/30", "/20")} rounded-xl p-3 flex items-center gap-3`}>
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${s.bg}`}>
-                  <Icon size={16} className={s.color} />
-                </div>
-                <div>
-                  <p className="text-base font-bold text-pure-white">{count}</p>
-                  <p className={`text-[10px] ${s.color}`}>{s.name}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+	      {/* SUMMARY CARDS */}
+	      {!loading && stats.total > 0 && (
+	        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+	          {SHIFTS.map(s => {
+	            const Icon = s.icon;
+	            const count = stats[s.code] || 0;
+	            if (count === 0) return null;
+	            return (
+	              <div key={s.code} className={`${s.bg} border ${s.ring.replace("ring", "border").replace("/30", "/20")} rounded-xl p-3 flex flex-col items-center text-center gap-2`}>
+	                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${s.bg}`}>
+	                  <Icon size={16} className={s.color} />
+	                </div>
+	                <div>
+	                  <p className="text-xl font-extrabold text-slate-900 dark:text-pure-white leading-none">{count}</p>
+	                  <p className="text-[10px] font-medium text-slate-500 dark:text-slate-mist mt-0.5">hari kerja</p>
+	                </div>
+	                <p className={`text-[9px] font-bold uppercase tracking-wider ${s.color}`}>Shift {s.name}</p>
+	              </div>
+	            );
+	          })}
+	        </div>
+	      )}
 
       {/* FOOTER INFO */}
       <div className="flex items-center gap-2 p-3.5 rounded-xl bg-gradient-to-r from-sky-500/5 to-violet-500/5 border border-sky-500/10 text-[11px] text-slate-mist">
