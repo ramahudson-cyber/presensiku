@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -28,8 +29,9 @@ function getDaysInMonth(year, month) {
   return days;
 }
 
-export default function EmployeeSchedule() {
-  const { user } = useAuth();
+	export default function EmployeeSchedule() {
+	  const { user } = useAuth();
+	  const navigate = useNavigate();
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
   const [schedules, setSchedules] = useState({});
@@ -87,25 +89,35 @@ export default function EmployeeSchedule() {
   const isCurrentMonth = year === now.getFullYear() && month === now.getMonth();
 
   return (
-    <div className="min-h-screen bg-transparent">
-      {/* Persistent Premium Bottom Sheet */}
+	    <div className="min-h-screen bg-transparent">
+	      {/* TOP HEADER */}
+	      <div className="flex items-center gap-3 px-5 pt-4 pb-2">
+	        <button onClick={() => navigate(-1)} className="bg-none border-0 flex items-center justify-center text-electric-violet dark:text-periwinkle-glow p-1 cursor-pointer shrink-0 hover:opacity-70 transition-opacity">
+	          <ChevronLeft size={26} />
+	        </button>
+	        <div className="flex items-center justify-center shrink-0 text-electric-violet dark:text-periwinkle-glow">
+	          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+	            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+	            <line x1="16" y1="2" x2="16" y2="6"/>
+	            <line x1="8" y1="2" x2="8" y2="6"/>
+	            <line x1="3" y1="10" x2="21" y2="10"/>
+	            <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/>
+	          </svg>
+	        </div>
+	        <div>
+	          <h2 className="text-lg font-bold text-slate-800 dark:text-pure-white tracking-tight leading-tight">Jadwal Shift Saya</h2>
+	          <p className="text-xs text-slate-500 dark:text-slate-mist mt-0.5">Kalender jadwal kerja bulanan</p>
+	        </div>
+	      </div>
+
+	      {/* Persistent Premium Bottom Sheet */}
       <div className="fixed bottom-0 left-0 w-full z-20 h-[85vh] bg-white dark:bg-onyx border-t border-slate-200 dark:border-white/10 rounded-t-[32px] shadow-[0_-20px_40px_-10px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden transition-colors duration-500">
         <div className="w-12 h-1.5 bg-slate-300 dark:bg-white/20 rounded-full mx-auto my-4 shrink-0" />
         
         <div className="flex-1 overflow-y-auto px-6 pb-24 scrollbar-thin">
-          <div className="max-w-md mx-auto space-y-4">
-            {/* HEADER */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-xl flex items-center justify-center shadow-lg">
-                <Calendar size={20} className="text-pure-white" />
-              </div>
-              <div>
-                <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-pure-white tracking-tight">Jadwal Shift Saya</h1>
-                <p className="text-sm text-slate-500 dark:text-slate-mist mt-0.5">Kalender jadwal kerja bulanan</p>
-              </div>
-            </div>
-
-            {/* NAV + STATS */}
+	          <div className="max-w-md mx-auto space-y-4">
+	
+	            {/* NAV + STATS */}
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-onyx border border-slate-200 dark:border-white/[0.06] rounded-2xl px-2.5 py-1.5">
                 <button onClick={() => nav(-1)} className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-mist hover:text-slate-800 dark:hover:text-pure-white transition-all">
