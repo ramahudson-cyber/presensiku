@@ -89,17 +89,13 @@ export default function EmployeeSchedule() {
   return (
     <div className="space-y-4 animate-fade-in min-w-0 pb-24 md:pb-6">
       {/* HEADER */}
-      <div className="relative bg-onyx rounded-2xl p-5 md:p-6 border border-white/[0.06] overflow-hidden">
-        <div className="absolute top-0 right-0 w-48 h-48 bg-electric-violet/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-600/10 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none" />
-        <div className="relative flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-xl flex items-center justify-center shadow-lg">
-            <Calendar size={20} className="text-pure-white" />
-          </div>
-          <div>
-            <h1 className="text-xl md:text-2xl font-bold text-pure-white tracking-tight">Jadwal Shift Saya</h1>
-            <p className="text-sm text-slate-mist mt-0.5">Kalender jadwal kerja bulanan</p>
-          </div>
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-xl flex items-center justify-center shadow-lg">
+          <Calendar size={20} className="text-pure-white" />
+        </div>
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold text-pure-white tracking-tight">Jadwal Shift Saya</h1>
+          <p className="text-sm text-slate-mist mt-0.5">Kalender jadwal kerja bulanan</p>
         </div>
       </div>
 
