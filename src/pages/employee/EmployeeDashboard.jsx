@@ -167,7 +167,7 @@ export default function EmployeeDashboard() {
         </div>
 
         {/* SECTION TITLE */}
-        <div className="px-6">
+        <div className="pl-[25px] pr-6">
           <div className="text-2xl font-extrabold tracking-tight text-white">Statistik bulan ini</div>
           <div className="text-sm text-white/35 mt-0.5 font-normal">Ringkasan kehadiran anda bulan ini</div>
         </div>
