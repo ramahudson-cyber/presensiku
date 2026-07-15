@@ -699,3 +699,6 @@ html:not(.dark) .cal-today-premium { border-color: #000 !important; }
 .cal-badge-si { background: #adff2f !important; color: #1a2e05 !important; }
 .cal-badge-sr { background: #f97316 !important; color: #ffffff !important; }
 .cal-badge-ml { background: #8b5cf6 !important; color: #ffffff !important; }
+
+/* --- DASHBOARD LIGHT MODE PROTECTION --- */
+html:not(.dark) .dashboard-status-masuk { color: #ffffff !important; }

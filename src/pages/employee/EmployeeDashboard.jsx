@@ -115,7 +115,7 @@ export default function EmployeeDashboard() {
         {/* 2 CARDS: MASUK & PULANG */}
         <div className="grid grid-cols-2 gap-3">
           {/* MASUK — Purple Gradient */}
-          <div className="bg-gradient-to-br from-electric-violet to-deep-indigo rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-electric-violet/25 text-white">
+          <div className="dashboard-status-masuk bg-gradient-to-br from-electric-violet to-deep-indigo rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-electric-violet/25 text-white">
             <div className="text-[9px] uppercase tracking-[0.2em] opacity-70 font-semibold mb-3 flex items-center gap-1.5">
               <Sun size={13} /> Masuk
             </div>
