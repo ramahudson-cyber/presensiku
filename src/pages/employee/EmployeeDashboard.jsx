@@ -48,23 +48,11 @@ export default function EmployeeDashboard() {
   );
 
   const now = new Date();
-  const getStatusColor = (status) => {
-    if (status === 'hadir' || status === 'tepat waktu') return 'text-emerald-400';
-    if (status === 'terlambat') return 'text-amber-400';
-    return 'text-white';
-  };
-
   const formatTime = (timeStr) => {
     if (!timeStr) return '-';
-    // If it's an ISO timestamp, convert from UTC to local WITA (Asia/Makassar)
     if (timeStr.includes('T')) {
-      return new Date(timeStr).toLocaleTimeString("id-ID", {
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZone: "Asia/Makassar",
-      });
+      return new Date(timeStr).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Makassar" });
     }
-    // Plain "HH:MM:SS" string — display as-is
     return timeStr.substring(0, 5);
   };
 
@@ -90,18 +78,16 @@ export default function EmployeeDashboard() {
           </div>
           <div className="flex justify-between items-end">
             <div>
-<<<<<<< Updated upstream
-	              <div className="text-4xl font-bold text-white">{now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</div>
-	              <div className="text-xs opacity-50 mt-1 text-white">{now.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
-	              <div className="text-[10px] mt-2 bg-white/10 px-2 py-0.5 rounded inline-block font-semibold text-white">Shift: {shift}</div>
+              <div className="text-4xl font-bold text-white">{now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</div>
+              <div className="text-xs opacity-50 mt-1 text-white">{now.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
+              <div className="text-[10px] mt-2 bg-white/10 px-2 py-0.5 rounded inline-block font-semibold text-white">Shift: {shift}</div>
             </div>
             <Link to="/employee/attendance" className="bg-white text-[#660099] px-8 py-3 rounded-xl font-bold text-sm">Absen</Link>
           </div>
         </div>
       </div>
 
-	      <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
-
+      <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
         {/* SECTION TITLE: Status hari ini */}
         <div className="px-4 flex items-center gap-3 mb-4">
           <div className="w-8 h-8 flex items-center justify-center shrink-0">
@@ -132,11 +118,6 @@ export default function EmployeeDashboard() {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   {todayAttendance.attendance_status || 'Tepat Waktu'}
                 </div>
-<<<<<<< Updated upstream
-                <div className="text-[8px] opacity-40 mt-2">Tepat waktu</div>
-=======
-                <div className="text-[11px] opacity-100 mt-2 font-medium">Tepat waktu</div>
->>>>>>> Stashed changes
               </>
             ) : (
               <>
@@ -162,29 +143,18 @@ export default function EmployeeDashboard() {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   Selesai
                 </div>
-<<<<<<< Updated upstream
-                <div className="text-[8px] opacity-40 mt-2">Shift selesai</div>
-=======
-                <div className="text-[11px] opacity-100 mt-2 font-medium">Shift selesai</div>
->>>>>>> Stashed changes
               </>
             ) : (
               <>
                 <div className="text-base font-bold leading-none opacity-40 mb-2">Belum Absen</div>
                 <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-black/5 px-2.5 py-1 rounded-full opacity-40">—</div>
-<<<<<<< Updated upstream
-                <div className="text-[8px] opacity-30 mt-2">Belum clock-out</div>
-=======
-                <div className="text-[11px] opacity-100 mt-2 font-medium">Belum clock-out</div>
->>>>>>> Stashed changes
               </>
             )}
           </div>
         </div>
 
-<<<<<<< Updated upstream
         {/* SECTION TITLE */}
-        <div className="px-4 flex items-center gap-2 mb-4">
+        <div className="px-4 flex items-center gap-3 mb-4">
           <div className="w-8 h-8 flex items-center justify-center shrink-0">
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
@@ -219,7 +189,6 @@ export default function EmployeeDashboard() {
             });
             return (
               <>
-                {/* Donut */}
                 <div className="flex items-center gap-5 mb-5 p-4 bg-white/5 rounded-2xl border border-white/5">
                   <div className="relative w-20 h-20 shrink-0">
                     <svg className="w-20 h-20" viewBox="0 0 80 80">
@@ -244,8 +213,6 @@ export default function EmployeeDashboard() {
                     ))}
                   </div>
                 </div>
-
-                {/* Bar chart */}
                 <div className="mb-5 p-4 bg-white/5 rounded-2xl border border-white/5">
                   <div className="flex items-end gap-3 h-24">
                     {items.map(it => {
@@ -254,8 +221,7 @@ export default function EmployeeDashboard() {
                         <div key={it.k} className="flex-1 flex flex-col items-center justify-end h-full">
                           <div className="text-xs font-bold mb-1.5" style={{color:it.color}}>{it.v}</div>
                           <div className="w-full rounded-t-lg relative overflow-hidden transition-all duration-500"
-                            style={{height:`${pct}%`, background:`linear-gradient(180deg, ${it.color}, ${it.color}22)`,
-                                    boxShadow: it.v > 0 ? `0 0 16px ${it.color}33` : 'none'}}>
+                            style={{height:`${pct}%`, background:`linear-gradient(180deg, ${it.color}, ${it.color}22)`, boxShadow: it.v > 0 ? `0 0 16px ${it.color}33` : 'none'}}>
                           </div>
                           <div className="text-[8px] uppercase tracking-wider opacity-40 mt-2">{it.label}</div>
                           <div className="text-[7px] opacity-25 mt-0.5">{total > 0 ? Math.round(it.v/total*100) : 0}%</div>
@@ -264,8 +230,6 @@ export default function EmployeeDashboard() {
                     })}
                   </div>
                 </div>
-
-                {/* Stats grid */}
                 <div className="grid grid-cols-4 gap-2">
                   {items.map(it => (
                     <div key={it.k} className="bg-white/5 rounded-2xl p-3 text-center border border-white/5 relative overflow-hidden hover:-translate-y-0.5 transition-all duration-300">
@@ -279,18 +243,6 @@ export default function EmployeeDashboard() {
               </>
             );
           })()}
-=======
-        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70 mb-6 flex justify-between">Statistik Bulan Ini <PieChart size={14}/></div>
-          <div className="grid grid-cols-4 gap-2">
-            {[ {v:stats.hadir, l:'Hadir'}, {v:stats.izin, l:'Izin'}, {v:stats.sakit, l:'Sakit'}, {v:stats.alpha, l:'Alpha'} ].map((s,i) => (
-              <div key={i} className="bg-white/5 rounded-2xl p-3 text-center border border-white/5">
-                <div className="text-xl font-light">{s.v}</div>
-                <div className="text-[8px] uppercase tracking-wider opacity-70">{s.l}</div>
-              </div>
-            ))}
-          </div>
->>>>>>> Stashed changes
         </div>
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
@@ -305,9 +257,7 @@ export default function EmployeeDashboard() {
             {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 5).map(att => (
               <div key={att.id} className="grid grid-cols-[1fr_55px_55px_90px] gap-3 items-center bg-white/5 -mx-6 px-6 py-3">
                 <div>
-                  <div className="text-xs font-semibold">
-                    {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
-                  </div>
+                  <div className="text-xs font-semibold">{new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}</div>
                   <div className="text-[10px] opacity-60 capitalize">Shift</div>
                 </div>
                 <div className="text-center text-xs font-medium tabular-nums">{formatTime(att.clock_in_time)}</div>
