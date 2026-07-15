@@ -100,8 +100,8 @@ export default function EmployeeDashboard() {
       </div>
 
       <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
-        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#BF00FF] to-transparent rounded-t-3xl"></div>
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#BF00FF] to-transparent"></div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Status Hari Ini <Clock size={14}/></div>
           
           <div className="grid grid-cols-2 gap-4">
