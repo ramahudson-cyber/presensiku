@@ -101,46 +101,45 @@ export default function EmployeeDashboard() {
 
       <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#BF00FF] to-transparent"></div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Status Hari Ini <Clock size={14}/></div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70 mb-4 flex justify-between">Status Hari Ini <Clock size={14}/></div>
           
           <div className="grid grid-cols-2 gap-4">
              <div className="space-y-1">
-                <div className="text-[10px] opacity-60 uppercase">Masuk</div>
+                <div className="text-[10px] opacity-80 uppercase">Masuk</div>
                 {todayAttendance?.clock_in_time ? (
                   <>
                     <div className="font-bold text-sm">{formatTime(todayAttendance.clock_in_time)}</div>
                     <div className={`text-[10px] font-medium ${getStatusColor(todayAttendance.attendance_status)}`}>{todayAttendance.attendance_status || 'Tepat Waktu'}</div>
                   </>
-                ) : <div className="text-xs opacity-40">--:--</div>}
+                ) : <div className="text-xs opacity-60">--:--</div>}
              </div>
              <div className="space-y-1">
-                <div className="text-[10px] opacity-60 uppercase">Pulang</div>
+                <div className="text-[10px] opacity-80 uppercase">Pulang</div>
                 {todayAttendance?.clock_out_time ? (
                   <>
                     <div className="font-bold text-sm">{formatTime(todayAttendance.clock_out_time)}</div>
                     <div className="text-[10px] text-emerald-400 font-medium">Selesai</div>
                   </>
-                ) : <div className="text-xs opacity-40">Belum Absen</div>}
+                ) : <div className="text-xs opacity-60">Belum Absen</div>}
              </div>
           </div>
         </div>
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-6 flex justify-between">Statistik Bulan Ini <PieChart size={14}/></div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70 mb-6 flex justify-between">Statistik Bulan Ini <PieChart size={14}/></div>
           <div className="grid grid-cols-4 gap-2">
             {[ {v:stats.hadir, l:'Hadir'}, {v:stats.izin, l:'Izin'}, {v:stats.sakit, l:'Sakit'}, {v:stats.alpha, l:'Alpha'} ].map((s,i) => (
               <div key={i} className="bg-white/5 rounded-2xl p-3 text-center border border-white/5">
                 <div className="text-xl font-light">{s.v}</div>
-                <div className="text-[8px] uppercase tracking-wider opacity-50">{s.l}</div>
+                <div className="text-[8px] uppercase tracking-wider opacity-70">{s.l}</div>
               </div>
             ))}
           </div>
         </div>
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Riwayat Absensi <History size={14}/></div>
-          <div className="grid grid-cols-[1fr_55px_55px_90px] gap-3 mb-2 text-[9px] uppercase tracking-wider opacity-40">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70 mb-4 flex justify-between">Riwayat Absensi <History size={14}/></div>
+          <div className="grid grid-cols-[1fr_55px_55px_90px] gap-3 mb-2 text-[9px] uppercase tracking-wider opacity-70">
             <div>Tanggal</div>
             <div className="text-center">Masuk</div>
             <div className="text-center">Pulang</div>
@@ -153,7 +152,7 @@ export default function EmployeeDashboard() {
                   <div className="text-xs font-semibold">
                     {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
                   </div>
-                  <div className="text-[10px] opacity-40 capitalize">Shift</div>
+                  <div className="text-[10px] opacity-60 capitalize">Shift</div>
                 </div>
                 <div className="text-center text-xs font-medium tabular-nums">{formatTime(att.clock_in_time)}</div>
                 <div className="text-center text-xs font-medium tabular-nums">{formatTime(att.clock_out_time)}</div>
@@ -165,19 +164,19 @@ export default function EmployeeDashboard() {
                   {att.attendance_status}
                 </div>
               </div>
-            )) : <div className="text-xs opacity-60 text-center py-6">Belum ada riwayat.</div>}
+            )) : <div className="text-xs opacity-80 text-center py-6">Belum ada riwayat.</div>}
           </div>
         </div>
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 flex justify-between">Pengumuman <Megaphone size={14}/></div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70 mb-4 flex justify-between">Pengumuman <Megaphone size={14}/></div>
           <div className="space-y-3">
             {announcements.length > 0 ? announcements.map(a => (
               <div key={a.id} className="p-3 bg-white/5 rounded-2xl">
                 <div className="text-sm font-semibold">{a.title}</div>
-                <div className="text-xs opacity-60 mt-1">{a.content}</div>
+                <div className="text-xs opacity-80 mt-1">{a.content}</div>
               </div>
-            )) : <div className="text-xs opacity-60">Tidak ada pengumuman.</div>}
+            )) : <div className="text-xs opacity-80">Tidak ada pengumuman.</div>}
           </div>
         </div>
       </div>
