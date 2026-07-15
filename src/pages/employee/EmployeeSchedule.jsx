@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import BottomSheet from "../../components/BottomSheet";
 import {
   ChevronLeft, ChevronRight, ChevronDown, Calendar, Sun, Moon, Sunset, CloudSun,
   Loader2, Info
@@ -39,6 +40,8 @@ function getDaysInMonth(year, month) {
   const [stats, setStats] = useState({ total: 0, PG: 0, SR: 0, SI: 0, ML: 0 });
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
+  const [pickerYear, setPickerYear] = useState(new Date().getFullYear());
   const scrollRef = useRef(null);
   const touchStartY = useRef(0);
   const isPulling = useRef(false);
@@ -88,6 +91,17 @@ function getDaysInMonth(year, month) {
   const goToday = () => {
     setMonth(new Date().getMonth());
     setYear(new Date().getFullYear());
+  };
+
+  const openMonthPicker = () => {
+    setPickerYear(year);
+    setShowMonthPicker(true);
+  };
+
+  const selectMonth = (m) => {
+    setMonth(m);
+    setYear(pickerYear);
+    setShowMonthPicker(false);
   };
 
   const now = new Date();
@@ -194,17 +208,14 @@ function getDaysInMonth(year, month) {
 	          </div>
 		          <div className="max-w-md mx-auto space-y-4">
 	
-	            {/* NAV + STATS */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-onyx border border-slate-200 dark:border-white/[0.06] rounded-2xl px-2.5 py-1.5">
-                <button onClick={() => nav(-1)} className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-mist hover:text-slate-800 dark:hover:text-pure-white transition-all">
-                  <ChevronLeft size={17} />
-                </button>
-                <span className="text-sm font-semibold text-slate-800 dark:text-pure-white w-[136px] text-center select-none">{MONTHS[month]} {year}</span>
-                <button onClick={() => nav(1)} className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-mist hover:text-slate-800 dark:hover:text-pure-white transition-all">
-                  <ChevronRight size={17} />
-                </button>
-              </div>
+		            {/* NAV + STATS */}
+	            <div className="flex flex-col sm:flex-row gap-3">
+	              <button onClick={openMonthPicker}
+	                className="flex items-center gap-2 bg-slate-100 dark:bg-onyx border border-slate-200 dark:border-white/[0.06] rounded-2xl px-3.5 py-2 cursor-pointer hover:bg-slate-200 dark:hover:bg-white/[0.03] transition-all active:scale-[0.97]">
+	                <Calendar size={15} className="text-slate-500 dark:text-slate-mist shrink-0" />
+	                <span className="text-sm font-semibold text-slate-800 dark:text-pure-white select-none min-w-[100px] text-left">{MONTHS[month]} {year}</span>
+	                <ChevronDown size={14} className="text-slate-400 dark:text-slate-mist shrink-0" />
+	              </button>
               {!isCurrentMonth && (
                 <button onClick={goToday}
                   className="px-3 py-1.5 rounded-full border border-slate-200 dark:border-transparent bg-transparent dark:bg-white/5 text-slate-600 dark:text-pure-white text-xs font-medium transition-all active:scale-95">
@@ -325,8 +336,45 @@ function getDaysInMonth(year, month) {
         <p>Jadwal ini ditetapkan oleh admin. Hubungi admin jika ada perubahan shift.</p>
       </div>
           </div>
+	      </div>
+	    </div>
+
+      {/* MONTH PICKER BOTTOM SHEET */}
+      <BottomSheet open={showMonthPicker} onClose={() => setShowMonthPicker(false)}
+        title="Pilih Bulan" subtitle={`Tahun ${pickerYear}`}>
+        <div className="space-y-5">
+          {/* Year nav */}
+          <div className="flex items-center justify-center gap-6 py-2">
+            <button onClick={() => setPickerYear(p => p - 1)}
+              className="p-2 rounded-xl hover:bg-white/10 text-slate-mist hover:text-pure-white transition-all">
+              <ChevronLeft size={18} />
+            </button>
+            <span className="text-lg font-bold text-pure-white w-20 text-center select-none">{pickerYear}</span>
+            <button onClick={() => setPickerYear(p => p + 1)}
+              className="p-2 rounded-xl hover:bg-white/10 text-slate-mist hover:text-pure-white transition-all">
+              <ChevronRight size={18} />
+            </button>
+          </div>
+
+          {/* Month grid */}
+          <div className="grid grid-cols-4 gap-2">
+            {MONTHS.map((name, i) => {
+              const isActive = month === i && pickerYear === year;
+              return (
+                <button key={i} onClick={() => selectMonth(i)}
+                  className={`p-3 rounded-2xl text-sm font-semibold transition-all active:scale-95
+                    ${isActive
+                      ? "bg-electric-violet text-pure-white shadow-lg shadow-electric-violet/30"
+                      : "bg-onyx border border-white/[0.06] text-slate-mist hover:bg-white/[0.06] hover:text-pure-white"
+                    }
+                  `}>
+                  {name.substring(0, 3)}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
-    </div>
+      </BottomSheet>
+	  </div>
   );
 }
