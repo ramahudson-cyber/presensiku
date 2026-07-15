@@ -89,14 +89,14 @@ function getDaysInMonth(year, month) {
   const isCurrentMonth = year === now.getFullYear() && month === now.getMonth();
 
   return (
-		    <div className="h-screen overflow-hidden bg-transparent">
-		      {/* TOP HEADER */}
-		      <div className="flex items-center gap-3 pl-3 pr-5 pt-4 pb-2">
-	        <button onClick={() => navigate(-1)} className="bg-none border-0 flex items-center justify-center text-electric-violet dark:text-periwinkle-glow p-1 cursor-pointer shrink-0 hover:opacity-70 transition-opacity">
-	          <ChevronLeft size={26} />
-	        </button>
-	        <div className="flex items-center justify-center shrink-0 text-electric-violet dark:text-periwinkle-glow">
-	          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+			    <div className="h-screen overflow-hidden bg-transparent">
+			      {/* TOP HEADER - fixed, gak bisa scroll */}
+			      <div className="fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-5 pt-4 pb-2 bg-gradient-to-b from-white dark:from-onyx to-transparent">
+			        <button onClick={() => navigate(-1)} className="bg-none border-0 flex items-center justify-center text-electric-violet dark:text-periwinkle-glow p-1 cursor-pointer shrink-0 hover:opacity-70 transition-opacity">
+			          <ChevronLeft size={26} />
+			        </button>
+			        <div className="flex items-center justify-center shrink-0 text-electric-violet dark:text-periwinkle-glow">
+			          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
 	            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
 	            <line x1="16" y1="2" x2="16" y2="6"/>
 	            <line x1="8" y1="2" x2="8" y2="6"/>
