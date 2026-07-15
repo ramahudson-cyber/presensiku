@@ -10,7 +10,7 @@ function AdminLayout() {
   const isEmployee = location.pathname === "/employee";
 
   return (
-    <div className="min-h-screen relative overflow-x-hidden bg-white dark:bg-obsidian transition-colors duration-500">
+    <div className="min-h-screen relative overflow-x-hidden bg-transparent dark:bg-obsidian transition-colors duration-500">
       {/* Magenta Purple Gradient Background */}
       <div className="fixed inset-0" style={{ background: 'linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%)', opacity: 0.08, pointerEvents: 'none' }}></div>
 

@@ -12,7 +12,7 @@ function getInitialDarkMode() {
   if (savedTheme) {
     return savedTheme === "dark";
   }
-  return true;
+  return false;
 }
 
 function applyTheme(darkMode) {
