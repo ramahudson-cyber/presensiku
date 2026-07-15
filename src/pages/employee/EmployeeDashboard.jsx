@@ -167,15 +167,15 @@ export default function EmployeeDashboard() {
         </div>
 
         {/* SECTION TITLE */}
-        <div className="pl-[25px] pr-6 flex items-start gap-4 mb-4">
-          <div className="w-12 h-12 flex items-center justify-center shrink-0">
-            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <div className="pl-[25px] pr-6 flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
             </svg>
           </div>
           <div className="pt-0.5">
-            <div className="text-2xl font-extrabold tracking-tight text-white">Statistik bulan ini</div>
-            <div className="text-sm text-white/35 mt-0.5 font-normal">Ringkasan kehadiran anda bulan ini</div>
+            <div className="text-xl font-extrabold tracking-tight text-white">Statistik bulan ini</div>
+            <div className="text-xs text-white/35 mt-0.5 font-normal">Ringkasan kehadiran anda bulan ini</div>
           </div>
         </div>
 
