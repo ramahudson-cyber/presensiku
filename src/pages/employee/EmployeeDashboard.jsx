@@ -101,15 +101,18 @@ export default function EmployeeDashboard() {
 
 	      <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
 
-        {/* STATUS HEADER — di luar card */}
-        <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70">Status Hari Ini</span>
+        {/* SECTION TITLE: Status hari ini */}
+        <div className="px-4 flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
           </div>
-            <span className="text-[9px] font-semibold text-black dark:text-white bg-electric-violet/10 px-2.5 py-1 rounded-full">
-              {now.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })}
-            </span>
+          <div className="pt-0.5">
+            <div className="text-xl font-medium tracking-tight text-white">Status hari ini</div>
+            <div className="text-xs text-white/35 mt-0.5 font-normal">Pantau waktu kehadiran anda</div>
+          </div>
         </div>
 
         {/* 2 CARDS: MASUK & PULANG */}
