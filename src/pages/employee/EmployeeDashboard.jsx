@@ -166,16 +166,95 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70 mb-6 flex justify-between">Statistik Bulan Ini <PieChart size={14}/></div>
-          <div className="grid grid-cols-4 gap-2">
-            {[ {v:stats.hadir, l:'Hadir'}, {v:stats.izin, l:'Izin'}, {v:stats.sakit, l:'Sakit'}, {v:stats.alpha, l:'Alpha'} ].map((s,i) => (
-              <div key={i} className="bg-white/5 rounded-2xl p-3 text-center border border-white/5">
-                <div className="text-xl font-light">{s.v}</div>
-                <div className="text-[8px] uppercase tracking-wider opacity-70">{s.l}</div>
-              </div>
-            ))}
-          </div>
+        {/* SECTION TITLE */}
+        <div className="px-6">
+          <div className="text-2xl font-extrabold tracking-tight text-white">Statistik bulan ini</div>
+          <div className="text-sm text-white/35 mt-0.5 font-normal">Ringkasan kehadiran anda bulan ini</div>
+        </div>
+
+        {/* STATS PREMIUM CARD */}
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#BF00FF] to-transparent rounded-t-3xl"></div>
+          {(() => {
+            const total = stats.hadir + stats.izin + stats.sakit + stats.alpha;
+            const max = Math.max(stats.hadir, stats.izin, stats.sakit, stats.alpha, 1);
+            const c = 2 * Math.PI * 32;
+            const items = [
+              { k:'hadir', v:stats.hadir, color:'#ADFF2F', label:'Hadir' },
+              { k:'izin', v:stats.izin, color:'#fbbf24', label:'Izin' },
+              { k:'sakit', v:stats.sakit, color:'#fb923c', label:'Sakit' },
+              { k:'alpha', v:stats.alpha, color:'#f87171', label:'Alpha' },
+            ];
+            let offset = 0;
+            const segments = items.map(it => {
+              const pct = total > 0 ? it.v / total : 0;
+              const len = c * pct;
+              const seg = { ...it, dasharray: `${len} ${c - len}`, dashoffset: -offset, pct: Math.round(pct * 100) };
+              offset += len;
+              return seg;
+            });
+            return (
+              <>
+                {/* Donut */}
+                <div className="flex items-center gap-5 mb-5 p-4 bg-white/5 rounded-2xl border border-white/5">
+                  <div className="relative w-20 h-20 shrink-0">
+                    <svg className="w-20 h-20" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="6"/>
+                      {segments.map(s => s.v > 0 && (
+                        <circle key={s.k} cx="40" cy="40" r="32" fill="none" stroke={s.color} strokeWidth="6"
+                          strokeDasharray={s.dasharray} strokeDashoffset={s.dashoffset}
+                          transform="rotate(-90, 40, 40)" strokeLinecap="round"
+                          style={{filter: s.k === 'hadir' ? 'drop-shadow(0 0 6px rgba(173,255,47,0.4))' : 'none'}} />
+                      ))}
+                      <circle cx="40" cy="40" r="22" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.03)" strokeWidth="1"/>
+                      <text x="40" y="44" textAnchor="middle" fill="white" fontSize="20" fontWeight="700">{total}</text>
+                    </svg>
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 flex-1">
+                    {segments.map(s => (
+                      <div key={s.k} className="flex items-center gap-1.5 text-[10px]">
+                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{background:s.color}}></span>
+                        <span className="opacity-70">{s.label}</span>
+                        <span className="ml-auto font-semibold" style={{color:s.color}}>{s.v}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bar chart */}
+                <div className="mb-5 p-4 bg-white/5 rounded-2xl border border-white/5">
+                  <div className="flex items-end gap-3 h-24">
+                    {items.map(it => {
+                      const pct = Math.max((it.v / max) * 100, 5);
+                      return (
+                        <div key={it.k} className="flex-1 flex flex-col items-center justify-end h-full">
+                          <div className="text-xs font-bold mb-1.5" style={{color:it.color}}>{it.v}</div>
+                          <div className="w-full rounded-t-lg relative overflow-hidden transition-all duration-500"
+                            style={{height:`${pct}%`, background:`linear-gradient(180deg, ${it.color}, ${it.color}22)`,
+                                    boxShadow: it.v > 0 ? `0 0 16px ${it.color}33` : 'none'}}>
+                          </div>
+                          <div className="text-[8px] uppercase tracking-wider opacity-40 mt-2">{it.label}</div>
+                          <div className="text-[7px] opacity-25 mt-0.5">{total > 0 ? Math.round(it.v/total*100) : 0}%</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Stats grid */}
+                <div className="grid grid-cols-4 gap-2">
+                  {items.map(it => (
+                    <div key={it.k} className="bg-white/5 rounded-2xl p-3 text-center border border-white/5 relative overflow-hidden hover:-translate-y-0.5 transition-all duration-300">
+                      <div className="absolute top-0 left-2 right-2 h-0.5 rounded-b-sm" style={{background:it.color, boxShadow: it.v > 0 ? `0 0 8px ${it.color}44` : 'none'}}></div>
+                      <div className="text-2xl font-extralight tracking-tight leading-none mb-1" style={{color:it.color}}>{it.v}</div>
+                      <div className="text-[8px] uppercase tracking-wider opacity-50">{it.label}</div>
+                      <div className="text-[8px] font-semibold opacity-20 mt-1">{total > 0 ? Math.round(it.v/total*100) : 0}%</div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            );
+          })()}
         </div>
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
