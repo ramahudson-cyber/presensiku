@@ -107,7 +107,7 @@ export default function EmployeeDashboard() {
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70">Status Hari Ini</span>
           </div>
-          <span className="text-[9px] font-semibold text-periwinkle-glow bg-electric-violet/10 px-2.5 py-1 rounded-full">
+          <span className="text-[9px] font-semibold text-black bg-electric-violet/10 px-2.5 py-1 rounded-full">
             {now.toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}
           </span>
         </div>
