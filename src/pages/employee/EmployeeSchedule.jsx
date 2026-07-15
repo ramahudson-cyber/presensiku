@@ -87,54 +87,61 @@ export default function EmployeeSchedule() {
   const isCurrentMonth = year === now.getFullYear() && month === now.getMonth();
 
   return (
-    <div className="space-y-4 animate-fade-in min-w-0 pb-24 md:pb-6">
-      {/* HEADER */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-xl flex items-center justify-center shadow-lg">
-          <Calendar size={20} className="text-pure-white" />
-        </div>
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-pure-white tracking-tight">Jadwal Shift Saya</h1>
-          <p className="text-sm text-slate-mist mt-0.5">Kalender jadwal kerja bulanan</p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-transparent">
+      {/* Persistent Premium Bottom Sheet */}
+      <div className="fixed bottom-0 left-0 w-full z-20 h-[85vh] bg-white dark:bg-onyx border-t border-slate-200 dark:border-white/10 rounded-t-[32px] shadow-[0_-20px_40px_-10px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden transition-colors duration-500">
+        <div className="w-12 h-1.5 bg-slate-300 dark:bg-white/20 rounded-full mx-auto my-4 shrink-0" />
+        
+        <div className="flex-1 overflow-y-auto px-6 pb-24 scrollbar-thin">
+          <div className="max-w-md mx-auto space-y-4">
+            {/* HEADER */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-xl flex items-center justify-center shadow-lg">
+                <Calendar size={20} className="text-pure-white" />
+              </div>
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-pure-white tracking-tight">Jadwal Shift Saya</h1>
+                <p className="text-sm text-slate-500 dark:text-slate-mist mt-0.5">Kalender jadwal kerja bulanan</p>
+              </div>
+            </div>
 
-      {/* NAV + STATS */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex items-center gap-1.5 bg-onyx border border-white/[0.06] rounded-2xl px-2.5 py-1.5">
-          <button onClick={() => nav(-1)} className="p-1.5 rounded-lg hover:bg-white/10 text-slate-mist hover:text-pure-white transition-all">
-            <ChevronLeft size={17} />
-          </button>
-          <span className="text-sm font-semibold text-pure-white w-[136px] text-center select-none">{MONTHS[month]} {year}</span>
-          <button onClick={() => nav(1)} className="p-1.5 rounded-lg hover:bg-white/10 text-slate-mist hover:text-pure-white transition-all">
-            <ChevronRight size={17} />
-          </button>
-        </div>
-        {!isCurrentMonth && (
-          <button onClick={goToday}
-            className="px-3 py-1.5 rounded-full border-gradient bg-transparent text-pure-white text-xs font-medium transition-all active:scale-95">
-            Hari Ini
-          </button>
-        )}
-        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-onyx border border-white/[0.06] text-[11px] text-slate-mist ml-auto">
-          <span className="flex items-center gap-1"><Calendar size={12} /> {stats.total} hari</span>
-        </div>
-      </div>
+            {/* NAV + STATS */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-onyx border border-slate-200 dark:border-white/[0.06] rounded-2xl px-2.5 py-1.5">
+                <button onClick={() => nav(-1)} className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-mist hover:text-slate-800 dark:hover:text-pure-white transition-all">
+                  <ChevronLeft size={17} />
+                </button>
+                <span className="text-sm font-semibold text-slate-800 dark:text-pure-white w-[136px] text-center select-none">{MONTHS[month]} {year}</span>
+                <button onClick={() => nav(1)} className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-mist hover:text-slate-800 dark:hover:text-pure-white transition-all">
+                  <ChevronRight size={17} />
+                </button>
+              </div>
+              {!isCurrentMonth && (
+                <button onClick={goToday}
+                  className="px-3 py-1.5 rounded-full border border-slate-200 dark:border-transparent bg-transparent dark:bg-white/5 text-slate-600 dark:text-pure-white text-xs font-medium transition-all active:scale-95">
+                  Hari Ini
+                </button>
+              )}
+              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-onyx border border-slate-200 dark:border-white/[0.06] text-[11px] text-slate-500 dark:text-slate-mist ml-auto">
+                <span className="flex items-center gap-1"><Calendar size={12} /> {stats.total} hari</span>
+              </div>
+            </div>
 
-      {/* LEGEND */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[9px] font-semibold text-slate-mist uppercase tracking-wider mr-1">Shift</span>
-        {SHIFTS.map(s => {
-          const Icon = s.icon;
-          return (
-            <span key={s.code} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium ${s.bg} ${s.color} ring-1 ${s.ring}`}>
-              <Icon size={11} /> {s.name}
-            </span>
-          );
-        })}
-      </div>
 
-      {/* CALENDAR */}
+            {/* LEGEND */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[9px] font-semibold text-slate-500 dark:text-slate-mist uppercase tracking-wider mr-1">Shift</span>
+              {SHIFTS.map(s => {
+                const Icon = s.icon;
+                return (
+                  <span key={s.code} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium ${s.bg} ${s.color} ring-1 ${s.ring}`}>
+                    <Icon size={11} /> {s.name}
+                  </span>
+                );
+              })}
+            </div>
+
+            {/* CALENDAR */}
       {loading ? (
         <div className="flex items-center justify-center min-h-[40vh]">
           <div className="flex flex-col items-center gap-3">
@@ -165,15 +172,15 @@ export default function EmployeeSchedule() {
                   <div key={i}
                     className={`relative aspect-[4/3] rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 text-xs
                       ${!day ? "invisible" : ""}
-                      ${isToday ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-obsidian" : ""}
+                      ${isToday ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-white dark:ring-offset-onyx" : ""}
                       ${!shiftInfo
                         ? isWeekend
-                          ? "bg-white/[0.01]"
-                          : "bg-white/[0.02]"
+                          ? "bg-slate-100 dark:bg-white/[0.01]"
+                          : "bg-slate-50 dark:bg-white/[0.02]"
                         : `${shiftInfo.bg}`
                       }
                     `}>
-                    <span className={`text-[11px] font-bold leading-none ${isToday ? "text-periwinkle-glow" : isWeekend && !shiftInfo ? "text-slate-mist" : "text-slate-mist"}`}>
+                    <span className={`text-[11px] font-bold leading-none ${isToday ? "text-violet-500" : isWeekend && !shiftInfo ? "text-slate-400 dark:text-slate-mist" : "text-slate-600 dark:text-slate-mist"}`}>
                       {day}
                     </span>
                     {shiftInfo && (
