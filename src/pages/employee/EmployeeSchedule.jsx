@@ -91,7 +91,7 @@ function getDaysInMonth(year, month) {
   return (
 	    <div className="min-h-screen bg-transparent">
 	      {/* TOP HEADER */}
-	      <div className="flex items-center gap-3 px-5 pt-4 pb-2">
+	      <div className="sticky top-0 z-30 flex items-center gap-3 pl-3 pr-5 pt-4 pb-2 bg-gradient-to-b from-white dark:from-onyx to-transparent">
 	        <button onClick={() => navigate(-1)} className="bg-none border-0 flex items-center justify-center text-electric-violet dark:text-periwinkle-glow p-1 cursor-pointer shrink-0 hover:opacity-70 transition-opacity">
 	          <ChevronLeft size={26} />
 	        </button>
