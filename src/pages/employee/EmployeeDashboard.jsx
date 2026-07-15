@@ -115,7 +115,7 @@ export default function EmployeeDashboard() {
         {/* 2 CARDS: MASUK & PULANG */}
         <div className="grid grid-cols-2 gap-3">
           {/* MASUK — Purple Gradient */}
-          <div className="bg-gradient-to-br from-electric-violet to-deep-indigo rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-electric-violet/25">
+          <div className="bg-gradient-to-br from-electric-violet to-deep-indigo rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-electric-violet/25 text-white">
             <div className="text-[9px] uppercase tracking-[0.2em] opacity-70 font-semibold mb-3 flex items-center gap-1.5">
               <Sun size={13} /> Masuk
             </div>
@@ -141,7 +141,7 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* PULANG — Green-Yellow Gradient */}
-          <div className="bg-gradient-to-br from-green-yellow to-[#85c600] rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-green-500/20" style={{ color: '#1a2e05' }}>
+          <div className="bg-gradient-to-br from-green-yellow to-[#85c600] rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-green-500/20" style={{ color: '#000000' }}>
             <div className="text-[9px] uppercase tracking-[0.2em] opacity-60 font-semibold mb-3 flex items-center gap-1.5">
               <Sunset size={13} /> Pulang
             </div>
