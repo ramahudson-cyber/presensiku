@@ -681,15 +681,6 @@ html:not(.dark) .ring-white.dark\:ring-\[\#0f0524\] { --tw-ring-color: #ffffff; 
 .cal-premium-sr { background: #f97316 !important; color: #ffffff !important; }
 .cal-premium-ml { background: #8b5cf6 !important; color: #ffffff !important; }
 
-.cal-today-premium {
-  border: 3px solid #000 !important;
-  box-shadow: 0 0 20px rgba(0,0,0,0.2);
-}
-html.dark .cal-today-premium {
-  border-color: #fff !important;
-  box-shadow: 0 0 20px rgba(255,255,255,0.3);
-}
-
 /* Light mode — premium cells inside design-card preserve colors */
 html:not(.dark) .cal-premium-pg,
 html:not(.dark) .cal-premium-si,

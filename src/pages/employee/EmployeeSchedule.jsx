@@ -151,7 +151,7 @@ function getDaysInMonth(year, month) {
   return (
 			    <div className="h-screen overflow-hidden bg-transparent">
 			      {/* TOP HEADER - fixed, gak bisa scroll */}
-				      <div className="fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-5 pt-4 pb-5 bg-gradient-to-b from-white dark:from-onyx to-transparent">
+					      <div className="fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-5 pt-10 pb-5 bg-gradient-to-b from-white dark:from-onyx to-transparent">
 			        <button onClick={() => navigate(-1)} className="bg-none border-0 flex items-center justify-center text-electric-violet dark:text-periwinkle-glow p-1 cursor-pointer shrink-0 hover:opacity-70 transition-opacity">
 			          <ChevronLeft size={26} />
 			        </button>
@@ -260,21 +260,21 @@ function getDaysInMonth(year, month) {
                   <div key={i}
                     className={`relative aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-200 cursor-default select-none
                       ${!day ? "invisible" : ""}
-                      ${shiftInfo 
-                        ? shiftInfo.premiumClass
-                        : isWeekend
-                          ? "bg-slate-100 dark:bg-white/[0.02]"
-                          : "bg-slate-50 dark:bg-white/[0.03]"
+                      ${isToday
+                        ? ""
+                        : shiftInfo 
+                          ? shiftInfo.premiumClass
+                          : isWeekend
+                            ? "bg-slate-100 dark:bg-white/[0.02]"
+                            : "bg-slate-50 dark:bg-white/[0.03]"
                       }
-                      ${isToday && !shiftInfo ? "ring-2 ring-violet-500 ring-offset-1 ring-offset-white dark:ring-offset-onyx" : ""}
-                      ${isToday && shiftInfo ? "cal-today-premium" : ""}
-                    `}
-                    style={!shiftInfo && isToday ? { border: '2px solid #6366f1', boxShadow: '0 0 12px rgba(99,102,241,0.3)' } : {}}>
+                      ${isToday ? "ring-2 ring-violet-500 ring-offset-1 ring-offset-white dark:ring-offset-onyx shadow-[0_0_14px_rgba(139,92,246,0.35)]" : ""}
+                    `}>
                     <span className={`text-[10px] font-bold leading-none ${
-                      shiftInfo 
-                        ? ""  /* color inherited from premium class */
-                        : isToday 
-                          ? "text-violet-500" 
+                      isToday
+                        ? "text-violet-500"
+                        : shiftInfo 
+                          ? ""
                           : isWeekend 
                             ? "text-slate-400 dark:text-slate-mist" 
                             : "text-slate-600 dark:text-slate-mist"
@@ -282,7 +282,7 @@ function getDaysInMonth(year, month) {
                       {day}
                     </span>
                     {shiftInfo && (
-                      <shiftInfo.icon size={9} className="mt-0.5" style={{ color: 'inherit' }} />
+                      <shiftInfo.icon size={9} className={`mt-0.5 ${isToday ? "text-violet-500" : ""}`} />
                     )}
                     {!shiftInfo && isWeekend && (
                       <span className="text-[5px] text-slate-mist mt-0.5 leading-none">Libur</span>
