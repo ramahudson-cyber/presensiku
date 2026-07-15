@@ -36,8 +36,8 @@ html, body, #root {
 }
 
 html.dark, html.dark body, html.dark #root {
-  background: linear-gradient(135deg, #ffffff 0%, #fdf4ff 30%, #f5d0fe 100%) !important;
-  color: #0f172a !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fdf4ff 30%, #f5d0fe 100%);
+  color: #0f172a;
 }
 
 /* --- DESIGN.md — COMPONENT UTILITY CLASSES --- */
