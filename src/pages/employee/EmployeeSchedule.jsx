@@ -151,7 +151,7 @@ function getDaysInMonth(year, month) {
   return (
 			    <div className="h-screen overflow-hidden bg-transparent">
 			      {/* TOP HEADER - fixed, gak bisa scroll */}
-			      <div className="fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-5 pt-4 pb-2 bg-gradient-to-b from-white dark:from-onyx to-transparent">
+				      <div className="fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-5 pt-4 pb-5 bg-gradient-to-b from-white dark:from-onyx to-transparent">
 			        <button onClick={() => navigate(-1)} className="bg-none border-0 flex items-center justify-center text-electric-violet dark:text-periwinkle-glow p-1 cursor-pointer shrink-0 hover:opacity-70 transition-opacity">
 			          <ChevronLeft size={26} />
 			        </button>
