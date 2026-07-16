@@ -415,7 +415,7 @@ const handleCheckIn = async () => {
     : puskesmasLocation;
 
   return (
-    <div className="relative h-[calc(100vh-var(--header-h,0px))] w-full overflow-hidden bg-[#0d0a14]">
+    <div className="fixed inset-0 z-10 top-[var(--header-h,0px)] overflow-hidden bg-[#0d0a14]">
       {/* Ambient Glow Orbs */}
       <div className="absolute top-[-120px] right-[-80px] w-[300px] h-[300px] bg-[radial-gradient(circle,rgba(191,0,255,0.08)_0%,transparent_70%)] rounded-full pointer-events-none z-[1]"></div>
       <div className="absolute bottom-[-100px] left-[-60px] w-[250px] h-[250px] bg-[radial-gradient(circle,rgba(74,222,128,0.05)_0%,transparent_70%)] rounded-full pointer-events-none z-[1]"></div>
@@ -459,7 +459,7 @@ const handleCheckIn = async () => {
         <div className="flex-1"></div>
 
         {/* Center: Overlay Location Card */}
-        <div className="pointer-events-auto w-full max-w-sm mx-auto mb-4">
+          <div className="pointer-events-auto w-full max-w-sm mx-auto mb-2">
           <div className="bg-[#0a0a12]/85 backdrop-blur-2xl rounded-[18px] p-3.5 border border-white/[0.04] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
             {/* Row 1: Location + Status Pill */}
             <div className="flex items-center justify-between">
@@ -557,7 +557,7 @@ const handleCheckIn = async () => {
 
         {/* Bottom: Fingerprint Button */}
         {todayAttendance && todayAttendance.clock_out_time ? null : (
-          <div className="pointer-events-auto flex flex-col items-center gap-2 pb-3">
+          <div className="pointer-events-auto flex flex-col items-center gap-2 pb-2">
             <div className="relative">
               <div className="absolute inset-[-8px] rounded-full bg-gradient-to-br from-electric-violet/20 to-transparent blur-2xl animate-ring-pulse"></div>
               <div className="absolute inset-[-2px] rounded-full border border-white/[0.05]"></div>

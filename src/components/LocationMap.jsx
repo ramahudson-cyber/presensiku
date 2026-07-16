@@ -22,7 +22,7 @@ export default function LocationMap({ userLocation, puskesmasLocation, distance,
     });
 
     // CartoDB dark tiles
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       maxZoom: 19,
     }).addTo(map);
 
@@ -89,7 +89,7 @@ if (!document.getElementById(styleId)) {
   const style = document.createElement("style");
   style.id = styleId;
   style.textContent = `
-    .leaflet-container { background: #0d0a14 !important; }
+    .leaflet-container { background: #f0f0f5 !important; }
     .leaflet-control-attribution { display: none !important; }
     .leaflet-control-zoom {
       border: none !important;
