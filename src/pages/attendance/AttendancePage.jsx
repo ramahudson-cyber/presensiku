@@ -2,8 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import {
-  MapPin, Clock, CheckCircle2,
-  RefreshCw, Loader2, ShieldAlert, ShieldCheck, LogOut
+  CheckCircle2, Loader2, ShieldAlert
 } from "lucide-react";
 import LocationMap from "../../components/LocationMap";
 import AttendanceResultSheet from "../../components/AttendanceResultSheet";
@@ -411,218 +410,200 @@ const handleCheckIn = async () => {
   const timeStr = displayTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   const dateStr = displayTime.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
+  const radiusBg = currentCoords
+    ? { latitude: currentCoords.latitude, longitude: currentCoords.longitude }
+    : puskesmasLocation;
+
   return (
-    <div className="space-y-2.5 animate-fade-in">
-      {/* Server Time Compact Card — Premium */}
-      <div className="relative bg-[#0a0a12] rounded-[20px] p-3.5 text-white shadow-lg border border-white/[0.04] overflow-hidden">
-        <div className="absolute top-0 right-0 w-20 h-20 bg-electric-violet/5 rounded-full -mr-8 -mt-8"></div>
-        <div className="relative flex items-center justify-between">
-          <div>
-            <p className="text-[9px] text-white/40 uppercase tracking-[0.6px]">{dateStr}</p>
-            <p className="text-xl font-bold font-mono tabular-nums mt-0.5 tracking-tight">{timeStr}</p>
+    <div className="relative h-[calc(100vh-var(--header-h,0px))] w-full overflow-hidden bg-[#0d0a14]">
+      {/* Ambient Glow Orbs */}
+      <div className="absolute top-[-120px] right-[-80px] w-[300px] h-[300px] bg-[radial-gradient(circle,rgba(191,0,255,0.08)_0%,transparent_70%)] rounded-full pointer-events-none z-[1]"></div>
+      <div className="absolute bottom-[-100px] left-[-60px] w-[250px] h-[250px] bg-[radial-gradient(circle,rgba(74,222,128,0.05)_0%,transparent_70%)] rounded-full pointer-events-none z-[1]"></div>
+
+      {/* Map Fullscreen */}
+      <div className="absolute inset-0 z-0">
+        {currentCoords ? (
+          <LocationMap
+            userLocation={{ latitude: currentCoords.latitude, longitude: currentCoords.longitude }}
+            puskesmasLocation={{ latitude: puskesmasLocation.latitude, longitude: puskesmasLocation.longitude }}
+            distance={distance}
+            status={locationStatus}
+            fullscreen={true}
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-[#0d0a14]">
+            <Loader2 size={28} className="animate-spin text-periwinkle-glow/60 mb-3" />
+            <p className="text-xs text-white/30">Mendapatkan lokasi...</p>
           </div>
-          {serverTime && (
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-yellow shadow-[0_0_6px_rgba(173,255,47,0.6)]"></span>
-              <span className="text-[9px] text-green-yellow/70 font-semibold tracking-wider">SYNC</span>
-            </div>
-          )}
-          {!serverTime && (
-            <div className="flex items-center gap-1.5">
-              <Loader2 size={12} className="animate-spin text-periwinkle-glow" />
-              <span className="text-[9px] text-periwinkle-glow/60">Sync...</span>
-            </div>
-          )}
-        </div>
+        )}
       </div>
 
-      {/* Status Card — Compact Premium */}
-      <div className="relative bg-gradient-to-br from-electric-violet/[0.07] to-[#0a0a12] backdrop-blur-xl rounded-[18px] p-3 border border-electric-violet/[0.04] shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
-        <div className="absolute top-[-20px] right-[-10px] w-16 h-16 bg-electric-violet/5 rounded-full pointer-events-none"></div>
-        <div className="relative z-[1]">
-          {todayAttendance ? (
-            <div className="flex items-center gap-2.5">
-              <div className={`w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0 ${
-                todayAttendance.clock_out_time ? "bg-electric-violet/15 border border-electric-violet/8" : "bg-green-yellow/10 border border-green-yellow/8"
-              }`}>
-                {todayAttendance.clock_out_time
-                  ? <CheckCircle2 size={15} className="text-periwinkle-glow" />
-                  : <CheckCircle2 size={15} className="text-green-yellow" />
-                }
+      {/* Overlay Content */}
+      <div className="absolute inset-0 z-10 flex flex-col justify-between p-4 pointer-events-none">
+        {/* Top: Server Time Badge */}
+        <div className="pointer-events-auto">
+          <div className="inline-flex items-center gap-2 bg-[#0a0a12]/80 backdrop-blur-xl rounded-full px-3.5 py-2 border border-white/[0.04] shadow-[0_4px_16px_rgba(0,0,0,0.3)]">
+            <div>
+              <p className="text-[8px] text-white/40 uppercase tracking-[0.6px]">{dateStr}</p>
+              <p className="text-sm font-bold font-mono tabular-nums tracking-tight text-white">{timeStr}</p>
+            </div>
+            {serverTime ? (
+              <span className="w-1.5 h-1.5 rounded-full bg-green-yellow shadow-[0_0_6px_rgba(173,255,47,0.6)] animate-breathe shrink-0"></span>
+            ) : (
+              <Loader2 size={12} className="animate-spin text-periwinkle-glow shrink-0" />
+            )}
+          </div>
+        </div>
+
+        {/* Spacer */}
+        <div className="flex-1"></div>
+
+        {/* Center: Overlay Location Card */}
+        <div className="pointer-events-auto w-full max-w-sm mx-auto mb-4">
+          <div className="bg-[#0a0a12]/85 backdrop-blur-2xl rounded-[18px] p-3.5 border border-white/[0.04] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+            {/* Row 1: Location + Status Pill */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-[10px] bg-electric-violet/15 border border-electric-violet/6 flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#BF00FF" strokeWidth="2" strokeLinecap="round">
+                    <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-[13px] font-extrabold text-white tracking-tight leading-tight">Puskesmas Ampenan</p>
+                  <p className="text-[8px] font-semibold text-white/35 uppercase tracking-[0.5px]">Lokasi Absensi</p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-bold text-white tracking-tight">
-                  {todayAttendance.clock_out_time ? "Sudah Absen (Selesai)" : "Sudah Absen Masuk"}
-                  {todayAttendance.is_late && <span className="text-green-yellow text-[9px] ml-1">(Terlambat {todayAttendance.late_minutes}m)</span>}
-                </p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <div className="flex items-center gap-1">
-                    <span className="text-[8px] text-white/30 uppercase tracking-wider">Masuk</span>
-                    <span className="text-[10px] text-white/60 font-semibold">
-                      {new Date(todayAttendance.clock_in_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}
-                    </span>
-                  </div>
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${
+                locationStatus === "valid"
+                  ? "bg-green-yellow/8 border border-green-yellow/8"
+                  : locationStatus === "invalid"
+                  ? "bg-red-500/8 border border-red-500/8"
+                  : "bg-white/5 border border-white/5"
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${
+                  locationStatus === "valid" ? "bg-green-yellow shadow-[0_0_6px_rgba(173,255,47,0.5)] animate-breathe" :
+                  locationStatus === "invalid" ? "bg-red-400" : "bg-white/30"
+                }`}></span>
+                <span className={`text-[8px] font-bold uppercase tracking-[0.3px] ${
+                  locationStatus === "valid" ? "text-green-yellow" :
+                  locationStatus === "invalid" ? "text-red-400" :
+                  "text-white/30"
+                }`}>
+                  {locationStatus === "valid" ? "Dalam Radius" :
+                   locationStatus === "invalid" ? "Luar Radius" :
+                   locationStatus === "checking" ? "Cek..." :
+                   "Error"}
+                </span>
+              </div>
+            </div>
+
+            {/* Row 2: Distance + Shift */}
+            <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-white/[0.03]">
+              <div className="flex items-center gap-1 bg-white/[0.02] px-2 py-1 rounded-full">
+                <span className="text-[9px] text-white/30">📍</span>
+                <span className="text-[9px] font-medium text-white/40">
+                  <strong className="text-white/80 font-bold">{distance || "—"}</strong> dari puskesmas
+                </span>
+              </div>
+              <div className="ml-auto bg-electric-violet/5 px-2 py-1 rounded-full border border-electric-violet/4">
+                <span className="text-[8px] font-bold text-white/45 uppercase tracking-[1px]">
+                  {todaySchedule?.name || (todayAttendance?.shift_code ? SHIFT_NAMES[todayAttendance.shift_code] : "Shift")}
+                </span>
+              </div>
+            </div>
+
+            {/* Attendance Status */}
+            {todayAttendance && (
+              <div className="flex items-center gap-2 mt-2 pt-2 border-t border-white/[0.03]">
+                <div className={`w-2 h-2 rounded-full ${todayAttendance.is_late ? "bg-green-yellow" : "bg-green-yellow"}`}></div>
+                <span className="text-[9px] font-semibold text-white/50">
+                  {todayAttendance.clock_out_time
+                    ? "Selesai"
+                    : todayAttendance.is_late
+                      ? `Terlambat ${todayAttendance.late_minutes}m`
+                      : "Belum absen pulang"}
+                </span>
+                <div className="ml-auto flex gap-2">
+                  <span className="text-[8px] text-white/25">Masuk {formatTimeSimple(todayAttendance.clock_in_time)}</span>
                   {todayAttendance.clock_out_time && (
-                    <div className="flex items-center gap-1">
-                      <span className="text-[8px] text-white/30 uppercase tracking-wider">Pulang</span>
-                      <span className="text-[10px] text-periwinkle-glow font-semibold">
-                        {new Date(todayAttendance.clock_out_time).toLocaleTimeString("id-ID", {hour:"2-digit",minute:"2-digit"})}
-                      </span>
-                    </div>
-                  )}
-                  {todayAttendance.shift_code && (
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider
-                      ${todayAttendance.shift_code === "PG" ? "bg-green-yellow/10 text-green-yellow" : ""}
-                      ${todayAttendance.shift_code === "SR" ? "bg-green-yellow/10 text-green-yellow" : ""}
-                      ${todayAttendance.shift_code === "SI" ? "bg-sky-500/10 text-sky-300" : ""}
-                      ${todayAttendance.shift_code === "ML" ? "bg-violet-500/10 text-violet-300" : ""}
-                    `}>
-                      {SHIFT_NAMES[todayAttendance.shift_code] || todayAttendance.shift_code}
-                    </span>
+                    <span className="text-[8px] text-periwinkle-glow/40">Pulang {formatTimeSimple(todayAttendance.clock_out_time)}</span>
                   )}
                 </div>
               </div>
+            )}
+          </div>
+
+          {/* Error banner inside overlay */}
+          {error && (
+            <div className="mt-2 px-3 py-2 bg-red-500/10 rounded-xl border border-red-500/10">
+              <p className="text-[10px] text-red-300 font-medium">{error}</p>
             </div>
-          ) : (
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-[10px] bg-electric-violet/10 border border-electric-violet/8 flex items-center justify-center shrink-0">
-                <Clock size={14} className="text-periwinkle-glow" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-bold text-white tracking-tight">Belum absen hari ini</p>
-                {todaySchedule ? (
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider
-                      ${todaySchedule.code === "PG" ? "bg-green-yellow/10 text-green-yellow" : ""}
-                      ${todaySchedule.code === "SR" ? "bg-green-yellow/10 text-green-yellow" : ""}
-                      ${todaySchedule.code === "SI" ? "bg-sky-500/10 text-sky-300" : ""}
-                      ${todaySchedule.code === "ML" ? "bg-violet-500/10 text-violet-300" : ""}
-                    `}>
-                      {todaySchedule.name}
-                    </span>
-                    <span className="text-[9px] text-white/30">Jadwal hari ini</span>
-                  </div>
-                ) : (
-                  <p className="text-[9px] text-green-yellow/60 mt-0.5">Tidak ada jadwal shift hari ini</p>
-                )}
-              </div>
+          )}
+          {successMsg && (
+            <div className="mt-2 px-3 py-2 bg-green-yellow/8 rounded-xl border border-green-yellow/15 flex items-center gap-2">
+              <CheckCircle2 size={12} className="text-green-yellow shrink-0" />
+              <p className="text-[10px] text-green-yellow">{successMsg}</p>
+            </div>
+          )}
+          {isFakeGPS && (
+            <div className="mt-2 px-3 py-2 bg-red-500/8 rounded-xl flex items-center gap-2 border border-red-500/10">
+              <ShieldAlert size={12} className="text-red-400 shrink-0" />
+              <p className="text-[9px] text-red-300 font-medium">Terdeteksi Fake GPS! Absen ditolak.</p>
             </div>
           )}
         </div>
-      </div>
 
-      {/* Location Card — Premium Map */}
-      <div className="bg-[#0a0a12] rounded-[20px] border border-white/[0.03] overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
-        <div className="flex items-center justify-between px-3.5 pt-3 pb-2">
-          <div className="flex items-center gap-2">
-            <div className={`w-7 h-7 rounded-[8px] flex items-center justify-center ${
-              locationStatus === "valid" ? "bg-green-yellow/10" :
-              locationStatus === "invalid" ? "bg-red-500/10" :
-              "bg-white/5"
-            }`}>
-              <MapPin size={13} className={
-                locationStatus === "valid" ? "text-green-yellow" :
-                locationStatus === "invalid" ? "text-red-400" :
-                "text-white/30"
-              } />
+        {/* Bottom: Fingerprint Button */}
+        {todayAttendance && todayAttendance.clock_out_time ? null : (
+          <div className="pointer-events-auto flex flex-col items-center gap-2 pb-3">
+            <div className="relative">
+              <div className="absolute inset-[-8px] rounded-full bg-gradient-to-br from-electric-violet/20 to-transparent blur-2xl animate-ring-pulse"></div>
+              <div className="absolute inset-[-2px] rounded-full border border-white/[0.05]"></div>
+              <button
+                onClick={todayAttendance ? handleCheckOut : handleCheckIn}
+                disabled={locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
+                className="relative w-[76px] h-[76px] rounded-full bg-gradient-to-br from-electric-violet/25 to-electric-violet/10 border border-electric-violet/10 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-md"
+              >
+                {saving ? (
+                  <Loader2 size={24} className="animate-spin text-white/80" />
+                ) : !serverTime ? (
+                  <Loader2 size={24} className="animate-spin text-white/50" />
+                ) : (
+                  <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2a6 6 0 0 0-6 6c0 3.5-1 5.5-1.5 6.5a3 3 0 0 0 1 3.8"/>
+                    <path d="M12 2a6 6 0 0 1 6 6c0 3.5 1 5.5 1.5 6.5a3 3 0 0 1-1 3.8"/>
+                    <path d="M8 14a4 4 0 0 1 8 0"/>
+                    <path d="M10 19a2 2 0 0 1 4 0"/>
+                    <path d="M9 7c0-1.1.9-2 2-2s2 .9 2 2v3"/>
+                    <path d="M9 12v3"/>
+                    <path d="M15 12v3"/>
+                  </svg>
+                )}
+              </button>
             </div>
-            <div>
-              <p className="text-[12px] font-bold text-white">Lokasi</p>
-              <p className="text-[9px] text-white/30">
-                {locationStatus === "valid" ? `${distance}m dari Puskesmas` :
-                 locationStatus === "checking" ? "Mendeteksi..." :
-                 locationStatus === "error" ? "GPS tidak aktif" :
-                 "Di luar radius"}
-              </p>
-            </div>
-          </div>
-          <button onClick={getLocation} disabled={refreshing}
-            className="w-7 h-7 rounded-[8px] bg-electric-violet/10 text-white flex items-center justify-center hover:bg-electric-violet/20 active:scale-90 transition-all disabled:opacity-40">
-            <RefreshCw size={12} className={refreshing ? "animate-spin" : ""} />
-          </button>
-        </div>
-
-        {currentCoords && (
-          <div className="px-3.5 pb-3">
-            <LocationMap
-              userLocation={{ latitude: currentCoords.latitude, longitude: currentCoords.longitude }}
-              puskesmasLocation={{ latitude: puskesmasLocation.latitude, longitude: puskesmasLocation.longitude }}
-              distance={distance}
-              status={locationStatus}
-            />
-          </div>
-        )}
-
-        {!currentCoords && (
-          <div className="px-3.5 pb-3">
-            <div className="rounded-2xl bg-onyx border border-white/[0.04] flex flex-col items-center justify-center" style={{ height: 160 }}>
-              <Loader2 size={18} className="animate-spin text-periwinkle-glow/60 mb-1.5" />
-              <p className="text-[10px] text-white/30">Mendapatkan lokasi...</p>
-            </div>
-          </div>
-        )}
-
-        {isFakeGPS && (
-          <div className="mx-3.5 mb-3 p-2.5 bg-red-500/8 rounded-xl flex items-center gap-2 border border-red-500/10">
-            <ShieldAlert size={13} className="text-red-400 shrink-0" />
-            <p className="text-[10px] text-red-300 font-medium">Terdeteksi Fake GPS! Absen ditolak.</p>
+            <span className="text-[10px] font-bold text-white/45 tracking-[2px] uppercase">
+              {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
+            </span>
           </div>
         )}
       </div>
 
-      {error && (
-        <div className="p-2.5">
-          <p className="text-[11px] text-red-400">{error}</p>
-        </div>
-      )}
-
-      {successMsg && (
-        <div className="p-2.5 rounded-2xl bg-green-yellow/8 border border-green-yellow/20 flex items-center gap-2">
-          <CheckCircle2 size={14} className="text-green-yellow shrink-0" />
-          <p className="text-[11px] text-green-yellow">{successMsg}</p>
-        </div>
-      )}
-
-      <AttendanceResultSheet
-        open={resultSheetOpen}
-        onClose={() => setResultSheetOpen(false)}
-        data={resultData}
-        type={resultType}
-      />
-
-      {/* Fingerprint Button — Premium */}
-      {todayAttendance && todayAttendance.clock_out_time ? null : (
-        <div className="flex flex-col items-center gap-2 pt-1 pb-2">
-          <div className="relative">
-            <div className="absolute inset-[-6px] rounded-full bg-gradient-to-br from-electric-violet/20 to-transparent blur-xl animate-pulse-slow"></div>
-            <div className="absolute inset-0 rounded-full border border-white/[0.04]"></div>
-            <button
-              onClick={todayAttendance ? handleCheckOut : handleCheckIn}
-              disabled={locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
-              className="relative w-16 h-16 rounded-full bg-gradient-to-br from-electric-violet/25 to-electric-violet/10 border border-electric-violet/10 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm"
-            >
-              {saving ? (
-                <Loader2 size={22} className="animate-spin text-white/80" />
-              ) : !serverTime ? (
-                <Loader2 size={22} className="animate-spin text-white/50" />
-              ) : (
-                <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2a6 6 0 0 0-6 6c0 3.5-1 5.5-1.5 6.5a3 3 0 0 0 1 3.8"/>
-                  <path d="M12 2a6 6 0 0 1 6 6c0 3.5 1 5.5 1.5 6.5a3 3 0 0 1-1 3.8"/>
-                  <path d="M8 14a4 4 0 0 1 8 0"/>
-                  <path d="M10 19a2 2 0 0 1 4 0"/>
-                  <path d="M9 7c0-1.1.9-2 2-2s2 .9 2 2v3"/>
-                  <path d="M9 12v3"/>
-                  <path d="M15 12v3"/>
-                </svg>
-              )}
-            </button>
-          </div>
-          <span className="text-[10px] font-bold text-white/50 tracking-[1.5px] uppercase">
-            {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
-          </span>
-        </div>
-      )}
+      {/* Bottom Sheet */}
+      <div className="relative z-20">
+        <AttendanceResultSheet
+          open={resultSheetOpen}
+          onClose={() => setResultSheetOpen(false)}
+          data={resultData}
+          type={resultType}
+        />
+      </div>
     </div>
   );
+}
+
+function formatTimeSimple(isoString) {
+  if (!isoString) return "-";
+  return new Date(isoString).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
 }

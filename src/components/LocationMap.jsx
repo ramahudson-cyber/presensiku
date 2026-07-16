@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-export default function LocationMap({ userLocation, puskesmasLocation, distance, status }) {
+export default function LocationMap({ userLocation, puskesmasLocation, distance, status, fullscreen }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
 
@@ -16,30 +16,50 @@ export default function LocationMap({ userLocation, puskesmasLocation, distance,
     const map = L.map(mapRef.current, {
       zoomControl: false,
       attributionControl: false,
-      dragging: false,
-      scrollWheelZoom: false,
+      dragging: !fullscreen,
+      scrollWheelZoom: !fullscreen,
+      zoom: 16,
     });
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    // CartoDB dark tiles
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
       maxZoom: 19,
     }).addTo(map);
+
+    // Dark zoom controls
+    const zoomControl = L.control.zoom({ position: "topright" });
+    zoomControl.addTo(map);
 
     const puskesmas = [puskesmasLocation.latitude, puskesmasLocation.longitude];
     const user = [userLocation.latitude, userLocation.longitude];
 
+    // Radius circle
+    L.circle(puskesmas, {
+      radius: 200,
+      color: "#ADFF2F",
+      fillColor: "rgba(173,255,47,0.04)",
+      weight: 1.5,
+      dashArray: "6 4",
+      fillOpacity: 0.2,
+    }).addTo(map);
+
+    // Puskesmas marker
     const puskesmasIcon = L.divIcon({
       className: "",
-      html: `<div style="width:32px;height:32px;background:#adff2f;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(173,255,47,0.5);font-size:14px;">🏥</div>`,
-      iconSize: [32, 32],
-      iconAnchor: [16, 16],
+      html: `<div style="width:38px;height:38px;background:#ADFF2F;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 25px rgba(173,255,47,0.5);font-size:18px;">🏥</div>`,
+      iconSize: [38, 38],
+      iconAnchor: [19, 19],
     });
 
+    // User marker with pulse ring
     const userIcon = L.divIcon({
       className: "",
-      html: `<div style="width:20px;height:20px;background:#10b981;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(16,185,129,0.5);"></div>
-             <div style="position:absolute;top:-8px;left:2px;width:16px;height:16px;background:#10b981;border-radius:50%;opacity:0.4;animation:pulse 1.5s infinite;"></div>`,
-      iconSize: [20, 20],
-      iconAnchor: [10, 10],
+      html: `<div style="position:relative;width:22px;height:22px;">
+        <div style="position:absolute;inset:-6px;border-radius:50%;background:#10b981;opacity:0.3;animation:userPulse 1.5s infinite;"></div>
+        <div style="width:22px;height:22px;background:#10b981;border:3px solid white;border-radius:50%;box-shadow:0 0 15px rgba(16,185,129,0.6);"></div>
+      </div>`,
+      iconSize: [22, 22],
+      iconAnchor: [11, 11],
     });
 
     L.marker(puskesmas, { icon: puskesmasIcon }).addTo(map);
@@ -56,21 +76,46 @@ export default function LocationMap({ userLocation, puskesmasLocation, distance,
       map.remove();
       mapInstanceRef.current = null;
     };
-  }, [userLocation, puskesmasLocation]);
+  }, [userLocation, puskesmasLocation, fullscreen]);
 
   return (
-    <div className="relative rounded-2xl overflow-hidden border border-white/10" style={{ height: 200, isolation: 'isolate' }}>
-      <div ref={mapRef} className="w-full h-full" />
-      <div className="absolute top-3 left-3 z-[1000] px-2.5 py-1.5 bg-black/60 backdrop-blur-sm rounded-lg flex items-center gap-1.5 text-white text-[11px] font-medium">
-        <span className={`w-1.5 h-1.5 rounded-full ${status === "valid" ? "bg-green-yellow" : status === "invalid" ? "bg-red-400" : "bg-green-yellow"}`} />
-        {status === "valid" ? `Dalam radius (${distance}m)` : status === "invalid" ? `Di luar radius (${distance}m)` : "Mendeteksi..."}
-      </div>
-      <style>{`
-        @keyframes pulse { 0%,100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(2.5); opacity: 0; } }
-        .leaflet-control-attribution { display: none !important; }
-        .leaflet-pane { z-index: 1 !important; }
-        .leaflet-container { z-index: 0 !important; }
-      `}</style>
-    </div>
+    <div ref={mapRef} className="w-full h-full" />
   );
+}
+
+// Inject global CSS once for Leaflet overrides
+const styleId = "leaflet-premium-overrides";
+if (!document.getElementById(styleId)) {
+  const style = document.createElement("style");
+  style.id = styleId;
+  style.textContent = `
+    .leaflet-container { background: #0d0a14 !important; }
+    .leaflet-control-attribution { display: none !important; }
+    .leaflet-control-zoom {
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .leaflet-control-zoom a {
+      background: rgba(30,30,40,0.85) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      color: white !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      width: 40px !important;
+      height: 40px !important;
+      line-height: 40px !important;
+      font-size: 18px !important;
+      border-radius: 12px !important;
+      margin-bottom: 6px !important;
+      transition: 0.2s !important;
+    }
+    .leaflet-control-zoom a:hover {
+      background: rgba(60,60,80,0.9) !important;
+    }
+    @keyframes userPulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(2); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
 }
