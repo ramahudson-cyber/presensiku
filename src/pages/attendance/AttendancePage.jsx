@@ -439,7 +439,7 @@ const handleCheckIn = async () => {
       </div>
 
       {/* Overlay Content */}
-      <div className="absolute inset-0 z-10 flex flex-col pt-16 sm:pt-20 px-4 pb-4 pointer-events-none">
+      <div className="absolute inset-0 z-10 flex flex-col pt-16 sm:pt-20 px-4 pb-24 pointer-events-none">
         {/* Top: Server Time + Location Card */}
         <div className="pointer-events-auto space-y-2">
           <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl rounded-full px-3.5 py-2 border border-black/10 shadow-sm">
@@ -548,11 +548,9 @@ const handleCheckIn = async () => {
               <p className="text-[9px] text-red-600 font-medium">Terdeteksi Fake GPS! Absen ditolak.</p>
             </div>
           )}
-        </div>
+	        </div>
 
-        {/* Spacer */}
-        <div className="flex-1 max-h-8"></div>
-        {todayAttendance && todayAttendance.clock_out_time ? null : (
+	        {todayAttendance && todayAttendance.clock_out_time ? null : (
           <div className="pointer-events-auto flex flex-col items-center gap-2 pb-2">
             <div className="relative">
               <div className="absolute inset-[-8px] rounded-full bg-gradient-to-br from-electric-violet/20 to-transparent blur-2xl animate-ring-pulse"></div>
