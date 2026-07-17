@@ -439,9 +439,9 @@ const handleCheckIn = async () => {
       </div>
 
       {/* Overlay Content */}
-      <div className="absolute inset-0 z-10 flex flex-col justify-between p-4 pointer-events-none">
-        {/* Top: Server Time Badge */}
-        <div className="pointer-events-auto">
+      <div className="absolute inset-0 z-10 flex flex-col p-4 pointer-events-none">
+        {/* Top: Server Time + Location Card */}
+        <div className="pointer-events-auto space-y-2">
           <div className="inline-flex items-center gap-2 bg-[#0a0a12]/80 backdrop-blur-xl rounded-full px-3.5 py-2 border border-white/[0.04] shadow-[0_4px_16px_rgba(0,0,0,0.3)]">
             <div>
               <p className="text-[8px] text-white/40 uppercase tracking-[0.6px]">{dateStr}</p>
@@ -453,13 +453,8 @@ const handleCheckIn = async () => {
               <Loader2 size={12} className="animate-spin text-periwinkle-glow shrink-0" />
             )}
           </div>
-        </div>
 
-        {/* Spacer */}
-        <div className="flex-1"></div>
-
-        {/* Center: Overlay Location Card */}
-          <div className="pointer-events-auto w-full max-w-sm mx-auto mb-2">
+          {/* Location Card */}
           <div className="bg-[#0a0a12]/85 backdrop-blur-2xl rounded-[18px] p-3.5 border border-white/[0.04] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
             {/* Row 1: Location + Status Pill */}
             <div className="flex items-center justify-between">
@@ -535,27 +530,28 @@ const handleCheckIn = async () => {
             )}
           </div>
 
-          {/* Error banner inside overlay */}
+          {/* Error banner */}
           {error && (
-            <div className="mt-2 px-3 py-2 bg-red-500/10 rounded-xl border border-red-500/10">
+            <div className="px-3 py-2 bg-red-500/10 rounded-xl border border-red-500/10">
               <p className="text-[10px] text-red-300 font-medium">{error}</p>
             </div>
           )}
           {successMsg && (
-            <div className="mt-2 px-3 py-2 bg-green-yellow/8 rounded-xl border border-green-yellow/15 flex items-center gap-2">
+            <div className="px-3 py-2 bg-green-yellow/8 rounded-xl border border-green-yellow/15 flex items-center gap-2">
               <CheckCircle2 size={12} className="text-green-yellow shrink-0" />
               <p className="text-[10px] text-green-yellow">{successMsg}</p>
             </div>
           )}
           {isFakeGPS && (
-            <div className="mt-2 px-3 py-2 bg-red-500/8 rounded-xl flex items-center gap-2 border border-red-500/10">
+            <div className="px-3 py-2 bg-red-500/8 rounded-xl flex items-center gap-2 border border-red-500/10">
               <ShieldAlert size={12} className="text-red-400 shrink-0" />
               <p className="text-[9px] text-red-300 font-medium">Terdeteksi Fake GPS! Absen ditolak.</p>
             </div>
           )}
         </div>
 
-        {/* Bottom: Fingerprint Button */}
+        {/* Spacer */}
+        <div className="flex-1"></div>
         {todayAttendance && todayAttendance.clock_out_time ? null : (
           <div className="pointer-events-auto flex flex-col items-center gap-2 pb-2">
             <div className="relative">
