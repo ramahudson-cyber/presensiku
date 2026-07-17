@@ -63,7 +63,10 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
             </div>
           </div>
           {!isCheckIn && data.is_late && (
-            <span className="text-[10px] font-bold text-[#FF4757]">Terlambat</span>
+            <div className="flex flex-col items-end">
+              <span className="text-[10px] font-bold text-[#FF4757]">Terlambat</span>
+              <span className="text-[8px] font-semibold text-[#FF4757]/70">{data.late_minutes}m</span>
+            </div>
           )}
           {!data.is_late && (
             <span className="text-[10px] font-bold text-electric-violet">Tepat Waktu</span>

@@ -282,10 +282,29 @@ const handleCheckIn = async () => {
       let lateMinutes = 0;
       let status = "hadir";
 
-      if (shiftSchedule?.is_working_day && shiftSchedule?.start_time) {
-        const [sh, sm] = shiftSchedule.start_time.split(":").map(Number);
+      if (shiftSchedule?.start_time) {
+        let effectiveStart = shiftSchedule.start_time;
+        let effectiveLatest = shiftSchedule.latest_check_in;
+
+        // Fallback kalo start_time '00:00' (non-working day), ambil jam asli dari hari kerja
+        if (effectiveStart === '00:00' || !shiftSchedule.is_working_day) {
+          const { data: workingSched } = await supabase
+            .from("shift_schedules")
+            .select("start_time, latest_check_in")
+            .eq("shift_code", shiftCode)
+            .eq("is_working_day", true)
+            .limit(1)
+            .maybeSingle();
+
+          if (workingSched) {
+            effectiveStart = workingSched.start_time;
+            effectiveLatest = workingSched.latest_check_in || workingSched.start_time;
+          }
+        }
+
+        const [sh, sm] = effectiveStart.split(":").map(Number);
         const shiftStartMinutes = sh * 60 + sm;
-        const [lh, lm] = (shiftSchedule.latest_check_in || shiftSchedule.start_time).split(":").map(Number);
+        const [lh, lm] = (effectiveLatest || effectiveStart).split(":").map(Number);
         const lateThreshold = lh * 60 + lm;
 
         isLate = totalWitaMinutes > lateThreshold;
