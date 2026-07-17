@@ -178,7 +178,10 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
       </div>
 
       <button
-        onClick={onClose}
+        onClick={() => {
+          onClose();
+          window.location.href = "/employee";
+        }}
         className="w-full mt-4 py-3.5 bg-gradient-to-r from-electric-violet to-[#9900CC] text-white rounded-full font-bold text-[13px] hover:brightness-110 active:scale-[0.98] transition-all duration-200 shadow-[0_4px_16px_rgba(191,0,255,0.2)]"
       >
         Tutup
