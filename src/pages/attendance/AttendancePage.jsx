@@ -439,7 +439,7 @@ const handleCheckIn = async () => {
       </div>
 
       {/* Overlay Content */}
-      <div className="absolute inset-0 z-10 flex flex-col pt-0 px-4 pb-4 pointer-events-none">
+      <div className="absolute inset-0 z-10 flex flex-col pt-16 sm:pt-20 px-4 pb-4 pointer-events-none">
         {/* Top: Server Time + Location Card */}
         <div className="pointer-events-auto space-y-2">
           <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl rounded-full px-3.5 py-2 border border-black/10 shadow-sm">
