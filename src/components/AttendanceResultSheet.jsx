@@ -171,7 +171,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
                 </div>
                 <div>
                   <p className="text-[10px] font-semibold text-[rgba(0,0,0,0.25)] uppercase tracking-wider">Lokasi</p>
-                  <p className="text-[13px] font-bold text-[#0a0a14] mt-0.5">{distance}m dari Puskesmas</p>
+                  <p className="text-[13px] font-bold text-[#0a0a14] mt-0.5">{distance}m dari Lokasi Presensi</p>
                 </div>
               </div>
               <span className="text-[10px] font-bold text-electric-violet">Valid</span>

@@ -487,8 +487,8 @@ const handleCheckIn = async () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-[13px] font-extrabold text-black tracking-tight leading-tight">{puskesmasLocation.name || "Puskesmas Ampenan"}</p>
-                  <p className="text-[8px] font-semibold text-black uppercase tracking-[0.5px]">Lokasi Absensi</p>
+                  <p className="text-[13px] font-extrabold text-black tracking-tight leading-tight">{puskesmasLocation.name || "Lokasi Presensi"}</p>
+                  <p className="text-[8px] font-semibold text-black uppercase tracking-[0.5px]">Lokasi Presensi</p>
                 </div>
               </div>
               <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${
