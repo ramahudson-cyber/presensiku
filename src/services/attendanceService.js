@@ -107,19 +107,68 @@ export async function getTodayAttendance(userId) {
 }
 
 /**
- * Clock In
+ * Clock In — otomatis hitung terlambat dari shift schedule
  */
 export async function clockIn(userId, location) {
-  const today = new Date().toISOString().split("T")[0];
+  // Ambil server time WITA
+  const { data: serverNow, error: timeErr } = await supabase.rpc("get_server_time");
+  if (timeErr) throw timeErr;
+  const now = new Date(serverNow);
+  const witaMs = now.getTime() + (8 * 60 * 60 * 1000);
+  const witaDate = new Date(witaMs);
+  const today = witaDate.toISOString().split("T")[0];
+
+  // Ambil jadwal shift hari ini
+  let isLate = false;
+  let lateMinutes = 0;
+  let attendanceStatus = "hadir";
+  let shiftCode = null;
+
+  const { data: schedule } = await supabase
+    .from("employee_schedules")
+    .select("shift_code")
+    .eq("user_id", userId)
+    .eq("date", today)
+    .maybeSingle();
+
+  if (schedule?.shift_code) {
+    shiftCode = schedule.shift_code;
+    const dayOfWeek = (witaDate.getUTCDay() + 6) % 7; // Senin=0
+
+    const { data: shiftSched } = await supabase
+      .from("shift_schedules")
+      .select("start_time, latest_check_in, is_working_day")
+      .eq("shift_code", shiftCode)
+      .eq("day_of_week", dayOfWeek)
+      .single();
+
+    if (shiftSched?.is_working_day && shiftSched?.start_time) {
+      const witaHour = witaDate.getUTCHours();
+      const witaMinute = witaDate.getUTCMinutes();
+      const totalWitaMinutes = witaHour * 60 + witaMinute;
+
+      const [lh, lm] = (shiftSched.latest_check_in || shiftSched.start_time).split(":").map(Number);
+      const lateThreshold = lh * 60 + lm;
+
+      isLate = totalWitaMinutes > lateThreshold;
+      lateMinutes = isLate ? totalWitaMinutes - (shiftSched.start_time.split(":").map(Number)[0] * 60 + shiftSched.start_time.split(":").map(Number)[1]) : 0;
+      attendanceStatus = isLate ? "terlambat" : "hadir";
+    }
+  }
 
   const { data, error } = await supabase
     .from("attendance")
     .insert({
       user_id: userId,
       date: today,
+      clock_in_time: now.toISOString(),
       location_in: location,
       selfie_in_url: null,
-      attendance_status: "hadir",
+      attendance_status: attendanceStatus,
+      shift_code: shiftCode,
+      is_late: isLate,
+      late_minutes: lateMinutes,
+      schedule_match: !!schedule,
     })
     .select()
     .single();
@@ -131,7 +180,7 @@ export async function clockIn(userId, location) {
     p_description: `Clock in berhasil`,
     p_entity_type: 'attendance',
     p_entity_id: data.id,
-    p_metadata: { location, server_time: data.clock_in_time }
+    p_metadata: { location, server_time: data.clock_in_time, is_late: isLate, late_minutes: lateMinutes }
   }).catch(() => {});
 
   return data;
