@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview Card</title>
+    <style>
+        body { background: #0a0a0a; display: flex; justify-content: center; padding-top: 50px; font-family: sans-serif; }
+        .card {
+            background: radial-gradient(circle at 100% 0%, #3b308e, #0a0a0a);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 24px;
+            width: 300px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .label { font-size: 12px; opacity: 0.6; text-transform: uppercase; }
+        .val { font-size: 32px; font-weight: 500; margin: 8px 0; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+        .subval { font-size: 16px; font-weight: 500; }
+        .unit { font-size: 12px; opacity: 0.6; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="label">Nutrition Overview</div>
+        <div class="val">70<span style="font-size: 16px; opacity: 0.6;">%</span></div>
+        <div class="grid">
+            <div><div class="label">Calories</div><div class="subval">637 <span class="unit">kcal</span></div></div>
+            <div><div class="label">Protein</div><div class="subval">65 <span class="unit">g</span></div></div>
+            <div><div class="label">Carbs</div><div class="subval">45 <span class="unit">g</span></div></div>
+            <div><div class="label">Fats</div><div class="subval">18 <span class="unit">g</span></div></div>
+        </div>
+    </div>
+</body>
+</html>
