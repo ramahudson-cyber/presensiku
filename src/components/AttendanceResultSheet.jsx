@@ -142,19 +142,16 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
         {/* Status */}
         <div className="flex items-center justify-between py-2">
           <div className="flex items-center gap-2.5">
-            <div className={`w-7 h-7 rounded-[8px] flex items-center justify-center ${data.is_late ? "bg-[rgba(255,71,87,0.08)]" : "bg-green-yellow/10"}`}>
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke={data.is_late ? "#FF4757" : "#ADFF2F"} strokeWidth="2.5" strokeLinecap="round">
+            <div className="w-7 h-7 rounded-[8px] flex items-center justify-center">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#BF00FF" strokeWidth="2" strokeLinecap="round">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
             </div>
             <div>
               <p className="text-[10px] font-semibold text-[rgba(0,0,0,0.25)] uppercase tracking-wider">Status</p>
-              <p className={`text-[13px] font-bold mt-0.5 ${data.is_late ? "text-[#FF4757]" : "text-[#ADFF2F]"}`}>{statusText}</p>
+              <p className="text-[13px] font-bold mt-0.5 text-black">{statusText}</p>
             </div>
           </div>
-          {data.is_late && (
-            <span className="text-[10px] font-bold text-[#FF4757]">Telat</span>
-          )}
         </div>
 
         {/* Location */}
