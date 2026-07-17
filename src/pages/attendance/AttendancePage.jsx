@@ -472,17 +472,17 @@ const handleCheckIn = async () => {
               </div>
               <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${
                 locationStatus === "valid"
-                  ? "bg-green-yellow/15 border border-green-yellow/30"
+                  ? "bg-black border border-black"
                   : locationStatus === "invalid"
                   ? "bg-red-500/10 border border-red-500/20"
                   : "bg-black/5 border border-black/10"
               }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${
-                  locationStatus === "valid" ? "bg-green-yellow shadow-[0_0_6px_rgba(173,255,47,0.5)] animate-breathe" :
+                  locationStatus === "valid" ? "bg-pure-white shadow-[0_0_6px_rgba(255,255,255,0.5)] animate-breathe" :
                   locationStatus === "invalid" ? "bg-red-400" : "bg-black/30"
                 }`}></span>
                 <span className={`text-[8px] font-bold uppercase tracking-[0.3px] ${
-                  locationStatus === "valid" ? "text-green-yellow" :
+                  locationStatus === "valid" ? "text-pure-white" :
                   locationStatus === "invalid" ? "text-red-400" :
                   "text-black/50"
                 }`}>
