@@ -1,57 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Pulsating Glow</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { 
-    min-height: 100vh; background: #050505; 
-    display: flex; align-items: center; justify-content: center;
-  }
-  .glow-container {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .glow-ring {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(191,0,255,0.8) 0%, rgba(191,0,255,0) 70%);
-    animation: pulse 2s infinite ease-in-out;
-  }
-  .plus-btn {
-    position: relative;
-    width: 60px;
-    height: 60px;
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 30px;
-    border: 1px solid rgba(255,255,255,0.2);
-    z-index: 2;
-  }
-  @keyframes pulse {
-    0% { transform: scale(0.8); opacity: 0.5; }
-    50% { transform: scale(1.5); opacity: 0.2; }
-    100% { transform: scale(0.8); opacity: 0.5; }
-  }
-</style>
-</head>
-<body>
-  <div class="glow-container">
-    <div class="glow-ring"></div>
-    <div class="plus-btn">+</div>
-  </div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#BF00FF" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <script>if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark')</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Urbanist:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Hadir.Kuy</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
