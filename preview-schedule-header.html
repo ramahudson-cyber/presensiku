@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Preview - Header Bottom Sheet</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #ffffff 0%, #fdf4ff 30%, #f5d0fe 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* TOP HEADER */
+  .top-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: transparent;
+    position: relative;
+    z-index: 10;
+  }
+  .back-btn {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a1a7a;
+    cursor: pointer;
+    padding: 4px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .back-btn:hover { opacity: 0.7; }
+  .back-btn svg { width: 26px; height: 26px; }
+  .header-title h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2d1b4e;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+  }
+  .header-title p {
+    font-size: 12px;
+    color: #7a6a95;
+    margin-top: 1px;
+  }
+
+  /* SPACER */
+  .spacer { flex: 1; }
+
+  /* BOTTOM SHEET */
+  .bottom-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80vh;
+    background: #ffffff;
+    border-top-left-radius: 32px;
+    border-top-right-radius: 32px;
+    box-shadow: 0 -20px 40px -10px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .handle {
+    width: 48px;
+    height: 5px;
+    background: #d1d5db;
+    border-radius: 99px;
+    margin: 14px auto;
+    flex-shrink: 0;
+  }
+  .sheet-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 24px 100px;
+  }
+  .content-inner {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  /* DARK MODE */
+  @media (prefers-color-scheme: dark) {
+    body { background: linear-gradient(135deg, #0f0720 0%, #1a0b2e 50%, #2d1554 100%); }
+    .back-btn { color: #c9a8f0; }
+    .icon-premium { color: #c9a8f0 !important; }
+    .header-title h2 { color: #e8d5f8; }
+    .header-title p { color: #a994c4; }
+    .bottom-sheet { background: #0f0720; box-shadow: 0 -20px 40px -10px rgba(0,0,0,0.4); }
+    .handle { background: rgba(255,255,255,0.15); }
+  }
+</style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <div class="top-header">
+    <button class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <div class="icon-premium" style="display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#6d28d9;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+        <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/>
+      </svg>
+    </div>
+    <div class="header-title">
+      <h2>Jadwal Shift Saya</h2>
+      <p>Kalender jadwal kerja bulanan</p>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <!-- BOTTOM SHEET -->
+  <div class="bottom-sheet">
+    <div class="handle"></div>
+    <div class="sheet-content">
+      <div class="content-inner">
+
+        <!-- Nav -->
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:4px;background:#f1f0f4;border-radius:16px;padding:4px 10px;">
+            <button style="padding:6px;border-radius:8px;border:none;background:transparent;cursor:pointer;color:#6b6580;">‹</button>
+            <span style="font-size:14px;font-weight:600;color:#1e1b2e;width:130px;text-align:center;">Juli 2026</span>
+            <button style="padding:6px;border-radius:8px;border:none;background:transparent;cursor:pointer;color:#6b6580;">›</button>
+          </div>
+        </div>
+
+        <!-- Calendar Grid Placeholder -->
+        <div style="background:#f8f7fa;border-radius:20px;padding:16px;">
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;text-align:center;font-size:10px;font-weight:700;color:#9b94b0;text-transform:uppercase;margin-bottom:8px;">
+            <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;">
+            <div style="aspect-ratio:4/3;border-radius:12px;background:#eeeef2;"></div>
+            <div style="aspect-ratio:4/3;border-radius:12px;background:#eeeef2;"></div>
+            <div style="aspect-ratio:4/3;border-radius:12px;background:#e8e6ef;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <span style="font-size:12px;font-weight:700;color:#1e1b2e;">1</span>
+            </div>
+            <div style="aspect-ratio:4/3;border-radius:12px;background:#e8e6ef;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <span style="font-size:12px;font-weight:700;color:#1e1b2e;">2</span>
+            </div>
+            <div style="aspect-ratio:4/3;border-radius:12px;background:#e8e6ef;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <span style="font-size:12px;font-weight:700;color:#1e1b2e;">3</span>
+            </div>
+            <div style="aspect-ratio:4/3;border-radius:12px;background:#eeeef2;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <span style="font-size:12px;font-weight:700;color:#a0a0b0;">4</span>
+              <span style="font-size:7px;color:#a0a0b0;">Libur</span>
+            </div>
+            <div style="aspect-ratio:4/3;border-radius:12px;background:#eeeef2;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <span style="font-size:12px;font-weight:700;color:#a0a0b0;">5</span>
+              <span style="font-size:7px;color:#a0a0b0;">Libur</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

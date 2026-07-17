@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #e0d7f2; display: flex; justify-content: center; padding: 20px; }
+        .phone { width: 320px; background: white; border-radius: 40px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .profile { width: 40px; height: 40px; border-radius: 50%; background: #ccc; }
+        .tags { display: flex; gap: 10px; margin: 20px 0; }
+        .tag { padding: 8px 15px; border-radius: 20px; background: #f0f0f0; font-size: 12px; }
+        .tag.active { background: #6c5ce7; color: white; }
+        .doc-list { display: flex; gap: 10px; margin-bottom: 20px; }
+        .doc-card { flex: 1; padding: 15px; border-radius: 20px; background: #f9f9f9; text-align: center; font-size: 11px; }
+        .nearby-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #ddd; }
+    </style>
+</head>
+<body>
+    <div class="phone">
+        <div class="header">
+            <div class="profile"></div>
+            <div>🔔 📅</div>
+        </div>
+        <h3>Good Morning<br>Steffany</h3>
+        <div class="tags">
+            <div class="tag active">Specialist</div>
+            <div class="tag">Labs & Test</div>
+        </div>
+        <div class="doc-list">
+            <div class="doc-card">Ella Zhang<br><b>$23</b></div>
+            <div class="doc-card">Rina Gupta<br><b>$16</b></div>
+        </div>
+        <p><b>Top doctor near you</b></p>
+        <div class="nearby-item"><div class="avatar"></div>Dr. Felix Harper<br><small>16km</small></div>
+        <div class="nearby-item"><div class="avatar"></div>Dr. Samuel Reed<br><small>16km</small></div>
+    </div>
+</body>
+</html>

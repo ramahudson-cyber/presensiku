@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { background: linear-gradient(135deg, #ffffff 0%, #fdf4ff 30%, #f5d0fe 100%); font-family: 'Inter', sans-serif; padding: 20px; color: #1a103d; }
+  .wrapper { max-width: 450px; margin: 0 auto; }
+  .card { 
+    background: rgba(255, 255, 255, 0.7); 
+    backdrop-filter: blur(20px); 
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 32px; 
+    padding: 24px; 
+    margin-bottom: 20px; 
+    box-shadow: 0 8px 32px rgba(102, 0, 153, 0.08);
+  }
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .stat-item { background: #fff; padding: 16px 8px; border-radius: 24px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+  .btn-quick { background: #660099; color: white; border-radius: 16px; padding: 12px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <!-- Performa Section -->
+  <div class="card">
+    <h4 style="margin-bottom:15px; opacity:0.6; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Performa Bulan Ini</h4>
+    <div class="stat-grid">
+      <div class="stat-item"><div style="font-size:18px; font-weight:700; color:#660099;">98%</div><div style="font-size:9px;">Kehadiran</div></div>
+      <div class="stat-item"><div style="font-size:18px; font-weight:700; color:#660099;">0</div><div style="font-size:9px;">Terlambat</div></div>
+      <div class="stat-item"><div style="font-size:18px; font-weight:700; color:#660099;">12</div><div style="font-size:9px;">Hari Kerja</div></div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;">
+    <div class="btn-quick">Ajukan Izin</div>
+    <div class="btn-quick" style="background:#adff2f; color:#1a103d;">Cek Slip Gaji</div>
+  </div>
+
+  <!-- Riwayat Card -->
+  <div class="card">
+    <h4 style="margin-bottom:15px; opacity:0.6; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Riwayat Terbaru</h4>
+    <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
+        <span>14 Jul</span> <span style="font-weight:600;">08:00</span> <span style="color:#10b981; font-weight:700;">HADIR</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; padding:10px 0;">
+        <span>13 Jul</span> <span style="font-weight:600;">08:05</span> <span style="color:#f59e0b; font-weight:700;">TERLAMBAT</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

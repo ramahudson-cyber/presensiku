@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; background: #e0d7f2; display: flex; justify-content: center; padding: 20px; }
+        .phone { width: 320px; background: white; border-radius: 40px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .doc-list { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; }
+        .doc-card { min-width: 120px; padding: 15px; border-radius: 20px; background: #f9f9f9; text-align: center; font-size: 11px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; margin-bottom: 10px; background-size: cover; background-position: center; }
+        .nearby-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+    </style>
+</head>
+<body>
+    <div class="phone">
+        <h3>Top doctors near you</h3>
+        <div id="doctor-container"></div>
+    </div>
+
+    <script>
+        const doctors = [
+            { name: "Felix Harper", spec: "Oral health", dist: "16km", avatar: "https://i.pravatar.cc/150?u=felix" },
+            { name: "Samuel Reed", spec: "Dental", dist: "16km", avatar: "https://i.pravatar.cc/150?u=samuel" },
+            { name: "Elena Torres", spec: "Oral health", dist: "16km", avatar: "https://i.pravatar.cc/150?u=elena" }
+        ];
+        
+        const container = document.getElementById('doctor-container');
+        doctors.forEach(doc => {
+            container.innerHTML += `
+                <div class="nearby-item">
+                    <div class="avatar" style="background-image: url('${doc.avatar}')"></div>
+                    <div>
+                        <b>${doc.name}</b><br>
+                        <small>${doc.spec} • ${doc.dist}</small>
+                    </div>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>

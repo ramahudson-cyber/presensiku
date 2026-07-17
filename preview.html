@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f0f12; color: white; font-family: sans-serif; }
+        .card { background-color: #1a1a20; border-radius: 20px; }
+        .primary-bg { background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); }
+    </style>
+</head>
+<body class="p-4 max-w-sm mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <div class="grid grid-cols-2 gap-1 w-6"><div class="w-2 h-2 bg-gray-500 rounded-sm"></div><div class="w-2 h-2 bg-gray-500 rounded-sm"></div><div class="w-2 h-2 bg-gray-500 rounded-sm"></div><div class="w-2 h-2 bg-gray-500 rounded-sm"></div></div>
+        <div class="text-sm font-semibold">Schedule</div>
+        <div class="w-6 h-6 bg-gray-800 rounded-full"></div>
+    </div>
+
+    <!-- Calendar -->
+    <div class="flex justify-between text-center mb-8">
+        <div class="opacity-50 text-xs">23<br>Mon</div>
+        <div class="opacity-50 text-xs">24<br>Mon</div>
+        <div class="primary-bg p-2 rounded-xl text-xs w-10">25<br>Tue</div>
+        <div class="opacity-50 text-xs">26<br>Wed</div>
+        <div class="opacity-50 text-xs">27<br>Thu</div>
+    </div>
+
+    <!-- Task List -->
+    <h2 class="font-bold text-lg mb-4">Today's task</h2>
+    <div class="card p-4 flex items-center gap-4 mb-4">
+        <div class="text-xs opacity-50">10 AM</div>
+        <div class="primary-bg p-4 rounded-xl flex-1 flex justify-between items-center">
+            <div>
+                <div class="font-bold">Landing page design</div>
+                <div class="text-[10px] opacity-80">10 am - 1 pm</div>
+            </div>
+            <div class="text-xs font-bold">70%</div>
+        </div>
+    </div>
+</body>
+</html>

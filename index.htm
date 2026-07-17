@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Premium Status Presensi</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #f8fafc 0%, #f0f0ff 30%, #e8f4f8 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .phone-frame {
+    width: 100%;
+    max-width: 400px;
+    background: #ffffff;
+    border-radius: 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* HERO HEADER */
+  .hero {
+    background: linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%);
+    padding: 28px 24px 36px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    left: -20%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(191,64,255,0.2) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .hero-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+  }
+  .hero-greeting {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    opacity: 0.6;
+  }
+  .hero-name {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .hero-role {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-top: 2px;
+  }
+
+  .hero-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-time {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+  .hero-date {
+    font-size: 11px;
+    opacity: 0.5;
+    margin-top: 4px;
+  }
+  .hero-shift {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  .hero-absen-btn {
+    background: #fff;
+    color: #6600CC;
+    padding: 10px 28px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .hero-absen-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  }
+
+  /* CONTENT */
+  .content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* STATUS HEADER — di luar card */
+  .status-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+  }
+  .status-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .status-header h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #1e293b;
+  }
+  .status-header .date-badge {
+    font-size: 10px;
+    font-weight: 600;
+    color: #6366f1;
+    background: #eef2ff;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .status-header .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    display: inline-block;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+
+  /* CARDS GRID */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* MASUK CARD — Premium Purple Gradient */
+  .card-masuk {
+    background: linear-gradient(145deg, #BF00FF, #9900CC);
+    border-radius: 24px;
+    padding: 20px 16px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(191, 0, 255, 0.25);
+    transition: all 0.3s;
+  }
+  .card-masuk:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(191, 0, 255, 0.35);
+  }
+  .card-masuk .card-bg-icon {
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    opacity: 0.08;
+    font-size: 80px;
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+  }
+  .card-masuk .card-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    opacity: 0.7;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-masuk .card-label svg {
+    width: 14px;
+    height: 14px;
+  }
+  .card-masuk .card-time {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .card-masuk .card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.15);
+    padding: 4px 10px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .card-masuk .card-status .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #22c55e;
+  }
+  .card-masuk .card-sub {
+    font-size: 9px;
+    opacity: 0.5;
+    margin-top: 10px;
+  }
+
+  /* PULANG CARD — Premium Green-Yellow Gradient */
+  .card-pulang {
+    background: linear-gradient(145deg, #adff2f, #85c600);
+    border-radius: 24px;
+    padding: 20px 16px;
+    color: #1a2e05;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(173, 255, 47, 0.3);
+    transition: all 0.3s;
+  }
+  .card-pulang:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(173, 255, 47, 0.4);
+  }
+  .card-pulang .card-bg-icon {
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    opacity: 0.1;
+    font-size: 80px;
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+  }
+  .card-pulang .card-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    opacity: 0.7;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-pulang .card-label svg {
+    width: 14px;
+    height: 14px;
+  }
+  .card-pulang .card-time {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .card-pulang .card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    background: rgba(0,0,0,0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .card-pulang .card-status .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #22c55e;
+  }
+  .card-pulang .card-sub {
+    font-size: 9px;
+    opacity: 0.5;
+    margin-top: 10px;
+  }
+
+  /* PULANG VERSI "BELUM ABSEN" */
+  .card-pulang.belum .card-time {
+    font-size: 18px;
+    font-weight: 600;
+    opacity: 0.6;
+    letter-spacing: 0;
+  }
+  .card-pulang.belum .card-status {
+    background: rgba(0,0,0,0.05);
+    opacity: 0.6;
+  }
+
+  /* STATS SECTION */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .stat-item {
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 16px;
+    padding: 14px 8px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .stat-item:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .stat-item .num {
+    font-size: 22px;
+    font-weight: 300;
+    color: #0f172a;
+  }
+  .stat-item .label {
+    font-size: 7px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #94a3b8;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  /* DIVIDER */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 4px;
+  }
+  .section-label span {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #94a3b8;
+  }
+  .section-label .line {
+    flex: 1;
+    height: 1px;
+    background: #f1f5f9;
+  }
+
+  /* HISTORY */
+  .history-item {
+    display: grid;
+    grid-template-columns: 1fr 50px 50px 80px;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .history-item:last-child { border-bottom: none; }
+  .history-item .h-date {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .history-item .h-shift {
+    font-size: 9px;
+    color: #94a3b8;
+    margin-top: 1px;
+  }
+  .history-item .h-time {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: #475569;
+    font-variant-numeric: tabular-nums;
+  }
+  .history-item .h-status {
+    text-align: right;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+  .history-item .h-status.hadir {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+  .history-item .h-status.terlambat {
+    background: #fef3c7;
+    color: #d97706;
+  }
+  .history-item .h-status.alpha {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  .empty-text {
+    text-align: center;
+    font-size: 12px;
+    color: #94a3b8;
+    padding: 20px 0;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    font-size: 9px;
+    color: #cbd5e1;
+    padding: 16px;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  /* DARK MODE TOGGLE DEMO */
+  .dark-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    font-size: 18px;
+    z-index: 999;
+  }
+  .dark-toggle:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+
+  /* DARK THEME */
+  body.dark {
+    background: linear-gradient(135deg, #060311 0%, #1a0b2e 50%, #4a2580 100%);
+  }
+  body.dark .phone-frame {
+    background: #161320;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+  }
+  body.dark .status-header h2 {
+    color: #f8fafc;
+  }
+  body.dark .status-header .date-badge {
+    background: rgba(99,102,241,0.2);
+    color: #a78bfa;
+  }
+  body.dark .stat-item {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.06);
+  }
+  body.dark .stat-item .num { color: #f8fafc; }
+  body.dark .stat-item .label { color: #64748b; }
+  body.dark .section-label span { color: #64748b; }
+  body.dark .section-label .line { background: rgba(255,255,255,0.06); }
+  body.dark .history-item { border-bottom-color: rgba(255,255,255,0.06); }
+  body.dark .history-item .h-date { color: #f8fafc; }
+  body.dark .history-item .h-time { color: #cbd5e1; }
+  body.dark .history-item .h-shift { color: #64748b; }
+  body.dark .history-item .h-status.hadir { background: rgba(22,163,74,0.15); color: #4ade80; }
+  body.dark .history-item .h-status.terlambat { background: rgba(217,119,6,0.15); color: #fbbf24; }
+  body.dark .history-item .h-status.alpha { background: rgba(220,38,38,0.15); color: #f87171; }
+  body.dark .empty-text { color: #64748b; }
+  body.dark .footer { color: #475569; border-top-color: rgba(255,255,255,0.06); }
+</style>
+</head>
+<body>
+
+  <button class="dark-toggle" onclick="document.body.classList.toggle('dark')" title="Toggle Dark Mode">🌙</button>
+
+  <div class="phone-frame">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-top">
+        <div class="hero-avatar">RH</div>
+        <div>
+          <div class="hero-greeting">Selamat Pagi,</div>
+          <div class="hero-name">Rama Hudson</div>
+          <div class="hero-role">Pegawai</div>
+        </div>
+      </div>
+      <div class="hero-bottom">
+        <div>
+          <div class="hero-time">13.16</div>
+          <div class="hero-date">Rabu, 15 Juli 2026</div>
+          <div class="hero-shift">Shift: SR</div>
+        </div>
+        <a href="#" class="hero-absen-btn">Absen</a>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- STATUS HEADER — di luar card -->
+      <div class="status-header">
+        <div class="status-header-left">
+          <span class="live-dot"></span>
+          <h2>Status Hari Ini</h2>
+        </div>
+        <span class="date-badge">15 Jul 2026</span>
+      </div>
+
+      <!-- 2 CARDS -->
+      <div class="cards-grid">
+        <!-- MASUK -->
+        <div class="card-masuk">
+          <div class="card-bg-icon">☀️</div>
+          <div class="card-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            Masuk
+          </div>
+          <div class="card-time">13.15</div>
+          <div class="card-status">
+            <span class="dot"></span>
+            Hadir
+          </div>
+          <div class="card-sub">Tepat waktu</div>
+        </div>
+
+        <!-- PULANG — VERSI SUDAH ABSEN -->
+        <div class="card-pulang">
+          <div class="card-bg-icon">🌅</div>
+          <div class="card-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a5 5 0 0 0-10 0M12 2v7M4.93 9.93l1.41 1.41M2 17h2M20 17h2M17.66 12.34l1.41-1.41M12 19v-2"/></svg>
+            Pulang
+          </div>
+          <div class="card-time">17.20</div>
+          <div class="card-status">
+            <span class="dot" style="background:#22c55e"></span>
+            Selesai
+          </div>
+          <div class="card-sub">Shift selesai</div>
+        </div>
+      </div>
+
+      <!-- PULANG VERSI BELUM ABSEN — ditampilkan terpisah untuk preview -->
+      <div style="display:flex;align-items:center;gap:8px;padding:0 4px">
+        <span style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8">Preview: Belum Absen</span>
+        <div style="flex:1;height:1px;background:#f1f5f9"></div>
+      </div>
+
+      <div class="cards-grid">
+        <!-- MASUK tetap sama -->
+        <div class="card-masuk">
+          <div class="card-bg-icon">☀️</div>
+          <div class="card-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            Masuk
+          </div>
+          <div class="card-time">13.15</div>
+          <div class="card-status">
+            <span class="dot"></span>
+            Hadir
+          </div>
+          <div class="card-sub">Tepat waktu</div>
+        </div>
+
+        <!-- PULANG BELUM ABSEN -->
+        <div class="card-pulang belum">
+          <div class="card-bg-icon">🌅</div>
+          <div class="card-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a5 5 0 0 0-10 0M12 2v7M4.93 9.93l1.41 1.41M2 17h2M20 17h2M17.66 12.34l1.41-1.41M12 19v-2"/></svg>
+            Pulang
+          </div>
+          <div class="card-time">Belum Absen</div>
+          <div class="card-status">—</div>
+          <div class="card-sub">Belum clock-out</div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="section-label">
+        <span>Statistik Bulan Ini</span>
+        <div class="line"></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-item"><div class="num">21</div><div class="label">Hadir</div></div>
+        <div class="stat-item"><div class="num">1</div><div class="label">Izin</div></div>
+        <div class="stat-item"><div class="num">0</div><div class="label">Sakit</div></div>
+        <div class="stat-item"><div class="num">0</div><div class="label">Alpha</div></div>
+      </div>
+
+      <!-- HISTORY -->
+      <div class="section-label">
+        <span>Riwayat Absensi</span>
+        <div class="line"></div>
+      </div>
+      <div>
+        <div class="history-item">
+          <div><div class="h-date">15 Juli 2026</div><div class="h-shift">Shift SR</div></div>
+          <div class="h-time">13.15</div>
+          <div class="h-time">17.20</div>
+          <div class="h-status hadir">Hadir</div>
+        </div>
+        <div class="history-item">
+          <div><div class="h-date">14 Juli 2026</div><div class="h-shift">Shift PG</div></div>
+          <div class="h-time">07.30</div>
+          <div class="h-time">15.45</div>
+          <div class="h-status hadir">Hadir</div>
+        </div>
+        <div class="history-item">
+          <div><div class="h-date">13 Juli 2026</div><div class="h-shift">Shift PG</div></div>
+          <div class="h-time">08.15</div>
+          <div class="h-time">15.30</div>
+          <div class="h-status terlambat">Terlambat</div>
+        </div>
+        <div class="history-item">
+          <div><div class="h-date">12 Juli 2026</div><div class="h-shift">—</div></div>
+          <div class="h-time">—</div>
+          <div class="h-time">—</div>
+          <div class="h-status alpha">Alpha</div>
+        </div>
+      </div>
+
+      <div class="footer">v1.6.9 — Hadir.Kuy</div>
+    </div>
+  </div>
+
+</body>
+</html>

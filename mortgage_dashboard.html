@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Tracking Dashboard</title>
+    <style>
+        :root {
+            --bg-dark: #0a0c10;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-white: #ffffff;
+            --text-dim: #94a3b8;
+            --accent-green: #4ade80;
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #1a202c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .phone {
+            width: 375px;
+            height: 812px;
+            background: linear-gradient(180deg, #062016 0%, #0a0c10 100%);
+            border-radius: 44px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-white);
+            position: relative;
+            overflow: hidden;
+            border: 8px solid #1a1a1a;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; background: #333; overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-text h4 { margin: 0; font-size: 14px; font-weight: 400; color: var(--text-dim); }
+        .user-text p { margin: 0; font-size: 16px; font-weight: 700; }
+        .notif-btn { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        
+        .hero { margin: 30px 0; }
+        .hero h1 { font-size: 28px; line-height: 1.2; font-weight: 600; margin: 0; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-header { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
+        .card-icon { width: 24px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+        .card-value { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .card-change { font-size: 11px; color: var(--text-dim); }
+        .chart { height: 50px; margin-top: 15px; position: relative; }
+        .chart-line { 
+            width: 100%; 
+            height: 2px; 
+            background: linear-gradient(90deg, transparent, var(--accent-green), transparent); 
+            position: absolute;
+            top: 50%;
+        }
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 100%;
+        }
+        .bar { flex: 1; background: rgba(255,255,255,0.1); border-radius: 1px; }
+
+        .nav-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 20px;
+            right: 20px;
+            height: 70px;
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 35px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .nav-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-dim); cursor: pointer; }
+        .nav-item.active { color: var(--accent-green); }
+        .nav-center {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+            color: black;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone">
+        <div class="header">
+            <div class="user-info">
+                <div class="avatar"><img src="https://i.pravatar.cc/100?u=emily" alt="Emily"></div>
+                <div class="user-text">
+                    <h4>Hi, Emily!</h4>
+                    <p>Smart Tracking</p>
+                </div>
+            </div>
+            <div class="notif-btn">🔔</div>
+        </div>
+
+        <div class="hero">
+            <h1>Simplify Mortgage<br>Decisions</h1>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-header"><div class="card-icon">📅</div> 30 Year Fixed</div>
+                <div class="card-value">6.78%</div>
+                <div class="card-change">+0.01%</div>
+                <div class="chart">
+                    <div class="chart-bars">
+                        <div class="bar" style="height: 40%"></div><div class="bar" style="height: 60%"></div><div class="bar" style="height: 50%"></div><div class="bar" style="height: 80%"></div><div class="bar" style="height: 70%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-icon">📅</div> FHA 30 Fixed</div>
+                <div class="card-value">6.29%</div>
+                <div class="card-change">+0.01%</div>
+                <div class="chart">
+                    <div class="chart-bars">
+                        <div class="bar" style="height: 30%"></div><div class="bar" style="height: 50%"></div><div class="bar" style="height: 40%"></div><div class="bar" style="height: 90%"></div><div class="bar" style="height: 60%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-icon">📅</div> VA 30 Fixed</div>
+                <div class="card-value">6.30%</div>
+                <div class="card-change">0%</div>
+                <div class="chart">
+                    <div class="chart-bars">
+                        <div class="bar" style="height: 20%"></div><div class="bar" style="height: 40%"></div><div class="bar" style="height: 60%"></div><div class="bar" style="height: 50%"></div><div class="bar" style="height: 30%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-icon">📅</div> Jumbo Fixed</div>
+                <div class="card-value">6.89%</div>
+                <div class="card-change">0%</div>
+                <div class="chart">
+                    <div class="chart-bars">
+                        <div class="bar" style="height: 50%"></div><div class="bar" style="height: 30%"></div><div class="bar" style="height: 70%"></div><div class="bar" style="height: 40%"></div><div class="bar" style="height: 80%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <div class="nav-item active">🏠 Home</div>
+            <div class="nav-center">📊</div>
+            <div class="nav-item">👤 Profile</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview BG Gradient</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background: #060311; }
+  .title { color: #fff; opacity: 0.6; font-size: 12px; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px; }
+  .grids { display: grid; grid-template-columns: 1fr; gap: 30px; width: 100%; max-width: 400px; }
+  .box { height: 200px; border-radius: 30px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); }
+  .label { color: white; font-size: 12px; opacity: 0.5; margin-top: 10px; text-align: center; }
+
+  /* Gradients */
+  .v1 { background: radial-gradient(circle at center, #2e1a47 0%, #060311 70%); }
+  .v2 { background: linear-gradient(135deg, #060311 0%, #1a0b2e 50%, #4a2580 100%); }
+  .v3 { background: radial-gradient(ellipse at top, #3d1c63 0%, #060311 80%); }
+</style>
+</head>
+<body>
+  <div class="title">Pilih Gradien Utama</div>
+  <div class="grids">
+    <div><div class="box v1">Deep Void</div><div class="label">Varian 1</div></div>
+    <div><div class="box v2">Electric Dusk</div><div class="label">Varian 2</div></div>
+    <div><div class="box v3">Nocturnal Pulse</div><div class="label">Varian 3</div></div>
+  </div>
+</body>
+</html>

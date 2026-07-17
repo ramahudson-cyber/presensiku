@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Calendar</title>
+    <style>
+        :root {
+            --bg: #f8f9ff;
+            --glass: rgba(255, 255, 255, 0.7);
+            --accent: #6366f1;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+        }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: #e2e8f0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0;
+        }
+        .phone { 
+            width: 375px; 
+            height: 812px; 
+            background: linear-gradient(160deg, #eff6ff 0%, #ffffff 100%);
+            border-radius: 44px; 
+            padding: 24px; 
+            box-sizing: border-box;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .phone::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-top: 20px;
+            z-index: 1;
+        }
+        .back-btn { 
+            font-weight: 600; 
+            font-size: 18px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            color: var(--text-main);
+        }
+        .nav-btns { display: flex; gap: 8px; }
+        .nav-btn { 
+            width: 40px; 
+            height: 40px; 
+            background: var(--glass); 
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 14px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        .date-section { 
+            margin: 32px 0; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end;
+            z-index: 1;
+        }
+        .date-section h1 { 
+            margin: 0; 
+            font-size: 28px; 
+            font-weight: 800; 
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+        .active-info { 
+            font-size: 12px; 
+            color: var(--text-sub); 
+            text-align: right;
+            line-height: 1.4;
+        }
+        .active-info b { color: var(--accent); }
+
+        .calendar-card { 
+            background: var(--glass); 
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 32px; 
+            padding: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            z-index: 1;
+        }
+        .days-label { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            text-align: center; 
+            font-size: 11px; 
+            font-weight: 700;
+            color: var(--text-sub); 
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            row-gap: 8px;
+            column-gap: 8px;
+        }
+        .day { 
+            aspect-ratio: 1;
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+            font-size: 15px; 
+            font-weight: 500;
+            color: var(--text-main);
+            position: relative;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        .day.muted { color: #cbd5e1; }
+        .day.selected { 
+            background: var(--accent); 
+            color: white; 
+            box-shadow: 0 8px 16px -4px rgba(99, 102, 241, 0.4);
+            font-weight: 600;
+        }
+        .day:hover:not(.selected) { background: rgba(255,255,255,0.8); }
+        
+        .dot-container {
+            display: flex;
+            gap: 2px;
+            position: absolute;
+            bottom: 6px;
+        }
+        .dot { width: 4px; height: 4px; border-radius: 50%; }
+        .dot.green { background: #10b981; }
+        .dot.blue { background: #6366f1; }
+        .dot.orange { background: #f59e0b; }
+
+        .events {
+            margin-top: 24px;
+            z-index: 1;
+        }
+        .event-card {
+            background: white;
+            padding: 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+        }
+        .event-icon {
+            width: 44px;
+            height: 44px;
+            background: #eff6ff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 20px;
+        }
+        .event-details h4 { margin: 0; font-size: 14px; }
+        .event-details p { margin: 2px 0 0; font-size: 12px; color: var(--text-sub); }
+    </style>
+</head>
+<body>
+    <div class="phone">
+        <div class="header">
+            <div class="back-btn"><span>&lsaquo;</span> Reminders</div>
+            <div class="nav-btns">
+                <div class="nav-btn">&lsaquo;</div>
+                <div class="nav-btn">&rsaquo;</div>
+            </div>
+        </div>
+
+        <div class="date-section">
+            <h1>May 12, 2026</h1>
+            <div class="active-info"><b>8 active</b><br>subscriptions</div>
+        </div>
+
+        <div class="calendar-card">
+            <div class="days-label">
+                <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
+            </div>
+            <div class="grid">
+                <div class="day">3<div class="dot-container"><div class="dot green"></div></div></div>
+                <div class="day">4</div>
+                <div class="day">5<div class="dot-container"><div class="dot green"></div></div></div>
+                <div class="day">6</div><div class="day">7</div><div class="day">8</div><div class="day">9</div>
+                
+                <div class="day">10</div><div class="day">11</div>
+                <div class="day selected">12
+                    <div class="dot-container" style="bottom:-4px">
+                        <div class="dot white" style="background:white;width:6px;height:6px;border:2px solid var(--accent)"></div>
+                    </div>
+                </div>
+                <div class="day">13</div><div class="day">14</div>
+                <div class="day">15<div class="dot-container"><div class="dot orange"></div><div class="dot orange"></div></div></div>
+                <div class="day">16</div>
+
+                <div class="day">17</div>
+                <div class="day">18<div class="dot-container"><div class="dot blue"></div></div></div>
+                <div class="day">19</div><div class="day">20</div><div class="day">21</div><div class="day">22</div>
+                <div class="day">23<div class="dot-container"><div class="dot blue"></div></div></div>
+
+                <div class="day">24</div>
+                <div class="day">25<div class="dot-container"><div class="dot blue"></div></div></div>
+                <div class="day">26</div><div class="day">27</div>
+                <div class="day">28<div class="dot-container"><div class="dot orange"></div></div></div>
+                <div class="day">29</div><div class="day">30</div>
+            </div>
+        </div>
+
+        <div class="events">
+            <div class="event-card">
+                <div class="event-icon">📅</div>
+                <div class="event-details">
+                    <h4>Review Meeting</h4>
+                    <p>10:00 AM - 11:30 AM</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

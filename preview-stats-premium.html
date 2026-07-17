@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview - Stats Premium</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f8f7fa;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-width: 400px;
+    width: 100%;
+  }
+  .card {
+    border-radius: 16px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+  }
+  .card-pagi { background: #f7ffd6; border: 1px solid #e5f5a0; }
+  .card-sore { background: #f7ffd6; border: 1px solid #e5f5a0; }
+  .card-siang { background: #e0f2fe; border: 1px solid #b8dffa; }
+  .card-malam { background: #ede9fe; border: 1px solid #d4c8f5; }
+  .icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .icon-pagi { background: #f7ffd6; color: #a3b81a; }
+  .icon-sore { background: #f7ffd6; color: #a3b81a; }
+  .icon-siang { background: #e0f2fe; color: #38bdf8; }
+  .icon-malam { background: #ede9fe; color: #8b5cf6; }
+  .count {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+  }
+  .count-unit {
+    font-size: 11px;
+    font-weight: 500;
+    color: #64748b;
+    margin-top: 1px;
+  }
+  .shift-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .shift-pagi { color: #7a8f0a; }
+  .shift-sore { color: #7a8f0a; }
+  .shift-siang { color: #0284c7; }
+  .shift-malam { color: #6d28d9; }
+  svg { width: 16px; height: 16px; }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <!-- Pagi -->
+    <div class="card card-pagi">
+      <div class="icon icon-pagi">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93 6.34 6.34M17.66 17.66 19.07 19.07M2 12h2M20 12h2M6.34 17.66 4.93 19.07M19.07 4.93 17.66 6.34"/>
+        </svg>
+      </div>
+      <div>
+        <div class="count">27</div>
+        <div class="count-unit">hari kerja</div>
+      </div>
+      <div class="shift-label shift-pagi">Shift Pagi</div>
+    </div>
+
+    <!-- Sore -->
+    <div class="card card-sore">
+      <div class="icon icon-sore">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 18a5 5 0 0 0-10 0M12 2v7M4.93 9.93l1.41 1.41M2 17h2M20 17h2M17.66 12.34l1.41-1.41M12 19v-2"/>
+        </svg>
+      </div>
+      <div>
+        <div class="count">0</div>
+        <div class="count-unit">hari kerja</div>
+      </div>
+      <div class="shift-label shift-sore">Shift Sore</div>
+    </div>
+
+    <!-- Siang -->
+    <div class="card card-siang">
+      <div class="icon icon-siang">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 0 12 6 6 0 0 0 0-12ZM12 15v6M8 21h8"/>
+        </svg>
+      </div>
+      <div>
+        <div class="count">0</div>
+        <div class="count-unit">hari kerja</div>
+      </div>
+      <div class="shift-label shift-siang">Shift Siang</div>
+    </div>
+
+    <!-- Malam -->
+    <div class="card card-malam">
+      <div class="icon icon-malam">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="count">0</div>
+        <div class="count-unit">hari kerja</div>
+      </div>
+      <div class="shift-label shift-malam">Shift Malam</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview BG Gradient</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, sans-serif; background: #060311; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+  .title { color: #fff; opacity: 0.6; font-size: 12px; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px; }
+  .cards { display: flex; flex-direction: column; gap: 30px; width: 100%; max-width: 420px; }
+  .card { border-radius: 40px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
+  .hero { padding: 40px 30px 50px; color: white; }
+  .hero .time { font-size: 36px; font-weight: bold; }
+  .hero .date { font-size: 11px; opacity: 0.5; margin-top: 4px; }
+  .hero .shift { display: inline-block; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 20px; margin-top: 8px; }
+  .hero .absen-btn { float: right; background: white; color: #660099; padding: 10px 24px; border-radius: 12px; font-weight: bold; font-size: 14px; border: none; cursor: pointer; }
+  .label { color: white; font-size: 12px; opacity: 0.4; text-align: center; margin-top: 10px; letter-spacing: 1px; }
+
+  /* Option 1: Current login gradient */
+  .opt1 { background: linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%); }
+  /* Option 2: Deep violet to black */
+  .opt2 { background: linear-gradient(160deg, #7C0DE0 0%, #440099 40%, #1A0033 75%, #000000 100%); }
+  /* Option 3: Violet glow on black */
+  .opt3 { background: linear-gradient(170deg, #9B30FF 0%, #2D0060 40%, #0A001A 70%, #000000 100%); }
+  /* Option 4: Rich purple to pure black */
+  .opt4 { background: linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%); }
+  /* Option 5: Minimal black-violet */
+  .opt5 { background: linear-gradient(180deg, #2D0060 0%, #0A001A 40%, #000000 100%); }
+</style>
+</head>
+<body>
+  <div class="title">Pilih varian background hero</div>
+  <div class="cards">
+    <div class="card">
+      <div class="hero opt1">
+        <button class="absen-btn">Absen</button>
+        <div class="time">08:46</div>
+        <div class="date">Selasa, 14 Juli 2026</div>
+        <div class="shift">Shift: Pagi</div>
+      </div>
+      <div class="label">Variant 1: Login Gradient (Sekarang)</div>
+    </div>
+    <div class="card">
+      <div class="hero opt2">
+        <button class="absen-btn">Absen</button>
+        <div class="time">08:46</div>
+        <div class="date">Selasa, 14 Juli 2026</div>
+        <div class="shift">Shift: Pagi</div>
+      </div>
+      <div class="label">Variant 2: Deep Violet → Black</div>
+    </div>
+    <div class="card">
+      <div class="hero opt3">
+        <button class="absen-btn">Absen</button>
+        <div class="time">08:46</div>
+        <div class="date">Selasa, 14 Juli 2026</div>
+        <div class="shift">Shift: Pagi</div>
+      </div>
+      <div class="label">Variant 3: Violet Glow on Black</div>
+    </div>
+    <div class="card">
+      <div class="hero opt4">
+        <button class="absen-btn">Absen</button>
+        <div class="time">08:46</div>
+        <div class="date">Selasa, 14 Juli 2026</div>
+        <div class="shift">Shift: Pagi</div>
+      </div>
+      <div class="label">Variant 4: Rich Purple → Pure Black</div>
+    </div>
+    <div class="card">
+      <div class="hero opt5">
+        <button class="absen-btn">Absen</button>
+        <div class="time">08:46</div>
+        <div class="date">Selasa, 14 Juli 2026</div>
+        <div class="shift">Shift: Pagi</div>
+      </div>
+      <div class="label">Variant 5: Minimal Black-Violet</div>
+    </div>
+  </div>
+</body>
+</html>

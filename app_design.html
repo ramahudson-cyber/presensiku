@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto; background: #e0d7f2; display: flex; justify-content: center; padding: 20px; }
+        .phone { width: 320px; background: white; border-radius: 40px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background-size: cover; }
+        .tags { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tag { padding: 8px 15px; border-radius: 20px; background: #f0f0f0; font-size: 12px; }
+        .tag.active { background: #6c5ce7; color: white; }
+        .doc-list { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; }
+        .doc-card { min-width: 110px; padding: 15px; border-radius: 20px; background: #f9f9f9; text-align: center; font-size: 11px; }
+        .nearby-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
+        .nearby-avatar { width: 40px; height: 40px; border-radius: 50%; background-size: cover; }
+    </style>
+</head>
+<body>
+    <div class="phone">
+        <div class="header">
+            <div class="avatar" style="background-image: url('https://i.pravatar.cc/150?u=user')"></div>
+            <div>🔔 📅</div>
+        </div>
+        <h3>Good Morning<br>Steffany</h3>
+        <div class="tags">
+            <div class="tag active">Specialist</div>
+            <div class="tag">Labs & Test</div>
+        </div>
+        <div class="doc-list" id="featured"></div>
+        <div style="display: flex; justify-content: space-between;">
+            <p><b>Top doctor near you</b></p>
+            <p style="font-size: 12px; color: #6c5ce7;">See all</p>
+        </div>
+        <div id="nearby"></div>
+    </div>
+
+    <script>
+        const featured = [
+            { name: "Ella Zhang", spec: "Bone health", price: "$23", img: "https://i.pravatar.cc/150?u=ella" },
+            { name: "Rina Gupta", spec: "Orthopedic", price: "$16", img: "https://i.pravatar.cc/150?u=rina" }
+        ];
+        const nearby = [
+            { name: "Dr. Felix Harper", spec: "Oral health", dist: "16km", img: "https://i.pravatar.cc/150?u=felix" },
+            { name: "Dr. Samuel Reed", spec: "Dental care", dist: "16km", img: "https://i.pravatar.cc/150?u=samuel" },
+            { name: "Dr. Elena Torres", spec: "Oral health", dist: "16km", img: "https://i.pravatar.cc/150?u=elena" }
+        ];
+
+        document.getElementById('featured').innerHTML = featured.map(d => `
+            <div class="doc-card">
+                <div class="avatar" style="margin: 0 auto 10px; background-image: url('${d.img}')"></div>
+                <b>${d.name}</b><br>${d.spec}<br><b>${d.price}</b>
+            </div>`).join('');
+
+        document.getElementById('nearby').innerHTML = nearby.map(d => `
+            <div class="nearby-item">
+                <div class="nearby-avatar" style="background-image: url('${d.img}')"></div>
+                <div><b>${d.name}</b><br><small>${d.spec} • ${d.dist}</small></div>
+            </div>`).join('');
+    </script>
+</body>
+</html>

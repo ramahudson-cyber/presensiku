@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Pegawai</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #eee; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .phone { width: 375px; background: #d32f2f; border-radius: 40px; overflow: hidden; height: 800px; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        .header { color: white; padding: 50px 20px 40px; font-size: 20px; font-weight: 700; }
+        .content { flex: 1; background: #f9f9f9; border-top-left-radius: 40px; border-top-right-radius: 40px; padding: 25px; overflow-y: auto; }
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .month { font-weight: 700; font-size: 18px; }
+        .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; margin-bottom: 20px; }
+        .day { font-size: 12px; color: #777; padding-bottom: 5px; }
+        .num { font-size: 16px; font-weight: 600; padding: 10px 0; border-radius: 50%; cursor: pointer; }
+        .num.active { background: #d32f2f; color: white; }
+        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .card-info h4 { margin: 0; color: #333; }
+        .card-info p { margin: 5px 0 0; color: #666; font-size: 14px; }
+        .badge { background: #e8f5e9; color: #2e7d32; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="phone">
+        <div class="header">Jadwal Kerja</div>
+        <div class="content">
+            <div class="cal-header"><span class="month">September 2025</span> <span>&gt;</span></div>
+            <div class="days">
+                <div class="day">S</div><div class="day">S</div><div class="day">R</div><div class="day">K</div><div class="day">J</div><div class="day">S</div><div class="day">M</div>
+                <div class="num">1</div><div class="num">2</div><div class="num">3</div><div class="num">4</div><div class="num active">5</div><div class="num">6</div><div class="num">7</div>
+            </div>
+            <div class="card">
+                <div class="card-info"><h4>Shift Pagi</h4><p>08:00 - 16:00</p></div>
+                <div class="badge">On Time</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

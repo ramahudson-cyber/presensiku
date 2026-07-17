@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f0f12; color: #fff; font-family: sans-serif; }
+        .card { background-color: #1c1c24; border-radius: 24px; }
+        .card-purple { background: #6366f1; }
+        .card-blue { background: #3b82f6; }
+        .card-green { background: #10b981; }
+    </style>
+</head>
+<body class="p-4 max-w-sm mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <!-- Dashboard Icon: 4 tiny rounded squares -->
+        <div class="grid grid-cols-2 gap-1 w-5">
+            <div class="w-2 h-2 border border-white rounded-[2px]"></div>
+            <div class="w-2 h-2 border border-white rounded-[2px]"></div>
+            <div class="w-2 h-2 border border-white rounded-[2px]"></div>
+            <div class="w-2 h-2 border border-white rounded-[2px]"></div>
+        </div>
+        <!-- Bell Icon: Stroke based -->
+        <div class="relative w-5 h-5">
+            <div class="absolute top-0 left-1 w-3 h-3 border-2 border-white rounded-t-full border-b-0"></div>
+            <div class="absolute bottom-0 left-0 w-5 h-1 border-2 border-white rounded-t-md"></div>
+        </div>
+    </div>
+
+    <div class="mb-6">
+        <div class="text-sm opacity-60">Hi, Jason</div>
+        <div class="text-2xl font-bold tracking-tight">Be productive today</div>
+    </div>
+
+    <!-- Search -->
+    <div class="bg-[#1c1c24] p-4 rounded-2xl mb-6 text-sm flex justify-between items-center border border-[#2d2d3a]">
+        <span class="text-gray-500">Search task</span>
+        <div class="w-4 h-4 border-2 border-gray-500 rounded-full"></div>
+    </div>
+
+    <!-- Progress Card -->
+    <div class="card p-5 mb-6 flex justify-between items-center">
+        <div>
+            <div class="font-bold">Task Progress</div>
+            <div class="text-xs opacity-60">30/40 task done</div>
+            <div class="mt-2 text-xs bg-gray-700 px-2 py-1 rounded inline-block">March 22</div>
+        </div>
+        <div class="w-12 h-12 rounded-full border-4 border-indigo-500 flex items-center justify-center font-bold text-sm">80%</div>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-2 gap-4">
+        <div class="card-purple p-4 rounded-3xl h-40 flex flex-col justify-between">
+            <div>
+                <div class="text-xs">UX Design</div>
+                <div class="font-bold text-sm">Task management<br>mobile app</div>
+            </div>
+            <div class="text-xs">Progress 70%</div>
+        </div>
+        <div class="flex flex-col gap-4">
+            <div class="card-blue p-4 rounded-3xl flex-1 flex flex-col justify-center">
+                <div class="font-bold text-sm">API Payment</div>
+                <div class="text-[10px] mt-1">Progress 40%</div>
+            </div>
+            <div class="card-green p-4 rounded-3xl flex-1 flex flex-col justify-center">
+                <div class="font-bold text-sm">Update work</div>
+                <div class="text-[10px] mt-1">Revision home page</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 font-bold">Urgent tasks</div>
+</body>
+</html>

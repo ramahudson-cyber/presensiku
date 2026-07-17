@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview Light BG Gradients</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background: #f5f5f5; }
+  .title { color: #333; font-size: 12px; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px; }
+  .grids { display: grid; grid-template-columns: 1fr; gap: 30px; width: 100%; max-width: 400px; }
+  .box { height: 200px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+  .label { color: #333; font-size: 12px; opacity: 0.6; margin-top: 10px; text-align: center; }
+
+  .v1 { background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 40%, #fbcfe8 100%); }
+  .v2 { background: linear-gradient(160deg, #faf5ff 0%, #f3e8ff 40%, #e9d5ff 100%); }
+  .v3 { background: linear-gradient(135deg, #ffffff 0%, #fdf4ff 30%, #f5d0fe 100%); }
+  .v4 { background: linear-gradient(140deg, #fff7ed 0%, #fdf2f8 40%, #fce7f3 100%); }
+  .v5 { background: linear-gradient(160deg, #ffffff 0%, #faf5ff 30%, #ede9fe 70%, #ddd6fe 100%); }
+</style>
+</head>
+<body>
+  <div class="title">Pilih Gradien Latar (Light Mode)</div>
+  <div class="grids">
+    <div><div class="box v1">Soft Pink</div><div class="label">Varian 1: #fdf2f8 → #fce7f3 → #fbcfe8</div></div>
+    <div><div class="box v2">Soft Violet</div><div class="label">Varian 2: #faf5ff → #f3e8ff → #e9d5ff</div></div>
+    <div><div class="box v3">White Magenta</div><div class="label">Varian 3: #ffffff → #fdf4ff → #f5d0fe</div></div>
+    <div><div class="box v4">Peach Violet</div><div class="label">Varian 4: #fff7ed → #fdf2f8 → #fce7f3</div></div>
+    <div><div class="box v5">White Lavender</div><div class="label">Varian 5: #ffffff → #faf5ff → #ede9fe → #ddd6fe</div></div>
+  </div>
+</body>
+</html>

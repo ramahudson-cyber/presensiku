@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redesign Preview</title>
+<style>
+  :root { --bg-gradient: linear-gradient(135deg, #ffffff 0%, #fdf4ff 30%, #f5d0fe 100%); }
+  .dark { --bg-gradient: linear-gradient(135deg, #060311 0%, #1a0b2e 50%, #4a2580 100%); }
+  
+  body { 
+    margin: 0; padding: 0; font-family: sans-serif;
+    background: var(--bg-gradient);
+    min-height: 100vh;
+  }
+  
+  /* Hero Dashboard */
+  .hero {
+    background: linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%);
+    color: white;
+    padding: 40px 24px;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+  }
+  
+  /* Content Wrapper */
+  .content { padding: 20px; }
+  .card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 30px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <h1>Dashboard Pegawai</h1>
+  </div>
+  <div class="content">
+    <div class="card">
+      <h3>Riwayat Absensi</h3>
+      <p>Data riwayat akan tampil di sini dengan background glass-morphism.</p>
+    </div>
+  </div>
+</body>
+</html>

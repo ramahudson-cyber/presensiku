@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Premium Calendar Preview</title>
+<style>
+  :root {
+    --primary: #6366f1;
+    --primary-glow: rgba(99, 102, 241, 0.2);
+    --bg-card: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #94a3b8;
+    --weekend-bg: #f8fafc;
+    --border: #f1f5f9;
+  }
+  
+  .dark {
+    --bg-card: #161320;
+    --text-main: #f8fafc;
+    --text-muted: #64748b;
+    --weekend-bg: rgba(255,255,255,0.02);
+    --border: rgba(255,255,255,0.05);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f1f5f9;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .calendar-container {
+    width: 100%;
+    max-width: 400px;
+    background: var(--bg-card);
+    border-radius: 32px;
+    padding: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+
+  .day-header {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-bottom: 12px;
+  }
+
+  .day-cell {
+    aspect-ratio: 1/1;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #fbfcfe;
+    border: 1px solid var(--border);
+  }
+  
+  .dark .day-cell { background: rgba(255,255,255,0.01); }
+
+  .day-cell.weekend { background: var(--weekend-bg); }
+  
+  .day-cell.today {
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
+  }
+
+  .day-num {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-main);
+    z-index: 2;
+  }
+  
+  .day-cell.today .day-num { color: var(--primary); }
+
+  /* SHIFT INDICATORS */
+  .shift-icon {
+    margin-top: 2px;
+    opacity: 0.9;
+  }
+  
+  .shift-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    margin-top: 4px;
+  }
+
+  /* PREMIUM VARIANTS — SOLID COLOR */
+  .pagi { background: #1e40af !important; border-color: #1e3a8a; }
+  .pagi .shift-icon, .pagi .day-num { color: #ffffff !important; }
+  
+  .siang { background: #adff2f !important; border-color: #85c600; }
+  .siang .shift-icon, .siang .day-num { color: #1a2e05 !important; }
+
+  .sore { background: #f97316 !important; border-color: #ea580c; }
+  .sore .shift-icon, .sore .day-num { color: #ffffff !important; }
+
+  .malam { background: #8b5cf6 !important; border-color: #7c3aed; }
+  .malam .shift-icon, .malam .day-num { color: #ffffff !important; }
+
+  .day-cell.today.pagi, .day-cell.today.siang, .day-cell.today.sore, .day-cell.today.malam {
+    border: 3px solid #000;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  }
+  .dark .day-cell.today.pagi, .dark .day-cell.today.siang, .dark .day-cell.today.sore, .dark .day-cell.today.malam {
+    border-color: #fff;
+    box-shadow: 0 0 20px rgba(255,255,255,0.3);
+  }
+
+  .empty { visibility: hidden; }
+</style>
+</head>
+<body class="">
+
+  <div class="calendar-container">
+    <div class="calendar-grid">
+      <!-- Headers -->
+      <div class="day-header">Sn</div>
+      <div class="day-header">Sl</div>
+      <div class="day-header">Rb</div>
+      <div class="day-header">Km</div>
+      <div class="day-header">Jm</div>
+      <div class="day-header">Sb</div>
+      <div class="day-header">Mg</div>
+
+      <!-- Days Row 1 -->
+      <div class="day-cell empty"></div>
+      <div class="day-cell empty"></div>
+      <div class="day-cell pagi">
+        <span class="day-num">1</span>
+        <svg class="shift-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </div>
+      <div class="day-cell siang">
+        <span class="day-num">2</span>
+        <svg class="shift-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/><path d="M12 12c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4z" opacity="0.5"/></svg>
+      </div>
+      <div class="day-cell sore">
+        <span class="day-num">3</span>
+        <svg class="shift-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 18a5 5 0 0 0-10 0M12 2v7M4.93 9.93l1.41 1.41M2 17h2M20 17h2M17.66 12.34l1.41-1.41M12 19v-2"/></svg>
+      </div>
+      <div class="day-cell weekend">
+        <span class="day-num">4</span>
+        <div class="shift-dot" style="background: #94a3b8"></div>
+      </div>
+      <div class="day-cell weekend">
+        <span class="day-num">5</span>
+        <div class="shift-dot" style="background: #94a3b8"></div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="day-cell today pagi">
+        <span class="day-num">15</span>
+        <svg class="shift-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </div>
+      <div class="day-cell malam">
+        <span class="day-num">16</span>
+        <svg class="shift-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      </div>
+      <!-- dst... -->
+    </div>
+  </div>
+
+</body>
+</html>
