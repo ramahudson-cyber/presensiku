@@ -8,10 +8,12 @@ import {
 import { useState } from "react";
 import BottomSheet from "./BottomSheet";
 
-export default function BottomNav() {
+export default function BottomNav({ hidden = false }) {
   const { user } = useAuth();
   const [moreOpen, setMoreOpen] = useState(false);
   const userRole = user?.role || "pegawai";
+
+  if (hidden) return null;
 
   // Menu untuk Pegawai — 2 items (Absensi diganti floating button)
   const pegawaiMenus = [

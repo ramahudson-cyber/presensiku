@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import LocationMap from "../../components/LocationMap";
 import AttendanceResultSheet from "../../components/AttendanceResultSheet";
+import BottomNav from "../../components/BottomNav";
 import { getCurrentPosition } from "../../services/geoService";
 import { getPuskesmasLocation, calculateDistance, verifyLocationServer } from "../../services/attendanceService";
 
@@ -621,11 +622,14 @@ const handleCheckIn = async () => {
       <div className="relative z-20">
         <AttendanceResultSheet
           open={resultSheetOpen}
-          onClose={() => setResultSheetOpen(false)}
+          onClose={() => {
+            setResultSheetOpen(false);
+          }}
           data={resultData}
           type={resultType}
         />
       </div>
+      <BottomNav hidden={resultSheetOpen} />
     </div>
   );
 }
