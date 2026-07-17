@@ -56,7 +56,7 @@ export default function AttendancePage() {
   const [isFakeGPS, setIsFakeGPS] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
-  const [puskesmasLocation, setPuskesmasLocation] = useState({ latitude: -8.5697, longitude: 116.0821, radius_meter: 200 });
+  const [puskesmasLocation, setPuskesmasLocation] = useState({ latitude: -8.5697, longitude: 116.0821, radius_meter: 200, name: "Puskesmas Ampenan" });
   const prevDistanceRef = useRef(null);
   const DISTANCE_THRESHOLD = 5;
   const [refreshing, setRefreshing] = useState(false);
@@ -466,7 +466,7 @@ const handleCheckIn = async () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-[13px] font-extrabold text-black tracking-tight leading-tight">Puskesmas Ampenan</p>
+                  <p className="text-[13px] font-extrabold text-black tracking-tight leading-tight">{puskesmasLocation.name || "Puskesmas Ampenan"}</p>
                   <p className="text-[8px] font-semibold text-black uppercase tracking-[0.5px]">Lokasi Absensi</p>
                 </div>
               </div>
@@ -499,7 +499,7 @@ const handleCheckIn = async () => {
               <div className="flex items-center gap-1 px-2 py-1 rounded-full">
                 <span className="text-[9px] text-black">📍</span>
                 <span className="text-[9px] font-medium text-black">
-                  <strong className="text-black font-bold">{distance || "—"}</strong> dari puskesmas
+                  <strong className="text-black font-bold">{distance || "—"}</strong> dari {puskesmasLocation.name?.toLowerCase?.() || "puskesmas"}
                 </span>
               </div>
               <div className="ml-auto px-2 py-1 rounded-full border border-electric-violet/4">
