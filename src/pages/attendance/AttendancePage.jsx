@@ -444,7 +444,7 @@ const handleCheckIn = async () => {
         <div className="pointer-events-auto space-y-2">
           <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl rounded-full px-3.5 py-2 border border-black/10 shadow-sm">
             <div>
-              <p className="text-[8px] text-black/40 uppercase tracking-[0.6px]">{dateStr}</p>
+              <p className="text-[8px] text-black uppercase tracking-[0.6px]">{dateStr}</p>
               <p className="text-sm font-bold font-mono tabular-nums tracking-tight text-black">{timeStr}</p>
             </div>
             {serverTime ? (
@@ -467,7 +467,7 @@ const handleCheckIn = async () => {
                 </div>
                 <div>
                   <p className="text-[13px] font-extrabold text-black tracking-tight leading-tight">Puskesmas Ampenan</p>
-                  <p className="text-[8px] font-semibold text-black/35 uppercase tracking-[0.5px]">Lokasi Absensi</p>
+                  <p className="text-[8px] font-semibold text-black uppercase tracking-[0.5px]">Lokasi Absensi</p>
                 </div>
               </div>
               <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${
@@ -479,12 +479,12 @@ const handleCheckIn = async () => {
               }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${
                   locationStatus === "valid" ? "bg-white shadow-[0_0_6px_rgba(255,255,255,0.5)] animate-breathe" :
-                  locationStatus === "invalid" ? "bg-red-400" : "bg-black/30"
+                  locationStatus === "invalid" ? "bg-red-400" : "bg-black"
                 }`}></span>
                 <span className={`text-[8px] font-bold uppercase tracking-[0.3px] ${
                   locationStatus === "valid" ? "text-white" :
                   locationStatus === "invalid" ? "text-red-400" :
-                  "text-black/40"
+                  "text-black"
                 }`}>
                   {locationStatus === "valid" ? "Dalam Radius" :
                    locationStatus === "invalid" ? "Luar Radius" :
@@ -497,13 +497,13 @@ const handleCheckIn = async () => {
             {/* Row 2: Distance + Shift */}
             <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-black/[0.06]">
               <div className="flex items-center gap-1 px-2 py-1 rounded-full">
-                <span className="text-[9px] text-black/40">📍</span>
-                <span className="text-[9px] font-medium text-black/50">
-                  <strong className="text-black/80 font-bold">{distance || "—"}</strong> dari puskesmas
+                <span className="text-[9px] text-black">📍</span>
+                <span className="text-[9px] font-medium text-black">
+                  <strong className="text-black font-bold">{distance || "—"}</strong> dari puskesmas
                 </span>
               </div>
               <div className="ml-auto px-2 py-1 rounded-full border border-electric-violet/4">
-                <span className="text-[8px] font-bold text-black/60 uppercase tracking-[1px]">
+                <span className="text-[8px] font-bold text-black uppercase tracking-[1px]">
                   {"Shift " + (todaySchedule?.name || (todayAttendance?.shift_code ? SHIFT_NAMES[todayAttendance.shift_code] : ""))}
                 </span>
               </div>
@@ -513,7 +513,7 @@ const handleCheckIn = async () => {
             {todayAttendance && (
               <div className="flex items-center gap-2 mt-2 pt-2 border-t border-black/[0.06]">
                 <div className={`w-2 h-2 rounded-full ${todayAttendance.is_late ? "bg-green-yellow" : "bg-green-yellow"}`}></div>
-                <span className="text-[9px] font-semibold text-black/60">
+                <span className="text-[9px] font-semibold text-black">
                   {todayAttendance.clock_out_time
                     ? "Selesai"
                     : todayAttendance.is_late
@@ -521,7 +521,7 @@ const handleCheckIn = async () => {
                       : "Belum absen pulang"}
                 </span>
                 <div className="ml-auto flex gap-2">
-                  <span className="text-[8px] text-black/40">Masuk {formatTimeSimple(todayAttendance.clock_in_time)}</span>
+                  <span className="text-[8px] text-black">Masuk {formatTimeSimple(todayAttendance.clock_in_time)}</span>
                   {todayAttendance.clock_out_time && (
                     <span className="text-[8px] text-periwinkle-glow/40">Pulang {formatTimeSimple(todayAttendance.clock_out_time)}</span>
                   )}
@@ -579,7 +579,7 @@ const handleCheckIn = async () => {
                 )}
               </button>
             </div>
-            <span className="text-[10px] font-bold text-black/60 tracking-[2px] uppercase">
+            <span className="text-[10px] font-bold text-black tracking-[2px] uppercase">
               {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
             </span>
           </div>
