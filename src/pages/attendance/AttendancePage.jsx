@@ -442,7 +442,7 @@ const handleCheckIn = async () => {
       <div className="absolute inset-0 z-10 flex flex-col pt-16 px-4 pb-4 pointer-events-none">
         {/* Top: Server Time + Location Card */}
         <div className="pointer-events-auto space-y-2">
-          <div className="inline-flex items-center gap-2 px-3.5 py-2">
+          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl rounded-full px-3.5 py-2 border border-black/10 shadow-sm">
             <div>
               <p className="text-[8px] text-black/40 uppercase tracking-[0.6px]">{dateStr}</p>
               <p className="text-sm font-bold font-mono tabular-nums tracking-tight text-black">{timeStr}</p>
@@ -455,7 +455,7 @@ const handleCheckIn = async () => {
           </div>
 
           {/* Location Card */}
-          <div className="p-3.5">
+          <div className="bg-white/85 backdrop-blur-2xl rounded-[18px] p-3.5 border border-black/10 shadow-sm">
             {/* Row 1: Location + Status Pill */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
