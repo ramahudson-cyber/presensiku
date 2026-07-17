@@ -551,7 +551,7 @@ const handleCheckIn = async () => {
         </div>
 
         {/* Spacer */}
-        <div className="flex-1"></div>
+        <div className="flex-1 max-h-8"></div>
         {todayAttendance && todayAttendance.clock_out_time ? null : (
           <div className="pointer-events-auto flex flex-col items-center gap-2 pb-2">
             <div className="relative">
