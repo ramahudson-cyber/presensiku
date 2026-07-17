@@ -98,7 +98,7 @@ export default function EmployeeDashboard() {
           </div>
           <div className="pt-0.5">
             <div className="text-xl font-medium tracking-tight text-white">Status hari ini</div>
-            <div className="text-xs text-white/35 mt-0.5 font-normal">Pantau waktu kehadiran anda</div>
+            <div className="text-xs text-black/50 dark:text-white/35 mt-0.5 font-normal">Pantau waktu kehadiran anda</div>
           </div>
         </div>
 
@@ -169,7 +169,7 @@ export default function EmployeeDashboard() {
           </div>
           <div className="pt-0.5">
             <div className="text-xl font-extrabold tracking-tight text-white">Statistik bulan ini</div>
-            <div className="text-xs text-white/35 mt-0.5 font-normal">Ringkasan kehadiran anda bulan ini</div>
+            <div className="text-xs text-black/50 dark:text-white/35 mt-0.5 font-normal">Ringkasan kehadiran anda bulan ini</div>
           </div>
         </div>
 
