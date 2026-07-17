@@ -47,7 +47,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
       </div>
 
       {/* Detail Card — Light Mode Premium */}
-      <div className="bg-[rgba(245,245,250,0.8)] backdrop-blur-xl rounded-[18px] p-3.5 border border-[rgba(0,0,0,0.03)] shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+      <div className="bg-white backdrop-blur-xl rounded-[18px] p-3.5 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
         {/* Clock In */}
         <div className="flex items-center justify-between py-2">
           <div className="flex items-center gap-2.5">
