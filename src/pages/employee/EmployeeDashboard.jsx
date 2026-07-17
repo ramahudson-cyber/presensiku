@@ -114,10 +114,17 @@ export default function EmployeeDashboard() {
                 <div className="text-[28px] font-extrabold leading-none tracking-tight mb-2">
                   {formatTime(todayAttendance.clock_in_time)}
                 </div>
-                <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/15 backdrop-blur-sm px-2.5 py-1 rounded-full">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  {todayAttendance.attendance_status || 'Tepat Waktu'}
-                </div>
+                {todayAttendance.is_late ? (
+                  <div className="inline-flex flex-col items-center px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm">
+                    <span className="text-[9px] font-bold text-red-300 leading-tight">Terlambat</span>
+                    <span className="text-[7px] font-semibold text-red-200 leading-tight">{todayAttendance.late_minutes}m</span>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/15 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    Tepat Waktu
+                  </div>
+                )}
               </>
             ) : (
               <>
