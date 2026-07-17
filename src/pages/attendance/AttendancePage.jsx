@@ -415,7 +415,7 @@ const handleCheckIn = async () => {
     : puskesmasLocation;
 
   return (
-    <div className="fixed inset-0 z-10 top-[var(--header-h,0px)] overflow-hidden bg-[#0d0a14]">
+    <div className="fixed inset-0 z-10 top-[var(--header-h,0px)] overflow-hidden bg-slate-50 dark:bg-[#0d0a14]">
       {/* Ambient Glow Orbs */}
       <div className="absolute top-[-120px] right-[-80px] w-[300px] h-[300px] bg-[radial-gradient(circle,rgba(191,0,255,0.08)_0%,transparent_70%)] rounded-full pointer-events-none z-[1]"></div>
       <div className="absolute bottom-[-100px] left-[-60px] w-[250px] h-[250px] bg-[radial-gradient(circle,rgba(74,222,128,0.05)_0%,transparent_70%)] rounded-full pointer-events-none z-[1]"></div>
@@ -431,9 +431,9 @@ const handleCheckIn = async () => {
             fullscreen={true}
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-[#0d0a14]">
+          <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 dark:bg-[#0d0a14]">
             <Loader2 size={28} className="animate-spin text-periwinkle-glow/60 mb-3" />
-            <p className="text-xs text-white/30">Mendapatkan lokasi...</p>
+            <p className="text-xs text-slate-500 dark:text-white/30">Mendapatkan lokasi...</p>
           </div>
         )}
       </div>
@@ -442,10 +442,10 @@ const handleCheckIn = async () => {
       <div className="absolute inset-0 z-10 flex flex-col pt-16 px-4 pb-4 pointer-events-none">
         {/* Top: Server Time + Location Card */}
         <div className="pointer-events-auto space-y-2">
-          <div className="inline-flex items-center gap-2 bg-[#0a0a12]/80 backdrop-blur-xl rounded-full px-3.5 py-2 border border-white/[0.04] shadow-[0_4px_16px_rgba(0,0,0,0.3)]">
+          <div className="inline-flex items-center gap-2 bg-white border border-slate-200 shadow-sm rounded-full px-3.5 py-2 dark:bg-[#0a0a12]/80 dark:backdrop-blur-xl dark:border-white/[0.04] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)]">
             <div>
-              <p className="text-[8px] text-white/40 uppercase tracking-[0.6px]">{dateStr}</p>
-              <p className="text-sm font-bold font-mono tabular-nums tracking-tight text-white">{timeStr}</p>
+              <p className="text-[8px] text-slate-400 dark:text-white/40 uppercase tracking-[0.6px]">{dateStr}</p>
+              <p className="text-sm font-bold font-mono tabular-nums tracking-tight text-slate-900 dark:text-white">{timeStr}</p>
             </div>
             {serverTime ? (
               <span className="w-1.5 h-1.5 rounded-full bg-green-yellow shadow-[0_0_6px_rgba(173,255,47,0.6)] animate-breathe shrink-0"></span>
@@ -455,7 +455,7 @@ const handleCheckIn = async () => {
           </div>
 
           {/* Location Card */}
-          <div className="bg-[#0a0a12]/85 backdrop-blur-2xl rounded-[18px] p-3.5 border border-white/[0.04] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <div className="bg-white border border-slate-200 shadow-sm rounded-[18px] p-3.5 dark:bg-[#0a0a12]/85 dark:backdrop-blur-2xl dark:border-white/[0.04] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
             {/* Row 1: Location + Status Pill */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
@@ -466,8 +466,8 @@ const handleCheckIn = async () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-[13px] font-extrabold text-white tracking-tight leading-tight">Puskesmas Ampenan</p>
-                  <p className="text-[8px] font-semibold text-white/35 uppercase tracking-[0.5px]">Lokasi Absensi</p>
+                  <p className="text-[13px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">Puskesmas Ampenan</p>
+                  <p className="text-[8px] font-semibold text-slate-400 dark:text-white/35 uppercase tracking-[0.5px]">Lokasi Absensi</p>
                 </div>
               </div>
               <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${
@@ -475,16 +475,16 @@ const handleCheckIn = async () => {
                   ? "bg-green-yellow/8 border border-green-yellow/8"
                   : locationStatus === "invalid"
                   ? "bg-red-500/8 border border-red-500/8"
-                  : "bg-white/5 border border-white/5"
+                  : "bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5"
               }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${
                   locationStatus === "valid" ? "bg-green-yellow shadow-[0_0_6px_rgba(173,255,47,0.5)] animate-breathe" :
-                  locationStatus === "invalid" ? "bg-red-400" : "bg-white/30"
+                  locationStatus === "invalid" ? "bg-red-400" : "bg-slate-300 dark:bg-white/30"
                 }`}></span>
                 <span className={`text-[8px] font-bold uppercase tracking-[0.3px] ${
                   locationStatus === "valid" ? "text-green-yellow" :
                   locationStatus === "invalid" ? "text-red-400" :
-                  "text-white/30"
+                  "text-slate-400 dark:text-white/30"
                 }`}>
                   {locationStatus === "valid" ? "Dalam Radius" :
                    locationStatus === "invalid" ? "Luar Radius" :
@@ -495,15 +495,15 @@ const handleCheckIn = async () => {
             </div>
 
             {/* Row 2: Distance + Shift */}
-            <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-white/[0.03]">
-              <div className="flex items-center gap-1 bg-white/[0.02] px-2 py-1 rounded-full">
-                <span className="text-[9px] text-white/30">📍</span>
-                <span className="text-[9px] font-medium text-white/40">
-                  <strong className="text-white/80 font-bold">{distance || "—"}</strong> dari puskesmas
+            <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-slate-100 dark:border-white/[0.03]">
+              <div className="flex items-center gap-1 bg-slate-50 dark:bg-white/[0.02] px-2 py-1 rounded-full">
+                <span className="text-[9px] text-slate-400 dark:text-white/30">📍</span>
+                <span className="text-[9px] font-medium text-slate-500 dark:text-white/40">
+                  <strong className="text-slate-800 dark:text-white/80 font-bold">{distance || "—"}</strong> dari puskesmas
                 </span>
               </div>
               <div className="ml-auto bg-electric-violet/5 px-2 py-1 rounded-full border border-electric-violet/4">
-                <span className="text-[8px] font-bold text-white/45 uppercase tracking-[1px]">
+                <span className="text-[8px] font-bold text-slate-500 dark:text-white/45 uppercase tracking-[1px]">
                   {todaySchedule?.name || (todayAttendance?.shift_code ? SHIFT_NAMES[todayAttendance.shift_code] : "Shift")}
                 </span>
               </div>
@@ -511,9 +511,9 @@ const handleCheckIn = async () => {
 
             {/* Attendance Status */}
             {todayAttendance && (
-              <div className="flex items-center gap-2 mt-2 pt-2 border-t border-white/[0.03]">
+              <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-white/[0.03]">
                 <div className={`w-2 h-2 rounded-full ${todayAttendance.is_late ? "bg-green-yellow" : "bg-green-yellow"}`}></div>
-                <span className="text-[9px] font-semibold text-white/50">
+                <span className="text-[9px] font-semibold text-slate-500 dark:text-white/50">
                   {todayAttendance.clock_out_time
                     ? "Selesai"
                     : todayAttendance.is_late
@@ -521,7 +521,7 @@ const handleCheckIn = async () => {
                       : "Belum absen pulang"}
                 </span>
                 <div className="ml-auto flex gap-2">
-                  <span className="text-[8px] text-white/25">Masuk {formatTimeSimple(todayAttendance.clock_in_time)}</span>
+                  <span className="text-[8px] text-slate-400 dark:text-white/25">Masuk {formatTimeSimple(todayAttendance.clock_in_time)}</span>
                   {todayAttendance.clock_out_time && (
                     <span className="text-[8px] text-periwinkle-glow/40">Pulang {formatTimeSimple(todayAttendance.clock_out_time)}</span>
                   )}
@@ -533,19 +533,19 @@ const handleCheckIn = async () => {
           {/* Error banner */}
           {error && (
             <div className="px-3 py-2 bg-red-500/10 rounded-xl border border-red-500/10">
-              <p className="text-[10px] text-red-300 font-medium">{error}</p>
+              <p className="text-[10px] text-red-600 dark:text-red-300 font-medium">{error}</p>
             </div>
           )}
           {successMsg && (
             <div className="px-3 py-2 bg-green-yellow/8 rounded-xl border border-green-yellow/15 flex items-center gap-2">
               <CheckCircle2 size={12} className="text-green-yellow shrink-0" />
-              <p className="text-[10px] text-green-yellow">{successMsg}</p>
+              <p className="text-[10px] text-green-600 dark:text-green-yellow">{successMsg}</p>
             </div>
           )}
           {isFakeGPS && (
             <div className="px-3 py-2 bg-red-500/8 rounded-xl flex items-center gap-2 border border-red-500/10">
               <ShieldAlert size={12} className="text-red-400 shrink-0" />
-              <p className="text-[9px] text-red-300 font-medium">Terdeteksi Fake GPS! Absen ditolak.</p>
+              <p className="text-[9px] text-red-600 dark:text-red-300 font-medium">Terdeteksi Fake GPS! Absen ditolak.</p>
             </div>
           )}
         </div>
@@ -579,7 +579,7 @@ const handleCheckIn = async () => {
                 )}
               </button>
             </div>
-            <span className="text-[10px] font-bold text-white/45 tracking-[2px] uppercase">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-white/45 tracking-[2px] uppercase">
               {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
             </span>
           </div>
