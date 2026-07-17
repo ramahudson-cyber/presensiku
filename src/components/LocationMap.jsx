@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-export default function LocationMap({ userLocation, puskesmasLocation, distance, status, fullscreen }) {
+export default function LocationMap({ userLocation, puskesmasLocation, distance, status, fullscreen, onMapReady }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
 
@@ -25,10 +25,6 @@ export default function LocationMap({ userLocation, puskesmasLocation, distance,
     L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       maxZoom: 19,
     }).addTo(map);
-
-    // Dark zoom controls
-    const zoomControl = L.control.zoom({ position: "topright" });
-    zoomControl.addTo(map);
 
     const puskesmas = [puskesmasLocation.latitude, puskesmasLocation.longitude];
     const user = [userLocation.latitude, userLocation.longitude];
@@ -71,8 +67,9 @@ export default function LocationMap({ userLocation, puskesmasLocation, distance,
     requestAnimationFrame(() => map.invalidateSize());
 
     mapInstanceRef.current = map;
+    onMapReady?.(map);
 
-    return () => {
+	    return () => {
       map.remove();
       mapInstanceRef.current = null;
     };
@@ -91,27 +88,6 @@ if (!document.getElementById(styleId)) {
   style.textContent = `
     .leaflet-container { background: #f0f0f5 !important; }
     .leaflet-control-attribution { display: none !important; }
-    .leaflet-control-zoom {
-      border: none !important;
-      box-shadow: none !important;
-    }
-    .leaflet-control-zoom a {
-      background: rgba(30,30,40,0.85) !important;
-      backdrop-filter: blur(12px) !important;
-      -webkit-backdrop-filter: blur(12px) !important;
-      color: white !important;
-      border: 1px solid rgba(255,255,255,0.08) !important;
-      width: 40px !important;
-      height: 40px !important;
-      line-height: 40px !important;
-      font-size: 18px !important;
-      border-radius: 12px !important;
-      margin-bottom: 6px !important;
-      transition: 0.2s !important;
-    }
-    .leaflet-control-zoom a:hover {
-      background: rgba(60,60,80,0.9) !important;
-    }
     @keyframes userPulse {
       0%, 100% { transform: scale(1); opacity: 0.3; }
       50% { transform: scale(2); opacity: 0; }

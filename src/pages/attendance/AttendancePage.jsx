@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import {
-  CheckCircle2, Loader2, ShieldAlert
+  CheckCircle2, Loader2, ShieldAlert, Plus, Minus
 } from "lucide-react";
 import LocationMap from "../../components/LocationMap";
 import AttendanceResultSheet from "../../components/AttendanceResultSheet";
@@ -58,8 +58,9 @@ export default function AttendancePage() {
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
   const [puskesmasLocation, setPuskesmasLocation] = useState({ latitude: -8.5697, longitude: 116.0821, radius_meter: 200, name: "Puskesmas Ampenan" });
   const prevDistanceRef = useRef(null);
-  const DISTANCE_THRESHOLD = 5;
-  const [refreshing, setRefreshing] = useState(false);
+	  const zoomMapRef = useRef(null);
+	  const DISTANCE_THRESHOLD = 5;
+	  const [refreshing, setRefreshing] = useState(false);
 
 
 
@@ -422,14 +423,15 @@ const handleCheckIn = async () => {
 
       {/* Map Fullscreen */}
       <div className="absolute inset-0 z-0">
-        {currentCoords ? (
-          <LocationMap
-            userLocation={{ latitude: currentCoords.latitude, longitude: currentCoords.longitude }}
-            puskesmasLocation={{ latitude: puskesmasLocation.latitude, longitude: puskesmasLocation.longitude }}
-            distance={distance}
-            status={locationStatus}
-            fullscreen={true}
-          />
+          {currentCoords ? (
+            <LocationMap
+              userLocation={{ latitude: currentCoords.latitude, longitude: currentCoords.longitude }}
+              puskesmasLocation={{ latitude: puskesmasLocation.latitude, longitude: puskesmasLocation.longitude }}
+              distance={distance}
+              status={locationStatus}
+              fullscreen={true}
+              onMapReady={(m) => zoomMapRef.current = m}
+            />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center bg-[#0d0a14]">
             <Loader2 size={28} className="animate-spin text-periwinkle-glow/60 mb-3" />
@@ -581,10 +583,22 @@ const handleCheckIn = async () => {
               {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
             </span>
           </div>
-        )}
-      </div>
+	        )}
 
-      {/* Bottom Sheet */}
+	        {/* Zoom controls */}
+	        <div className="absolute bottom-28 right-4 flex flex-col gap-2 pointer-events-auto z-20">
+	          <button onClick={() => zoomMapRef.current?.zoomIn()}
+	            className="w-9 h-9 rounded-xl bg-white/80 backdrop-blur-xl border border-black/10 flex items-center justify-center shadow-sm hover:bg-white transition-all">
+	            <Plus size={16} className="text-black" />
+	          </button>
+	          <button onClick={() => zoomMapRef.current?.zoomOut()}
+	            className="w-9 h-9 rounded-xl bg-white/80 backdrop-blur-xl border border-black/10 flex items-center justify-center shadow-sm hover:bg-white transition-all">
+	            <Minus size={16} className="text-black" />
+	          </button>
+	        </div>
+	      </div>
+	
+	      {/* Bottom Sheet */}
       <div className="relative z-20">
         <AttendanceResultSheet
           open={resultSheetOpen}
