@@ -128,9 +128,8 @@ export default function EmployeeDashboard() {
             ) : (
               <>
                 <div className="text-[20px] font-bold leading-none opacity-50 mb-2">--:--</div>
-                <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/10 px-2.5 py-1 rounded-full opacity-50">
-                  Belum Absen
-                </div>
+                <div className="text-base font-bold leading-none text-white mb-2">Belum Absen</div>
+                <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/10 px-2.5 py-1 rounded-full opacity-50">—</div>
               </>
             )}
           </div>
@@ -152,7 +151,7 @@ export default function EmployeeDashboard() {
               </>
             ) : (
               <>
-                <div className="text-base font-bold leading-none opacity-40 mb-2">Belum Absen</div>
+                <div className="text-base font-bold leading-none text-black mb-2">Belum Absen</div>
                 <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-black/5 px-2.5 py-1 rounded-full opacity-40">—</div>
               </>
             )}
