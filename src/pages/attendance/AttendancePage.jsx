@@ -629,7 +629,7 @@ const handleCheckIn = async () => {
           type={resultType}
         />
       </div>
-      <BottomNav hidden={true} />
+      <BottomNav hidden={resultSheetOpen} />
     </div>
   );
 }
