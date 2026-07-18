@@ -30,7 +30,10 @@ export default function EmployeeDashboard() {
       const monthStart = new Date(); monthStart.setDate(1);
       const { data: monthData } = await supabase.from("attendance").select("attendance_status").eq("user_id", user.id).gte("date", monthStart.toISOString().split("T")[0]);
       const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
-      monthData?.forEach(a => { if (s[a.attendance_status] !== undefined) s[a.attendance_status]++; });
+      monthData?.forEach(a => {
+        const st = a.attendance_status === 'terlambat' ? 'hadir' : a.attendance_status;
+        if (s[st] !== undefined) s[st]++;
+      });
       setStats(s);
       const { data: ann } = await supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3);
       setAnnouncements(ann || []);
