@@ -172,6 +172,110 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
+        {/* SECTION TITLE */}
+        <div className="px-4 flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+          </div>
+          <div className="pt-0.5">
+            <div className="text-xl font-extrabold tracking-tight text-white">Statistik bulan ini</div>
+            <div className="text-xs text-black/50 dark:text-white/35 mt-0.5 font-normal">Ringkasan kehadiran anda bulan ini</div>
+          </div>
+        </div>
+
+        {/* STATS CARD PREMIUM */}
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative overflow-hidden stats-card">
+          <div className="bg-grid" />
+          <div className="bg-orb-1" />
+          <div className="bg-orb-2" />
+          <div className="bg-ring-glow" />
+
+          <div className="content">
+            {(() => {
+              const total = stats.hadir + stats.izin + stats.sakit + stats.alpha;
+              const c = 2 * Math.PI * 40;
+              const daysElapsed = new Date().getDate();
+              const items = [
+                { k:'hadir', v:stats.hadir, color:'#ADFF2F', label:'Hadir' },
+                { k:'izin', v:stats.izin, color:'#fbbf24', label:'Izin' },
+                { k:'sakit', v:stats.sakit, color:'#fb923c', label:'Sakit' },
+                { k:'alpha', v:stats.alpha, color:'#f87171', label:'Alpha' },
+              ];
+              let offset = 0;
+              const segments = items.map(it => {
+                const pct = total > 0 ? it.v / total : 0;
+                const len = c * pct;
+                const displayPct = it.k === 'hadir' ? Math.round(it.v / daysElapsed * 100) : Math.round(pct * 100);
+                const seg = { ...it, dasharray: `${len} ${c - len}`, dashoffset: -offset, pct: Math.round(pct * 100), displayPct };
+                offset += len;
+                return seg;
+              });
+              return (
+                <>
+                  {/* Title row */}
+                  <div className="flex justify-between items-center mb-5 pb-4 border-b border-white/5">
+                    <h3 className="text-sm font-bold text-white">Statistik</h3>
+                    <span className="text-xs px-3 py-1 rounded-full bg-electric-violet/10 text-electric-violet font-semibold">Total: {total}</span>
+                  </div>
+
+                  {/* Long horizontal cards — white text */}
+                  <div className="flex flex-col gap-2 mb-5">
+                    {segments.map(s => (
+                      <div key={s.k} className="flex items-center justify-between rounded-xl px-4 py-3.5 border backdrop-blur-sm hover:-translate-y-0.5 transition-all duration-300"
+                        style={{ background: `${s.color}08`, borderColor: `${s.color}15` }}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full shrink-0" style={{background: s.color}} />
+                          <span className="text-xs font-medium text-white">{s.label}</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="text-lg font-bold text-white tabular-nums">{s.v}</span>
+                          <span className="text-[10px] text-white/40 font-medium">{s.displayPct}%</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Viz row: Ring + Bar list */}
+                  <div className="flex gap-4 items-stretch bg-white/5 rounded-2xl p-4 border border-white/5">
+                    {/* Donut Ring */}
+                    <div className="relative w-[100px] h-[100px] shrink-0">
+                      <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="8"/>
+                        {segments.filter(s => s.v > 0).map(s => (
+                          <circle key={s.k} cx="50" cy="50" r="40" fill="none" stroke={s.color} strokeWidth="8"
+                            strokeDasharray={s.dasharray} strokeDashoffset={s.dashoffset}
+                            strokeLinecap="round" transform="rotate(-90, 50, 50)"
+                            style={{filter: s.k === 'hadir' ? 'drop-shadow(0 0 6px rgba(173,255,47,0.3))' : 'none'}} />
+                        ))}
+                        <circle cx="50" cy="50" r="28" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.03)" strokeWidth="1"/>
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center text-xl font-extrabold text-white">{total}</div>
+                    </div>
+
+                    {/* Horizontal Bar List */}
+                    <div className="flex-1 flex flex-col justify-center gap-2">
+                      {segments.map(s => (
+                        <div key={s.k} className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full shrink-0"
+                            style={{background: s.color, boxShadow: s.v > 0 ? `0 0 4px ${s.color}88` : 'none'}} />
+                          <span className="text-[10px] text-white/50 w-10">{s.label}</span>
+                          <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full transition-all duration-1000"
+                              style={{width: `${s.pct}%`, background: `linear-gradient(90deg, ${s.color}, ${s.color}66)`}} />
+                          </div>
+                          <span className="text-[11px] font-semibold w-8 text-right" style={{color: s.color}}>{s.v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
           <div className="flex justify-between items-center mb-5 pb-4 border-b border-white/5">
             <h3 className="text-sm font-bold text-white">Riwayat Absensi</h3>
