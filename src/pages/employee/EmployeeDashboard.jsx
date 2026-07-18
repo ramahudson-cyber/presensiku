@@ -285,12 +285,15 @@ export default function EmployeeDashboard() {
                 </div>
                 <div className="text-center text-xs font-medium tabular-nums">{formatTime(att.clock_in_time)}</div>
                 <div className="text-center text-xs font-medium tabular-nums">{formatTime(att.clock_out_time)}</div>
-                <div className={`text-right text-xs font-bold uppercase px-2 py-1 rounded-full whitespace-nowrap justify-self-end ${
+                <div className={`text-right text-xs font-bold uppercase px-2 py-1 rounded-full justify-self-end ${
                   att.attendance_status === 'terlambat' ? 'bg-amber-400/15 text-amber-400' :
                   att.attendance_status === 'hadir' ? 'bg-emerald-400/15 text-emerald-400' :
                   'bg-white/10 opacity-80'
                 }`}>
-                  {att.attendance_status}
+                  <div>{att.attendance_status}</div>
+                  {att.attendance_status === 'terlambat' && att.late_minutes > 0 && (
+                    <div className="text-[8px] font-semibold opacity-70 leading-tight">{att.late_minutes}m</div>
+                  )}
                 </div>
               </div>
             )) : <div className="text-xs opacity-80 text-center py-6">Belum ada riwayat.</div>}
