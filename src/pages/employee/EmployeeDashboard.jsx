@@ -115,14 +115,20 @@ export default function EmployeeDashboard() {
                   {formatTime(todayAttendance.clock_in_time)}
                 </div>
                 {todayAttendance.is_late ? (
-                  <div className="inline-flex flex-col items-center px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm">
-                    <span className="text-[9px] font-bold text-red-300 leading-tight">Terlambat</span>
-                    <span className="text-[7px] font-semibold text-red-200 leading-tight">{todayAttendance.late_minutes}m</span>
+                  <div className="badge-luxury badge-luxury-terlambat">
+                    <div className="badge-luxury-icon badge-luxury-icon-terlambat">⚠</div>
+                    <div className="badge-luxury-content">
+                      <span className="badge-luxury-label badge-luxury-label-terlambat">Terlambat {todayAttendance.late_minutes} menit</span>
+                      <span className="badge-luxury-sub badge-luxury-sub-terlambat">Melebihi batas toleransi</span>
+                    </div>
                   </div>
                 ) : (
-                  <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/15 backdrop-blur-sm px-2.5 py-1 rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    Tepat Waktu
+                  <div className="badge-luxury badge-luxury-tepat">
+                    <div className="badge-luxury-icon badge-luxury-icon-tepat">✓</div>
+                    <div className="badge-luxury-content">
+                      <span className="badge-luxury-label badge-luxury-label-tepat">Tepat Waktu</span>
+                      <span className="badge-luxury-sub badge-luxury-sub-tepat">Hadir sesuai jadwal</span>
+                    </div>
                   </div>
                 )}
               </>
