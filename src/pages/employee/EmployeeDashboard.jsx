@@ -204,14 +204,19 @@ export default function EmployeeDashboard() {
                     <span className="text-xs px-3 py-1 rounded-full bg-electric-violet/10 text-electric-violet font-semibold">Total: {total}</span>
                   </div>
 
-                  {/* 4 Mini cards */}
-                  <div className="grid grid-cols-4 gap-2 mb-5">
+                  {/* Long horizontal cards — white text */}
+                  <div className="flex flex-col gap-2 mb-5">
                     {segments.map(s => (
-                      <div key={s.k} className="rounded-xl p-4 text-center border backdrop-blur-sm hover:-translate-y-0.5 transition-all duration-300"
-                        style={{ background: `${s.color}0f`, borderColor: `${s.color}1a` }}>
-                        <div className="text-2xl font-bold leading-none mb-1.5" style={{color: s.color}}>{s.v}</div>
-                        <div className="text-[9px] font-medium" style={{color: s.color}}>{s.label}</div>
-                        <div className="text-[8px] mt-1 opacity-40" style={{color: s.color}}>{s.pct}%</div>
+                      <div key={s.k} className="flex items-center justify-between rounded-xl px-4 py-3.5 border backdrop-blur-sm hover:-translate-y-0.5 transition-all duration-300"
+                        style={{ background: `${s.color}08`, borderColor: `${s.color}15` }}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full shrink-0" style={{background: s.color}} />
+                          <span className="text-xs font-medium text-white">{s.label}</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="text-lg font-bold text-white tabular-nums">{s.v}</span>
+                          <span className="text-[10px] text-white/40 font-medium">{s.pct}%</span>
+                        </div>
                       </div>
                     ))}
                   </div>

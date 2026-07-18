@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Palette — Hadir/Izin/Sakit/Alpha</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: #050208;
+}
+.container { max-width: 1100px; margin: 0 auto; }
+h1 { font-size: 28px; font-weight: 800; color: #fff; text-align: center; margin-bottom: 4px; }
+.subtitle { text-align: center; color: rgba(255,255,255,0.3); font-size: 13px; margin-bottom: 40px; }
+
+/* Phone frame */
+.phone-frame {
+  width: 390px;
+  background: #000;
+  border-radius: 48px;
+  padding: 12px 0;
+  box-shadow: 0 25px 80px rgba(0,0,0,0.6), 0 0 0 2px #2a2a3e, 0 0 0 12px #0d001a;
+  position: relative;
+  margin: 0 auto;
+}
+.phone-frame::before {
+  content: ''; position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+  width: 110px; height: 28px; background: #000; border-radius: 0 0 18px 18px; z-index: 100;
+}
+.phone-screen {
+  width: 100%; height: auto;
+  background: #060311;
+  border-radius: 36px; overflow: hidden;
+  padding: 48px 16px 24px;
+}
+
+/* Dark mode card */
+.card-dark {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 24px;
+}
+.card-dark .section-title {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.card-dark .section-title h3 { font-size: 14px; font-weight: 700; color: #fff; }
+.card-dark .section-title span {
+  font-size: 11px; padding: 4px 12px; border-radius: 9999px;
+  background: rgba(191,0,255,0.1); color: #BF00FF; font-weight: 600;
+}
+
+/* Mini card grid */
+.mini-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
+.mini-card {
+  border-radius: 14px; padding: 16px 8px; text-align: center;
+  border: 1px solid; transition: all 0.3s;
+}
+.mini-card:hover { transform: translateY(-2px); }
+.mini-card .num { font-size: 24px; font-weight: 700; line-height: 1; }
+.mini-card .lbl { font-size: 9px; font-weight: 500; margin-top: 6px; }
+.mini-card .pct { font-size: 8px; margin-top: 4px; opacity: 0.4; }
+
+/* Light mode card */
+.card-light {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.card-light .section-title {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.card-light .section-title h3 { font-size: 14px; font-weight: 700; color: #0f172a; }
+.card-light .section-title span {
+  font-size: 11px; padding: 4px 12px; border-radius: 9999px;
+  background: rgba(191,0,255,0.08); color: #BF00FF; font-weight: 600;
+}
+
+/* Light mini cards */
+.card-light .mini-card { backdrop-filter: none; }
+
+/* Palette showcase */
+.palette-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 32px; margin-bottom: 48px;
+}
+
+.palette-label {
+  text-align: center;
+  font-size: 12px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+.palette-label .tag {
+  display: inline-block;
+  padding: 3px 12px; border-radius: 9999px;
+  font-size: 10px;
+}
+
+/* Color swatches */
+.color-swatch-row {
+  display: flex; gap: 8px; margin-bottom: 32px;
+  justify-content: center;
+}
+.color-swatch {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.color-swatch .swatch {
+  width: 48px; height: 48px; border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.08);
+}
+.color-swatch .name { font-size: 9px; color: rgba(255,255,255,0.4); }
+.color-swatch .hex { font-size: 8px; color: rgba(255,255,255,0.2); font-family: monospace; }
+
+/* Comparison table */
+.comparison {
+  margin-top: 40px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 24px;
+}
+.comparison h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.2); margin-bottom: 16px; }
+.comparison table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.comparison th { text-align: left; padding: 10px 12px; font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.comparison td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.8); }
+.comparison .highlight { color: #BF00FF; font-weight: 700; }
+.comparison .color-dot {
+  display: inline-block; width: 12px; height: 12px; border-radius: 4px;
+  vertical-align: middle; margin-right: 6px;
+}
+
+.vs { text-align: center; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.15); padding: 8px 0; letter-spacing: 0.15em; }
+
+.rec-badge {
+  display: inline-block; font-size: 9px; font-weight: 600; padding: 2px 8px; border-radius: 9999px;
+  background: rgba(191,0,255,0.15); color: #BF00FF; margin-left: 6px;
+}
+
+@media (max-width: 640px) {
+  .phone-frame { width: 100%; }
+  .mini-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>🎨 Warna Hadir / Izin / Sakit / Alpha</h1>
+  <p class="subtitle">Cocok untuk dark mode (bg gelap) dan light mode (bg putih)</p>
+
+  <!-- PREVIEW: CURRENT vs PROPOSED -->
+  <div class="palette-row">
+
+    <!-- CURRENT (OLD) -->
+    <div>
+      <div class="palette-label">
+        <span class="tag" style="background:rgba(248,113,113,0.15);color:#f87171;">❌ SEKARANG</span>
+      </div>
+      <div class="phone-frame" style="box-shadow:0 25px 80px rgba(0,0,0,0.6),0 0 0 2px #2a2a3e,0 0 0 12px #1a002e;">
+        <div class="phone-screen" style="padding:24px 16px;">
+          <div class="card-dark">
+            <div class="section-title"><h3>Statistik</h3><span>Total: 15</span></div>
+            <div class="mini-grid">
+              <div class="mini-card" style="background:rgba(173,255,47,0.06);border-color:rgba(173,255,47,0.1);">
+                <div class="num" style="color:#ADFF2F;">12</div><div class="lbl" style="color:#ADFF2F;">Hadir</div><div class="pct" style="color:rgba(173,255,47,0.4);">60%</div>
+              </div>
+              <div class="mini-card" style="background:rgba(251,191,36,0.06);border-color:rgba(251,191,36,0.1);">
+                <div class="num" style="color:#fbbf24;">2</div><div class="lbl" style="color:#fbbf24;">Izin</div><div class="pct" style="color:rgba(251,191,36,0.4);">10%</div>
+              </div>
+              <div class="mini-card" style="background:rgba(251,146,60,0.06);border-color:rgba(251,146,60,0.1);">
+                <div class="num" style="color:#fb923c;">1</div><div class="lbl" style="color:#fb923c;">Sakit</div><div class="pct" style="color:rgba(251,146,60,0.4);">5%</div>
+              </div>
+              <div class="mini-card" style="background:rgba(248,113,113,0.06);border-color:rgba(248,113,113,0.1);">
+                <div class="num" style="color:#f87171;">0</div><div class="lbl" style="color:#f87171;">Alpha</div><div class="pct" style="color:rgba(248,113,113,0.4);">0%</div>
+              </div>
+            </div>
+          </div>
+          <!-- Light mode version -->
+          <div style="margin-top:12px;padding:12px;background:rgba(248,113,113,0.05);border-radius:12px;border:1px solid rgba(248,113,113,0.1);">
+            <div style="font-size:9px;color:#f87171;margin-bottom:6px;">⚠️ Light mode: warna neon kurang kontras di bg putih</div>
+            <div class="card-light" style="padding:16px;">
+              <div class="mini-grid" style="margin-bottom:0;">
+                <div class="mini-card" style="background:rgba(173,255,47,0.06);border-color:rgba(173,255,47,0.15);">
+                  <div class="num" style="color:#ADFF2F;">12</div><div class="lbl" style="color:#ADFF2F;">Hadir</div>
+                </div>
+                <div class="mini-card" style="background:rgba(251,191,36,0.06);border-color:rgba(251,191,36,0.15);">
+                  <div class="num" style="color:#fbbf24;">2</div><div class="lbl" style="color:#fbbf24;">Izin</div>
+                </div>
+                <div class="mini-card" style="background:rgba(251,146,60,0.06);border-color:rgba(251,146,60,0.15);">
+                  <div class="num" style="color:#fb923c;">1</div><div class="lbl" style="color:#fb923c;">Sakit</div>
+                </div>
+                <div class="mini-card" style="background:rgba(248,113,113,0.06);border-color:rgba(248,113,113,0.15);">
+                  <div class="num" style="color:#f87171;">0</div><div class="lbl" style="color:#f87171;">Alpha</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROPOSED (NEW) -->
+    <div>
+      <div class="palette-label">
+        <span class="tag" style="background:rgba(191,0,255,0.15);color:#BF00FF;">✨ BARU</span>
+        <span class="rec-badge">Rekomendasi</span>
+      </div>
+      <div class="phone-frame" style="box-shadow:0 25px 80px rgba(191,0,255,0.1),0 0 0 2px #3a1a4e,0 0 0 12px #1a002e;">
+        <div class="phone-screen" style="padding:24px 16px;">
+          <div class="card-dark">
+            <div class="section-title"><h3>Statistik</h3><span>Total: 15</span></div>
+            <div class="mini-grid">
+              <div class="mini-card" style="background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.15);">
+                <div class="num" style="color:#22C55E;">12</div><div class="lbl" style="color:#22C55E;">Hadir</div><div class="pct" style="color:rgba(34,197,94,0.4);">60%</div>
+              </div>
+              <div class="mini-card" style="background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.15);">
+                <div class="num" style="color:#6366F1;">2</div><div class="lbl" style="color:#6366F1;">Izin</div><div class="pct" style="color:rgba(99,102,241,0.4);">10%</div>
+              </div>
+              <div class="mini-card" style="background:rgba(234,179,8,0.08);border-color:rgba(234,179,8,0.15);">
+                <div class="num" style="color:#EAB308;">1</div><div class="lbl" style="color:#EAB308;">Sakit</div><div class="pct" style="color:rgba(234,179,8,0.4);">5%</div>
+              </div>
+              <div class="mini-card" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.15);">
+                <div class="num" style="color:#EF4444;">0</div><div class="lbl" style="color:#EF4444;">Alpha</div><div class="pct" style="color:rgba(239,68,68,0.4);">0%</div>
+              </div>
+            </div>
+          </div>
+          <!-- Light mode version -->
+          <div style="margin-top:12px;padding:12px;background:rgba(34,197,94,0.05);border-radius:12px;border:1px solid rgba(34,197,94,0.1);">
+            <div style="font-size:9px;color:#22C55E;margin-bottom:6px;">✅ Light mode: warna solid tetap terbaca di bg putih</div>
+            <div class="card-light" style="padding:16px;">
+              <div class="mini-grid" style="margin-bottom:0;">
+                <div class="mini-card" style="background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.15);">
+                  <div class="num" style="color:#22C55E;">12</div><div class="lbl" style="color:#22C55E;">Hadir</div>
+                </div>
+                <div class="mini-card" style="background:rgba(99,102,241,0.06);border-color:rgba(99,102,241,0.15);">
+                  <div class="num" style="color:#6366F1;">2</div><div class="lbl" style="color:#6366F1;">Izin</div>
+                </div>
+                <div class="mini-card" style="background:rgba(234,179,8,0.06);border-color:rgba(234,179,8,0.15);">
+                  <div class="num" style="color:#EAB308;">1</div><div class="lbl" style="color:#EAB308;">Sakit</div>
+                </div>
+                <div class="mini-card" style="background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.15);">
+                  <div class="num" style="color:#EF4444;">0</div><div class="lbl" style="color:#EF4444;">Alpha</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Color swatches -->
+      <div class="color-swatch-row" style="margin-top:12px;">
+        <div class="color-swatch"><div class="swatch" style="background:#22C55E;"></div><span class="name">Hadir</span><span class="hex">#22C55E</span></div>
+        <div class="color-swatch"><div class="swatch" style="background:#6366F1;"></div><span class="name">Izin</span><span class="hex">#6366F1</span></div>
+        <div class="color-swatch"><div class="swatch" style="background:#EAB308;"></div><span class="name">Sakit</span><span class="hex">#EAB308</span></div>
+        <div class="color-swatch"><div class="swatch" style="background:#EF4444;"></div><span class="name">Alpha</span><span class="hex">#EF4444</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="comparison">
+    <h3>📊 Perbandingan Warna</h3>
+    <table>
+      <thead>
+        <tr><th>Kategori</th><th>Sekarang</th><th>Baru ✨</th><th>Alasan</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="color-dot" style="background:#ADFF2F;"></span>Hadir</td>
+          <td><code>#ADFF2F</code> (green-yellow)</td>
+          <td class="highlight"><span class="color-dot" style="background:#22C55E;"></span> <code>#22C55E</code> (green-500)</td>
+          <td>Lebih solid, terbaca di bg putih, tetap cerah di bg gelap</td>
+        </tr>
+        <tr>
+          <td><span class="color-dot" style="background:#fbbf24;"></span>Izin</td>
+          <td><code>#fbbf24</code> (amber-400)</td>
+          <td class="highlight"><span class="color-dot" style="background:#6366F1;"></span> <code>#6366F1</code> (indigo-500)</td>
+          <td>Beda kontras dengan Sakit, warna netral/premium</td>
+        </tr>
+        <tr>
+          <td><span class="color-dot" style="background:#fb923c;"></span>Sakit</td>
+          <td><code>#fb923c</code> (orange-400)</td>
+          <td class="highlight"><span class="color-dot" style="background:#EAB308;"></span> <code>#EAB308</code> (yellow-500)</td>
+          <td>Kuning lebih jelas, warning tapi tidak alarm</td>
+        </tr>
+        <tr>
+          <td><span class="color-dot" style="background:#f87171;"></span>Alpha</td>
+          <td><code>#f87171</code> (red-400)</td>
+          <td class="highlight"><span class="color-dot" style="background:#EF4444;"></span> <code>#EF4444</code> (red-500)</td>
+          <td>Merah lebih kuat, alert jelas di kedua mode</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CODE SNIPPET -->
+  <div style="margin-top:40px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:24px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:rgba(255,255,255,0.2);margin-bottom:16px;">💻 Yang diubah — 1 baris di EmployeeDashboard.jsx</div>
+    <pre style="background:#0a0a14;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;overflow-x:auto;font-size:12px;line-height:1.6;color:#e2e8f0;">
+<span style="color:#a78bfa;">// Ganti array items — cuma warna yang diubah</span>
+<span style="color:#c084fc;">const items</span> = [
+  { k: <span style="color:#6ee7b7;">'hadir'</span>, color: <span style="color:#6ee7b7;">'<span style="color:#22C55E;">#22C55E</span>'</span>, label: <span style="color:#6ee7b7;">'Hadir'</span> },  <span style="color:#a78bfa;">// ← green-500</span>
+  { k: <span style="color:#6ee7b7;">'izin'</span>,  color: <span style="color:#6ee7b7;">'<span style="color:#6366F1;">#6366F1</span>'</span>, label: <span style="color:#6ee7b7;">'Izin'</span> },   <span style="color:#a78bfa;">// ← indigo-500</span>
+  { k: <span style="color:#6ee7b7;">'sakit'</span>, color: <span style="color:#6ee7b7;">'<span style="color:#EAB308;">#EAB308</span>'</span>, label: <span style="color:#6ee7b7;">'Sakit'</span> },  <span style="color:#a78bfa;">// ← yellow-500</span>
+  { k: <span style="color:#6ee7b7;">'alpha'</span>, color: <span style="color:#6ee7b7;">'<span style="color:#EF4444;">#EF4444</span>'</span>, label: <span style="color:#6ee7b7;">'Alpha'</span> },   <span style="color:#a78bfa;">// ← red-500</span>
+];</pre>
+  </div>
+
+</div>
+
+</body>
+</html>
