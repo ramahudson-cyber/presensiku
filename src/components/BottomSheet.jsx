@@ -15,7 +15,7 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
   return (
     <>
       {open && (
-        <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center pb-16 md:pb-0 animate-fade-in" onClick={onClose}>
+        <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center pb-0 animate-fade-in" onClick={onClose}>
         <div className="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
           <div ref={sheetRef} onClick={e => e.stopPropagation()}

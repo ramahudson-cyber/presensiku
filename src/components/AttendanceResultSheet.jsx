@@ -1,5 +1,6 @@
 import BottomSheet from "./BottomSheet";
 import { CheckCircle2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
 
@@ -22,6 +23,7 @@ function calcDuration(clockIn, clockOut) {
 }
 
 export default function AttendanceResultSheet({ open, onClose, data, type }) {
+  const navigate = useNavigate();
   if (!data) return null;
   const isCheckIn = type === "in";
 
@@ -180,7 +182,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
       <button
         onClick={() => {
           onClose();
-          window.location.href = "/employee";
+          navigate("/employee");
         }}
         className="w-full mt-4 py-3.5 bg-gradient-to-r from-electric-violet to-[#9900CC] text-white rounded-full font-bold text-[13px] hover:brightness-110 active:scale-[0.98] transition-all duration-200 shadow-[0_4px_16px_rgba(191,0,255,0.2)]"
       >
