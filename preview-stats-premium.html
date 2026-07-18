@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Stats Card — Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  background: #050208;
+  background-image: radial-gradient(ellipse at 50% 0%, rgba(191,0,255,0.08) 0%, transparent 70%);
+}
+.container { max-width: 1200px; width: 100%; }
+h1 { font-size: 28px; font-weight: 800; color: #fff; text-align: center; margin-bottom: 4px; }
+.subtitle { text-align: center; color: rgba(255,255,255,0.3); font-size: 13px; margin-bottom: 40px; }
+
+.phone-frame {
+  width: 400px;
+  background: #000;
+  border-radius: 48px;
+  padding: 12px 0;
+  box-shadow: 0 25px 80px rgba(0,0,0,0.6), 0 0 0 2px #2a2a3e, 0 0 0 12px #0d001a;
+  position: relative;
+  margin: 0 auto;
+}
+.phone-frame::before {
+  content: ''; position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+  width: 110px; height: 28px; background: #000; border-radius: 0 0 18px 18px; z-index: 100;
+}
+.phone-screen {
+  width: 100%; height: auto; min-height: 500px;
+  background: #060311;
+  border-radius: 36px; overflow: hidden;
+  padding: 48px 16px 24px;
+}
+
+/* ===== PHONE CONTEXT ===== */
+.phone-header-bar {
+  background: linear-gradient(135deg, #BF40FF, #6600CC, #2B0066);
+  padding: 12px 16px 24px;
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+.phone-header-bar .title-section {
+  display: flex; align-items: center; gap: 10px;
+}
+.phone-header-bar .title-section svg { width: 20px; height: 20px; stroke: rgba(255,255,255,0.6); }
+.phone-header-bar .title-section h2 { font-size: 18px; font-weight: 800; color: #fff; }
+.phone-header-bar .title-section p { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
+/* ===== CURRENT (OLD) ===== */
+.card-current {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 24px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.card-current .top-accent {
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(to right, #BF00FF, transparent);
+}
+.card-current .ring-section {
+  display: flex; align-items: center; gap: 20px;
+  padding: 16px; background: rgba(255,255,255,0.04);
+  border-radius: 16px; border: 1px solid rgba(255,255,255,0.04);
+  margin-bottom: 16px;
+}
+.card-current .legend-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; flex: 1;
+}
+.card-current .legend-item {
+  display: flex; align-items: center; gap: 6px; font-size: 10px;
+}
+.card-current .legend-item .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+}
+.card-current .legend-item .lbl { opacity: 0.7; color: #fff; }
+.card-current .legend-item .val { margin-left: auto; font-weight: 600; }
+
+.card-current .bar-section {
+  padding: 16px; background: rgba(255,255,255,0.04);
+  border-radius: 16px; border: 1px solid rgba(255,255,255,0.04);
+  margin-bottom: 16px;
+}
+.card-current .bar-row {
+  display: flex; align-items: flex-end; gap: 12px; height: 96px;
+}
+.card-current .bar-col {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+}
+.card-current .bar-col .val { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+.card-current .bar-col .bar {
+  width: 100%; border-radius: 8px 8px 4px 4px; min-height: 4px; transition: all 0.5s;
+}
+.card-current .bar-col .lbl { font-size: 8px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.4; margin-top: 8px; }
+.card-current .bar-col .pct { font-size: 7px; opacity: 0.25; margin-top: 2px; }
+
+.card-current .stat-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+}
+.card-current .stat-item {
+  background: rgba(255,255,255,0.04); border-radius: 16px;
+  padding: 12px 8px; text-align: center;
+  border: 1px solid rgba(255,255,255,0.04);
+  position: relative; overflow: hidden;
+}
+.card-current .stat-item .top-line {
+  position: absolute; top: 0; left: 8px; right: 8px; height: 2px; border-radius: 0 0 4px 4px;
+}
+.card-current .stat-item .num {
+  font-size: 24px; font-weight: 200; letter-spacing: -0.02em; line-height: 1; margin-bottom: 4px;
+}
+.card-current .stat-item .lbl { font-size: 8px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; }
+.card-current .stat-item .pct { font-size: 8px; font-weight: 600; opacity: 0.2; margin-top: 4px; }
+
+/* ===== PREMIUM DESIGNS ===== */
+
+/* --- DESIGN A: Apple-style Premium --- */
+.premium-a {
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 28px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.premium-a::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+.premium-a .section-label {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+}
+.premium-a .section-label svg { width: 18px; height: 18px; stroke: #BF00FF; stroke-width: 1.5; }
+.premium-a .section-label h3 { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+.premium-a .section-label span { font-size: 10px; color: rgba(255,255,255,0.25); margin-left: auto; }
+
+.premium-a .stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;
+}
+.premium-a .stat-card {
+  background: rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.3s;
+}
+.premium-a .stat-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.07); }
+.premium-a .stat-card .icon {
+  width: 32px; height: 32px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px; font-size: 14px;
+}
+.premium-a .stat-card .num { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+.premium-a .stat-card .lbl { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 4px; font-weight: 500; }
+.premium-a .stat-card .pct-bar {
+  width: 100%; height: 3px; background: rgba(255,255,255,0.06);
+  border-radius: 2px; margin-top: 10px; overflow: hidden;
+}
+.premium-a .stat-card .pct-fill { height: 100%; border-radius: 2px; transition: width 1s; }
+
+.premium-a .chart-section {
+  background: rgba(255,255,255,0.03);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.premium-a .chart-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+}
+.premium-a .chart-header h4 { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.08em; }
+.premium-a .chart-header span { font-size: 10px; color: rgba(255,255,255,0.2); }
+
+.premium-a .bar-chart {
+  display: flex; align-items: flex-end; gap: 8px; height: 120px;
+}
+.premium-a .bar-chart .col {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.premium-a .bar-chart .col .val { font-size: 13px; font-weight: 700; }
+.premium-a .bar-chart .col .bar-wrap {
+  width: 100%; border-radius: 8px; overflow: hidden; position: relative;
+  background: rgba(255,255,255,0.04);
+  flex: 1; display: flex; align-items: flex-end;
+  min-height: 4px;
+}
+.premium-a .bar-chart .col .bar-fill {
+  width: 100%; border-radius: 8px; min-height: 4px;
+  transition: height 1s;
+}
+.premium-a .bar-chart .col .lbl { font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* --- DESIGN B: Dark Luxury Glass --- */
+.premium-b {
+  background: linear-gradient(160deg, rgba(22,19,32,0.9), rgba(10,5,25,0.95));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(191,0,255,0.12);
+  border-radius: 24px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.premium-b::before {
+  content: '';
+  position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(circle at 30% 20%, rgba(191,0,255,0.06), transparent 50%),
+              radial-gradient(circle at 70% 80%, rgba(112,102,237,0.04), transparent 50%);
+  pointer-events: none;
+}
+.premium-b .header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+  position: relative; z-index: 1;
+}
+.premium-b .header h3 { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: 0.01em; }
+.premium-b .header .badge {
+  font-size: 9px; padding: 3px 10px; border-radius: 9999px;
+  background: rgba(191,0,255,0.15); color: #BF00FF; font-weight: 600;
+}
+
+.premium-b .metric-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 24px;
+  position: relative; z-index: 1;
+}
+.premium-b .metric-card {
+  text-align: center; padding: 18px 8px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.04);
+  position: relative;
+}
+.premium-b .metric-card .glow-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  margin: 0 auto 10px;
+}
+.premium-b .metric-card .num { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+.premium-b .metric-card .lbl { font-size: 9px; color: rgba(255,255,255,0.35); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.08em; }
+.premium-b .metric-card .pct { font-size: 9px; font-weight: 600; margin-top: 4px; opacity: 0.5; }
+
+.premium-b .progress-section {
+  position: relative; z-index: 1;
+  background: rgba(255,255,255,0.02);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.premium-b .progress-section h4 {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.3); margin-bottom: 16px;
+}
+.premium-b .progress-row {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.premium-b .progress-item {
+  display: flex; align-items: center; gap: 12px;
+}
+.premium-b .progress-item .info {
+  width: 60px; flex-shrink: 0;
+}
+.premium-b .progress-item .info .label { font-size: 11px; font-weight: 600; }
+.premium-b .progress-item .info .sub { font-size: 9px; opacity: 0.35; }
+.premium-b .progress-item .track {
+  flex: 1; height: 6px; background: rgba(255,255,255,0.05);
+  border-radius: 3px; overflow: hidden;
+}
+.premium-b .progress-item .fill {
+  height: 100%; border-radius: 3px; transition: width 1.5s;
+}
+.premium-b .progress-item .pct-label { font-size: 11px; font-weight: 600; width: 40px; text-align: right; }
+
+/* --- DESIGN C: Minimal Elegant (2026 trend) --- */
+.premium-c {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+}
+.premium-c .title-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.premium-c .title-row h3 { font-size: 14px; font-weight: 700; color: #fff; }
+.premium-c .title-row .total-badge {
+  font-size: 11px; padding: 4px 12px; border-radius: 9999px;
+  background: rgba(191,0,255,0.1); color: #BF00FF; font-weight: 600;
+}
+
+.premium-c .cards-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px;
+}
+.premium-c .card-mini {
+  border-radius: 14px; padding: 16px 8px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.premium-c .card-mini .num { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.premium-c .card-mini .lbl { font-size: 9px; margin-top: 6px; font-weight: 500; }
+.premium-c .card-mini .trend { font-size: 8px; margin-top: 4px; opacity: 0.4; }
+
+.premium-c .viz-row {
+  display: flex; gap: 16px; align-items: stretch;
+}
+.premium-c .ring-wrap {
+  width: 100px; height: 100px; flex-shrink: 0; position: relative;
+}
+.premium-c .ring-wrap svg { width: 100%; height: 100%; }
+.premium-c .ring-wrap .center-num {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 800; color: #fff;
+}
+.premium-c .bar-list {
+  flex: 1; display: flex; flex-direction: column; gap: 6px; justify-content: center;
+}
+.premium-c .bar-list .row-item {
+  display: flex; align-items: center; gap: 8px;
+}
+.premium-c .bar-list .row-item .dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.premium-c .bar-list .row-item .lbl { font-size: 10px; color: rgba(255,255,255,0.5); width: 40px; }
+.premium-c .bar-list .row-item .track {
+  flex: 1; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden;
+}
+.premium-c .bar-list .row-item .fill { height: 100%; border-radius: 2px; }
+.premium-c .bar-list .row-item .val { font-size: 11px; font-weight: 600; width: 30px; text-align: right; }
+
+/* ===== COMPARISON TABLE ===== */
+.comparison {
+  margin-top: 48px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 24px;
+}
+.comparison h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.2); margin-bottom: 16px; }
+.comparison table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.comparison th { text-align: left; padding: 10px 12px; font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.comparison td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.8); }
+.comparison .highlight { color: #BF00FF; font-weight: 700; }
+
+.section-label-header {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.15em; color: rgba(255,255,255,0.25);
+  margin: 32px 0 16px; padding-left: 4px;
+}
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 24px; }
+
+.old-tag { display: inline-block; font-size: 9px; font-weight: 600; padding: 2px 10px; border-radius: 9999px; background: rgba(248,113,113,0.15); color: #f87171; }
+.new-tag { display: inline-block; font-size: 9px; font-weight: 600; padding: 2px 10px; border-radius: 9999px; background: rgba(191,0,255,0.15); color: #BF00FF; }
+
+@media (max-width: 640px) { .phone-frame { width: 100%; } }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>✨ Statistik Bulan Ini — Premium Redesign</h1>
+  <p class="subtitle">3 konsep premium untuk card ringkasan kehadiran bulanan</p>
+
+  <!-- CURRENT vs PREMIUM side by side in phone frames -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:24px;margin-bottom:40px;">
+
+    <!-- CURRENT (OLD) -->
+    <div class="phone-frame" style="box-shadow:0 25px 80px rgba(0,0,0,0.6),0 0 0 2px #2a2a3e,0 0 0 12px #1a002e;">
+      <div class="phone-screen">
+        <div class="phone-header-bar" style="padding:12px 12px 16px;">
+          <div class="title-section">
+            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            <div><h2>Statistik bulan ini</h2><p>Ringkasan kehadiran anda bulan ini</p></div>
+          </div>
+        </div>
+
+        <!-- CURRENT CARD -->
+        <div class="card-current">
+          <div class="top-accent"></div>
+
+          <div class="ring-section">
+            <div style="position:relative;width:80px;height:80px;flex-shrink:0;">
+              <svg width="80" height="80" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="6"/>
+                <circle cx="40" cy="40" r="22" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                <text x="40" y="44" text-anchor="middle" fill="white" font-size="20" font-weight="700">0</text>
+              </svg>
+            </div>
+            <div class="legend-grid">
+              <div class="legend-item"><div class="dot" style="background:#adff2f;"></div><span class="lbl">Hadir</span><span class="val" style="color:#adff2f;">0</span></div>
+              <div class="legend-item"><div class="dot" style="background:#fbbf24;"></div><span class="lbl">Izin</span><span class="val" style="color:#fbbf24;">0</span></div>
+              <div class="legend-item"><div class="dot" style="background:#fb923c;"></div><span class="lbl">Sakit</span><span class="val" style="color:#fb923c;">0</span></div>
+              <div class="legend-item"><div class="dot" style="background:#f87171;"></div><span class="lbl">Alpha</span><span class="val" style="color:#f87171;">0</span></div>
+            </div>
+          </div>
+
+          <div class="bar-section">
+            <div class="bar-row">
+              <div class="bar-col"><div class="val" style="color:#adff2f;">0</div><div class="bar" style="height:5%;background:linear-gradient(#adff2f,rgba(173,255,47,0.133));"></div><div class="lbl">Hadir</div><div class="pct">0%</div></div>
+              <div class="bar-col"><div class="val" style="color:#fbbf24;">0</div><div class="bar" style="height:5%;background:linear-gradient(#fbbf24,rgba(251,191,36,0.133));"></div><div class="lbl">Izin</div><div class="pct">0%</div></div>
+              <div class="bar-col"><div class="val" style="color:#fb923c;">0</div><div class="bar" style="height:5%;background:linear-gradient(#fb923c,rgba(251,146,60,0.133));"></div><div class="lbl">Sakit</div><div class="pct">0%</div></div>
+              <div class="bar-col"><div class="val" style="color:#f87171;">0</div><div class="bar" style="height:5%;background:linear-gradient(#f87171,rgba(248,113,113,0.133));"></div><div class="lbl">Alpha</div><div class="pct">0%</div></div>
+            </div>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-item"><div class="top-line" style="background:#adff2f;"></div><div class="num" style="color:#adff2f;">0</div><div class="lbl">Hadir</div><div class="pct">0%</div></div>
+            <div class="stat-item"><div class="top-line" style="background:#fbbf24;"></div><div class="num" style="color:#fbbf24;">0</div><div class="lbl">Izin</div><div class="pct">0%</div></div>
+            <div class="stat-item"><div class="top-line" style="background:#fb923c;"></div><div class="num" style="color:#fb923c;">0</div><div class="lbl">Sakit</div><div class="pct">0%</div></div>
+            <div class="stat-item"><div class="top-line" style="background:#f87171;"></div><div class="num" style="color:#f87171;">0</div><div class="lbl">Alpha</div><div class="pct">0%</div></div>
+          </div>
+
+          <div style="margin-top:12px;font-size:8px;color:rgba(255,255,255,0.15);text-align:center;">⚠️ Desain lama — 3 visualisasi redundan</div>
+        </div>
+
+        <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#f87171;color:#fff;padding:2px 10px;border-radius:9999px;font-size:9px;font-weight:600;white-space:nowrap;z-index:200;">SEKARANG</div>
+      </div>
+    </div>
+
+    <!-- NEW PREMIUM (Design A) -->
+    <div class="phone-frame" style="box-shadow:0 25px 80px rgba(191,0,255,0.12),0 0 0 2px #3a1a4e,0 0 0 12px #1a002e;">
+      <div class="phone-screen">
+        <div class="phone-header-bar" style="padding:12px 12px 16px;">
+          <div class="title-section">
+            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            <div><h2>Statistik bulan ini</h2><p>Ringkasan kehadiran anda bulan ini</p></div>
+          </div>
+        </div>
+
+        <!-- PREMIUM A -->
+        <div class="premium-a">
+          <div class="section-label">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <h3>Kehadiran</h3>
+            <span>Bulan ini</span>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card"><div class="icon" style="background:rgba(173,255,47,0.12);color:#adff2f;">✓</div><div class="num" style="color:#adff2f;">12</div><div class="lbl">Hadir</div><div class="pct-bar"><div class="pct-fill" style="width:60%;background:#adff2f;"></div></div></div>
+            <div class="stat-card"><div class="icon" style="background:rgba(251,191,36,0.12);color:#fbbf24;">📋</div><div class="num" style="color:#fbbf24;">2</div><div class="lbl">Izin</div><div class="pct-bar"><div class="pct-fill" style="width:10%;background:#fbbf24;"></div></div></div>
+            <div class="stat-card"><div class="icon" style="background:rgba(251,146,60,0.12);color:#fb923c;">🤒</div><div class="num" style="color:#fb923c;">1</div><div class="lbl">Sakit</div><div class="pct-bar"><div class="pct-fill" style="width:5%;background:#fb923c;"></div></div></div>
+            <div class="stat-card"><div class="icon" style="background:rgba(248,113,113,0.12);color:#f87171;">✕</div><div class="num" style="color:#f87171;">0</div><div class="lbl">Alpha</div><div class="pct-bar"><div class="pct-fill" style="width:0%;background:#f87171;"></div></div></div>
+          </div>
+
+          <div class="chart-section">
+            <div class="chart-header">
+              <h4>Distribusi Kehadiran</h4>
+              <span>15 total hari</span>
+            </div>
+            <div class="bar-chart">
+              <div class="col"><div class="val" style="color:#adff2f;">12</div><div class="bar-wrap"><div class="bar-fill" style="height:80%;background:linear-gradient(to top,#adff2f,rgba(173,255,47,0.3));box-shadow:0 0 12px rgba(173,255,47,0.15);"></div></div><div class="lbl">Hadir</div></div>
+              <div class="col"><div class="val" style="color:#fbbf24;">2</div><div class="bar-wrap"><div class="bar-fill" style="height:25%;background:linear-gradient(to top,#fbbf24,rgba(251,191,36,0.3));"></div></div><div class="lbl">Izin</div></div>
+              <div class="col"><div class="val" style="color:#fb923c;">1</div><div class="bar-wrap"><div class="bar-fill" style="height:15%;background:linear-gradient(to top,#fb923c,rgba(251,146,60,0.3));"></div></div><div class="lbl">Sakit</div></div>
+              <div class="col"><div class="val" style="color:#f87171;">0</div><div class="bar-wrap"><div class="bar-fill" style="height:4%;background:linear-gradient(to top,#f87171,rgba(248,113,113,0.3));"></div></div><div class="lbl">Alpha</div></div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;font-size:8px;color:rgba(191,0,255,0.25);text-align:center;">✨ Premium A — Apple-style, progress bar, 1 chart</div>
+        </div>
+
+        <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#BF00FF;color:#fff;padding:2px 10px;border-radius:9999px;font-size:9px;font-weight:600;white-space:nowrap;z-index:200;">BARU A</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 DESIGN CONCEPTS FULL -->
+  <div class="section-label-header">🎨 3 Konsep Premium</div>
+  <div class="grid-3">
+
+    <!-- DESIGN A -->
+    <div>
+      <div class="new-tag" style="margin-bottom:8px;">#A · Apple-style Premium</div>
+      <div class="premium-a">
+        <div class="section-label">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <h3>Kehadiran</h3>
+          <span>Bulan ini</span>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="icon" style="background:rgba(173,255,47,0.12);color:#adff2f;">✓</div><div class="num" style="color:#adff2f;">12</div><div class="lbl">Hadir</div><div class="pct-bar"><div class="pct-fill" style="width:60%;background:#adff2f;"></div></div></div>
+          <div class="stat-card"><div class="icon" style="background:rgba(251,191,36,0.12);color:#fbbf24;">📋</div><div class="num" style="color:#fbbf24;">2</div><div class="lbl">Izin</div><div class="pct-bar"><div class="pct-fill" style="width:10%;background:#fbbf24;"></div></div></div>
+          <div class="stat-card"><div class="icon" style="background:rgba(251,146,60,0.12);color:#fb923c;">🤒</div><div class="num" style="color:#fb923c;">1</div><div class="lbl">Sakit</div><div class="pct-bar"><div class="pct-fill" style="width:5%;background:#fb923c;"></div></div></div>
+          <div class="stat-card"><div class="icon" style="background:rgba(248,113,113,0.12);color:#f87171;">✕</div><div class="num" style="color:#f87171;">0</div><div class="lbl">Alpha</div><div class="pct-bar"><div class="pct-fill" style="width:0%;background:#f87171;"></div></div></div>
+        </div>
+        <div class="chart-section">
+          <div class="chart-header"><h4>Distribusi</h4><span>15 total</span></div>
+          <div class="bar-chart">
+            <div class="col"><div class="val" style="color:#adff2f;">12</div><div class="bar-wrap"><div class="bar-fill" style="height:80%;background:linear-gradient(to top,#adff2f,rgba(173,255,47,0.3));box-shadow:0 0 12px rgba(173,255,47,0.15);"></div></div><div class="lbl">Hadir</div></div>
+            <div class="col"><div class="val" style="color:#fbbf24;">2</div><div class="bar-wrap"><div class="bar-fill" style="height:25%;background:linear-gradient(to top,#fbbf24,rgba(251,191,36,0.3));"></div></div><div class="lbl">Izin</div></div>
+            <div class="col"><div class="val" style="color:#fb923c;">1</div><div class="bar-wrap"><div class="bar-fill" style="height:15%;background:linear-gradient(to top,#fb923c,rgba(251,146,60,0.3));"></div></div><div class="lbl">Sakit</div></div>
+            <div class="col"><div class="val" style="color:#f87171;">0</div><div class="bar-wrap"><div class="bar-fill" style="height:4%;background:linear-gradient(to top,#f87171,rgba(248,113,113,0.3));"></div></div><div class="lbl">Alpha</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESIGN B -->
+    <div>
+      <div class="new-tag" style="margin-bottom:8px;background:rgba(112,102,237,0.15);color:#7066ed;">#B · Dark Luxury Glass</div>
+      <div class="premium-b">
+        <div class="header">
+          <h3>📊 Ringkasan Bulanan</h3>
+          <span class="badge">15 Hari</span>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-card"><div class="glow-dot" style="background:#adff2f;box-shadow:0 0 8px rgba(173,255,47,0.4);"></div><div class="num" style="color:#adff2f;">12</div><div class="lbl">Hadir</div><div class="pct" style="color:#adff2f;">60%</div></div>
+          <div class="metric-card"><div class="glow-dot" style="background:#fbbf24;box-shadow:0 0 8px rgba(251,191,36,0.4);"></div><div class="num" style="color:#fbbf24;">2</div><div class="lbl">Izin</div><div class="pct" style="color:#fbbf24;">10%</div></div>
+          <div class="metric-card"><div class="glow-dot" style="background:#fb923c;box-shadow:0 0 8px rgba(251,146,60,0.4);"></div><div class="num" style="color:#fb923c;">1</div><div class="lbl">Sakit</div><div class="pct" style="color:#fb923c;">5%</div></div>
+          <div class="metric-card"><div class="glow-dot" style="background:#f87171;box-shadow:0 0 8px rgba(248,113,113,0.4);"></div><div class="num" style="color:#f87171;">0</div><div class="lbl">Alpha</div><div class="pct" style="color:#f87171;">0%</div></div>
+        </div>
+        <div class="progress-section">
+          <h4>Presentase</h4>
+          <div class="progress-row">
+            <div class="progress-item"><div class="info"><div class="label" style="color:#adff2f;">Hadir</div><div class="sub">12 hari</div></div><div class="track"><div class="fill" style="width:60%;background:linear-gradient(90deg,#adff2f,rgba(173,255,47,0.4));box-shadow:0 0 8px rgba(173,255,47,0.2);"></div></div><div class="pct-label" style="color:#adff2f;">60%</div></div>
+            <div class="progress-item"><div class="info"><div class="label" style="color:#fbbf24;">Izin</div><div class="sub">2 hari</div></div><div class="track"><div class="fill" style="width:10%;background:linear-gradient(90deg,#fbbf24,rgba(251,191,36,0.4));"></div></div><div class="pct-label" style="color:#fbbf24;">10%</div></div>
+            <div class="progress-item"><div class="info"><div class="label" style="color:#fb923c;">Sakit</div><div class="sub">1 hari</div></div><div class="track"><div class="fill" style="width:5%;background:linear-gradient(90deg,#fb923c,rgba(251,146,60,0.4));"></div></div><div class="pct-label" style="color:#fb923c;">5%</div></div>
+            <div class="progress-item"><div class="info"><div class="label" style="color:#f87171;">Alpha</div><div class="sub">0 hari</div></div><div class="track"><div class="fill" style="width:0%;background:linear-gradient(90deg,#f87171,rgba(248,113,113,0.4));"></div></div><div class="pct-label" style="color:#f87171;">0%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESIGN C -->
+    <div>
+      <div class="new-tag" style="margin-bottom:8px;background:rgba(45,212,120,0.15);color:#4ADE80;">#C · Minimal Elegant 2026</div>
+      <div class="premium-c">
+        <div class="title-row">
+          <h3>Statistik</h3>
+          <span class="total-badge">Total: 15</span>
+        </div>
+        <div class="cards-row">
+          <div class="card-mini" style="background:rgba(173,255,47,0.06);border:1px solid rgba(173,255,47,0.1);">
+            <div class="num" style="color:#adff2f;">12</div>
+            <div class="lbl" style="color:#adff2f;">Hadir</div>
+            <div class="trend" style="color:rgba(173,255,47,0.4);">↑ 60%</div>
+          </div>
+          <div class="card-mini" style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.1);">
+            <div class="num" style="color:#fbbf24;">2</div>
+            <div class="lbl" style="color:#fbbf24;">Izin</div>
+            <div class="trend" style="color:rgba(251,191,36,0.4);">10%</div>
+          </div>
+          <div class="card-mini" style="background:rgba(251,146,60,0.06);border:1px solid rgba(251,146,60,0.1);">
+            <div class="num" style="color:#fb923c;">1</div>
+            <div class="lbl" style="color:#fb923c;">Sakit</div>
+            <div class="trend" style="color:rgba(251,146,60,0.4);">5%</div>
+          </div>
+          <div class="card-mini" style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.1);">
+            <div class="num" style="color:#f87171;">0</div>
+            <div class="lbl" style="color:#f87171;">Alpha</div>
+            <div class="trend" style="color:rgba(248,113,113,0.4);">0%</div>
+          </div>
+        </div>
+        <div class="viz-row">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="8"/>
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#adff2f" stroke-width="8"
+                stroke-dasharray="251.2" stroke-dashoffset="100.5" transform="rotate(-90, 50, 50)"
+                stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(173,255,47,0.3));"/>
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#fbbf24" stroke-width="8"
+                stroke-dasharray="251.2" stroke-dashoffset="0" transform="rotate(-90, 50, 50)"
+                stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(251,191,36,0.3));"/>
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#fb923c" stroke-width="8"
+                stroke-dasharray="251.2" stroke-dashoffset="0" transform="rotate(-90, 50, 50)"
+                stroke-linecap="round"/>
+            </svg>
+            <div class="center-num">15</div>
+          </div>
+          <div class="bar-list">
+            <div class="row-item"><div class="dot" style="background:#adff2f;"></div><span class="lbl">Hadir</span><div class="track"><div class="fill" style="width:60%;background:#adff2f;box-shadow:0 0 6px rgba(173,255,47,0.2);"></div></div><span class="val" style="color:#adff2f;">12</span></div>
+            <div class="row-item"><div class="dot" style="background:#fbbf24;"></div><span class="lbl">Izin</span><div class="track"><div class="fill" style="width:10%;background:#fbbf24;"></div></div><span class="val" style="color:#fbbf24;">2</span></div>
+            <div class="row-item"><div class="dot" style="background:#fb923c;"></div><span class="lbl">Sakit</span><div class="track"><div class="fill" style="width:5%;background:#fb923c;"></div></div><span class="val" style="color:#fb923c;">1</span></div>
+            <div class="row-item"><div class="dot" style="background:#f87171;"></div><span class="lbl">Alpha</span><div class="track"><div class="fill" style="width:0%;background:#f87171;"></div></div><span class="val" style="color:#f87171;">0</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COMPARISON -->
+  <div class="comparison">
+    <h3>📊 Perbandingan</h3>
+    <table>
+      <thead>
+        <tr><th>Aspek</th><th>Sekarang</th><th>Premium ✨</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Jumlah visualisasi</td><td>3 (ring + bar + 4 kartu)</td><td class="highlight">1-2 (fokus, tidak redundan)</td></tr>
+        <tr><td>Ukuran font data</td><td>24px / 12px / 8px</td><td class="highlight">28px / 13px / 11px</td></tr>
+        <tr><td>Kontras</td><td>Rendah (white/5 bg)</td><td class="highlight">Tinggi (solid/glass lebih bersih)</td></tr>
+        <tr><td>Hierarki informasi</td><td>Kacau (3 elemen tunjuk hal sama)</td><td class="highlight">Jelas: angka besar → progress → detail</td></tr>
+        <tr><td>Interaktivitas</td><td>—</td><td class="highlight">Hover scale, progress bar animasi</td></tr>
+        <tr><td>Style</td><td>Outdated (2023)</td><td class="highlight">Apple/Glass/Minimal 2026</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:16px;font-size:11px;color:rgba(255,255,255,0.3);text-align:center;">
+      🎯 Rekomendasi: <strong style="color:#BF00FF;">Design A (Apple-style)</strong> — paling bersih, mudah diimplementasi dengan Tailwind yang sudah ada
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

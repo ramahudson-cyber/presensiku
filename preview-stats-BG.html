@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stats Card — Design C + BG Graphic</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  background: #050208;
+  background-image: radial-gradient(ellipse at 50% 0%, rgba(191,0,255,0.08) 0%, transparent 70%);
+}
+.container { max-width: 1200px; width: 100%; }
+h1 { font-size: 28px; font-weight: 800; color: #fff; text-align: center; margin-bottom: 4px; }
+.subtitle { text-align: center; color: rgba(255,255,255,0.3); font-size: 13px; margin-bottom: 40px; }
+
+.phone-frame {
+  width: 390px;
+  background: #000;
+  border-radius: 48px;
+  padding: 12px 0;
+  box-shadow: 0 25px 80px rgba(0,0,0,0.6), 0 0 0 2px #2a2a3e, 0 0 0 12px #0d001a;
+  position: relative;
+  margin: 0 auto;
+}
+.phone-frame::before {
+  content: ''; position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+  width: 110px; height: 28px; background: #000; border-radius: 0 0 18px 18px; z-index: 100;
+}
+.phone-screen {
+  width: 100%; height: auto; min-height: 500px;
+  background: #060311;
+  border-radius: 36px; overflow: hidden;
+  padding: 48px 16px 24px;
+}
+.phone-header-bar {
+  background: linear-gradient(135deg, #BF40FF, #6600CC, #2B0066);
+  padding: 12px 16px 24px;
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+.phone-header-bar .title-section {
+  display: flex; align-items: center; gap: 10px;
+}
+.phone-header-bar .title-section svg { width: 20px; height: 20px; stroke: rgba(255,255,255,0.6); }
+.phone-header-bar .title-section h2 { font-size: 18px; font-weight: 800; color: #fff; }
+.phone-header-bar .title-section p { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
+/* ===== DESIGN C + BG GRAPHIC ===== */
+.stats-card {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+/* BG Grid */
+.stats-card .bg-grid {
+  position: absolute; inset: 0;
+  background-image: 
+    linear-gradient(rgba(191,0,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(191,0,255,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.4), transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.4), transparent 70%);
+  pointer-events: none;
+}
+/* BG Orbs */
+.stats-card .bg-orb-1 {
+  position: absolute;
+  top: -25%; right: -10%;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(191,0,255,0.1), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(40px);
+}
+.stats-card .bg-orb-2 {
+  position: absolute;
+  bottom: -20%; left: -10%;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(112,102,237,0.07), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(50px);
+}
+/* BG Ring Glow */
+.stats-card .bg-ring-glow {
+  position: absolute;
+  top: 50%; right: 60%;
+  transform: translate(-50%, -50%);
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(173,255,47,0.05), transparent 60%);
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(30px);
+}
+/* Content z-index */
+.stats-card .content { position: relative; z-index: 1; }
+
+/* Title */
+.stats-card .title-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.stats-card .title-row h3 { font-size: 14px; font-weight: 700; color: #fff; }
+.stats-card .title-row .badge {
+  font-size: 11px; padding: 4px 12px; border-radius: 9999px;
+  background: rgba(191,0,255,0.1); color: #BF00FF; font-weight: 600;
+}
+
+/* Mini Cards */
+.stats-card .mini-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px;
+}
+.stats-card .mini-card {
+  border-radius: 14px; padding: 16px 8px; text-align: center;
+  position: relative; overflow: hidden;
+  transition: all 0.3s;
+}
+.stats-card .mini-card:hover { transform: translateY(-2px); }
+.stats-card .mini-card .num { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.stats-card .mini-card .lbl { font-size: 9px; margin-top: 6px; font-weight: 500; }
+.stats-card .mini-card .pct { font-size: 8px; margin-top: 4px; opacity: 0.4; }
+
+/* Viz Row */
+.stats-card .viz-row {
+  display: flex; gap: 16px; align-items: stretch;
+  background: rgba(255,255,255,0.03);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.stats-card .ring-wrap {
+  width: 100px; height: 100px; flex-shrink: 0; position: relative;
+}
+.stats-card .ring-wrap svg { width: 100%; height: 100%; }
+.stats-card .ring-wrap .center-num {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 800; color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.stats-card .bar-list {
+  flex: 1; display: flex; flex-direction: column; gap: 8px; justify-content: center;
+}
+.stats-card .bar-item {
+  display: flex; align-items: center; gap: 8px;
+}
+.stats-card .bar-item .dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.stats-card .bar-item .lbl { font-size: 10px; color: rgba(255,255,255,0.45); width: 40px; flex-shrink: 0; }
+.stats-card .bar-item .track {
+  flex: 1; height: 6px; background: rgba(255,255,255,0.04); border-radius: 3px; overflow: hidden;
+}
+.stats-card .bar-item .fill { height: 100%; border-radius: 3px; transition: width 1.5s; }
+.stats-card .bar-item .val { font-size: 11px; font-weight: 600; width: 28px; text-align: right; }
+
+/* Comparison side */
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 24px; margin-bottom: 48px; }
+
+.legend {
+  margin-top: 32px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;
+}
+.legend-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 16px;
+}
+.legend-item h4 { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+.legend-item p { font-size: 11px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+.legend-item code { font-size: 10px; background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 4px; color: rgba(255,255,255,0.6); }
+
+@media (max-width: 640px) { 
+  .phone-frame { width: 100%; }
+  .stats-card .mini-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>🎯 Statistik Bulan Ini — Design C + BG Graphic</h1>
+  <p class="subtitle">Minimal Elegant 2026 dengan background grid, glow orbs, dan ring glow</p>
+
+  <div class="grid-2">
+
+    <!-- TANPA BG -->
+    <div class="phone-frame" style="box-shadow:0 25px 80px rgba(0,0,0,0.6),0 0 0 2px #2a2a3e,0 0 0 12px #1a002e;">
+      <div class="phone-screen">
+        <div class="phone-header-bar">
+          <div class="title-section">
+            <svg viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <div><h2>Statistik bulan ini</h2><p>Ringkasan kehadiran anda</p></div>
+          </div>
+        </div>
+
+        <!-- CARD WITHOUT BG -->
+        <div class="stats-card">
+          <div class="content">
+            <div class="title-row">
+              <h3>Statistik</h3>
+              <span class="badge">Total: 15</span>
+            </div>
+
+            <div class="mini-grid">
+              <div class="mini-card" style="background:rgba(173,255,47,0.06);border:1px solid rgba(173,255,47,0.1);">
+                <div class="num" style="color:#adff2f;">12</div>
+                <div class="lbl" style="color:#adff2f;">Hadir</div>
+                <div class="pct" style="color:rgba(173,255,47,0.4);">60%</div>
+              </div>
+              <div class="mini-card" style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.1);">
+                <div class="num" style="color:#fbbf24;">2</div>
+                <div class="lbl" style="color:#fbbf24;">Izin</div>
+                <div class="pct" style="color:rgba(251,191,36,0.4);">10%</div>
+              </div>
+              <div class="mini-card" style="background:rgba(251,146,60,0.06);border:1px solid rgba(251,146,60,0.1);">
+                <div class="num" style="color:#fb923c;">1</div>
+                <div class="lbl" style="color:#fb923c;">Sakit</div>
+                <div class="pct" style="color:rgba(251,146,60,0.4);">5%</div>
+              </div>
+              <div class="mini-card" style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.1);">
+                <div class="num" style="color:#f87171;">0</div>
+                <div class="lbl" style="color:#f87171;">Alpha</div>
+                <div class="pct" style="color:rgba(248,113,113,0.4);">0%</div>
+              </div>
+            </div>
+
+            <div class="viz-row">
+              <div class="ring-wrap">
+                <svg viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="8"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#adff2f" stroke-width="8"
+                    stroke-dasharray="251.2" stroke-dashoffset="100.5" stroke-linecap="round"
+                    style="filter:drop-shadow(0 0 6px rgba(173,255,47,0.3))"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#fbbf24" stroke-width="8"
+                    stroke-dasharray="251.2" stroke-dashoffset="0" stroke-linecap="round"
+                    style="filter:drop-shadow(0 0 6px rgba(251,191,36,0.3))"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#fb923c" stroke-width="8"
+                    stroke-dasharray="251.2" stroke-dashoffset="0" stroke-linecap="round"/>
+                  <circle cx="50" cy="50" r="28" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                </svg>
+                <div class="center-num">15</div>
+              </div>
+              <div class="bar-list">
+                <div class="bar-item">
+                  <div class="dot" style="background:#adff2f;box-shadow:0 0 6px rgba(173,255,47,0.4);"></div>
+                  <span class="lbl">Hadir</span>
+                  <div class="track"><div class="fill" style="width:60%;background:linear-gradient(90deg,#adff2f,rgba(173,255,47,0.2));box-shadow:0 0 6px rgba(173,255,47,0.1);"></div></div>
+                  <span class="val" style="color:#adff2f;">12</span>
+                </div>
+                <div class="bar-item">
+                  <div class="dot" style="background:#fbbf24;box-shadow:0 0 6px rgba(251,191,36,0.4);"></div>
+                  <span class="lbl">Izin</span>
+                  <div class="track"><div class="fill" style="width:10%;background:linear-gradient(90deg,#fbbf24,rgba(251,191,36,0.2));"></div></div>
+                  <span class="val" style="color:#fbbf24;">2</span>
+                </div>
+                <div class="bar-item">
+                  <div class="dot" style="background:#fb923c;box-shadow:0 0 6px rgba(251,146,60,0.4);"></div>
+                  <span class="lbl">Sakit</span>
+                  <div class="track"><div class="fill" style="width:5%;background:linear-gradient(90deg,#fb923c,rgba(251,146,60,0.2));"></div></div>
+                  <span class="val" style="color:#fb923c;">1</span>
+                </div>
+                <div class="bar-item">
+                  <div class="dot" style="background:#f87171;"></div>
+                  <span class="lbl">Alpha</span>
+                  <div class="track"><div class="fill" style="width:0%;background:linear-gradient(90deg,#f87171,rgba(248,113,113,0.2));"></div></div>
+                  <span class="val" style="color:#f87171;">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:8px;color:rgba(255,255,255,0.15);margin-top:8px;">Tanpa BG grafik</div>
+      </div>
+    </div>
+
+    <!-- DENGAN BG -->
+    <div class="phone-frame" style="box-shadow:0 25px 80px rgba(191,0,255,0.1),0 0 0 2px #3a1a4e,0 0 0 12px #1a002e;">
+      <div class="phone-screen">
+        <div class="phone-header-bar">
+          <div class="title-section">
+            <svg viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <div><h2>Statistik bulan ini</h2><p>Ringkasan kehadiran anda</p></div>
+          </div>
+        </div>
+
+        <!-- CARD WITH BG GRAPHIC -->
+        <div class="stats-card">
+          <!-- BG LAYERS -->
+          <div class="bg-grid"></div>
+          <div class="bg-orb-1"></div>
+          <div class="bg-orb-2"></div>
+          <div class="bg-ring-glow"></div>
+
+          <div class="content">
+            <div class="title-row">
+              <h3>Statistik</h3>
+              <span class="badge">Total: 15</span>
+            </div>
+
+            <div class="mini-grid">
+              <div class="mini-card" style="background:rgba(173,255,47,0.08);border:1px solid rgba(173,255,47,0.15);backdrop-filter:blur(4px);">
+                <div class="num" style="color:#adff2f;">12</div>
+                <div class="lbl" style="color:#adff2f;">Hadir</div>
+                <div class="pct" style="color:rgba(173,255,47,0.4);">60%</div>
+              </div>
+              <div class="mini-card" style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.15);backdrop-filter:blur(4px);">
+                <div class="num" style="color:#fbbf24;">2</div>
+                <div class="lbl" style="color:#fbbf24;">Izin</div>
+                <div class="pct" style="color:rgba(251,191,36,0.4);">10%</div>
+              </div>
+              <div class="mini-card" style="background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.15);backdrop-filter:blur(4px);">
+                <div class="num" style="color:#fb923c;">1</div>
+                <div class="lbl" style="color:#fb923c;">Sakit</div>
+                <div class="pct" style="color:rgba(251,146,60,0.4);">5%</div>
+              </div>
+              <div class="mini-card" style="background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.15);backdrop-filter:blur(4px);">
+                <div class="num" style="color:#f87171;">0</div>
+                <div class="lbl" style="color:#f87171;">Alpha</div>
+                <div class="pct" style="color:rgba(248,113,113,0.4);">0%</div>
+              </div>
+            </div>
+
+            <div class="viz-row">
+              <div class="ring-wrap">
+                <svg viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="8"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#adff2f" stroke-width="8"
+                    stroke-dasharray="251.2" stroke-dashoffset="100.5" stroke-linecap="round"
+                    style="filter:drop-shadow(0 0 8px rgba(173,255,47,0.4))"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#fbbf24" stroke-width="8"
+                    stroke-dasharray="251.2" stroke-dashoffset="0" stroke-linecap="round"
+                    style="filter:drop-shadow(0 0 6px rgba(251,191,36,0.3))"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#fb923c" stroke-width="8"
+                    stroke-dasharray="251.2" stroke-dashoffset="0" stroke-linecap="round"/>
+                  <circle cx="50" cy="50" r="28" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                </svg>
+                <div class="center-num">15</div>
+              </div>
+              <div class="bar-list">
+                <div class="bar-item">
+                  <div class="dot" style="background:#adff2f;box-shadow:0 0 6px rgba(173,255,47,0.5);"></div>
+                  <span class="lbl">Hadir</span>
+                  <div class="track"><div class="fill" style="width:60%;background:linear-gradient(90deg,#adff2f,rgba(173,255,47,0.2));box-shadow:0 0 8px rgba(173,255,47,0.1);"></div></div>
+                  <span class="val" style="color:#adff2f;">12</span>
+                </div>
+                <div class="bar-item">
+                  <div class="dot" style="background:#fbbf24;box-shadow:0 0 6px rgba(251,191,36,0.4);"></div>
+                  <span class="lbl">Izin</span>
+                  <div class="track"><div class="fill" style="width:10%;background:linear-gradient(90deg,#fbbf24,rgba(251,191,36,0.2));"></div></div>
+                  <span class="val" style="color:#fbbf24;">2</span>
+                </div>
+                <div class="bar-item">
+                  <div class="dot" style="background:#fb923c;box-shadow:0 0 6px rgba(251,146,60,0.4);"></div>
+                  <span class="lbl">Sakit</span>
+                  <div class="track"><div class="fill" style="width:5%;background:linear-gradient(90deg,#fb923c,rgba(251,146,60,0.2));"></div></div>
+                  <span class="val" style="color:#fb923c;">1</span>
+                </div>
+                <div class="bar-item">
+                  <div class="dot" style="background:#f87171;"></div>
+                  <span class="lbl">Alpha</span>
+                  <div class="track"><div class="fill" style="width:0%;background:linear-gradient(90deg,#f87171,rgba(248,113,113,0.2));"></div></div>
+                  <span class="val" style="color:#f87171;">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:8px;color:rgba(191,0,255,0.3);margin-top:8px;">✨ Dengan BG grafik: grid + orbs + ring glow</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BG LAYERS EXPLAINED -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:40px;">
+    <div class="legend-item">
+      <h4 style="color:#BF00FF;">🔲 Grid Pattern</h4>
+      <p>Garis kotak ungu transparan 32px, di-mask radial pudar di tepi. Kesan data/analytics tanpa ganggu konten.</p>
+      <code>mask-image: radial-gradient(...)</code>
+    </div>
+    <div class="legend-item">
+      <h4 style="color:#7066ed;">🌀 Glow Orbs</h4>
+      <p>2 lingkaran blur ungu + violet di pojok card. Memberi kedalaman dan kesan premium.</p>
+      <code>filter: blur(40px)</code>
+    </div>
+    <div class="legend-item">
+      <h4 style="color:#adff2f;">💚 Ring Glow</h4>
+      <p>Cahaya hijau lembut di belakang donut chart. Ring chart lebih menonjol dan bercahaya.</p>
+      <code>radial-gradient(circle, rgba(173,255,47,0.05), transparent 60%)</code>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

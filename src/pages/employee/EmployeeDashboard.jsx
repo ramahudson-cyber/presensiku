@@ -171,83 +171,88 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* STATS PREMIUM CARD */}
-        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#BF00FF] to-transparent rounded-t-3xl"></div>
-          {(() => {
-            const total = stats.hadir + stats.izin + stats.sakit + stats.alpha;
-            const max = Math.max(stats.hadir, stats.izin, stats.sakit, stats.alpha, 1);
-            const c = 2 * Math.PI * 32;
-            const items = [
-              { k:'hadir', v:stats.hadir, color:'#ADFF2F', label:'Hadir' },
-              { k:'izin', v:stats.izin, color:'#fbbf24', label:'Izin' },
-              { k:'sakit', v:stats.sakit, color:'#fb923c', label:'Sakit' },
-              { k:'alpha', v:stats.alpha, color:'#f87171', label:'Alpha' },
-            ];
-            let offset = 0;
-            const segments = items.map(it => {
-              const pct = total > 0 ? it.v / total : 0;
-              const len = c * pct;
-              const seg = { ...it, dasharray: `${len} ${c - len}`, dashoffset: -offset, pct: Math.round(pct * 100) };
-              offset += len;
-              return seg;
-            });
-            return (
-              <>
-                <div className="flex items-center gap-5 mb-5 p-4 bg-white/5 rounded-2xl border border-white/5">
-                  <div className="relative w-20 h-20 shrink-0">
-                    <svg className="w-20 h-20" viewBox="0 0 80 80">
-                      <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="6"/>
-                      {segments.map(s => s.v > 0 && (
-                        <circle key={s.k} cx="40" cy="40" r="32" fill="none" stroke={s.color} strokeWidth="6"
-                          strokeDasharray={s.dasharray} strokeDashoffset={s.dashoffset}
-                          transform="rotate(-90, 40, 40)" strokeLinecap="round"
-                          style={{filter: s.k === 'hadir' ? 'drop-shadow(0 0 6px rgba(173,255,47,0.4))' : 'none'}} />
-                      ))}
-                      <circle cx="40" cy="40" r="22" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.03)" strokeWidth="1"/>
-                      <text x="40" y="44" textAnchor="middle" fill="white" fontSize="20" fontWeight="700">{total}</text>
-                    </svg>
+        {/* STATS CARD PREMIUM */}
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative overflow-hidden stats-card">
+          <div className="bg-grid" />
+          <div className="bg-orb-1" />
+          <div className="bg-orb-2" />
+          <div className="bg-ring-glow" />
+
+          <div className="content">
+            {(() => {
+              const total = stats.hadir + stats.izin + stats.sakit + stats.alpha;
+              const c = 2 * Math.PI * 40;
+              const items = [
+                { k:'hadir', v:stats.hadir, color:'#ADFF2F', label:'Hadir' },
+                { k:'izin', v:stats.izin, color:'#fbbf24', label:'Izin' },
+                { k:'sakit', v:stats.sakit, color:'#fb923c', label:'Sakit' },
+                { k:'alpha', v:stats.alpha, color:'#f87171', label:'Alpha' },
+              ];
+              let offset = 0;
+              const segments = items.map(it => {
+                const pct = total > 0 ? it.v / total : 0;
+                const len = c * pct;
+                const seg = { ...it, dasharray: `${len} ${c - len}`, dashoffset: -offset, pct: Math.round(pct * 100) };
+                offset += len;
+                return seg;
+              });
+              return (
+                <>
+                  {/* Title row */}
+                  <div className="flex justify-between items-center mb-5 pb-4 border-b border-white/5">
+                    <h3 className="text-sm font-bold text-white">Statistik</h3>
+                    <span className="text-xs px-3 py-1 rounded-full bg-electric-violet/10 text-electric-violet font-semibold">Total: {total}</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 flex-1">
+
+                  {/* 4 Mini cards */}
+                  <div className="grid grid-cols-4 gap-2 mb-5">
                     {segments.map(s => (
-                      <div key={s.k} className="flex items-center gap-1.5 text-[10px]">
-                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{background:s.color}}></span>
-                        <span className="opacity-70">{s.label}</span>
-                        <span className="ml-auto font-semibold" style={{color:s.color}}>{s.v}</span>
+                      <div key={s.k} className="rounded-xl p-4 text-center border backdrop-blur-sm hover:-translate-y-0.5 transition-all duration-300"
+                        style={{ background: `${s.color}0f`, borderColor: `${s.color}1a` }}>
+                        <div className="text-2xl font-bold leading-none mb-1.5" style={{color: s.color}}>{s.v}</div>
+                        <div className="text-[9px] font-medium" style={{color: s.color}}>{s.label}</div>
+                        <div className="text-[8px] mt-1 opacity-40" style={{color: s.color}}>{s.pct}%</div>
                       </div>
                     ))}
                   </div>
-                </div>
-                <div className="mb-5 p-4 bg-white/5 rounded-2xl border border-white/5">
-                  <div className="flex items-end gap-3 h-24">
-                    {items.map(it => {
-                      const pct = Math.max((it.v / max) * 100, 5);
-                      return (
-                        <div key={it.k} className="flex-1 flex flex-col items-center justify-end h-full">
-                          <div className="text-xs font-bold mb-1.5" style={{color:it.color}}>{it.v}</div>
-                          <div className="w-full rounded-t-lg relative overflow-hidden transition-all duration-500"
-                            style={{height:`${pct}%`, background:`linear-gradient(180deg, ${it.color}, ${it.color}22)`, boxShadow: it.v > 0 ? `0 0 16px ${it.color}33` : 'none'}}>
-                          </div>
-                          <div className="text-[8px] uppercase tracking-wider opacity-40 mt-2">{it.label}</div>
-                          <div className="text-[7px] opacity-25 mt-0.5">{total > 0 ? Math.round(it.v/total*100) : 0}%</div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-                <div className="grid grid-cols-4 gap-2">
-                  {items.map(it => (
-                    <div key={it.k} className="bg-white/5 rounded-2xl p-3 text-center border border-white/5 relative overflow-hidden hover:-translate-y-0.5 transition-all duration-300">
-                      <div className="absolute top-0 left-2 right-2 h-0.5 rounded-b-sm" style={{background:it.color, boxShadow: it.v > 0 ? `0 0 8px ${it.color}44` : 'none'}}></div>
-                      <div className="text-2xl font-extralight tracking-tight leading-none mb-1" style={{color:it.color}}>{it.v}</div>
-                      <div className="text-[8px] uppercase tracking-wider opacity-50">{it.label}</div>
-                      <div className="text-[8px] font-semibold opacity-20 mt-1">{total > 0 ? Math.round(it.v/total*100) : 0}%</div>
+
+                  {/* Viz row: Ring + Bar list */}
+                  <div className="flex gap-4 items-stretch bg-white/5 rounded-2xl p-4 border border-white/5">
+                    {/* Donut Ring */}
+                    <div className="relative w-[100px] h-[100px] shrink-0">
+                      <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="8"/>
+                        {segments.filter(s => s.v > 0).map(s => (
+                          <circle key={s.k} cx="50" cy="50" r="40" fill="none" stroke={s.color} strokeWidth="8"
+                            strokeDasharray={s.dasharray} strokeDashoffset={s.dashoffset}
+                            strokeLinecap="round" transform="rotate(-90, 50, 50)"
+                            style={{filter: s.k === 'hadir' ? 'drop-shadow(0 0 6px rgba(173,255,47,0.3))' : 'none'}} />
+                        ))}
+                        <circle cx="50" cy="50" r="28" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.03)" strokeWidth="1"/>
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center text-xl font-extrabold text-white">{total}</div>
                     </div>
-                  ))}
-                </div>
-              </>
-            );
-          })()}
+
+                    {/* Horizontal Bar List */}
+                    <div className="flex-1 flex flex-col justify-center gap-2">
+                      {segments.map(s => (
+                        <div key={s.k} className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full shrink-0"
+                            style={{background: s.color, boxShadow: s.v > 0 ? `0 0 4px ${s.color}88` : 'none'}} />
+                          <span className="text-[10px] text-white/50 w-10">{s.label}</span>
+                          <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full transition-all duration-1000"
+                              style={{width: `${s.pct}%`, background: `linear-gradient(90deg, ${s.color}, ${s.color}66)`}} />
+                          </div>
+                          <span className="text-[11px] font-semibold w-8 text-right" style={{color: s.color}}>{s.v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
         </div>
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">

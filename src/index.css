@@ -733,3 +733,41 @@ html:not(.dark) .dashboard-status-masuk { color: #ffffff !important; }
   line-height: 1.2;
   color: rgba(191, 0, 255, 0.65);
 }
+
+/* ===================================================================
+   STATS CARD — MINIMAL ELEGANT 2026 + BG GRAPHIC
+   =================================================================== */
+.stats-card {
+  position: relative;
+  overflow: hidden;
+}
+.stats-card .bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(191,0,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(191,0,255,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.4), transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.4), transparent 70%);
+  pointer-events: none;
+}
+.stats-card .bg-orb-1 {
+  position: absolute; top: -25%; right: -10%;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(191,0,255,0.1), transparent 70%);
+  border-radius: 50%; filter: blur(40px); pointer-events: none;
+}
+.stats-card .bg-orb-2 {
+  position: absolute; bottom: -20%; left: -10%;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(112,102,237,0.07), transparent 70%);
+  border-radius: 50%; filter: blur(50px); pointer-events: none;
+}
+.stats-card .bg-ring-glow {
+  position: absolute;
+  top: 50%; right: 60%; transform: translate(-50%, -50%);
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(173,255,47,0.05), transparent 60%);
+  border-radius: 50%; filter: blur(30px); pointer-events: none;
+}
+.stats-card .content { position: relative; z-index: 1; }
