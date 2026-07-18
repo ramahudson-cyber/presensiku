@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preview — Statistik</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      width: 420px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 24px;
+      padding: 24px;
+    }
+    .title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .stat-item {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 32px;
+      font-weight: 200;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.5);
+    }
+    .stat-pct {
+      font-size: 9px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    .row-list {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .row-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .row-label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      width: 60px;
+    }
+    .row-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .row-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: none;
+    }
+    .row-value {
+      font-size: 13px;
+      font-weight: 600;
+      width: 40px;
+      text-align: right;
+    }
+    .footer {
+      text-align: center;
+      font-size: 10px;
+      color: rgba(255,255,255,0.15);
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="title">
+      <span>Statistik bulan ini</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+      </svg>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-value" style="color: #ADFF2F;">1</div>
+        <div class="stat-label">Hadir</div>
+        <div class="stat-pct" style="color: #ADFF2F;">100%</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" style="color: #fbbf24;">0</div>
+        <div class="stat-label">Izin</div>
+        <div class="stat-pct" style="color: #fbbf24;">0%</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" style="color: #fb923c;">0</div>
+        <div class="stat-label">Sakit</div>
+        <div class="stat-pct" style="color: #fb923c;">0%</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" style="color: #f87171;">0</div>
+        <div class="stat-label">Alpha</div>
+        <div class="stat-pct" style="color: #f87171;">0%</div>
+      </div>
+    </div>
+
+    <div class="row-list">
+      <div class="row-item">
+        <div class="dot" style="background: #ADFF2F; box-shadow: 0 0 6px rgba(173,255,47,0.4);"></div>
+        <div class="row-label">Hadir</div>
+        <div class="row-bar">
+          <div class="row-bar-fill" style="width: 100%; background: linear-gradient(90deg, #ADFF2F, rgba(173,255,47,0.4));"></div>
+        </div>
+        <div class="row-value" style="color: #ADFF2F;">1</div>
+      </div>
+      <div class="row-item">
+        <div class="dot" style="background: #fbbf24;"></div>
+        <div class="row-label">Izin</div>
+        <div class="row-bar">
+          <div class="row-bar-fill" style="width: 0%; background: linear-gradient(90deg, #fbbf24, rgba(251,191,36,0.4));"></div>
+        </div>
+        <div class="row-value" style="color: #fbbf24;">0</div>
+      </div>
+      <div class="row-item">
+        <div class="dot" style="background: #fb923c;"></div>
+        <div class="row-label">Sakit</div>
+        <div class="row-bar">
+          <div class="row-bar-fill" style="width: 0%; background: linear-gradient(90deg, #fb923c, rgba(251,146,60,0.4));"></div>
+        </div>
+        <div class="row-value" style="color: #fb923c;">0</div>
+      </div>
+      <div class="row-item">
+        <div class="dot" style="background: #f87171;"></div>
+        <div class="row-label">Alpha</div>
+        <div class="row-bar">
+          <div class="row-bar-fill" style="width: 0%; background: linear-gradient(90deg, #f87171, rgba(248,113,113,0.4));"></div>
+        </div>
+        <div class="row-value" style="color: #f87171;">0</div>
+      </div>
+    </div>
+
+    <div class="footer">Preview — Hadir.Kuy</div>
+  </div>
+</body>
+</html>
