@@ -256,7 +256,10 @@ export default function EmployeeDashboard() {
         </div>
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70 mb-4 flex justify-between">Riwayat Absensi <History size={14}/></div>
+          <div className="flex justify-between items-center mb-5 pb-4 border-b border-white/5">
+            <h3 className="text-sm font-bold text-white">Riwayat Absensi</h3>
+            <History size={16} className="text-white/30" />
+          </div>
           <div className="grid grid-cols-[1fr_55px_55px_90px] gap-3 mb-2 text-[9px] uppercase tracking-wider opacity-70">
             <div>Tanggal</div>
             <div className="text-center">Masuk</div>
@@ -285,7 +288,10 @@ export default function EmployeeDashboard() {
         </div>
 
         <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-70 mb-4 flex justify-between">Pengumuman <Megaphone size={14}/></div>
+          <div className="flex justify-between items-center mb-5 pb-4 border-b border-white/5">
+            <h3 className="text-sm font-bold text-white">Pengumuman</h3>
+            <Megaphone size={16} className="text-white/30" />
+          </div>
           <div className="space-y-3">
             {announcements.length > 0 ? announcements.map(a => (
               <div key={a.id} className="p-3 bg-white/5 rounded-2xl">
