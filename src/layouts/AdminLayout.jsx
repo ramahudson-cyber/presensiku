@@ -8,6 +8,7 @@ function AdminLayout() {
   const location = useLocation();
   const isDashboard = location.pathname === "/admin";
   const isEmployeePath = location.pathname === "/employee" || location.pathname.startsWith("/employee/");
+  const isAttendancePath = location.pathname === "/employee/attendance" || location.pathname === "/admin/attendance";
 
   return (
     <div className="min-h-screen relative overflow-x-hidden bg-transparent dark:bg-obsidian transition-colors duration-500">
@@ -36,7 +37,7 @@ function AdminLayout() {
         </main>
       </div>
 
-      <BottomNav />
+      <BottomNav hidden={isAttendancePath} />
     </div>
   );
 }
