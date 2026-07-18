@@ -25,7 +25,8 @@ export default function EmployeeDashboard() {
       setTodayAttendance(att);
       
       const { data: shiftData } = await supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle();
-      setShift(shiftData?.shift_code || "N/A");
+      const shiftNames = { PG:'Pagi', SR:'Sore', SI:'Siang', ML:'Malam' };
+      setShift(shiftData?.shift_code ? shiftNames[shiftData.shift_code] || shiftData.shift_code : "N/A");
 
       const monthStart = new Date(); monthStart.setDate(1);
       const { data: monthData } = await supabase.from("attendance").select("attendance_status").eq("user_id", user.id).gte("date", monthStart.toISOString().split("T")[0]);
