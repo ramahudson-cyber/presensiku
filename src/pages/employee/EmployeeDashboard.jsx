@@ -15,11 +15,22 @@ export default function EmployeeDashboard() {
   const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [shift, setShift] = useState(null);
+  const [serverTime, setServerTime] = useState(new Date());
 
   useEffect(() => { fetchData(); }, []);
 
+  useEffect(() => {
+    const id = setInterval(() => {
+      setServerTime(prev => new Date(prev.getTime() + 1000));
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
   const fetchData = async () => {
     try {
+      const { data: st } = await supabase.rpc('get_server_time');
+      if (st) setServerTime(new Date(st));
+
       const today = new Date().toLocaleString("sv-SE", {timeZone: "Asia/Makassar"}).split(" ")[0];
       const { data: att } = await supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle();
       setTodayAttendance(att);
@@ -51,7 +62,6 @@ export default function EmployeeDashboard() {
     </div>
   );
 
-  const now = new Date();
   const formatTime = (timeStr) => {
     if (!timeStr) return '-';
     if (timeStr.includes('T')) {
@@ -82,8 +92,8 @@ export default function EmployeeDashboard() {
           </div>
           <div className="flex justify-between items-end">
             <div>
-              <div className="text-4xl font-bold text-white">{now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</div>
-              <div className="text-xs opacity-50 mt-1 text-white">{now.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
+              <div className="text-4xl font-bold text-white">{serverTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</div>
+              <div className="text-xs opacity-50 mt-1 text-white">{serverTime.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
               <div className="text-[10px] mt-2 bg-white/10 px-2 py-0.5 rounded inline-block font-semibold text-white">Shift: {shift}</div>
             </div>
             <Link to="/employee/attendance" className="bg-white text-[#660099] px-8 py-3 rounded-xl font-bold text-sm">Absen</Link>
