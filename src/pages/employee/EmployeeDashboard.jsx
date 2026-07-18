@@ -185,6 +185,7 @@ export default function EmployeeDashboard() {
             {(() => {
               const total = stats.hadir + stats.izin + stats.sakit + stats.alpha;
               const c = 2 * Math.PI * 40;
+              const daysElapsed = new Date().getDate();
               const items = [
                 { k:'hadir', v:stats.hadir, color:'#ADFF2F', label:'Hadir' },
                 { k:'izin', v:stats.izin, color:'#fbbf24', label:'Izin' },
@@ -195,7 +196,8 @@ export default function EmployeeDashboard() {
               const segments = items.map(it => {
                 const pct = total > 0 ? it.v / total : 0;
                 const len = c * pct;
-                const seg = { ...it, dasharray: `${len} ${c - len}`, dashoffset: -offset, pct: Math.round(pct * 100) };
+                const displayPct = it.k === 'hadir' ? Math.round(it.v / daysElapsed * 100) : Math.round(pct * 100);
+                const seg = { ...it, dasharray: `${len} ${c - len}`, dashoffset: -offset, pct: Math.round(pct * 100), displayPct };
                 offset += len;
                 return seg;
               });
@@ -218,7 +220,7 @@ export default function EmployeeDashboard() {
                         </div>
                         <div className="flex items-center gap-4">
                           <span className="text-lg font-bold text-white tabular-nums">{s.v}</span>
-                          <span className="text-[10px] text-white/40 font-medium">{s.pct}%</span>
+                          <span className="text-[10px] text-white/40 font-medium">{s.displayPct}%</span>
                         </div>
                       </div>
                     ))}
