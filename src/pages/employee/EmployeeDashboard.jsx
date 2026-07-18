@@ -237,25 +237,9 @@ export default function EmployeeDashboard() {
                     ))}
                   </div>
 
-                  {/* Viz row: Ring + Bar list */}
-                  <div className="flex gap-4 items-stretch bg-white/5 rounded-2xl p-4 border border-white/5">
-                    {/* Donut Ring */}
-                    <div className="relative w-[100px] h-[100px] shrink-0">
-                      <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="8"/>
-                        {segments.filter(s => s.v > 0).map(s => (
-                          <circle key={s.k} cx="50" cy="50" r="40" fill="none" stroke={s.color} strokeWidth="8"
-                            strokeDasharray={s.dasharray} strokeDashoffset={s.dashoffset}
-                            strokeLinecap="round" transform="rotate(-90, 50, 50)"
-                            style={{filter: s.k === 'hadir' ? 'drop-shadow(0 0 6px rgba(173,255,47,0.3))' : 'none'}} />
-                        ))}
-                        <circle cx="50" cy="50" r="28" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.03)" strokeWidth="1"/>
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center text-xl font-extrabold text-white">{total}</div>
-                    </div>
-
-                    {/* Horizontal Bar List */}
-                    <div className="flex-1 flex flex-col justify-center gap-2">
+                  {/* Progress bars */}
+                  <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
+                    <div className="flex flex-col gap-2">
                       {segments.map(s => (
                         <div key={s.k} className="flex items-center gap-2">
                           <div className="w-1.5 h-1.5 rounded-full shrink-0"
