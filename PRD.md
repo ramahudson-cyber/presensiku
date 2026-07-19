@@ -1,7 +1,7 @@
-# Product Requirement Document (PRD): SIAP Ampenan
+# Product Requirement Document (PRD): PresensiKU
 
 ## 1. Pendahuluan
-SIAP Ampenan (Sistem Informasi Absensi Pegawai) adalah aplikasi berbasis web dan mobile yang dirancang untuk mendigitalkan dan mengelola proses absensi pegawai di Puskesmas Ampenan. Aplikasi ini bertujuan untuk menggantikan sistem manual, meningkatkan akurasi data, dan mempermudah pemantauan kehadiran.
+PresensiKU adalah aplikasi absensi berbasis PWA (Progressive Web App) yang dirancang untuk mendigitalkan dan mengelola proses absensi pegawai di Puskesmas Ampenan. Aplikasi ini bertujuan untuk menggantikan sistem manual, meningkatkan akurasi data, dan mempermudah pemantauan kehadiran dengan moto "Absen Anti Ribet, Kerja Makin Greget".
 
 ## 2. Tujuan & Latar Belakang
 - **Tujuan Utama**: Menyediakan platform yang efisien, akurat, dan real-time untuk absensi pegawai.
