@@ -34,11 +34,11 @@ export default function WelcomePage() {
         <div className="w-full max-w-[400px] flex flex-col min-h-[85vh]">
           <div className="flex-1 flex flex-col justify-center">
             <h1 className="text-[clamp(52px,12vw,68px)] font-semibold text-pure-white leading-tight">
-              PresensiKU
+              Hadir.Kuy
             </h1>
             <p className="text-[22px] text-pure-white/70 mt-4 leading-relaxed">
-              Absen Anti Ribet,<br />
-              Kerja Makin Greget
+              Absen anti ribet,<br />
+              kerja makin greget!
             </p>
             <p className="text-xs text-pure-white/35 mt-6 tracking-[2.5px] uppercase font-light">
               Disiplin · Akurat · Optimal
@@ -54,7 +54,7 @@ export default function WelcomePage() {
 
           <div className="pb-4">
             <p className="text-xs text-pure-white/70">Puskesmas Ampenan</p>
-            <p className="text-[10px] text-pure-white/50 mt-1">v{appVersion} — PresensiKU</p>
+            <p className="text-[10px] text-pure-white/50 mt-1">v{appVersion} — Hadir.Kuy</p>
           </div>
         </div>
       </div>
