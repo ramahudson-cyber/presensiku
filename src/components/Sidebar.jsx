@@ -49,11 +49,11 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
         <div className="p-5 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-xl flex items-center justify-center shadow-lg shrink-0">
-              <span className="text-white font-bold text-sm tracking-tight">HK</span>
+              <span className="text-white font-bold text-sm tracking-tight">PK</span>
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-wide text-pure-white">Hadir.Kuy</h1>
-              <p className="text-[10px] text-slate-mist">Absen anti ribet, kerja makin greget!</p>
+              <h1 className="text-lg font-bold tracking-wide text-pure-white">PresensiKU</h1>
+              <p className="text-[10px] text-slate-mist">Absen Anti Ribet, Kerja Makin Greget</p>
             </div>
           </div>
               <button onClick={() => setMenuOpen(false)} className="xl:hidden border-gradient bg-transparent text-pure-white rounded-lg transition">

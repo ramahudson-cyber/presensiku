@@ -376,10 +376,10 @@ export default function SignInPage() {
         <div className="hidden lg:block lg:flex-1">
           <div className="text-left px-2">
             <h1 className="font-urbanist text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
-              Hadir.Kuy
+              PresensiKU
             </h1>
             <p className="text-green-yellow text-base leading-relaxed mt-8 tracking-[0.72px]">
-              Absen anti ribet, kerja makin greget!
+              Absen Anti Ribet, Kerja Makin Greget
             </p>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-6">
               <span className="text-[#c4b5fd] text-sm tracking-[2.5px] uppercase font-semibold">Disiplin</span>
@@ -398,10 +398,10 @@ export default function SignInPage() {
             {/* Hero — mobile/tablet only */}
             <div className="text-left mb-6 sm:mb-10 lg:hidden px-2">
               <h1 className="font-urbanist text-3xl sm:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
-                Hadir.Kuy
+                PresensiKU
               </h1>
               <p className="text-green-yellow text-sm sm:text-base leading-relaxed mt-6 sm:mt-8 tracking-[0.72px] hidden sm:block">
-                Absen anti ribet, kerja makin greget!
+                Absen Anti Ribet, Kerja Makin Greget
               </p>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-4 hidden sm:flex">
                 <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Disiplin</span>
@@ -674,7 +674,7 @@ export default function SignInPage() {
 
           {/* Footer */}
           <p className="text-center text-[10px] text-pure-white mt-6 sm:mt-8 tracking-[0.65px]">
-            Hadir.Kuy v{appVersion}
+            PresensiKU v{appVersion}
           </p>
         </div>
       </div>
