@@ -329,38 +329,66 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-          <div className="flex justify-between items-center mb-5 pb-4 border-b border-white/5">
-            <h3 className="text-sm font-bold text-white">Riwayat Absensi</h3>
-            <History size={16} className="text-white/30" />
+        {/* HISTORY CARD — GLASSMORPHISM PREMIUM */}
+        <div className="rounded-3xl p-5 relative overflow-hidden border transition-all duration-500"
+          style={{ background: darkMode ? 'rgba(30,30,50,0.6)' : 'rgba(255,255,255,0.05)', borderColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.05)', boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.08)', backdropFilter: 'blur(20px)' }}>
+          {/* Card Header */}
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+              <h3 className={`text-sm font-bold tracking-wide ${darkMode ? 'text-white' : 'text-gray-900'}`}>Riwayat Absensi</h3>
+            </div>
+            <History size={16} className={darkMode ? 'text-white/30' : 'text-gray-400'} />
           </div>
-          <div className="grid grid-cols-[1fr_55px_55px_90px] gap-3 mb-2 text-[9px] uppercase tracking-wider opacity-70">
-            <div>Tanggal</div>
-            <div className="text-center">Masuk</div>
-            <div className="text-center">Pulang</div>
-            <div className="text-right">Status</div>
+
+          {/* Header Labels */}
+          <div className="grid grid-cols-[1fr_55px_55px_90px] gap-3 mb-2 text-[9px] uppercase tracking-wider">
+            <div className={darkMode ? 'text-white/30' : 'text-gray-400'}>Tanggal</div>
+            <div className={`text-center ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Masuk</div>
+            <div className={`text-center ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Pulang</div>
+            <div className={`text-right ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Status</div>
           </div>
+
+          {/* History Items */}
           <div className="space-y-1">
-            {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 5).map(att => (
-              <div key={att.id} className="grid grid-cols-[1fr_55px_55px_90px] gap-3 items-center bg-white/5 -mx-6 px-6 py-3">
-                <div>
-                  <div className="text-xs font-semibold">{new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-                  <div className="text-[10px] opacity-60 capitalize">Shift</div>
+            {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 5).map(att => {
+              const isHadir = att.attendance_status === 'hadir' || att.attendance_status === 'terlambat';
+              return (
+                <div key={att.id}
+                  className="grid grid-cols-[1fr_55px_55px_90px] gap-3 items-center rounded-xl px-4 py-3 transition-all duration-200 hover:translate-x-1"
+                  style={{
+                    background: isHadir
+                      ? (darkMode ? 'rgba(173,255,47,0.03)' : 'rgba(173,255,47,0.02)')
+                      : 'transparent',
+                    boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.06)'
+                  }}>
+                  <div>
+                    <div className={`text-xs font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {new Date(att.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </div>
+                    <div className={`text-[10px] ${darkMode ? 'text-white/40' : 'text-gray-500'}`}>Shift</div>
+                  </div>
+                  <div className={`text-center text-xs font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {formatTime(att.clock_in_time)}
+                  </div>
+                  <div className={`text-center text-xs font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {formatTime(att.clock_out_time)}
+                  </div>
+                  <div className={`text-right text-xs font-bold uppercase ${
+                    att.attendance_status === 'terlambat' ? 'text-amber-400' :
+                    att.attendance_status === 'hadir' ? 'text-emerald-400' :
+                    (darkMode ? 'text-white/40' : 'text-gray-500')
+                  }`}>
+                    <div>{att.attendance_status}</div>
+                    {att.attendance_status === 'terlambat' && att.late_minutes > 0 && (
+                      <div className="text-[8px] font-semibold opacity-70 leading-tight">{att.late_minutes} menit</div>
+                    )}
+                  </div>
                 </div>
-                <div className="text-center text-xs font-medium tabular-nums">{formatTime(att.clock_in_time)}</div>
-                <div className="text-center text-xs font-medium tabular-nums">{formatTime(att.clock_out_time)}</div>
-                <div className={`text-right text-xs font-bold uppercase justify-self-end ${
-                  att.attendance_status === 'terlambat' ? 'text-amber-400' :
-                  att.attendance_status === 'hadir' ? 'text-emerald-400' :
-                  'opacity-60'
-                }`}>
-                  <div>{att.attendance_status}</div>
-                  {att.attendance_status === 'terlambat' && att.late_minutes > 0 && (
-                    <div className="text-[8px] font-semibold opacity-70 leading-tight">{att.late_minutes} menit</div>
-                  )}
-                </div>
-              </div>
-            )) : <div className="text-xs opacity-80 text-center py-6">Belum ada riwayat.</div>}
+              );
+            }) : (
+              <div className={`text-xs text-center py-6 ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Belum ada riwayat.</div>
+            )}
           </div>
         </div>
 
