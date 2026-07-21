@@ -319,7 +319,7 @@ export default function EmployeeDashboard() {
                   {/* Footer Summary */}
                   <div className={`mt-4 pt-4 border-t ${darkMode ? 'border-white/5' : 'border-gray-100'} flex items-center justify-between`}>
                     <span className={`text-[9px] ${darkMode ? 'text-white/25' : 'text-gray-400'} font-medium`}>Periode: {dayRange}</span>
-                    <span className="text-[9px] font-medium tabular-nums" style={{ color: stats.hadir > 0 ? (darkMode ? 'rgba(173,255,47,0.5)' : 'rgba(173,255,47,0.7)') : (darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.25)') }}>
+                    <span className={`text-[9px] font-medium tabular-nums ${darkMode ? 'text-white/25' : 'text-gray-400'}`}>
                       {stats.hadir} dari {stats.jadwalCount} hari kerja
                     </span>
                   </div>
