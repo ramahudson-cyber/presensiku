@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import {
-  CheckCircle2, Loader2, ShieldAlert, Plus, Minus, FingerprintPattern
+  CheckCircle2, Loader2, ShieldAlert, Plus, Minus, FingerprintPattern, ArrowLeft
 } from "lucide-react";
 import LocationMap from "../../components/LocationMap";
 import AttendanceResultSheet from "../../components/AttendanceResultSheet";
@@ -40,6 +41,7 @@ function getDeviceInfoLite() {
 }
 
 export default function AttendancePage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   const [todayAttendance, setTodayAttendance] = useState(null);
@@ -463,6 +465,13 @@ const handleCheckIn = async () => {
       {/* Overlay Content */}
       <div className="absolute inset-0 z-10 flex flex-col pt-16 sm:pt-20 px-4 pb-24 pointer-events-none">
         {/* Top: Server Time + Location Card */}
+        {/* Back + Presensi Title */}
+        <div className="pointer-events-auto flex items-center gap-2 bg-white/80 backdrop-blur-xl rounded-full px-3 py-2 border border-black/10 shadow-sm mb-3 w-fit">
+          <button onClick={() => navigate(-1)} className="w-7 h-7 rounded-full bg-black/5 flex items-center justify-center active:scale-90 transition-transform">
+            <ArrowLeft size={16} className="text-black" />
+          </button>
+          <span className="text-sm font-medium text-black">Presensi</span>
+        </div>
         <div className="pointer-events-auto space-y-2">
           <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl rounded-full px-3.5 py-2 border border-black/10 shadow-sm">
             <div>
