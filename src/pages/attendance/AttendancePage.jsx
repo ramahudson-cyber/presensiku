@@ -573,7 +573,7 @@ const handleCheckIn = async () => {
 	        </div>
 
 	        {todayAttendance && todayAttendance.clock_out_time ? null : (
-          <div className="pointer-events-auto flex flex-col items-center gap-2 pb-2">
+          <div className="pointer-events-auto flex flex-col items-center gap-2 mt-auto pb-12">
             <div className="relative">
               <div className="absolute inset-[-8px] rounded-full bg-gradient-to-br from-electric-violet/20 to-transparent blur-2xl animate-ring-pulse"></div>
               <div className="absolute inset-[-2px] rounded-full border border-white/[0.05]"></div>
