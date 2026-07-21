@@ -135,7 +135,7 @@ export default function EmployeeDashboard() {
               <div className="text-[10px] mt-2 bg-white/10 px-2 py-0.5 rounded inline-block font-semibold text-white">Shift: {shift}</div>
             </div>
             <Link to="/employee/attendance" className="bg-white text-[#660099] px-8 py-3 rounded-xl font-bold text-sm flex items-center gap-2">
-              Absen Sekarang <ArrowRight size={16} />
+              Absen <ArrowRight size={16} />
             </Link>
           </div>
         </div>
