@@ -468,9 +468,9 @@ const handleCheckIn = async () => {
         {/* Back + Presensi Title */}
         <div className="pointer-events-auto flex items-center gap-3 mb-3">
           <button onClick={() => navigate(-1)} className="active:scale-90 transition-transform">
-            <ArrowLeft size={24} className="text-white" />
+            <ArrowLeft size={24} className="text-black" />
           </button>
-          <h1 className="text-xl font-bold text-white">Presensi</h1>
+          <h1 className="text-xl font-bold text-black">Presensi</h1>
         </div>
         <div className="pointer-events-auto space-y-2">
           <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl rounded-full px-3.5 py-2 border border-black/10 shadow-sm">
@@ -619,8 +619,8 @@ const handleCheckIn = async () => {
                 )}
               </button>
             </div>
-            <span className="text-[13px] font-bold text-white tracking-[3px] uppercase" style={{
-              textShadow: '0 0 15px rgba(191,0,255,0.6)'
+            <span className="text-[13px] font-bold text-black tracking-[3px] uppercase" style={{
+              textShadow: '0 0 15px rgba(191,0,255,0.3)'
             }}>
               {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
             </span>
