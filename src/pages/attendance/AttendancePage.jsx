@@ -463,7 +463,7 @@ const handleCheckIn = async () => {
       </div>
 
       {/* Overlay Content */}
-      <div className="absolute inset-0 z-10 flex flex-col pt-8 sm:pt-12 px-4 pb-24 pointer-events-none">
+      <div className="absolute inset-0 z-10 flex flex-col pt-8 sm:pt-12 px-4 pb-4 pointer-events-none">
         {/* Top: Server Time + Location Card */}
         {/* Back + Presensi Title */}
         <div className="pointer-events-auto flex items-center gap-3 mb-3">
