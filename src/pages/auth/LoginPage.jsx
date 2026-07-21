@@ -59,7 +59,7 @@ export default function LoginPage() {
 
           <div className="pb-4" style={{ animation: 'fadeInUp 0.6s ease-out 0.9s both' }}>
             <p className="text-xs text-pure-white/70">Puskesmas Ampenan</p>
-            <p className="text-[10px] text-pure-white/50 mt-1">v{appVersion} — Hadir.Kuy</p>
+            <p className="text-[10px] text-pure-white/50 mt-1">v{appVersion} — Presensiku</p>
           </div>
         </div>
       </div>

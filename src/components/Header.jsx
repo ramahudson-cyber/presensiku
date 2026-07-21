@@ -22,7 +22,7 @@ function Header() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const title = TITLES[location.pathname] || "Hadir.Kuy";
+  const title = TITLES[location.pathname] || "Presensiku";
   const userName = user?.full_name || user?.username || "User";
 
   const [now, setNow] = useState(new Date());

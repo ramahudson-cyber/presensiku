@@ -15,10 +15,10 @@ export default function BlockPage() {
               Akses Terbatas
             </h1>
             <p className="text-slate-mist mb-4">
-              Halaman ini hanya bisa diakses melalui Aplikasi <strong>Hadir.Kuy</strong>.
+              Halaman ini hanya bisa diakses melalui Aplikasi <strong>Presensiku</strong>.
             </p>
             <p className="text-slate-mist text-sm">
-              Silakan login melalui Aplikasi Hadir.Kuy yang sudah terinstall di HP Android Anda.
+              Silakan login melalui Aplikasi Presensiku yang sudah terinstall di HP Android Anda.
             </p>
           </>
         ) : (
@@ -28,10 +28,10 @@ export default function BlockPage() {
               Akses Terbatas
             </h1>
             <p className="text-slate-mist mb-4">
-              Halaman ini hanya bisa diakses melalui Aplikasi <strong>Hadir.Kuy</strong> di HP Android.
+              Halaman ini hanya bisa diakses melalui Aplikasi <strong>Presensiku</strong> di HP Android.
             </p>
             <p className="text-slate-mist text-sm">
-              Akses dari laptop/desktop hanya untuk Admin. Silakan buka melalui HP Android yang sudah terinstall aplikasi Hadir.Kuy.
+              Akses dari laptop/desktop hanya untuk Admin. Silakan buka melalui HP Android yang sudah terinstall aplikasi Presensiku.
             </p>
           </>
         )}

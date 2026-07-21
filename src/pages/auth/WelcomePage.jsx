@@ -34,7 +34,7 @@ export default function WelcomePage() {
         <div className="w-full max-w-[400px] flex flex-col min-h-[85vh]">
           <div className="flex-1 flex flex-col justify-center">
             <h1 className="text-[clamp(52px,12vw,68px)] font-semibold text-pure-white leading-tight">
-              Hadir.Kuy
+              Presensiku
             </h1>
             <p className="text-[22px] text-pure-white/70 mt-4 leading-relaxed">
               Absen anti ribet,<br />
@@ -54,7 +54,7 @@ export default function WelcomePage() {
 
           <div className="pb-4">
             <p className="text-xs text-pure-white/70">Puskesmas Ampenan</p>
-            <p className="text-[10px] text-pure-white/50 mt-1">v{appVersion} — Hadir.Kuy</p>
+            <p className="text-[10px] text-pure-white/50 mt-1">v{appVersion} — Presensiku</p>
           </div>
         </div>
       </div>
