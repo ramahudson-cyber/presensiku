@@ -463,14 +463,14 @@ const handleCheckIn = async () => {
       </div>
 
       {/* Overlay Content */}
-      <div className="absolute inset-0 z-10 flex flex-col pt-16 sm:pt-20 px-4 pb-24 pointer-events-none">
+      <div className="absolute inset-0 z-10 flex flex-col pt-8 sm:pt-12 px-4 pb-24 pointer-events-none">
         {/* Top: Server Time + Location Card */}
         {/* Back + Presensi Title */}
-        <div className="pointer-events-auto flex items-center gap-2 bg-white/80 backdrop-blur-xl rounded-full px-3 py-2 border border-black/10 shadow-sm mb-3 w-fit">
-          <button onClick={() => navigate(-1)} className="w-7 h-7 rounded-full bg-black/5 flex items-center justify-center active:scale-90 transition-transform">
-            <ArrowLeft size={16} className="text-black" />
+        <div className="pointer-events-auto flex items-center gap-3 mb-3">
+          <button onClick={() => navigate(-1)} className="active:scale-90 transition-transform">
+            <ArrowLeft size={24} className="text-white" />
           </button>
-          <span className="text-sm font-medium text-black">Presensi</span>
+          <h1 className="text-xl font-bold text-white">Presensi</h1>
         </div>
         <div className="pointer-events-auto space-y-2">
           <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl rounded-full px-3.5 py-2 border border-black/10 shadow-sm">
