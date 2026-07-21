@@ -264,9 +264,9 @@ export default function EmployeeDashboard() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
-                      <span className="text-xs font-bold text-white tracking-wide">Ringkasan Kehadiran</span>
+                      <span className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'} tracking-wide`}>Ringkasan Kehadiran</span>
                     </div>
-                    <span className="text-[10px] text-white/30 font-medium">{monthLabel}</span>
+                    <span className={`text-[10px] ${darkMode ? 'text-white/30' : 'text-gray-400'} font-medium`}>{monthLabel}</span>
                   </div>
 
                   {/* Stat Items List */}
@@ -299,14 +299,14 @@ export default function EmployeeDashboard() {
 
                           {/* Label + Desc */}
                           <div className="flex-1 min-w-0">
-                            <div className={`text-sm font-semibold ${isActive ? 'text-white' : 'text-white/80'}`}>{item.label}</div>
-                            <div className="text-[9px] text-white/40">{item.desc}</div>
+                            <div className={`text-sm font-semibold ${isActive ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-white/80' : 'text-gray-500')}`}>{item.label}</div>
+                            <div className={`text-[9px] ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>{item.desc}</div>
                           </div>
 
                           {/* Value */}
                           <div className="text-right shrink-0">
-                            <div className={`text-xl font-extrabold tabular-nums ${isActive ? 'text-white' : 'text-white/60'}`}>{item.v}</div>
-                            <div className={`text-[9px] font-medium ${isActive ? '' : 'text-white/20'}`}
+                            <div className={`text-xl font-extrabold tabular-nums ${isActive ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-white/60' : 'text-gray-400')}`}>{item.v}</div>
+                            <div className={`text-[9px] font-medium ${isActive ? '' : (darkMode ? 'text-white/20' : 'text-gray-300')}`}
                               style={{ color: isActive ? item.color : undefined }}>
                               {`${stats.hadir} dari ${stats.jadwalCount} hari`}
                             </div>
@@ -317,8 +317,8 @@ export default function EmployeeDashboard() {
                   </div>
 
                   {/* Footer Summary */}
-                  <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
-                    <span className="text-[9px] text-white/25 font-medium">Periode: {dayRange}</span>
+                  <div className={`mt-4 pt-4 border-t ${darkMode ? 'border-white/5' : 'border-gray-100'} flex items-center justify-between`}>
+                    <span className={`text-[9px] ${darkMode ? 'text-white/25' : 'text-gray-400'} font-medium`}>Periode: {dayRange}</span>
                     <span className="text-[9px] font-medium tabular-nums" style={{ color: stats.hadir > 0 ? 'rgba(173,255,47,0.5)' : 'rgba(255,255,255,0.2)' }}>
                       {stats.hadir} dari {stats.jadwalCount} hari kerja
                     </span>
