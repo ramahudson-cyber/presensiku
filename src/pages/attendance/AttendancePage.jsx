@@ -606,6 +606,7 @@ const handleCheckIn = async () => {
                     <FingerprintPattern size={56} strokeWidth={1.6} className="animate-icon-pulse text-white" style={{
                       filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.5))'
                     }} />
+                  </div>
                 )}
               </button>
             </div>
