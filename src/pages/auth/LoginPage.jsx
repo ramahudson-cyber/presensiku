@@ -26,24 +26,38 @@ export default function LoginPage() {
       <div className="relative z-10 min-h-dvh flex items-center justify-center p-6">
         <div className="w-full max-w-[400px] flex flex-col min-h-[85vh]">
           <div className="flex-1 flex flex-col justify-center">
-            <img src={logoPresensiku} alt="Presensiku" className="w-full max-w-[380px]" />
-            <p className="text-[22px] text-pure-white/70 mt-4 leading-relaxed">
+            <img
+              src={logoPresensiku}
+              alt="Presensiku"
+              className="w-[220px] max-w-[380px]"
+              style={{
+                animation: 'fadeInUp 0.8s ease-out both, float 3s ease-in-out infinite 0.8s'
+              }}
+            />
+            <p
+              className="text-[22px] text-pure-white/70 mt-4 leading-relaxed"
+              style={{ animation: 'fadeInUp 0.8s ease-out 0.2s both' }}
+            >
               Absen anti ribet,<br />
               kerja makin greget!
             </p>
-            <p className="text-xs text-pure-white/35 mt-6 tracking-[2.5px] uppercase font-light">
+            <p
+              className="text-xs text-pure-white/35 mt-6 tracking-[2.5px] uppercase font-light"
+              style={{ animation: 'fadeInUp 0.8s ease-out 0.4s both' }}
+            >
               Disiplin · Akurat · Optimal
             </p>
             <button
               onClick={() => navigate("/login")}
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-br from-electric-violet to-deep-indigo text-pure-white rounded-full text-sm font-semibold shadow-lg mt-8 w-auto hover:brightness-110 active:brightness-90 transition-all duration-200"
+              style={{ animation: 'fadeInUp 0.8s ease-out 0.6s both' }}
             >
               Mulai Sekarang
               <ArrowRight size={16} />
             </button>
           </div>
 
-          <div className="pb-4">
+          <div className="pb-4" style={{ animation: 'fadeInUp 0.6s ease-out 0.9s both' }}>
             <p className="text-xs text-pure-white/70">Puskesmas Ampenan</p>
             <p className="text-[10px] text-pure-white/50 mt-1">v{appVersion} — Hadir.Kuy</p>
           </div>
