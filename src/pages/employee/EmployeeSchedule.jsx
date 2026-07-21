@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 import BottomSheet from "../../components/BottomSheet";
 import {
   ChevronLeft, ChevronRight, ChevronDown, Calendar, Sun, Moon, Sunset, CloudSun,
@@ -31,8 +32,9 @@ function getDaysInMonth(year, month) {
 }
 
 	export default function EmployeeSchedule() {
-	  const { user } = useAuth();
-	  const navigate = useNavigate();
+	const { user } = useAuth();
+	const { darkMode } = useTheme();
+	const navigate = useNavigate();
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
   const [schedules, setSchedules] = useState({});
