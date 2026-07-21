@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import {
-  CheckCircle2, Loader2, ShieldAlert, Plus, Minus
+  CheckCircle2, Loader2, ShieldAlert, Plus, Minus, FingerprintPattern
 } from "lucide-react";
 import LocationMap from "../../components/LocationMap";
 import AttendanceResultSheet from "../../components/AttendanceResultSheet";
@@ -602,19 +602,10 @@ const handleCheckIn = async () => {
                 ) : (
                   <div className="relative flex items-center justify-center z-30">
                     {/* White glow background behind fingerprint */}
-                    <div className="absolute w-[56px] h-[56px] rounded-full bg-white/10 blur-md"></div>
-                    <svg viewBox="0 0 24 24" width="52" height="52" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                      className="animate-icon-pulse"
-                      style={{ filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.4))' }}>
-                      <path d="M12 2a6 6 0 0 0-6 6c0 3.5-1 5.5-1.5 6.5a3 3 0 0 0 1 3.8"/>
-                      <path d="M12 2a6 6 0 0 1 6 6c0 3.5 1 5.5 1.5 6.5a3 3 0 0 1-1 3.8"/>
-                      <path d="M8 14a4 4 0 0 1 8 0"/>
-                      <path d="M10 19a2 2 0 0 1 4 0"/>
-                      <path d="M9 7c0-1.1.9-2 2-2s2 .9 2 2v3"/>
-                      <path d="M9 12v3"/>
-                      <path d="M15 12v3"/>
-                    </svg>
-                  </div>
+                    <div className="absolute w-[60px] h-[60px] rounded-full bg-white/10 blur-lg"></div>
+                    <FingerprintPattern size={56} strokeWidth={1.6} className="animate-icon-pulse text-white" style={{
+                      filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.5))'
+                    }} />
                 )}
               </button>
             </div>
