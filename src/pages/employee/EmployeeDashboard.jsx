@@ -290,10 +290,10 @@ export default function EmployeeDashboard() {
                           {/* Icon */}
                           <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
                             style={{
-                              background: isActive ? `${item.color}1A` : `${item.color}1A`,
-                              boxShadow: isActive ? `0 0 12px ${item.glow}` : 'none'
+                              background: 'transparent',
+                              boxShadow: 'none'
                             }}>
-                            <div style={{ color: darkMode ? '#FFFFFF' : '#000000' }}>
+                            <div style={{ color: '#8B5CF6' }}>
                               {getIcon(item.check)}
                             </div>
                           </div>
