@@ -305,7 +305,25 @@ function getDaysInMonth(year, month) {
         </div>
       )}
 
-		      {/* SUMMARY CARDS */}
+      {/* TODAY SCHEDULE INFO */}
+      {(() => {
+        const now = new Date();
+        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+        const todaySched = schedules[todayStr];
+        const shiftInfo = todaySched ? SHIFT_MAP[todaySched.shift_code] : null;
+        if (!todaySched || !shiftInfo) return null;
+        return (
+          <div className="my-3 rounded-xl p-3 text-center" style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.15)' }}>
+            <span className="text-[10px] text-slate-mist font-medium">Jadwal hari ini: </span>
+            <span className="text-[10px] font-bold text-pure-white">
+              {now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+              {' '}<span className="text-violet-400">({shiftInfo.name})</span>
+            </span>
+          </div>
+        );
+      })()}
+
+      {/* SUMMARY CARDS */}
 		      {!loading && stats.total > 0 && (
 		        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
 		          {SHIFTS.map(s => {
