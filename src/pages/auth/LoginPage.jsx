@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { getCurrentVersion } from "../../services/updateService";
+import logoPresensiku from "../../assets/logo-presensiku.png";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -25,9 +26,7 @@ export default function LoginPage() {
       <div className="relative z-10 min-h-dvh flex items-center justify-center p-6">
         <div className="w-full max-w-[400px] flex flex-col min-h-[85vh]">
           <div className="flex-1 flex flex-col justify-center">
-            <h1 className="text-[clamp(52px,12vw,68px)] font-semibold text-pure-white leading-tight">
-              Hadir.Kuy
-            </h1>
+            <img src={logoPresensiku} alt="Presensiku" className="w-full max-w-[380px]" />
             <p className="text-[22px] text-pure-white/70 mt-4 leading-relaxed">
               Absen anti ribet,<br />
               kerja makin greget!
