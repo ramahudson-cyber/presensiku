@@ -313,11 +313,13 @@ function getDaysInMonth(year, month) {
         const shiftInfo = todaySched ? SHIFT_MAP[todaySched.shift_code] : null;
         if (!todaySched || !shiftInfo) return null;
         return (
-          <div className="my-3 rounded-xl p-3 text-center" style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.15)' }}>
-            <span className="text-[10px] text-slate-mist font-medium">Jadwal hari ini: </span>
-            <span className="text-[10px] font-bold text-pure-white">
-              {now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-              {' '}<span className="text-violet-400">({shiftInfo.name})</span>
+          <div className="my-3 rounded-xl p-3 text-center" style={{ background: darkMode ? 'rgba(139,92,246,0.08)' : 'rgba(139,92,246,0.06)', border: darkMode ? '1px solid rgba(139,92,246,0.15)' : '1px solid rgba(139,92,246,0.2)' }}>
+            <span className="text-[10px] font-medium">
+              <span className={darkMode ? 'text-white/50' : 'text-gray-600'}>Jadwal hari ini: </span>
+              <span className={darkMode ? 'text-white' : 'text-gray-900'}>
+                {now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                {' '}<span className="text-violet-500">({shiftInfo.name})</span>
+              </span>
             </span>
           </div>
         );
