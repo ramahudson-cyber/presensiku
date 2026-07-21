@@ -770,4 +770,50 @@ html:not(.dark) .dashboard-status-masuk { color: #ffffff !important; }
   background: radial-gradient(circle, rgba(173,255,47,0.05), transparent 60%);
   border-radius: 50%; filter: blur(30px); pointer-events: none;
 }
-.stats-card .content { position: relative; z-index: 1; }
+/* Fingerprint button utility classes */
+.animate-ripple { animation: rippleOut 3s ease-out infinite; }
+.animate-ripple2 { animation: rippleOut2 3s ease-out infinite 1s; }
+.animate-ripple3 { animation: rippleOut3 3s ease-out infinite 2s; }
+.animate-scan { animation: scanFingerprint 3s ease-in-out infinite; }
+
+/* ===================================================================
+   FINGERPRINT BUTTON ANIMATIONS - Design B Solid Gradient
+   =================================================================== */
+
+/* Icon pulse animation - heartbeat-like */
+@keyframes fingerprintPulse {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.08); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.04); }
+  60% { transform: scale(1); }
+}
+
+/* Icon glow variation */
+@keyframes fingerprintGlow {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(255,255,255,0.3)); }
+  50% { filter: drop-shadow(0 0 18px rgba(255,255,255,0.6)); }
+}
+
+/* Ripple rings expanding outward */
+@keyframes rippleOut {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+@keyframes rippleOut2 {
+  0% { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+@keyframes rippleOut3 {
+  0% { transform: scale(1); opacity: 0.3; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* Scanning line moving up and down */
+@keyframes scanFingerprint {
+  0% { top: 25%; opacity: 0; }
+  15% { opacity: 0.6; }
+  50% { top: 65%; opacity: 0.6; }
+  85% { opacity: 0.6; }
+  100% { top: 75%; opacity: 0; }
+}
