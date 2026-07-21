@@ -11,7 +11,7 @@ export default function EmployeeDashboard() {
   const { darkMode, toggleTheme } = useTheme();
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
-  const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0 });
+  const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0, jadwalCount: 0 });
   const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [shift, setShift] = useState(null);
@@ -47,6 +47,23 @@ export default function EmployeeDashboard() {
         if (s[st] !== undefined) s[st]++;
       });
       setStats(s);
+
+      // Hitung total jadwal hari kerja bulan ini
+      const year = monthStart.getFullYear();
+      const month = String(monthStart.getMonth() + 1).padStart(2, '0');
+      const lastDay = new Date(year, monthStart.getMonth() + 1, 0).getDate();
+      let jadwalCount = 0;
+      for (let d = 1; d <= lastDay; d++) {
+        const dateStr = `${year}-${month}-${String(d).padStart(2, '0')}`;
+        const { data: sch } = await supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", dateStr).maybeSingle();
+        if (sch?.shift_code) {
+          const dateObj = new Date(dateStr + 'T00:00:00');
+          const dayOfWeek = (dateObj.getDay() + 6) % 7;
+          const { data: shiftSch } = await supabase.from("shift_schedules").select("is_working_day").eq("shift_code", sch.shift_code).eq("day_of_week", dayOfWeek).maybeSingle();
+          if (shiftSch?.is_working_day) jadwalCount++;
+        }
+      }
+      setStats(prev => ({ ...prev, jadwalCount }));
       const { data: ann } = await supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3);
       setAnnouncements(ann || []);
       setAttendanceHistory(await getAttendanceHistory(user.id));
@@ -247,7 +264,7 @@ export default function EmployeeDashboard() {
                   <div className="space-y-2">
                     {items.map(item => {
                       const isActive = item.v > 0;
-                      const pct = total > 0 ? Math.round((item.v / total) * 100) : 0;
+                      const pct = stats.jadwalCount > 0 ? Math.round((item.v / stats.jadwalCount) * 100) : 0;
                       return (
                         <div key={item.k}
                           className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1"
@@ -282,7 +299,7 @@ export default function EmployeeDashboard() {
                             <div className={`text-xl font-extrabold tabular-nums ${isActive ? 'text-white' : 'text-white/40'}`}>{item.v}</div>
                             <div className={`text-[9px] font-medium ${isActive ? '' : 'text-white/20'}`}
                               style={{ color: isActive ? `${item.color}99` : undefined }}>
-                              {isActive ? `${pct}% dari total` : '0%'}
+                              {`${stats.hadir} dari ${stats.jadwalCount} hari`}
                             </div>
                           </div>
                         </div>
@@ -294,7 +311,7 @@ export default function EmployeeDashboard() {
                   <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
                     <span className="text-[9px] text-white/25 font-medium">Periode: {dayRange}</span>
                     <span className="text-[9px] font-medium tabular-nums" style={{ color: stats.hadir > 0 ? 'rgba(173,255,47,0.5)' : 'rgba(255,255,255,0.2)' }}>
-                      {stats.hadir} dari {total} total absensi
+                      {stats.hadir} dari {stats.jadwalCount} hari kerja
                     </span>
                   </div>
                 </>
