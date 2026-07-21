@@ -778,6 +778,14 @@ html:not(.dark) .dashboard-status-masuk { color: #ffffff !important; }
 .animate-icon-pulse { animation: fingerprintPulse 2.5s ease-in-out infinite, fingerprintGlow 2.5s ease-in-out infinite; }
 
 /* ===================================================================
+   PREMIUM STATS CARD — Gradient Border Animation
+   =================================================================== */
+@keyframes borderGlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ===================================================================
    FINGERPRINT BUTTON ANIMATIONS - Design B Solid Gradient
    =================================================================== */
 

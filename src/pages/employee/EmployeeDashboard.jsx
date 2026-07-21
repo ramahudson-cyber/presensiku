@@ -185,74 +185,118 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* STATS CARD PREMIUM */}
-        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 relative overflow-hidden stats-card">
-          <div className="bg-grid" />
-          <div className="bg-orb-1" />
-          <div className="bg-orb-2" />
-          <div className="bg-ring-glow" />
+        {/* STATS CARD — ELEGANT LIST PREMIUM */}
+        <div className="rounded-3xl p-5 relative overflow-hidden border transition-all duration-500"
+          style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)', backdropFilter: 'blur(20px)', borderColor: 'rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
+            backgroundImage: 'linear-gradient(135deg, rgba(191,0,255,0.03) 0%, transparent 50%, rgba(59,130,246,0.02) 100%)',
+            backgroundClip: 'padding-box' }}>
+          {/* Animated gradient border */}
+          <div className="pointer-events-none absolute inset-0 rounded-3xl -z-10" style={{
+            border: '1px solid transparent',
+            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            WebkitMaskComposite: 'xor',
+            maskComposite: 'exclude',
+            padding: '1px',
+            background: 'linear-gradient(135deg, rgba(191,0,255,0.35), rgba(59,130,246,0.15), rgba(168,85,247,0.25))',
+            backgroundSize: '300% 300%',
+            animation: 'borderGlow 4s ease-in-out infinite'
+          }} />
+          @keyframes borderGlow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 
           <div className="content">
             {(() => {
               const total = stats.hadir + stats.izin + stats.sakit + stats.alpha;
-              const c = 2 * Math.PI * 40;
-              const daysElapsed = new Date().getDate();
               const items = [
-                { k:'hadir', v:stats.hadir, color:'#ADFF2F', label:'Hadir' },
-                { k:'izin', v:stats.izin, color:'#fbbf24', label:'Izin' },
-                { k:'sakit', v:stats.sakit, color:'#fb923c', label:'Sakit' },
-                { k:'alpha', v:stats.alpha, color:'#f87171', label:'Alpha' },
+                { k:'hadir', v:stats.hadir, color:'#ADFF2F', glow:'rgba(173,255,47,0.1)', check:'check', label:'Hadir', desc:'Kehadiran tepat waktu' },
+                { k:'izin', v:stats.izin, color:'#fbbf24', glow:'rgba(251,191,36,0.1)', check:'info', label:'Izin', desc:'Diluar tanggung jawab' },
+                { k:'sakit', v:stats.sakit, color:'#fb923c', glow:'rgba(251,146,60,0.1)', check:'heart', label:'Sakit', desc:'Tidak hadir karena sakit' },
+                { k:'alpha', v:stats.alpha, color:'#f87171', glow:'rgba(248,113,113,0.1)', check:'x', label:'Alpha', desc:'Tanpa keterangan' },
               ];
-              let offset = 0;
-              const segments = items.map(it => {
-                const pct = total > 0 ? it.v / total : 0;
-                const len = c * pct;
-                const displayPct = it.k === 'hadir' ? Math.round(it.v / daysElapsed * 100) : Math.round(pct * 100);
-                const seg = { ...it, dasharray: `${len} ${c - len}`, dashoffset: -offset, pct: Math.round(pct * 100), displayPct };
-                offset += len;
-                return seg;
-              });
+
+              // Icon SVG components
+              const iconCheck = <polyline points="20 6 9 17 4 12"/>;
+              const iconInfo = <> <circle cx="12" cy="12" r="10"/> <line x1="12" y1="8" x2="12" y2="12"/> <line x1="12" y1="16" x2="12.01" y2="16"/> </>;
+              const iconHeart = <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>;
+              const iconX = <> <circle cx="12" cy="12" r="10"/> <line x1="15" y1="9" x2="9" y2="15"/> <line x1="9" y1="9" x2="15" y2="15"/> </>;
+
+              const getIcon = (t) => {
+                const s = "2.5"; const cls = "w-5 h-5";
+                switch(t) {
+                  case 'check': return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={s} strokeLinecap="round" strokeLinejoin="round">{iconCheck}</svg>;
+                  case 'info': return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={s} strokeLinecap="round" strokeLinejoin="round">{iconInfo}</svg>;
+                  case 'heart': return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={s} strokeLinecap="round" strokeLinejoin="round">{iconHeart}</svg>;
+                  case 'x': return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={s} strokeLinecap="round" strokeLinejoin="round">{iconX}</svg>;
+                }
+              };
+
+              const today = new Date();
+              const monthLabel = today.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+              const dayRange = `1 — ${today.getDate()} ${today.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}`;
+
               return (
                 <>
-                  {/* Title row */}
-                  <div className="flex justify-between items-center mb-5 pb-4 border-b border-white/5">
-                    <h3 className="text-sm font-bold text-white">Statistik</h3>
-                    <span className="text-xs px-3 py-1 rounded-full bg-electric-violet/10 text-electric-violet font-semibold">Total: {total}</span>
-                  </div>
-
-                  {/* Long horizontal cards — white text */}
-                  <div className="flex flex-col gap-2 mb-5">
-                    {segments.map(s => (
-                      <div key={s.k} className="flex items-center justify-between rounded-xl px-4 py-3.5 border backdrop-blur-sm hover:-translate-y-0.5 transition-all duration-300"
-                        style={{ background: `${s.color}08`, borderColor: `${s.color}15` }}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 rounded-full shrink-0" style={{background: s.color}} />
-                          <span className="text-xs font-medium text-white">{s.label}</span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <span className="text-lg font-bold text-white tabular-nums">{s.v}</span>
-                          <span className="text-[10px] text-white/40 font-medium">{s.displayPct}%</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Progress bars */}
-                  <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                    <div className="flex flex-col gap-2">
-                      {segments.map(s => (
-                        <div key={s.k} className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 rounded-full shrink-0"
-                            style={{background: s.color, boxShadow: s.v > 0 ? `0 0 4px ${s.color}88` : 'none'}} />
-                          <span className="text-[10px] text-white/50 w-10">{s.label}</span>
-                          <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                            <div className="h-full rounded-full transition-all duration-1000"
-                              style={{width: `${s.pct}%`, background: `linear-gradient(90deg, ${s.color}, ${s.color}66)`}} />
-                          </div>
-                          <span className="text-[11px] font-semibold w-8 text-right" style={{color: s.color}}>{s.v}</span>
-                        </div>
-                      ))}
+                  {/* Card Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+                      <span className="text-xs font-bold text-white tracking-wide">Ringkasan Kehadiran</span>
                     </div>
+                    <span className="text-[10px] text-white/30 font-medium">{monthLabel}</span>
+                  </div>
+
+                  {/* Stat Items List */}
+                  <div className="space-y-2">
+                    {items.map(item => {
+                      const isActive = item.v > 0;
+                      const pct = total > 0 ? Math.round((item.v / total) * 100) : 0;
+                      return (
+                        <div key={item.k}
+                          className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1"
+                          style={{
+                            background: isActive
+                              ? `linear-gradient(90deg, ${item.color}08, transparent)`
+                              : 'transparent',
+                            borderColor: isActive ? 'transparent' : `${item.color}33`,
+                            borderLeftWidth: '2px',
+                            borderLeftStyle: 'solid',
+                            opacity: isActive ? 1 : 0.5
+                          }}>
+                          {/* Icon */}
+                          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
+                            style={{
+                              background: isActive ? `${item.color}1A` : `${item.color}1A`,
+                              boxShadow: isActive ? `0 0 12px ${item.glow}` : 'none'
+                            }}>
+                            <div style={{ color: isActive ? item.color : item.color }}>
+                              {getIcon(item.check)}
+                            </div>
+                          </div>
+
+                          {/* Label + Desc */}
+                          <div className="flex-1 min-w-0">
+                            <div className={`text-sm font-semibold ${isActive ? 'text-white' : 'text-white/80'}`}>{item.label}</div>
+                            <div className="text-[9px] text-white/30">{item.desc}</div>
+                          </div>
+
+                          {/* Value */}
+                          <div className="text-right shrink-0">
+                            <div className={`text-xl font-extrabold tabular-nums ${isActive ? 'text-white' : 'text-white/40'}`}>{item.v}</div>
+                            <div className={`text-[9px] font-medium ${isActive ? '' : 'text-white/20'}`}
+                              style={{ color: isActive ? `${item.color}99` : undefined }}>
+                              {isActive ? `${pct}% dari total` : '0%'}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Footer Summary */}
+                  <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                    <span className="text-[9px] text-white/25 font-medium">Periode: {dayRange}</span>
+                    <span className="text-[9px] font-medium tabular-nums" style={{ color: stats.hadir > 0 ? 'rgba(173,255,47,0.5)' : 'rgba(255,255,255,0.2)' }}>
+                      {stats.hadir} dari {total} total absensi
+                    </span>
                   </div>
                 </>
               );
