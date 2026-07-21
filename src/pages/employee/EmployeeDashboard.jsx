@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
-import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, Moon } from "lucide-react";
+import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, Moon, ArrowRight } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 
 export default function EmployeeDashboard() {
@@ -134,7 +134,9 @@ export default function EmployeeDashboard() {
               <div className="text-xs opacity-50 mt-1 text-white">{serverTime.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
               <div className="text-[10px] mt-2 bg-white/10 px-2 py-0.5 rounded inline-block font-semibold text-white">Shift: {shift}</div>
             </div>
-            <Link to="/employee/attendance" className="bg-white text-[#660099] px-8 py-3 rounded-xl font-bold text-sm">Absen</Link>
+            <Link to="/employee/attendance" className="bg-white text-[#660099] px-8 py-3 rounded-xl font-bold text-sm flex items-center gap-2">
+              Absen Sekarang <ArrowRight size={16} />
+            </Link>
           </div>
         </div>
       </div>
