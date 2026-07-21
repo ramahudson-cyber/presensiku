@@ -28,45 +28,66 @@ export default function EmployeeDashboard() {
 
   const fetchData = async () => {
     try {
-      const { data: st } = await supabase.rpc('get_server_time');
-      if (st) setServerTime(new Date(st));
-
       const today = new Date().toLocaleString("sv-SE", {timeZone: "Asia/Makassar"}).split(" ")[0];
-      const { data: att } = await supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle();
-      setTodayAttendance(att);
-      
-      const { data: shiftData } = await supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle();
-      const shiftNames = { PG:'Pagi', SR:'Sore', SI:'Siang', ML:'Malam' };
-      setShift(shiftData?.shift_code ? shiftNames[shiftData.shift_code] || shiftData.shift_code : "N/A");
-
       const monthStart = new Date(); monthStart.setDate(1);
-      const { data: monthData } = await supabase.from("attendance").select("attendance_status").eq("user_id", user.id).gte("date", monthStart.toISOString().split("T")[0]);
-      const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
-      monthData?.forEach(a => {
-        const st = a.attendance_status === 'terlambat' ? 'hadir' : a.attendance_status;
-        if (s[st] !== undefined) s[st]++;
-      });
-      setStats(s);
-
-      // Hitung total jadwal hari kerja bulan ini
+      const monthStartStr = monthStart.toISOString().split("T")[0];
       const year = monthStart.getFullYear();
       const month = String(monthStart.getMonth() + 1).padStart(2, '0');
       const lastDay = new Date(year, monthStart.getMonth() + 1, 0).getDate();
+      const monthEndStr = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
+
+      // Parallel: all independent queries
+      const [stRes, attRes, shiftRes, schedRes, monthAttRes, annRes, histRes] = await Promise.all([
+        supabase.rpc('get_server_time'),
+        supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
+        supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
+        supabase.from("employee_schedules").select("date, shift_code").eq("user_id", user.id).gte("date", monthStartStr).lte("date", monthEndStr),
+        supabase.from("attendance").select("attendance_status").eq("user_id", user.id).gte("date", monthStartStr),
+        supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3),
+        getAttendanceHistory(user.id),
+      ]);
+
+      // Server time
+      if (stRes.data) setServerTime(new Date(stRes.data));
+
+      // Today attendance
+      setTodayAttendance(attRes.data);
+
+      // Shift
+      const shiftNames = { PG:'Pagi', SR:'Sore', SI:'Siang', ML:'Malam' };
+      setShift(shiftRes.data?.shift_code ? shiftNames[shiftRes.data.shift_code] || shiftRes.data.shift_code : "N/A");
+
+      // Month attendance stats
+      const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
+      monthAttRes.data?.forEach(a => {
+        const st = a.attendance_status === 'terlambat' ? 'hadir' : a.attendance_status;
+        if (s[st] !== undefined) s[st]++;
+      });
+
+      // Jadwal count: 2 queries instead of N+1 loop
       let jadwalCount = 0;
-      for (let d = 1; d <= lastDay; d++) {
-        const dateStr = `${year}-${month}-${String(d).padStart(2, '0')}`;
-        const { data: sch } = await supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", dateStr).maybeSingle();
-        if (sch?.shift_code) {
-          const dateObj = new Date(dateStr + 'T00:00:00');
+      const schedules = schedRes.data || [];
+      const shiftCodes = [...new Set(schedules.map(s => s.shift_code).filter(Boolean))];
+      let shiftSchedulesData = [];
+      if (shiftCodes.length > 0) {
+        const { data: ssData } = await supabase
+          .from("shift_schedules")
+          .select("shift_code, day_of_week, is_working_day")
+          .in("shift_code", shiftCodes);
+        shiftSchedulesData = ssData || [];
+      }
+      schedules.forEach(sch => {
+        if (sch.shift_code) {
+          const dateObj = new Date(sch.date + 'T00:00:00');
           const dayOfWeek = (dateObj.getDay() + 6) % 7;
-          const { data: shiftSch } = await supabase.from("shift_schedules").select("is_working_day").eq("shift_code", sch.shift_code).eq("day_of_week", dayOfWeek).maybeSingle();
+          const shiftSch = shiftSchedulesData.find(ss => ss.shift_code === sch.shift_code && ss.day_of_week === dayOfWeek);
           if (shiftSch?.is_working_day) jadwalCount++;
         }
-      }
-      setStats(prev => ({ ...prev, jadwalCount }));
-      const { data: ann } = await supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3);
-      setAnnouncements(ann || []);
-      setAttendanceHistory(await getAttendanceHistory(user.id));
+      });
+
+      setStats({ ...s, jadwalCount });
+      setAnnouncements(annRes.data || []);
+      setAttendanceHistory(histRes || []);
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 

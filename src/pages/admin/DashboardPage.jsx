@@ -102,52 +102,49 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      let serverDate;
-      try {
-        const { data: serverNow } = await supabase.rpc("get_server_time");
-        serverDate = new Date(serverNow);
-      } catch {
-        serverDate = new Date();
-      }
+      const serverDate = new Date();
       const today = getWitaDateString(serverDate);
 
-      const { count: totalPegawai } = await supabase
-        .from("profiles")
-        .select("*", { count: "exact", head: true });
+      // Parallel: totalPegawai, attendanceToday (limited), announcements
+      const [totalPegawaiRes, attendanceTodayRes, announceRes] = await Promise.all([
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
+        supabase
+          .from("attendance")
+          .select("*, profiles(full_name, position)")
+          .eq("date", today)
+          .order("clock_in_time", { ascending: false })
+          .limit(8),
+        supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3),
+      ]);
 
-      const { data: attendanceToday } = await supabase
-        .from("attendance")
-        .select("*, profiles(full_name, position)")
-        .eq("date", today)
-        .order("clock_in_time", { ascending: false });
+      const totalPegawai = totalPegawaiRes.count || 0;
+      const attendanceToday = attendanceTodayRes.data || [];
+      const announceData = announceRes.data || [];
 
-      const hadir = attendanceToday?.filter(a =>
+      const hadir = attendanceToday.filter(a =>
         a.attendance_status === "hadir" || a.attendance_status === "terlambat"
-      ).length || 0;
-      const izinSakit = attendanceToday?.filter(a =>
+      ).length;
+      const izinSakit = attendanceToday.filter(a =>
         a.attendance_status === "izin" || a.attendance_status === "sakit"
-      ).length || 0;
-      const cuti = attendanceToday?.filter(a => a.attendance_status === "cuti").length || 0;
+      ).length;
+      const cuti = attendanceToday.filter(a => a.attendance_status === "cuti").length;
 
-      const weekly = [];
+      // Weekly chart: 1 query instead of 7
+      const weekDates = [];
       for (let i = 6; i >= 0; i--) {
         const d = new Date(serverDate);
         d.setDate(d.getDate() - i);
-        const dateStr = getWitaDateString(d);
-        const { count } = await supabase
-          .from("attendance")
-          .select("*", { count: "exact", head: true })
-          .eq("date", dateStr)
-          .in("attendance_status", ["hadir", "terlambat"]);
-        weekly.push(count || 0);
+        weekDates.push(getWitaDateString(d));
       }
-
-      const { data: announceData } = await supabase
-        .from("announcements")
-        .select("*")
-        .eq("is_active", true)
-        .order("created_at", { ascending: false })
-        .limit(3);
+      const { data: weekAttendance } = await supabase
+        .from("attendance")
+        .select("date")
+        .in("date", weekDates)
+        .in("attendance_status", ["hadir", "terlambat"]);
+      const weeklyMap = {};
+      weekDates.forEach(d => weeklyMap[d] = 0);
+      weekAttendance?.forEach(a => { if (weeklyMap[a.date] !== undefined) weeklyMap[a.date]++; });
+      const weekly = weekDates.map(d => weeklyMap[d]);
 
       // Jadwal shift pribadi admin hari ini
       setMyScheduleLoading(true);
@@ -184,14 +181,14 @@ export default function DashboardPage() {
       }
 
       setStats({
-        totalPegawai: totalPegawai || 0,
+        totalPegawai,
         hadirHariIni: hadir,
         izinSakit,
         cuti,
       });
-      setRecentAttendance(attendanceToday?.slice(0, 8) || []);
+      setRecentAttendance(attendanceToday);
       setWeeklyData(weekly);
-      setAnnouncements(announceData || []);
+      setAnnouncements(announceData);
       setLastUpdated(new Date().toLocaleTimeString("id-ID"));
     } catch (err) {
       console.error("Dashboard error:", err);
