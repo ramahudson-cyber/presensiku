@@ -308,7 +308,7 @@ export default function EmployeeDashboard() {
                           <div className="text-right shrink-0">
                             <div className={`text-xl font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.v}</div>
                             <div className={`text-[9px] font-medium ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>
-                              {`${stats.hadir} dari ${stats.jadwalCount} hari`}
+                              {`${item.v} dari ${stats.jadwalCount} hari`}
                             </div>
                           </div>
                         </div>
