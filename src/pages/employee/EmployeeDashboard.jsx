@@ -201,7 +201,6 @@ export default function EmployeeDashboard() {
             backgroundSize: '300% 300%',
             animation: 'borderGlow 4s ease-in-out infinite'
           }} />
-          @keyframes borderGlow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 
           <div className="content">
             {(() => {
