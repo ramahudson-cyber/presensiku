@@ -293,7 +293,7 @@ export default function EmployeeDashboard() {
                               background: 'transparent',
                               boxShadow: 'none'
                             }}>
-                            <div style={{ color: '#8B5CF6' }}>
+                            <div style={{ color: '#BF00FF' }}>
                               {getIcon(item.check)}
                             </div>
                           </div>
