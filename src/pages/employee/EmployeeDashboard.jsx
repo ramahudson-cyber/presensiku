@@ -264,9 +264,9 @@ export default function EmployeeDashboard() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
-                    <span className="text-xs font-bold text-gray-900 tracking-wide">Ringkasan Kehadiran</span>
+                    <span className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'} tracking-wide`}>Ringkasan Kehadiran</span>
                     </div>
-                    <span className="text-[10px] text-gray-400 font-medium">{monthLabel}</span>
+                    <span className={`text-[10px] ${darkMode ? 'text-white/30' : 'text-gray-400'} font-medium`}>{monthLabel}</span>
                   </div>
 
                   {/* Stat Items List */}
@@ -285,7 +285,7 @@ export default function EmployeeDashboard() {
                             borderLeftWidth: '2px',
                             borderLeftStyle: 'solid',
                             opacity: isActive ? 1 : 0.5,
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.06)'
+                            boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.06)'
                           }}>
                           {/* Icon */}
                           <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
@@ -293,21 +293,21 @@ export default function EmployeeDashboard() {
                               background: isActive ? `${item.color}1A` : `${item.color}1A`,
                               boxShadow: isActive ? `0 0 12px ${item.glow}` : 'none'
                             }}>
-                            <div style={{ color: '#000000' }}>
+                            <div style={{ color: darkMode ? '#FFFFFF' : '#000000' }}>
                               {getIcon(item.check)}
                             </div>
                           </div>
 
                           {/* Label + Desc */}
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold text-gray-900">{item.label}</div>
-                            <div className="text-[9px] text-gray-500">{item.desc}</div>
+                            <div className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.label}</div>
+                            <div className={`text-[9px] ${darkMode ? 'text-white/40' : 'text-gray-500'}`}>{item.desc}</div>
                           </div>
 
                           {/* Value */}
                           <div className="text-right shrink-0">
-                            <div className="text-xl font-medium tabular-nums text-gray-900">{item.v}</div>
-                            <div className="text-[9px] font-medium text-gray-400">
+                            <div className={`text-xl font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.v}</div>
+                            <div className={`text-[9px] font-medium ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>
                               {`${stats.hadir} dari ${stats.jadwalCount} hari`}
                             </div>
                           </div>
@@ -317,9 +317,9 @@ export default function EmployeeDashboard() {
                   </div>
 
                   {/* Footer Summary */}
-                  <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                    <span className="text-[9px] text-gray-400 font-medium">Periode: {dayRange}</span>
-                    <span className="text-[9px] font-medium tabular-nums" style={{ color: stats.hadir > 0 ? 'rgba(173,255,47,0.7)' : 'rgba(0,0,0,0.25)' }}>
+                  <div className={`mt-4 pt-4 border-t ${darkMode ? 'border-white/5' : 'border-gray-100'} flex items-center justify-between`}>
+                    <span className={`text-[9px] ${darkMode ? 'text-white/25' : 'text-gray-400'} font-medium`}>Periode: {dayRange}</span>
+                    <span className="text-[9px] font-medium tabular-nums" style={{ color: stats.hadir > 0 ? (darkMode ? 'rgba(173,255,47,0.5)' : 'rgba(173,255,47,0.7)') : (darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.25)') }}>
                       {stats.hadir} dari {stats.jadwalCount} hari kerja
                     </span>
                   </div>
