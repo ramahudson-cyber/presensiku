@@ -202,23 +202,9 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* STATS CARD — ELEGANT LIST PREMIUM */}
+        {/* STATS CARD — ELEGANT LIST PREMIUM (WHITE SOLID) */}
         <div className="rounded-3xl p-5 relative overflow-hidden border transition-all duration-500"
-          style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)', backdropFilter: 'blur(20px)', borderColor: 'rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
-            backgroundImage: 'linear-gradient(135deg, rgba(191,0,255,0.03) 0%, transparent 50%, rgba(59,130,246,0.02) 100%)',
-            backgroundClip: 'padding-box' }}>
-          {/* Animated gradient border */}
-          <div className="pointer-events-none absolute inset-0 rounded-3xl -z-10" style={{
-            border: '1px solid transparent',
-            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-            WebkitMaskComposite: 'xor',
-            maskComposite: 'exclude',
-            padding: '1px',
-            background: 'linear-gradient(135deg, rgba(191,0,255,0.35), rgba(59,130,246,0.15), rgba(168,85,247,0.25))',
-            backgroundSize: '300% 300%',
-            animation: 'borderGlow 4s ease-in-out infinite'
-          }} />
-
+          style={{ background: '#FFFFFF', borderColor: 'rgba(0,0,0,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.08)' }}>
           <div className="content">
             {(() => {
               const total = stats.hadir + stats.izin + stats.sakit + stats.alpha;
@@ -255,9 +241,9 @@ export default function EmployeeDashboard() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
-                      <span className="text-xs font-bold text-white tracking-wide">Ringkasan Kehadiran</span>
+                      <span className="text-xs font-bold text-gray-900 tracking-wide">Ringkasan Kehadiran</span>
                     </div>
-                    <span className="text-[10px] text-white/30 font-medium">{monthLabel}</span>
+                    <span className="text-[10px] text-gray-400 font-medium">{monthLabel}</span>
                   </div>
 
                   {/* Stat Items List */}
@@ -290,15 +276,15 @@ export default function EmployeeDashboard() {
 
                           {/* Label + Desc */}
                           <div className="flex-1 min-w-0">
-                            <div className={`text-sm font-semibold ${isActive ? 'text-white' : 'text-white/80'}`}>{item.label}</div>
-                            <div className="text-[9px] text-white/30">{item.desc}</div>
+                            <div className={`text-sm font-semibold ${isActive ? 'text-gray-900' : 'text-gray-500'}`}>{item.label}</div>
+                            <div className="text-[9px] text-gray-400">{item.desc}</div>
                           </div>
 
                           {/* Value */}
                           <div className="text-right shrink-0">
-                            <div className={`text-xl font-extrabold tabular-nums ${isActive ? 'text-white' : 'text-white/40'}`}>{item.v}</div>
-                            <div className={`text-[9px] font-medium ${isActive ? '' : 'text-white/20'}`}
-                              style={{ color: isActive ? `${item.color}99` : undefined }}>
+                            <div className={`text-xl font-extrabold tabular-nums ${isActive ? 'text-gray-900' : 'text-gray-400'}`}>{item.v}</div>
+                            <div className={`text-[9px] font-medium ${isActive ? '' : 'text-gray-400'}`}
+                              style={{ color: isActive ? item.color : undefined }}>
                               {`${stats.hadir} dari ${stats.jadwalCount} hari`}
                             </div>
                           </div>
@@ -308,9 +294,9 @@ export default function EmployeeDashboard() {
                   </div>
 
                   {/* Footer Summary */}
-                  <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
-                    <span className="text-[9px] text-white/25 font-medium">Periode: {dayRange}</span>
-                    <span className="text-[9px] font-medium tabular-nums" style={{ color: stats.hadir > 0 ? 'rgba(173,255,47,0.5)' : 'rgba(255,255,255,0.2)' }}>
+                  <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                    <span className="text-[9px] text-gray-400 font-medium">Periode: {dayRange}</span>
+                    <span className="text-[9px] font-medium tabular-nums" style={{ color: stats.hadir > 0 ? '#22c55e' : '#9ca3af' }}>
                       {stats.hadir} dari {stats.jadwalCount} hari kerja
                     </span>
                   </div>
