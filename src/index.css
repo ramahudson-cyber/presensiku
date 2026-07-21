@@ -775,6 +775,7 @@ html:not(.dark) .dashboard-status-masuk { color: #ffffff !important; }
 .animate-ripple2 { animation: rippleOut2 3s ease-out infinite 1s; }
 .animate-ripple3 { animation: rippleOut3 3s ease-out infinite 2s; }
 .animate-scan { animation: scanFingerprint 3s ease-in-out infinite; }
+.animate-icon-pulse { animation: fingerprintPulse 2.5s ease-in-out infinite, fingerprintGlow 2.5s ease-in-out infinite; }
 
 /* ===================================================================
    FINGERPRINT BUTTON ANIMATIONS - Design B Solid Gradient

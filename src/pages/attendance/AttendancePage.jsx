@@ -576,48 +576,49 @@ const handleCheckIn = async () => {
           <div className="pointer-events-auto flex flex-col items-center gap-3 mt-auto pb-16">
             <div className="relative">
               {/* Ripple rings */}
-              <div className="absolute inset-0 rounded-full border-2 border-electric-violet/30 animate-ripple"></div>
-              <div className="absolute inset-0 rounded-full border-2 border-electric-violet/20 animate-ripple2"></div>
-              <div className="absolute inset-0 rounded-full border-2 border-electric-violet/10 animate-ripple3"></div>
+              <div className="absolute inset-0 rounded-full border-2 border-electric-violet/30 animate-ripple z-0"></div>
+              <div className="absolute inset-0 rounded-full border-2 border-electric-violet/20 animate-ripple2 z-0"></div>
+              <div className="absolute inset-0 rounded-full border-2 border-electric-violet/10 animate-ripple3 z-0"></div>
               {/* Scanning line */}
-              <div className="absolute top-[28%] left-1/2 -translate-x-1/2 w-[60px] h-2 rounded-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-scan"></div>
+              <div className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[70px] h-[3px] rounded-full bg-gradient-to-r from-transparent via-white/60 to-transparent animate-scan z-10"></div>
               {/* Dashed rotating ring */}
-              <div className="absolute -inset-[18px] rounded-full border border-white/[0.06] border-dashed animate-spin" style={{ animationDuration: '12s' }}></div>
+              <div className="absolute -inset-[20px] rounded-full border border-white/[0.08] border-dashed animate-spin z-0" style={{ animationDuration: '12s' }}></div>
               {/* Main button */}
               <button
                 onClick={todayAttendance ? handleCheckOut : handleCheckIn}
                 disabled={locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
                 className="relative w-[120px] h-[120px] rounded-full bg-gradient-to-br from-electric-violet via-[#8B00CC] to-[#6600CC] flex items-center justify-center
-                  transition-all duration-400 hover:scale-105 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed
+                  transition-all duration-300 hover:scale-105 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed
                   shadow-[0_0_40px_rgba(191,0,255,0.5),0_0_80px_rgba(191,0,255,0.25),0_10px_40px_rgba(0,0,0,0.4)]
                   hover:shadow-[0_0_60px_rgba(191,0,255,0.7),0_0_100px_rgba(191,0,255,0.4),0_15px_50px_rgba(0,0,0,0.5)]
                   before:content-[''] before:absolute before:inset-0 before:rounded-full
-                  before:bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.12),transparent_50%)]
-                  active:before:opacity-0"
-                style={{
-                  animation: 'fingerprintPulse 2.5s ease-in-out infinite, fingerprintGlow 2.5s ease-in-out infinite'
-                }}
+                  before:bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_50%)]
+                  active:before:opacity-0 z-20"
               >
                 {saving ? (
-                  <Loader2 size={32} className="animate-spin text-white/80" />
+                  <Loader2 size={32} className="animate-spin text-white/80 relative z-30" />
                 ) : !serverTime ? (
-                  <Loader2 size={32} className="animate-spin text-white/50" />
+                  <Loader2 size={32} className="animate-spin text-white/50 relative z-30" />
                 ) : (
-                  <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{
-                    filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.3))'
-                  }}>
-                    <path d="M12 2a6 6 0 0 0-6 6c0 3.5-1 5.5-1.5 6.5a3 3 0 0 0 1 3.8"/>
-                    <path d="M12 2a6 6 0 0 1 6 6c0 3.5 1 5.5 1.5 6.5a3 3 0 0 1-1 3.8"/>
-                    <path d="M8 14a4 4 0 0 1 8 0"/>
-                    <path d="M10 19a2 2 0 0 1 4 0"/>
-                    <path d="M9 7c0-1.1.9-2 2-2s2 .9 2 2v3"/>
-                    <path d="M9 12v3"/>
-                    <path d="M15 12v3"/>
-                  </svg>
+                  <div className="relative flex items-center justify-center z-30">
+                    {/* White glow background behind fingerprint */}
+                    <div className="absolute w-[56px] h-[56px] rounded-full bg-white/10 blur-md"></div>
+                    <svg viewBox="0 0 24 24" width="52" height="52" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                      className="animate-icon-pulse"
+                      style={{ filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.4))' }}>
+                      <path d="M12 2a6 6 0 0 0-6 6c0 3.5-1 5.5-1.5 6.5a3 3 0 0 0 1 3.8"/>
+                      <path d="M12 2a6 6 0 0 1 6 6c0 3.5 1 5.5 1.5 6.5a3 3 0 0 1-1 3.8"/>
+                      <path d="M8 14a4 4 0 0 1 8 0"/>
+                      <path d="M10 19a2 2 0 0 1 4 0"/>
+                      <path d="M9 7c0-1.1.9-2 2-2s2 .9 2 2v3"/>
+                      <path d="M9 12v3"/>
+                      <path d="M15 12v3"/>
+                    </svg>
+                  </div>
                 )}
               </button>
             </div>
-            <span className="text-[12px] font-bold text-white tracking-[3px] uppercase" style={{
+            <span className="text-[13px] font-bold text-white tracking-[3px] uppercase" style={{
               textShadow: '0 0 15px rgba(191,0,255,0.6)'
             }}>
               {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
