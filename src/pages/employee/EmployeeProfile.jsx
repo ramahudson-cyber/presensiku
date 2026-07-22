@@ -174,7 +174,7 @@ export default function EmployeeProfile() {
         </div>
 
         <p className="mt-2 text-[11px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          {user?.email || '-'}
+          {user?.position || '-'}
         </p>
       </div>
 
