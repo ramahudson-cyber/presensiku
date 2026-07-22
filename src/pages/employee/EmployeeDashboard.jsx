@@ -170,7 +170,7 @@ export default function EmployeeDashboard() {
             <div>
               <div className="text-4xl font-bold text-white">{serverTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</div>
               <div className="text-xs opacity-50 mt-1 text-white">{serverTime.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
-              <div className="text-[10px] mt-2 bg-white/10 px-2 py-0.5 rounded inline-block font-semibold text-white">SHIFT: {shift.toUpperCase()}</div>
+              <div className="text-[9px] mt-2 bg-white/10 px-2 py-0.5 rounded inline-block font-semibold text-white">SHIFT: {shift.toUpperCase()}</div>
             </div>
             <Link to="/employee/attendance" className="bg-white text-[#660099] px-8 py-3 rounded-xl font-bold text-sm flex items-center gap-2">
               Absen <ArrowRight size={16} />
@@ -398,7 +398,7 @@ export default function EmployeeDashboard() {
                     <div className={`text-xs font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       {new Date(att.date).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                     </div>
-                    <div className={`text-[10px] ${darkMode ? 'text-white/40' : 'text-gray-500'}`}>SHIFT: {getShiftName(att.shift_code)}</div>
+                    <div className={`text-[9px] ${darkMode ? 'text-white/40' : 'text-gray-500'}`}>SHIFT: {getShiftName(att.shift_code)}</div>
                   </div>
                   <div className={`text-center text-xs font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     {formatTime(att.clock_in_time)}
