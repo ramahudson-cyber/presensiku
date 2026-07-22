@@ -362,7 +362,7 @@ export default function EmployeeDashboard() {
                       : 'transparent',
                     boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.06)'
                   }}>
-                  <div className="text-left pl-5">
+                  <div className="text-left">
                     <div className={`text-xs font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       {new Date(att.date).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                     </div>
