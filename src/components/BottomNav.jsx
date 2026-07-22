@@ -57,8 +57,8 @@ export default function BottomNav({ hidden = false }) {
         <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-center z-20">
           <NavLink
             to={centerPath}
-            className="w-16 h-16 rounded-full flex items-center justify-center text-white text-3xl shadow-lg shadow-purple-500/50 border-4 border-[#0d001a]"
-            style={{ background: "linear-gradient(135deg, #BF00FF, #6366f1)" }}
+            className="w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg shadow-purple-500/50 border-4 border-[#0d001a]"
+            style={{ background: "linear-gradient(135deg, #BF00FF, #6366f1)", color: "#ffffff" }}
           >
             <FingerprintPattern size={28} className="text-white" />
           </NavLink>
