@@ -42,17 +42,15 @@ const CardHeader = ({ title, subtitle, darkMode }) => (
 // ── Stat Row (info row) — matches STATISTICS-CARD-DESIGN.md light/dark modes ──
 const InfoRow = ({ icon, label, desc, value, active = true, darkMode }) => {
   const cm = darkMode
-    ? { bgLabel: 'text-white', bgDesc: 'text-white/40', bgValue: 'text-white', activeBg: 'transparent', activeBorder: 'transparent', inactiveBorder: '#ADFF2F33' }
-    : { bgLabel: 'text-gray-900', bgDesc: 'text-gray-500', bgValue: 'text-gray-900', activeBg: 'transparent', activeBorder: 'transparent', inactiveBorder: '#ADFF2F33' };
+    ? { bgLabel: 'text-white', bgDesc: 'text-white/40', bgValue: 'text-white', inactiveBorder: '#ADFF2F33' }
+    : { bgLabel: 'text-gray-900', bgDesc: 'text-gray-500', bgValue: 'text-gray-900', inactiveBorder: '#fbbf2433' };
 
   return (
     <div
       className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1"
       style={{
-        background: active
-          ? `linear-gradient(90deg, ${cm.activeBg.replace('text-white', '').replace('text-gray-900', ''), transparent})`
-          : 'transparent',
-        borderColor: active ? cm.activeBorder : `${cm.inactiveBorder}`,
+        background: active ? 'transparent' : 'transparent',
+        borderColor: active ? 'transparent' : `${cm.inactiveBorder}`,
         borderLeftWidth: '2px',
         borderLeftStyle: 'solid',
         opacity: active ? 1 : 0.5,
