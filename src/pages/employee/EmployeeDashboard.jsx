@@ -355,7 +355,7 @@ export default function EmployeeDashboard() {
               const isHadir = att.attendance_status === 'hadir' || att.attendance_status === 'terlambat';
               return (
                 <div key={att.id}
-                  className="grid grid-cols-[1fr_55px_55px_90px] gap-3 items-center py-2 rounded-lg transition-all duration-200 hover:translate-x-1"
+                  className="grid grid-cols-[1fr_55px_55px_90px] gap-3 items-center py-2 -mx-5 transition-all duration-200 hover:translate-x-1"
                   style={{
                     background: isHadir
                       ? (darkMode ? 'rgba(173,255,47,0.03)' : 'rgba(173,255,47,0.02)')
