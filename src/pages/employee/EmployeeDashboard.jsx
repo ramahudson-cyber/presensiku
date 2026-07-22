@@ -151,7 +151,13 @@ export default function EmployeeDashboard() {
       <div className="hero-card-bg w-full p-8 pt-12 shadow-2xl border-b border-white/5 rounded-b-[40px]" style={{ background: 'linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)' }}>
         <div className="max-w-md mx-auto">
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center font-bold text-2xl text-white">RH</div>
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="" className="w-16 h-16 rounded-2xl object-cover border border-white/20" />
+            ) : (
+              <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center font-bold text-2xl text-white">
+                {user?.full_name?.charAt(0)?.toUpperCase() || "R"}
+              </div>
+            )}
             <div className="flex-1">
               <div className="text-[11px] uppercase tracking-[0.2em] opacity-60 text-white">Selamat Pagi,</div>
               <div className="text-2xl font-bold text-white">{user?.full_name || "Rama Hudson"}</div>
