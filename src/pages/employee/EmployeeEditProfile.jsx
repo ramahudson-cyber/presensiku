@@ -14,17 +14,37 @@ export default function EmployeeEditProfile() {
     full_name: user?.full_name || "",
     email: user?.email || "",
   });
-  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || null);
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [preview, setPreview] = useState(user?.avatar_url || null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setAvatarFile(file);
+    // Preview local
     const reader = new FileReader();
-    reader.onload = (ev) => {
-      setAvatarUrl(ev.target?.result);
-    };
+    reader.onload = (ev) => setPreview(ev.target?.result);
     reader.readAsDataURL(file);
+  };
+
+  const uploadAvatar = async (file) => {
+    const fileExt = file.name.split(".").pop() || "jpg";
+    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(fileName, file, { upsert: true });
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(fileName);
+
+    return publicUrl;
   };
 
   const handleChange = (e) => {
@@ -39,9 +59,18 @@ export default function EmployeeEditProfile() {
     }
     setSaving(true);
     try {
+      let finalAvatarUrl = avatarUrl;
+
+      // Upload file ke storage dulu (kalau ada file baru)
+      if (avatarFile) {
+        setUploading(true);
+        finalAvatarUrl = await uploadAvatar(avatarFile);
+        setUploading(false);
+      }
+
       const updateData = { full_name: form.full_name.trim() };
-      if (avatarUrl) {
-        updateData.avatar_url = avatarUrl;
+      if (finalAvatarUrl) {
+        updateData.avatar_url = finalAvatarUrl;
       }
 
       const { error } = await supabase
@@ -101,10 +130,10 @@ export default function EmployeeEditProfile() {
           >
             <div
               className="w-full h-full rounded-full flex items-center justify-center text-3xl font-extrabold overflow-hidden"
-              style={{ background: avatarUrl ? 'transparent' : '#161320', fontFamily: "'Urbanist', sans-serif" }}
+              style={{ background: preview ? 'transparent' : '#161320', fontFamily: "'Urbanist', sans-serif" }}
             >
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              {preview ? (
+                <img src={preview} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
                 user?.full_name?.charAt(0)?.toUpperCase() || "?"
               )}
@@ -123,7 +152,6 @@ export default function EmployeeEditProfile() {
               id="avatar-upload"
               type="file"
               accept="image/*"
-              capture="user"
               onChange={handleAvatarChange}
               className="hidden"
             />

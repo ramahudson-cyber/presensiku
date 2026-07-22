@@ -166,13 +166,19 @@ export default function EmployeeProfile() {
             style={{ background: 'linear-gradient(135deg, #BF00FF, #9900CC, #7066ed)',
                      boxShadow: '0 0 24px rgba(191,0,255,0.25), 0 0 48px rgba(191,0,255,0.08)' }}>
             <div className="w-full h-full rounded-full flex items-center justify-center relative overflow-hidden"
-              style={{ background: darkMode ? '#161320' : '#f0f0f0' }}>
-              <div className="absolute inset-0 rounded-full"
-                style={{ background: 'linear-gradient(135deg, rgba(191,0,255,0.12), rgba(153,0,204,0.04))' }} />
-              <span className="relative text-[40px] font-extrabold"
-                style={{ fontFamily: "'Urbanist', sans-serif", color: darkMode ? '#FFFFFF' : '#111111' }}>
-                {initial}
-              </span>
+              style={{ background: user?.avatar_url ? 'transparent' : (darkMode ? '#161320' : '#f0f0f0') }}>
+              {user?.avatar_url ? (
+                <img src={user.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <>
+                  <div className="absolute inset-0 rounded-full"
+                    style={{ background: 'linear-gradient(135deg, rgba(191,0,255,0.12), rgba(153,0,204,0.04))' }} />
+                  <span className="relative text-[40px] font-extrabold"
+                    style={{ fontFamily: "'Urbanist', sans-serif", color: darkMode ? '#FFFFFF' : '#111111' }}>
+                    {initial}
+                  </span>
+                </>
+              )}
               {/* Status dot */}
               <div className="absolute bottom-[5px] right-[5px] w-5 h-5 rounded-full border-[2.5px]"
                 style={{ background: '#adff2f', borderColor: darkMode ? '#161320' : '#f0f0f0',
