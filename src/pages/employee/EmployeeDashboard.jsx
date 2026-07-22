@@ -6,6 +6,15 @@ import { useAuth } from "../../context/AuthContext";
 import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, Moon, ArrowRight } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(label || `Timeout after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
 export default function EmployeeDashboard() {
   const { user } = useAuth();
   const { darkMode, toggleTheme } = useTheme();
@@ -14,10 +23,17 @@ export default function EmployeeDashboard() {
   const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0, jadwalCount: 0 });
   const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [shift, setShift] = useState(null);
   const [serverTime, setServerTime] = useState(new Date());
 
   useEffect(() => { fetchData(); }, []);
+
+  const retryFetchData = () => {
+    setFetchError(null);
+    setLoading(true);
+    fetchData();
+  };
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -36,8 +52,8 @@ export default function EmployeeDashboard() {
       const lastDay = new Date(year, monthStart.getMonth() + 1, 0).getDate();
       const monthEndStr = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
 
-      // Parallel: all independent queries
-      const [stRes, attRes, shiftRes, schedRes, monthAttRes, annRes, histRes] = await Promise.all([
+      // Parallel: all independent queries (timeout 20s)
+      const [stRes, attRes, shiftRes, schedRes, monthAttRes, annRes, histRes] = await withTimeout(Promise.all([
         supabase.rpc('get_server_time'),
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
@@ -45,7 +61,7 @@ export default function EmployeeDashboard() {
         supabase.from("attendance").select("attendance_status").eq("user_id", user.id).gte("date", monthStartStr),
         supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3),
         getAttendanceHistory(user.id),
-      ]);
+      ]), 20000, "fetchAll");
 
       // Server time
       if (stRes.data) setServerTime(new Date(stRes.data));
@@ -70,10 +86,10 @@ export default function EmployeeDashboard() {
       const shiftCodes = [...new Set(schedules.map(s => s.shift_code).filter(Boolean))];
       let shiftSchedulesData = [];
       if (shiftCodes.length > 0) {
-        const { data: ssData } = await supabase
+        const { data: ssData } = await withTimeout(supabase
           .from("shift_schedules")
           .select("shift_code, day_of_week, is_working_day")
-          .in("shift_code", shiftCodes);
+          .in("shift_code", shiftCodes), 10000, "shiftSchedules");
         shiftSchedulesData = ssData || [];
       }
       schedules.forEach(sch => {
@@ -88,14 +104,34 @@ export default function EmployeeDashboard() {
       setStats({ ...s, jadwalCount });
       setAnnouncements(annRes.data || []);
       setAttendanceHistory(histRes || []);
-    } catch (e) { console.error(e); } finally { setLoading(false); }
+    } catch (e) {
+      console.error(e);
+      setFetchError(e.message?.includes('Timeout') ? 'Koneksi lambat. Coba lagi.' : 'Gagal memuat data. Periksa koneksi.');
+    } finally { setLoading(false); }
   };
 
   if (loading) return (
     <div className="fixed inset-0 bg-transparent flex items-center justify-center z-50">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-4 border-[#660099] border-t-transparent rounded-full animate-spin"></div>
-        <div className="text-white/50 text-xs tracking-widest uppercase">Memuat...</div>
+        {fetchError ? (
+          <>
+            <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mb-1">
+              <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div className="text-red-400 text-xs font-medium text-center max-w-[200px]">{fetchError}</div>
+            <button onClick={retryFetchData}
+              className="mt-3 px-6 py-2 bg-[#660099] hover:bg-[#7a00b5] text-white text-xs font-semibold rounded-full transition-all duration-200">
+              Coba Lagi
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="w-10 h-10 border-4 border-[#660099] border-t-transparent rounded-full animate-spin"></div>
+            <div className="text-white/50 text-xs tracking-widest uppercase">Memuat...</div>
+          </>
+        )}
       </div>
     </div>
   );
