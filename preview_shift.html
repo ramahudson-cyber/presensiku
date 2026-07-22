@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview Shift</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background: linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .card {
+      width: 100%;
+      max-width: 400px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border-radius: 30px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+    }
+    .user-info {
+      flex: 1;
+    }
+    .greeting {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      opacity: 0.6;
+      color: white;
+      margin-bottom: 4px;
+    }
+    .name {
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 2px;
+    }
+    .role {
+      font-size: 12px;
+      opacity: 0.7;
+      color: white;
+    }
+    .clock-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 20px;
+    }
+    .clock-info {
+    }
+    .current-time {
+      font-size: 40px;
+      font-weight: bold;
+      color: white;
+    }
+    .date {
+      font-size: 12px;
+      opacity: 0.5;
+      color: white;
+      margin-top: 2px;
+    }
+    .shift-badge {
+      font-size: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: white;
+      margin-top: 8px;
+      display: inline-block;
+    }
+    .absen-btn {
+      background: white;
+      color: #660099;
+      padding: 12px 32px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .status-section {
+      margin-bottom: 16px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .section-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+    .subtitle {
+      font-size: 12px;
+      color: black/0.5;
+      margin-top: 2px;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .status-card {
+      border-radius: 24px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    .status-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      opacity: 0.7;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .clock-time {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 20px;
+    }
+    .masuk {
+      background: linear-gradient(135deg, #A855F7 0%, #6D28D9 100%);
+      color: white;
+    }
+    .pulang {
+      background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
+      color: black;
+    }
+    .stats-section {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .history-section {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 24px;
+      padding: 24px;
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .history-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      opacity: 0.7;
+    }
+    .history-grid {
+      display: grid;
+      grid-template-columns: 1fr 55px 55px 90px;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .history-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.7;
+    }
+    .history-item {
+      display: grid;
+      grid-template-columns: 1fr 55px 55px 90px;
+      gap: 12px;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      -mx-6;
+      px-6;
+      py-3;
+    }
+    .history-item-label {
+      font-size: 8px;
+      opacity: 0.6;
+      text-transform: capitalize;
+    }
+    .history-time {
+      font-size: 12px;
+      font-weight: 500;
+      tabular-nums: true;
+    }
+    .history-status {
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 16px;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="avatar">RH</div>
+      <div class="user-info">
+        <div class="greeting">SELAMAT PAGI</div>
+        <div class="name">Tester pegawai</div>
+        <div class="role">Pegawai</div>
+      </div>
+    </div>
+
+    <div class="clock-section">
+      <div class="clock-info">
+        <div class="current-time">07:34</div>
+        <div class="date">Rabu, 22 Juli 2026</div>
+        <div class="shift-badge">SHIFT: PAGI</div>
+      </div>
+      <a href="#" class="absen-btn">Absen</a>
+    </div>
+
+    <div class="status-section">
+      <div class="section-title">
+        <div class="section-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div class="title">Status hari ini</div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="status-card masuk">
+          <div class="status-label">
+            <span>☀️ Masuk</span>
+          </div>
+          <div class="clock-time">07:34</div>
+          <div class="status-badge">
+            <span class="dot"></span>
+            Tepat Waktu
+          </div>
+        </div>
+
+        <div class="status-card pulang">
+          <div class="status-label">
+            <span>🌅 Pulang</span>
+          </div>
+          <div class="clock-time">Belum Absen</div>
+          <div class="status-badge" style="opacity: 0.4">
+            —
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <div class="section-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+        <div class="title">Statistik bulan ini</div>
+      </div>
+
+      <div class="stats-section">
+        <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px;">
+          <div style="width: 80px; height: 80px; position: relative;">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="6"/>
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#ADFF2F" stroke-width="6"
+                stroke-dasharray="201" stroke-dashoffset="0" transform="rotate(-90, 40, 40)" stroke-linecap="round"
+                style="filter: drop-shadow(0 0 6px rgba(173,255,47,0.4))"/>
+              <circle cx="40" cy="40" r="22" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+              <text x="40" y="44" text-anchor="middle" fill="white" font-size="20" font-weight="700">2</text>
+            </svg>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; flex: 1;">
+            <div style="display: flex; align-items: center; gap: 4px; font-size: 10px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #ADFF2F;"></span>
+              <span style="opacity: 0.7;">Hadir</span>
+              <span style="margin-left: auto; font-weight: 600; color: #ADFF2F;">2</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px; font-size: 10px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #fbbf24;"></span>
+              <span style="opacity: 0.7;">Izin</span>
+              <span style="margin-left: auto; font-weight: 600; color: #fbbf24;">0</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px; font-size: 10px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #fb923c;"></span>
+              <span style="opacity: 0.7;">Sakit</span>
+              <span style="margin-left: auto; font-weight: 600; color: #fb923c;">0</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px; font-size: 10px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #f87171;"></span>
+              <span style="opacity: 0.7;">Alpha</span>
+              <span style="margin-left: auto; font-weight: 600; color: #f87171;">0</span>
+            </div>
+          </div>
+        </div>
+        <div style="height: 96px; display: flex; align-items: flex-end; gap: 12px;">
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <div style="font-size: 12px; font-weight: bold; margin-bottom: 6px; color: #ADFF2F;">2</div>
+            <div style="width: 100%; height: 12px; background: linear-gradient(180deg, #ADFF2F, #ADFF2F44); border-radius: 4px; margin-bottom: 8px;"></div>
+            <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4;">Hadir</div>
+            <div style="font-size: 7px; opacity: 0.25; margin-top: 2px;">7%</div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <div style="font-size: 12px; font-weight: bold; margin-bottom: 6px; color: #fbbf24;">0</div>
+            <div style="width: 100%; height: 6px; background: linear-gradient(180deg, #fbbf24, #fbbf2433); border-radius: 4px; margin-bottom: 8px;"></div>
+            <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4;">Izin</div>
+            <div style="font-size: 7px; opacity: 0.25; margin-top: 2px;">0%</div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <div style="font-size: 12px; font-weight: bold; margin-bottom: 6px; color: #fb923c;">0</div>
+            <div style="width: 100%; height: 6px; background: linear-gradient(180deg, #fb923c, #fb923c33); border-radius: 4px; margin-bottom: 8px;"></div>
+            <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4;">Sakit</div>
+            <div style="font-size: 7px; opacity: 0.25; margin-top: 2px;">0%</div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <div style="font-size: 12px; font-weight: bold; margin-bottom: 6px; color: #f87171;">0</div>
+            <div style="width: 100%; height: 6px; background: linear-gradient(180deg, #f87171, #f8717133); border-radius: 4px; margin-bottom: 8px;"></div>
+            <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4;">Alpha</div>
+            <div style="font-size: 7px; opacity: 0.25; margin-top: 2px;">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+        <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.05);">
+          <div style="font-size: 20px; font-weight: 200; margin-bottom: 4px; color: #ADFF2F;">2</div>
+          <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5;">Hadir</div>
+          <div style="font-size: 8px; font-weight: 600; opacity: 0.2; margin-top: 2px;">7%</div>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.05);">
+          <div style="font-size: 20px; font-weight: 200; margin-bottom: 4px; color: #fbbf24;">0</div>
+          <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5;">Izin</div>
+          <div style="font-size: 8px; font-weight: 600; opacity: 0.2; margin-top: 2px;">0%</div>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.05);">
+          <div style="font-size: 20px; font-weight: 200; margin-bottom: 4px; color: #fb923c;">0</div>
+          <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5;">Sakit</div>
+          <div style="font-size: 8px; font-weight: 600; opacity: 0.2; margin-top: 2px;">0%</div>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.05);">
+          <div style="font-size: 20px; font-weight: 200; margin-bottom: 4px; color: #f87171;">0</div>
+          <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5;">Alpha</div>
+          <div style="font-size: 8px; font-weight: 600; opacity: 0.2; margin-top: 2px;">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-section">
+      <div class="history-header">
+        <div class="history-title">RIWAYAT ABSENSI <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+      </div>
+      <div class="history-grid">
+        <div class="history-label">Tanggal</div>
+        <div class="history-label" style="text-align: center">Masuk</div>
+        <div class="history-label" style="text-align: center">Pulang</div>
+        <div class="history-label" style="text-align: right">Status</div>
+      </div>
+      <div class="history-item">
+        <div>
+          <div style="font-size: 12px; font-weight: 600;">Rabu, 22 Juli 2026</div>
+          <div class="history-item-label">Shift</div>
+        </div>
+        <div class="history-time" style="text-align: center">07:34</div>
+        <div class="history-time" style="text-align: center">07:34</div>
+        <div class="history-status" style="background: rgba(52, 211, 153, 0.15); color: #34d399;">Hadir</div>
+      </div>
+      <div class="history-item">
+        <div>
+          <div style="font-size: 12px; font-weight: 600;">Selasa, 21 Juli 2026</div>
+          <div class="history-item-label">Shift</div>
+        </div>
+        <div class="history-time" style="text-align: center">12:30</div>
+        <div class="history-time" style="text-align: center">14:02</div>
+        <div class="history-status" style="background: rgba(52, 211, 153, 0.15); color: #34d399;">Hadir</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
