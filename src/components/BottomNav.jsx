@@ -18,11 +18,12 @@ export default function BottomNav({ hidden = false }) {
   // Menu untuk Pegawai — 2 items (Absensi diganti floating button)
   const pegawaiMenus = [
     { path: "/employee", label: "Home", icon: LayoutDashboard, end: true },
-    { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
     { path: "/employee/profile", label: "Profil", icon: User },
+    { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
+    { path: "/employee/history", label: "Riwayat", icon: History },
   ];
 
-  // Menu untuk Admin — 4 main + 4 di "More"
+  // Admin: 3 main + more menus
   const adminMain = [
     { path: "/admin", label: "Home", icon: LayoutDashboard, end: true },
     { path: "/admin/employees", label: "Pegawai", icon: Users },
@@ -81,7 +82,7 @@ export default function BottomNav({ hidden = false }) {
           {displayMenus.map((item, i) => {
             if (item === null) {
               return (
-                <div key="center-placeholder" className="flex-1 h-full" />
+                <div key="center-placeholder" className="w-32 shrink-0 h-full" />
               );
             }
             const Icon = item.icon;

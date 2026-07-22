@@ -10,6 +10,7 @@ import PengaturanPage from "../pages/admin/PengaturanPage";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import EmployeeSchedule from "../pages/employee/EmployeeSchedule";
 import EmployeeProfile from "../pages/employee/EmployeeProfile";
+import EmployeeHistory from "../pages/employee/EmployeeHistory";
 import SchedulingPage from "../pages/admin/SchedulingPage";
 import ComingSoonPage from "../pages/admin/ComingSoonPage";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
@@ -59,6 +60,7 @@ function AppRoutes() {
         <Route path="attendance" element={<AttendancePage />} />
         <Route path="schedule" element={<EmployeeSchedule />} />
         <Route path="profile" element={<EmployeeProfile />} />
+        <Route path="history" element={<EmployeeHistory />} />
       </Route>
 
       {/* UBAH PASSWORD (wajib untuk first login) */}
