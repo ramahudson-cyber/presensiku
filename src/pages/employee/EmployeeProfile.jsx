@@ -29,70 +29,85 @@ const IndicatorBar = () => (
 );
 
 // ── Card Header ──
-const CardHeader = ({ title, subtitle }) => (
+const CardHeader = ({ title, subtitle, darkMode }) => (
   <div className="flex items-center justify-between px-5 pt-5 pb-1">
     <div className="flex items-center gap-2.5">
       <IndicatorBar />
-      <span className="text-xs font-bold text-white tracking-wide">{title}</span>
+      <span className={`text-xs font-bold tracking-wide ${darkMode ? 'text-white' : 'text-gray-900'}`}>{title}</span>
     </div>
-    <span className="text-[10px] font-medium text-white/30">{subtitle}</span>
+    <span className={`text-[10px] font-medium ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>{subtitle}</span>
   </div>
 );
 
-// ── Stat Row (info row) ──
-const InfoRow = ({ icon, label, desc, value, active = true }) => (
-  <div
-    className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1"
-    style={{
-      background: active ? 'linear-gradient(90deg, rgba(191,0,255,0.06), transparent)' : 'transparent',
-      borderLeft: `2px solid ${active ? 'transparent' : 'rgba(191,0,255,0.15)'}`,
-      borderLeftStyle: 'solid',
-      opacity: active ? 1 : 0.5,
-      boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-    }}
-  >
-    <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-      style={{ background: 'transparent', boxShadow: 'none' }}>
-      <div style={{ color: '#BF00FF' }}>{icon}</div>
-    </div>
-    <div className="flex-1 min-w-0">
-      <div className="text-sm font-semibold text-white">{label}</div>
-      <div className="text-[9px] text-white/40">{desc}</div>
-    </div>
-    <div className="text-right shrink-0">
-      <div className="text-sm font-semibold text-white">{value}</div>
-    </div>
-  </div>
-);
+// ── Stat Row (info row) — matches STATISTICS-CARD-DESIGN.md light/dark modes ──
+const InfoRow = ({ icon, label, desc, value, active = true, darkMode }) => {
+  const cm = darkMode
+    ? { bgLabel: 'text-white', bgDesc: 'text-white/40', bgValue: 'text-white', activeBg: 'transparent', activeBorder: 'transparent', inactiveBorder: '#ADFF2F33' }
+    : { bgLabel: 'text-gray-900', bgDesc: 'text-gray-500', bgValue: 'text-gray-900', activeBg: 'transparent', activeBorder: 'transparent', inactiveBorder: '#ADFF2F33' };
 
-// ── Menu Row ──
-const MenuRow = ({ icon, title, desc, right, onClick }) => (
-  <div
-    className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1 cursor-pointer"
-    style={{
-      borderLeft: '2px solid transparent',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-    }}
-    onClick={onClick}
-    role="button"
-    tabIndex={0}
-    onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
-  >
-    <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-      style={{ background: 'transparent', boxShadow: 'none' }}>
-      <div style={{ color: '#BF00FF' }}>{icon}</div>
-    </div>
-    <div className="flex-1 min-w-0">
-      <div className="text-sm font-semibold text-white">{title}</div>
-      <div className="text-[9px] text-white/40">{desc}</div>
-    </div>
-    {right || (
-      <div className="shrink-0" style={{ color: 'rgba(255,255,255,0.2)' }}>
-        {icons.chevron}
+  return (
+    <div
+      className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1"
+      style={{
+        background: active
+          ? `linear-gradient(90deg, ${cm.activeBg.replace('text-white', '').replace('text-gray-900', ''), transparent})`
+          : 'transparent',
+        borderColor: active ? cm.activeBorder : `${cm.inactiveBorder}`,
+        borderLeftWidth: '2px',
+        borderLeftStyle: 'solid',
+        opacity: active ? 1 : 0.5,
+        boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.06)',
+      }}
+    >
+      <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
+        style={{ background: 'transparent', boxShadow: 'none' }}>
+        <div style={{ color: '#BF00FF' }}>{icon}</div>
       </div>
-    )}
-  </div>
-);
+      <div className="flex-1 min-w-0">
+        <div className={`text-sm font-semibold ${cm.bgLabel}`}>{label}</div>
+        <div className={`text-[9px] ${cm.bgDesc}`}>{desc}</div>
+      </div>
+      <div className="text-right shrink-0">
+        <div className={`text-sm font-semibold ${cm.bgValue}`}>{value}</div>
+      </div>
+    </div>
+  );
+};
+
+// ── Menu Row — matches STATISTICS-CARD-DESIGN.md light/dark modes ──
+const MenuRow = ({ icon, title, desc, right, onClick, darkMode }) => {
+  const cm = darkMode
+    ? { bgLabel: 'text-white', bgDesc: 'text-white/40', hoverBg: 'rgba(255,255,255,0.02)' }
+    : { bgLabel: 'text-gray-900', bgDesc: 'text-gray-500', hoverBg: 'rgba(0,0,0,0.02)' };
+
+  return (
+    <div
+      className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1 cursor-pointer"
+      style={{
+        borderLeft: '2px solid transparent',
+        boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.06)',
+      }}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
+    >
+      <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
+        style={{ background: 'transparent', boxShadow: 'none' }}>
+        <div style={{ color: '#BF00FF' }}>{icon}</div>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className={`text-sm font-semibold ${cm.bgLabel}`}>{title}</div>
+        <div className={`text-[9px] ${cm.bgDesc}`}>{desc}</div>
+      </div>
+      {right || (
+        <div className="shrink-0" style={{ color: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)' }}>
+          {icons.chevron}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ── Toggle ──
 const Toggle = ({ on }) => (
@@ -103,16 +118,16 @@ const Toggle = ({ on }) => (
   </div>
 );
 
-// ── Glass Container ──
-const glassCard = {
-  background: 'rgba(30,30,50,0.6)',
+// ── Glass Container — matches STATISTICS-CARD-DESIGN.md ──
+const glassCard = (darkMode) => ({
+  background: darkMode ? 'rgba(30,30,50,0.6)' : 'rgba(255,255,255,0.05)',
   backdropFilter: 'blur(20px)',
   WebkitBackdropFilter: 'blur(20px)',
   border: '1px solid rgba(255,255,255,0.05)',
   borderRadius: '24px',
-  boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+  boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.08)',
   overflow: 'hidden',
-};
+});
 
 // ==============================
 // EMPLOYEE PROFILE PAGE
@@ -136,73 +151,80 @@ export default function EmployeeProfile() {
     }
   };
 
+  const cm = darkMode
+    ? { bgHero: 'linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)' }
+    : { bgHero: 'linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)' };
+
   return (
-    <div className="min-h-screen w-full bg-transparent text-white font-sans absolute top-0 left-0 pb-24">
-      {/* Hero Header */}
-      <div
-        className="w-full pt-12 pb-10 shadow-2xl border-b border-white/5 rounded-b-[40px] text-center"
-        style={{ background: 'linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)' }}
-      >
-        {/* Avatar Ring */}
-        <div className="relative w-[110px] h-[110px] mx-auto mb-4 rounded-full p-[3px]"
-          style={{ background: 'linear-gradient(135deg, #BF00FF, #9900CC, #7066ed)',
-                   boxShadow: '0 0 24px rgba(191,0,255,0.25), 0 0 48px rgba(191,0,255,0.08)' }}>
-          <div className="w-full h-full rounded-full flex items-center justify-center relative overflow-hidden"
-            style={{ background: '#161320' }}>
-            <div className="absolute inset-0 rounded-full"
-              style={{ background: 'linear-gradient(135deg, rgba(191,0,255,0.12), rgba(153,0,204,0.04))' }} />
-            <span className="relative text-[40px] font-extrabold text-white"
-              style={{ fontFamily: "'Urbanist', sans-serif" }}>
-              {initial}
-            </span>
-            {/* Status dot */}
-            <div className="absolute bottom-[5px] right-[5px] w-5 h-5 rounded-full border-[2.5px]"
-              style={{ background: '#adff2f', borderColor: '#161320',
-                       boxShadow: '0 0 6px rgba(173,255,47,0.3)' }} />
+    <div className="min-h-screen w-full bg-transparent absolute top-0 left-0 pb-24">
+      <div className={`relative w-full text-center overflow-hidden`}>
+        {/* Hero Header */}
+        <div
+          className="w-full pt-12 pb-10 shadow-2xl border-b border-white/5 rounded-b-[40px]"
+          style={{ background: cm.bgHero }}
+        >
+          {/* Avatar Ring */}
+          <div className="relative w-[110px] h-[110px] mx-auto mb-4 rounded-full p-[3px]"
+            style={{ background: 'linear-gradient(135deg, #BF00FF, #9900CC, #7066ed)',
+                     boxShadow: '0 0 24px rgba(191,0,255,0.25), 0 0 48px rgba(191,0,255,0.08)' }}>
+            <div className="w-full h-full rounded-full flex items-center justify-center relative overflow-hidden"
+              style={{ background: darkMode ? '#161320' : '#f0f0f0' }}>
+              <div className="absolute inset-0 rounded-full"
+                style={{ background: 'linear-gradient(135deg, rgba(191,0,255,0.12), rgba(153,0,204,0.04))' }} />
+              <span className="relative text-[40px] font-extrabold"
+                style={{ fontFamily: "'Urbanist', sans-serif", color: darkMode ? '#FFFFFF' : '#111111' }}>
+                {initial}
+              </span>
+              {/* Status dot */}
+              <div className="absolute bottom-[5px] right-[5px] w-5 h-5 rounded-full border-[2.5px]"
+                style={{ background: '#adff2f', borderColor: darkMode ? '#161320' : '#f0f0f0',
+                         boxShadow: '0 0 6px rgba(173,255,47,0.3)' }} />
+            </div>
           </div>
+
+          <h1 className="text-[22px] font-bold mb-1"
+            style={{ fontFamily: "'Urbanist', sans-serif", letterSpacing: '-0.3px', color: '#FFFFFF' }}>
+            {user?.full_name || '-'}
+          </h1>
+
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-[0.5px]"
+            style={{ background: 'rgba(191,0,255,0.12)', border: '1px solid rgba(191,0,255,0.2)', color: '#7066ed' }}>
+            {icons.shield}
+            {user?.role === 'pegawai' ? 'Pegawai' : user?.role || '-'}
+          </div>
+
+          <p className="mt-2 text-[11px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            {user?.position || '-'}
+          </p>
         </div>
-
-        <h1 className="text-[22px] font-bold text-white mb-1"
-          style={{ fontFamily: "'Urbanist', sans-serif", letterSpacing: '-0.3px' }}>
-          {user?.full_name || '-'}
-        </h1>
-
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-[0.5px]"
-          style={{ background: 'rgba(191,0,255,0.12)', border: '1px solid rgba(191,0,255,0.2)', color: '#7066ed' }}>
-          {icons.shield}
-          {user?.role === 'pegawai' ? 'Pegawai' : user?.role || '-'}
-        </div>
-
-        <p className="mt-2 text-[11px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          {user?.position || '-'}
-        </p>
       </div>
 
       {/* Content */}
       <div className="max-w-md mx-auto space-y-4 px-4 mt-6 pb-6">
 
         {/* ─── INFORMASI AKUN ─── */}
-        <div style={glassCard}>
-          <CardHeader title="Informasi Akun" subtitle={user?.role || 'Pegawai'} />
+        <div style={glassCard(darkMode)}>
+          <CardHeader title="Informasi Akun" subtitle={user?.role || 'Pegawai'} darkMode={darkMode} />
           <div className="px-1 pb-2 pt-0.5">
             <InfoRow icon={icons.user} label="Nama Lengkap" desc="Nama sesuai identitas"
-              value={user?.full_name || '-'} active />
+              value={user?.full_name || '-'} active darkMode={darkMode} />
             <InfoRow icon={icons.atSign} label="Username" desc="ID akun login"
-              value={user?.username || user?.email?.split('@')[0] || '-'} active />
+              value={user?.username || user?.email?.split('@')[0] || '-'} active darkMode={darkMode} />
             <InfoRow icon={icons.idCard} label="NIP" desc="Nomor Induk Pegawai"
-              value={nip} active />
+              value={nip} active darkMode={darkMode} />
             <InfoRow icon={icons.building} label="Unit Kerja" desc="Departemen / Instansi"
-              value={user?.department || 'Puskesmas Ampenan'} active={false} />
+              value={user?.department || 'Puskesmas Ampenan'} active={false} darkMode={darkMode} />
           </div>
         </div>
 
         {/* ─── PENGATURAN ─── */}
-        <div style={glassCard}>
-          <CardHeader title="Pengaturan" subtitle="Akun" />
+        <div style={glassCard(darkMode)}>
+          <CardHeader title="Pengaturan" subtitle="Akun" darkMode={darkMode} />
           <div className="px-1 pb-2 pt-0.5">
             <MenuRow icon={icons.edit} title="Edit Profil"
               desc="Ubah foto, nama, dan informasi pribadi"
-              onClick={() => navigate('/employee/profile/edit')} />
+              onClick={() => navigate('/employee/profile/edit')}
+              darkMode={darkMode} />
             <MenuRow icon={icons.lock} title="Keamanan"
               desc="Ubah password & verifikasi identitas"
               right={
@@ -211,10 +233,12 @@ export default function EmployeeProfile() {
                   BARU
                 </span>
               }
-              onClick={() => {}} />
+              onClick={() => {}}
+              darkMode={darkMode} />
             <MenuRow icon={icons.shield} title="Sidik Jari & Face ID"
               desc="Akses cepat dengan biometrik"
-              right={<Toggle on />} />
+              right={<Toggle on />}
+              darkMode={darkMode} />
             <MenuRow icon={icons.bell} title="Notifikasi"
               desc="Pengingat & pemberitahuan"
               right={
@@ -223,32 +247,37 @@ export default function EmployeeProfile() {
                   3
                 </span>
               }
-              onClick={() => {}} />
+              onClick={() => {}}
+              darkMode={darkMode} />
             <MenuRow icon={icons.moon} title="Tema"
               desc="Tampilan gelap / terang"
               right={<Toggle on />}
-              onClick={toggleTheme} />
+              onClick={toggleTheme}
+              darkMode={darkMode} />
           </div>
         </div>
 
         {/* ─── LAINNYA ─── */}
-        <div style={glassCard}>
-          <CardHeader title="Lainnya" subtitle="Sistem" />
+        <div style={glassCard(darkMode)}>
+          <CardHeader title="Lainnya" subtitle="Sistem" darkMode={darkMode} />
           <div className="px-1 pb-2 pt-0.5">
             <MenuRow icon={icons.globe} title="Bahasa"
               desc="Bahasa tampilan aplikasi"
-              right={<span className="text-[12px] font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Indonesia</span>} />
+              right={<span className="text-[12px] font-medium" style={{ color: darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }}>Indonesia</span>}
+              darkMode={darkMode} />
             <MenuRow icon={icons.info} title="Tentang Aplikasi"
               desc="Versi, syarat & ketentuan"
-              onClick={() => {}} />
+              onClick={() => {}}
+              darkMode={darkMode} />
             <MenuRow icon={icons.shield} title="Kebijakan Privasi"
               desc="Perlindungan data pribadi"
-              onClick={() => {}} />
+              onClick={() => {}}
+              darkMode={darkMode} />
           </div>
         </div>
 
         {/* ─── LOGOUT ─── */}
-        <div style={glassCard}>
+        <div style={glassCard(darkMode)}>
           <div className="p-4">
             <button
               onClick={handleLogout}
@@ -278,13 +307,13 @@ export default function EmployeeProfile() {
             </button>
           </div>
 
-          {/* Footer */}
-          <div className="border-t flex items-center justify-between px-5 py-3"
-            style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-            <span className="text-[9px] font-medium" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          {/* Footer — matches STATISTICS-CARD-DESIGN.md light/dark */}
+          <div className={`border-t flex items-center justify-between px-5 py-3`}
+            style={{ borderColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)' }}>
+            <span className="text-[9px] font-medium" style={{ color: darkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.4)' }}>
               Hadir.Kuy v1.6.6
             </span>
-            <span className="text-[9px] font-medium" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            <span className="text-[9px] font-medium" style={{ color: darkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.4)' }}>
               Build 18
             </span>
           </div>
