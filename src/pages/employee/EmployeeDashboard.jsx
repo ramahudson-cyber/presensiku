@@ -15,6 +15,9 @@ function withTimeout(promise, ms, label) {
   ]);
 }
 
+const SHIFT_NAMES = { PG:'PAGI', SR:'SORE', SI:'SIANG', ML:'MALAM' };
+const getShiftName = (code) => SHIFT_NAMES[code] || (code || 'Shift').toUpperCase();
+
 export default function EmployeeDashboard() {
   const { user } = useAuth();
   const { darkMode, toggleTheme } = useTheme();
@@ -70,8 +73,7 @@ export default function EmployeeDashboard() {
       setTodayAttendance(attRes.data);
 
       // Shift
-      const shiftNames = { PG:'Pagi', SR:'Sore', SI:'Siang', ML:'Malam' };
-      setShift(shiftRes.data?.shift_code ? shiftNames[shiftRes.data.shift_code] || shiftRes.data.shift_code : "N/A");
+      setShift(shiftRes.data?.shift_code ? getShiftName(shiftRes.data.shift_code) : "N/A");
 
       // Month attendance stats
       const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
@@ -396,7 +398,7 @@ export default function EmployeeDashboard() {
                     <div className={`text-xs font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       {new Date(att.date).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                     </div>
-                    <div className={`text-[10px] ${darkMode ? 'text-white/40' : 'text-gray-500'}`}>SHIFT: {(att.shift_code || 'Shift').toUpperCase()}</div>
+                    <div className={`text-[10px] ${darkMode ? 'text-white/40' : 'text-gray-500'}`}>SHIFT: {getShiftName(att.shift_code)}</div>
                   </div>
                   <div className={`text-center text-xs font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     {formatTime(att.clock_in_time)}
