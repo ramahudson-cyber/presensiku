@@ -193,8 +193,6 @@ export default function EmployeeProfile() {
               value={nip} active />
             <InfoRow icon={icons.building} label="Unit Kerja" desc="Departemen / Instansi"
               value={user?.department || 'Puskesmas Ampenan'} active={false} />
-            <InfoRow icon={icons.mapPin} label="Lokasi Absen" desc="Radius GPS terdaftar"
-              value="Puskesmas Ampenan, Mataram" active={false} />
           </div>
         </div>
 
