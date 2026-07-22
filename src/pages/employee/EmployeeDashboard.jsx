@@ -422,18 +422,35 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
-          <div className="flex justify-between items-center mb-5 pb-4 border-b border-white/5">
-            <h3 className="text-sm font-bold text-white">Pengumuman</h3>
-            <Megaphone size={16} className="text-white/30" />
+        {/* PENGUMUMAN CARD — GLASSMORPHISM DARK (match STATISTICS-CARD-DESIGN.md) */}
+        <div className="rounded-3xl p-5 relative overflow-hidden border transition-all duration-500"
+          style={{ background: darkMode ? 'rgba(30,30,50,0.6)' : 'rgba(255,255,255,0.05)', borderColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.05)', boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.08)', backdropFilter: 'blur(20px)' }}>
+          {/* Card Header */}
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+              <h3 className={`text-xs font-bold tracking-wide ${darkMode ? 'text-white' : 'text-gray-900'}`}>Pengumuman</h3>
+            </div>
+            <Megaphone size={16} className={darkMode ? 'text-white/30' : 'text-gray-400'} />
           </div>
-          <div className="space-y-3">
+
+          {/* Announcement Items */}
+          <div className="space-y-2">
             {announcements.length > 0 ? announcements.map(a => (
-              <div key={a.id} className="p-3 bg-white/5 rounded-2xl">
-                <div className="text-sm font-semibold">{a.title}</div>
-                <div className="text-xs opacity-80 mt-1">{a.content}</div>
+              <div key={a.id}
+                className="rounded-xl px-4 py-3 transition-all duration-200 hover:translate-x-1"
+                style={{
+                  background: darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                  boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.06)'
+                }}>
+                <div className={`text-xs font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{a.title}</div>
+                <div className={`text-[10px] mt-0.5 ${darkMode ? 'text-white/70' : 'text-gray-700'}`}>{a.content}</div>
               </div>
-            )) : <div className="text-xs opacity-80">Tidak ada pengumuman.</div>}
+            )) : (
+              <div className={`text-xs py-6 text-center ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>
+                Tidak ada pengumuman.
+              </div>
+            )}
           </div>
         </div>
       </div>
