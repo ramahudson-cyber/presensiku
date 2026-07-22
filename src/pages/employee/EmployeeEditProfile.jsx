@@ -14,7 +14,18 @@ export default function EmployeeEditProfile() {
     full_name: user?.full_name || "",
     email: user?.email || "",
   });
+  const [avatarUrl, setAvatarUrl] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setAvatarUrl(ev.target?.result);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -28,9 +39,14 @@ export default function EmployeeEditProfile() {
     }
     setSaving(true);
     try {
+      const updateData = { full_name: form.full_name.trim() };
+      if (avatarUrl) {
+        updateData.avatar_url = avatarUrl;
+      }
+
       const { error } = await supabase
         .from("profiles")
-        .update({ full_name: form.full_name.trim() })
+        .update(updateData)
         .eq("id", user.id);
 
       if (error) throw error;
@@ -84,14 +100,18 @@ export default function EmployeeEditProfile() {
             }}
           >
             <div
-              className="w-full h-full rounded-full flex items-center justify-center text-3xl font-extrabold"
-              style={{ background: "#161320", fontFamily: "'Urbanist', sans-serif" }}
+              className="w-full h-full rounded-full flex items-center justify-center text-3xl font-extrabold overflow-hidden"
+              style={{ background: avatarUrl ? 'transparent' : '#161320', fontFamily: "'Urbanist', sans-serif" }}
             >
-              {user?.full_name?.charAt(0)?.toUpperCase() || "?"}
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                user?.full_name?.charAt(0)?.toUpperCase() || "?"
+              )}
             </div>
           </div>
           <div className="mt-3">
-            <label className="text-[11px] font-semibold cursor-pointer px-4 py-1.5 rounded-full"
+            <label htmlFor="avatar-upload" className="text-[11px] font-semibold cursor-pointer px-4 py-1.5 rounded-full"
               style={{ background: "rgba(191,0,255,0.12)", color: "#7066ed", border: "1px solid rgba(191,0,255,0.2)" }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="inline mr-1">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
@@ -99,8 +119,16 @@ export default function EmployeeEditProfile() {
               </svg>
               Ganti Foto
             </label>
-            <p className="text-[9px] mt-1.5" style={{ color: "rgba(255,255,255,0.25)" }}>
-              {/* ponytail: avatar upload uses native file picker; add Capacitor Camera plugin for APK */}
+            <input
+              id="avatar-upload"
+              type="file"
+              accept="image/*"
+              capture="user"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
+            <p className="text-[9px] mt-1.5" style={{ color: "rgba(255,255,255,0.2)" }}>
+              Upload foto dari galeri atau kamera
             </p>
           </div>
         </div>
