@@ -66,7 +66,7 @@
 - Fix React error #310 (blank screen): `UpdateDialog.jsx` — useEffect cleanup ditempatkan setelah early return. Hook count mismatch (11 vs 12 hooks).
 - Fix OOM Gradle: `android/gradle.properties` — `org.gradle.jvmargs=-Xmx2048m`
 - Bump version: `updateService.js` → `CURRENT_VERSION="1.6.6"`, `CURRENT_VERSION_CODE=18`
-- Deploy Vercel: https://siap-ampenan.vercel.app
+- Deploy Vercel: https://presensiku.vercel.app
 - Remember Me & Biometric UI: checkbox "Ingat Saya" + "Gunakan Sidik Jari" (APK only)
 
 ### Blankscreen Cause (sept 7 juli)

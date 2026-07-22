@@ -59,7 +59,7 @@ export default function UpdateDialog() {
     const url = update.apkUrlFallback || update.apkUrl;
     const a = document.createElement("a");
     a.href = url;
-    a.download = `SIAP-Puskesmas-${update.version}.apk`;
+    a.download = `Presensiku-${update.version}.apk`;
     a.target = "_blank";
     document.body.appendChild(a);
     a.click();

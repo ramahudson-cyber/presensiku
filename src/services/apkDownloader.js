@@ -88,7 +88,7 @@ async function downloadWithFetch(url, version, onProgress) {
 
     const a = document.createElement("a");
     a.href = blobUrl;
-    a.download = `SIAP-Puskesmas-${version || "latest"}.apk`;
+    a.download = `Presensiku-${version || "latest"}.apk`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -101,7 +101,7 @@ async function downloadWithFetch(url, version, onProgress) {
     if (err.name === "TypeError" && err.message.includes("fetch")) {
       const a = document.createElement("a");
       a.href = url;
-      a.download = `SIAP-Puskesmas-${version || "latest"}.apk`;
+      a.download = `Presensiku-${version || "latest"}.apk`;
       a.target = "_blank";
       document.body.appendChild(a);
       a.click();

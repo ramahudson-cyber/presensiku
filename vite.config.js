@@ -11,9 +11,9 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "icons.svg", "manifest.json"],
       manifest: {
-        name: "SIAP Puskesmas",
-        short_name: "SIAP",
-        description: "Sistem Informasi Absensi Pegawai Puskesmas",
+        name: "Presensiku",
+        short_name: "Presensiku",
+        description: "Aplikasi Presensi Pegawai",
         start_url: "/",
         display: "standalone",
         background_color: "#ffffff",

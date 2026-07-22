@@ -1,6 +1,6 @@
 const KEYS = {
-  CREDENTIALS: "siap_saved_credentials",
-  BIOMETRIC_ENABLED: "siap_biometric_enabled",
+  CREDENTIALS: "presensiku_saved_credentials",
+  BIOMETRIC_ENABLED: "presensiku_biometric_enabled",
 };
 
 function withTimeout(promise, ms, label) {
@@ -49,7 +49,7 @@ export async function authenticateBiometric() {
     if (!Capacitor.isNativePlatform()) return true;
     const { BiometricAuth } = await import("@aparajita/capacitor-biometric-auth");
     const result = await withTimeout(BiometricAuth.authenticate({
-      reason: "Login ke SIAP Puskesmas",
+      reason: "Login ke Presensiku",
       cancelTitle: "Batal",
     }), 10000, "BiometricAuth.authenticate");
     return result.authenticated === true;
