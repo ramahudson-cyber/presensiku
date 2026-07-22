@@ -11,6 +11,7 @@ import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import EmployeeSchedule from "../pages/employee/EmployeeSchedule";
 import EmployeeProfile from "../pages/employee/EmployeeProfile";
 import EmployeeHistory from "../pages/employee/EmployeeHistory";
+import EmployeeEditProfile from "../pages/employee/EmployeeEditProfile";
 import SchedulingPage from "../pages/admin/SchedulingPage";
 import ComingSoonPage from "../pages/admin/ComingSoonPage";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
@@ -60,6 +61,7 @@ function AppRoutes() {
         <Route path="attendance" element={<AttendancePage />} />
         <Route path="schedule" element={<EmployeeSchedule />} />
         <Route path="profile" element={<EmployeeProfile />} />
+        <Route path="profile/edit" element={<EmployeeEditProfile />} />
         <Route path="history" element={<EmployeeHistory />} />
       </Route>
 

@@ -202,7 +202,7 @@ export default function EmployeeProfile() {
           <div className="px-1 pb-2 pt-0.5">
             <MenuRow icon={icons.edit} title="Edit Profil"
               desc="Ubah foto, nama, dan informasi pribadi"
-              onClick={() => {}} />
+              onClick={() => navigate('/employee/profile/edit')} />
             <MenuRow icon={icons.lock} title="Keamanan"
               desc="Ubah password & verifikasi identitas"
               right={
