@@ -1,6 +1,9 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/", "destination": "https://presensiku.vercel.app/", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],
@@ -24,7 +27,7 @@
       ]
     },
     {
-      "source": "/SIAP-Puskesmas.apk",
+      "source": "/Presensiku.apk",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
         { "key": "Content-Type", "value": "application/vnd.android.package-archive" }
