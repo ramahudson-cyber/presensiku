@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import {
   LayoutDashboard, CalendarCheck, CalendarDays,
   Users, History, FileText, Megaphone, Settings, MoreHorizontal,
-  FingerprintPattern,
+  FingerprintPattern, User,
 } from "lucide-react";
 import { useState } from "react";
 import BottomSheet from "./BottomSheet";
@@ -19,6 +19,7 @@ export default function BottomNav({ hidden = false }) {
   const pegawaiMenus = [
     { path: "/employee", label: "Home", icon: LayoutDashboard, end: true },
     { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
+    { path: "/employee/profile", label: "Profil", icon: User },
   ];
 
   // Menu untuk Admin — 4 main + 4 di "More"
