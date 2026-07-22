@@ -379,10 +379,10 @@ export default function EmployeeDashboard() {
 
           {/* Header Labels */}
           <div className="grid grid-cols-[1fr_55px_55px_90px] gap-3 mb-2 text-[9px] uppercase tracking-wider">
-            <div className={darkMode ? 'text-white/30' : 'text-gray-400'}>Tanggal</div>
-            <div className={`text-center ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Masuk</div>
-            <div className={`text-center ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Pulang</div>
-            <div className={`text-right ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Status</div>
+            <div className={darkMode ? 'text-white/80' : 'text-gray-800'}>Tanggal</div>
+            <div className={`text-center ${darkMode ? 'text-white/80' : 'text-gray-800'}`}>Masuk</div>
+            <div className={`text-center ${darkMode ? 'text-white/80' : 'text-gray-800'}`}>Pulang</div>
+            <div className={`text-right ${darkMode ? 'text-white/80' : 'text-gray-800'}`}>Status</div>
           </div>
 
           {/* History Items */}
