@@ -233,7 +233,7 @@ export async function checkDeviceRequestStatus(userId, visitorId) {
 /**
  * Generate OTP & kirim ke email pegawai
  */
-const API_BASE = "https://siap-ampenan.vercel.app";
+const API_BASE = "https://presensiku.vercel.app";
 
 export async function sendOtpEmail(userEmail, userName) {
   try {

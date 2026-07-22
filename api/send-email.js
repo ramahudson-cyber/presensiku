@@ -54,7 +54,7 @@ export default async function handler(req, res) {
             </tr>
           </table>
         </div>
-        <a href="https://siap-ampenan.vercel.app" style="display: block; text-align: center; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: #fff; text-decoration: none; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; margin-bottom: 16px;">
+        <a href="https://presensiku.vercel.app" style="display: block; text-align: center; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: #fff; text-decoration: none; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; margin-bottom: 16px;">
           Buka SIAP
         </a>
         <p style="color: rgba(255,255,255,0.4); font-size: 11px; margin: 0; line-height: 1.5;">

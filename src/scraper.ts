@@ -13,7 +13,7 @@ async function loginAsAdmin() {
   
   try {
     console.log('Membuka halaman dalam mode Mobile...');
-    await page.goto('https://siap-ampenan.vercel.app', { waitUntil: 'networkidle2' });
+    await page.goto('https://presensiku.vercel.app', { waitUntil: 'networkidle2' });
     
     // Fungsi untuk memantau URL setiap 2 detik
     setInterval(async () => {

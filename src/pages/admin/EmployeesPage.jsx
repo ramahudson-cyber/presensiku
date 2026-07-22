@@ -130,7 +130,7 @@ const EmployeesPage = () => {
         if (!rpcResult?.success) throw new Error(rpcResult?.error || "Gagal membuat pegawai");
         // Kirim notif email
         try {
-          const API_BASE = "https://siap-ampenan.vercel.app";
+          const API_BASE = "https://presensiku.vercel.app";
           await fetch(API_BASE + '/api/send-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

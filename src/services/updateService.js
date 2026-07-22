@@ -1,4 +1,4 @@
-const VERSION_URL = "https://siap-ampenan.vercel.app/version.json";
+const VERSION_URL = "https://presensiku.vercel.app/version.json";
 const CURRENT_VERSION = "1.6.10";
 const CURRENT_VERSION_CODE = 22;
 
