@@ -92,7 +92,7 @@ export default function BottomNav({ hidden = false }) {
                 to={item.path}
                 end={item.end}
                 className={({ isActive }) =>
-                  `flex flex-col items-center justify-center gap-0.5 flex-1 h-full pt-2 transition-all ${
+                  `flex flex-col items-center justify-center gap-0.5 flex-1 h-full pt-2 px-1 transition-all ${
                     isActive ? "text-electric-violet" : "text-slate-mist"
                   }`
                 }
