@@ -60,7 +60,7 @@ export default function BottomNav({ hidden = false }) {
             className="w-16 h-16 rounded-full flex items-center justify-center text-white text-3xl shadow-lg shadow-purple-500/50 border-4 border-[#0d001a]"
             style={{ background: "linear-gradient(135deg, #BF00FF, #6366f1)" }}
           >
-            <FingerprintPattern size={28} />
+            <FingerprintPattern size={28} className="text-white" />
           </NavLink>
           <p className="text-xs text-slate-mist mt-1 font-medium">Presensi</p>
         </div>
