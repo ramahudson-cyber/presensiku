@@ -51,7 +51,7 @@ export default function EmployeeHistory() {
       <div className="w-full pt-12 pb-8 px-6 shadow-2xl border-b border-white/5 rounded-b-[40px]"
         style={{ background: 'linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)' }}>
         <h1 className="text-lg font-bold" style={{ fontFamily: "'Urbanist', sans-serif", color: '#FFFFFF' }}>Riwayat Absensi</h1>
-        <p className="text-[11px] mt-1 text-white/80">Riwayat 30 hari terakhir</p>
+        <p className="text-[11px] mt-1" style={{ color: 'rgba(255,255,255,0.8)' }}>Riwayat 30 hari terakhir</p>
       </div>
 
       <div className="max-w-md mx-auto px-4 mt-6">
