@@ -20,7 +20,7 @@ export default function EmployeeHistory() {
 
   const statusBadge = (status) => {
     const colors = {
-      hadir: { bg: 'transparent', text: '#6ee7b7' },
+      hadir: { bg: 'transparent', text: '#BF00FF' },
       terlambat: { bg: 'rgba(251,146,60,0.15)', text: '#fb923c' },
       izin: { bg: 'rgba(251,191,36,0.15)', text: '#fbbf24' },
       sakit: { bg: 'rgba(251,114,133,0.15)', text: '#fb7185' },

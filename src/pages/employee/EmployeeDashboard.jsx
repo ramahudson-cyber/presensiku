@@ -377,7 +377,9 @@ export default function EmployeeDashboard() {
               <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
               <h3 className={`text-sm font-bold tracking-wide ${darkMode ? 'text-white' : 'text-gray-900'}`}>Riwayat Absensi</h3>
             </div>
-            <History size={16} className={darkMode ? 'text-white/30' : 'text-gray-400'} />
+            <Link to="/employee/history" className="flex items-center gap-1 text-[10px] font-semibold text-[#BF00FF] hover:underline">
+              Lihat Semua <History size={14} />
+            </Link>
           </div>
 
           {/* Header Labels */}
@@ -390,7 +392,10 @@ export default function EmployeeDashboard() {
 
           {/* History Items */}
           <div className="space-y-0.5">
-            {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 5).map(att => {
+            {attendanceHistory.length > 0 ? (() => {
+              const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+              return attendanceHistory.filter(att => new Date(att.date) >= weekAgo);
+            })().map(att => {
               const isHadir = att.attendance_status === 'hadir' || att.attendance_status === 'terlambat';
               return (
                 <div key={att.id}
