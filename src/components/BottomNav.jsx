@@ -103,7 +103,9 @@ export default function BottomNav({ hidden = false }) {
                   to={item.path}
                   end={item.end}
                   className={({ isActive }) =>
-                    `flex flex-col items-center justify-center gap-0.5 h-full pt-2 transition-all w-[65px] ${
+                    `flex flex-col items-center justify-center gap-0.5 h-full pt-2 transition-all ${
+                      (item.label === 'Profil' || item.label === 'Jadwal') ? 'w-[75px]' : 'w-[55px]'
+                    } ${
                       isActive ? "text-electric-violet" : (darkMode ? "text-slate-mist" : "text-slate-500")
                     }`
                   }
