@@ -38,10 +38,10 @@ export default function EmployeeHistory() {
   // ── Card style matching STATISTICS-CARD-DESIGN.md ──
   const cardStyle = {
     background: darkMode ? 'rgba(30,30,50,0.6)' : 'rgba(255,255,255,0.05)',
-    backdropFilter: 'blur(20px)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    backdropFilter: darkMode ? 'blur(20px)' : undefined,
+    border: darkMode ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.03)',
     borderRadius: '24px',
-    boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.08)',
+    boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.06)',
   };
 
   return (
@@ -63,7 +63,7 @@ export default function EmployeeHistory() {
             <div className="text-4xl mb-3 opacity-30">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={darkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mx-auto"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             </div>
-            <p className="text-sm font-medium" style={{ color: darkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }}>Belum ada riwayat absensi</p>
+            <p className="text-sm font-medium" style={{ color: darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }}>Belum ada riwayat absensi</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -74,7 +74,7 @@ export default function EmployeeHistory() {
                   <div className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' }) : '-'}
                   </div>
-                  <div className="text-[10px] mt-0.5" style={{ color: darkMode ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)' }}>
+                  <div className="text-[10px] mt-0.5" style={{ color: darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }}>
                     {item.clock_in_time?.substring(0,5) || '--:--'} — {item.clock_out_time?.substring(0,5) || '--:--'}
                   </div>
                 </div>
