@@ -155,7 +155,7 @@ export default function EmployeeEditProfile() {
               onChange={handleAvatarChange}
               className="hidden"
             />
-            <p className="text-[9px] mt-1.5" style={{ color: "rgba(255,255,255,0.2)" }}>
+            <p className={`text-[9px] mt-1.5 ${darkMode ? 'text-white/20' : 'text-gray-500'}`}>
               Upload foto dari galeri atau kamera
             </p>
           </div>
@@ -164,8 +164,7 @@ export default function EmployeeEditProfile() {
         <form onSubmit={handleSave} className="space-y-4">
           {/* Nama Lengkap */}
           <div>
-            <label className="block text-[10px] font-semibold uppercase tracking-[0.5px] mb-2"
-              style={{ color: "rgba(255,255,255,0.4)" }}>
+            <label className={darkMode ? 'block text-[10px] font-semibold uppercase tracking-[0.5px] text-white/40 mb-2' : 'block text-[10px] font-semibold uppercase tracking-[0.5px] text-gray-800 mb-2'}>
               Nama Lengkap
             </label>
             <input
@@ -174,20 +173,19 @@ export default function EmployeeEditProfile() {
               value={form.full_name}
               onChange={handleChange}
               placeholder="Nama lengkap Anda"
-              className="w-full px-4 py-3.5 rounded-2xl text-sm font-medium text-white outline-none transition-all duration-200 focus:ring-2"
+              className={`w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none transition-all duration-200 focus:ring-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}
               style={{
-                background: "rgba(30,30,50,0.6)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                backdropFilter: "blur(20px)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+                background: darkMode ? 'rgba(30,30,50,0.6)' : 'rgba(255,255,255,0.05)',
+                border: darkMode ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.05)',
+                backdropFilter: darkMode ? 'blur(20px)' : undefined,
+                boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.4)' : undefined,
               }}
             />
           </div>
 
           {/* Email (readonly) */}
           <div>
-            <label className="block text-[10px] font-semibold uppercase tracking-[0.5px] mb-2"
-              style={{ color: "rgba(255,255,255,0.4)" }}>
+            <label className={darkMode ? 'block text-[10px] font-semibold uppercase tracking-[0.5px] text-white/40 mb-2' : 'block text-[10px] font-semibold uppercase tracking-[0.5px] text-gray-800 mb-2'}>
               Email
             </label>
             <input
@@ -196,34 +194,31 @@ export default function EmployeeEditProfile() {
               value={form.email}
               onChange={handleChange}
               placeholder="Email"
-              className="w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none"
+              className={`w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none ${darkMode ? 'text-white/40' : 'text-gray-500'}`}
               style={{
-                background: "rgba(30,30,50,0.3)",
-                border: "1px solid rgba(255,255,255,0.05)",
-                color: "rgba(255,255,255,0.35)",
+                background: darkMode ? 'rgba(30,30,50,0.3)' : 'rgba(255,255,255,0.05)',
+                border: darkMode ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)',
                 cursor: "not-allowed",
               }}
               disabled
             />
-            <p className="text-[9px] mt-1.5" style={{ color: "rgba(255,255,255,0.2)" }}>
+            <p className={`text-[9px] mt-1.5 ${darkMode ? 'text-white/20' : 'text-gray-500'}`}>
               Email tidak dapat diubah. Hubungi admin untuk perubahan.
             </p>
           </div>
 
           {/* Username (readonly) */}
           <div>
-            <label className="block text-[10px] font-semibold uppercase tracking-[0.5px] mb-2"
-              style={{ color: "rgba(255,255,255,0.4)" }}>
+            <label className={darkMode ? 'block text-[10px] font-semibold uppercase tracking-[0.5px] text-white/40 mb-2' : 'block text-[10px] font-semibold uppercase tracking-[0.5px] text-gray-800 mb-2'}>
               Username
             </label>
             <input
               type="text"
               value={user?.username || "-"}
-              className="w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none"
+              className={`w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none ${darkMode ? 'text-white/40' : 'text-gray-500'}`}
               style={{
-                background: "rgba(30,30,50,0.3)",
-                border: "1px solid rgba(255,255,255,0.05)",
-                color: "rgba(255,255,255,0.35)",
+                background: darkMode ? 'rgba(30,30,50,0.3)' : 'rgba(255,255,255,0.05)',
+                border: darkMode ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)',
                 cursor: "not-allowed",
               }}
               disabled

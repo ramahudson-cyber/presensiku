@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import {
   LayoutDashboard, CalendarCheck, CalendarDays,
   Users, History, FileText, Megaphone, Settings, MoreHorizontal,
@@ -10,6 +11,7 @@ import BottomSheet from "./BottomSheet";
 
 export default function BottomNav({ hidden = false }) {
   const { user } = useAuth();
+  const { darkMode } = useTheme();
   const [moreOpen, setMoreOpen] = useState(false);
   const userRole = user?.role || "pegawai";
 
