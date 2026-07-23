@@ -18,6 +18,14 @@ export default function EmployeeHistory() {
     }
   }, [user?.id]);
 
+  const formatTime = (timeStr) => {
+    if (!timeStr) return '--:--';
+    if (timeStr.includes('T')) {
+      return new Date(timeStr).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Makassar" });
+    }
+    return timeStr.substring(0, 5);
+  };
+
   const statusBadge = (status) => {
     const colors = {
       hadir: { bg: 'transparent', text: '#BF00FF' },
@@ -76,7 +84,7 @@ export default function EmployeeHistory() {
                     {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' }) : '-'}
                   </div>
                   <div className="text-[10px] mt-0.5" style={{ color: darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }}>
-                    Masuk {item.clock_in_time?.substring(0,5) || '--:--'} — Pulang {item.clock_out_time?.substring(0,5) || '--:--'}
+                    Masuk {formatTime(item.clock_in_time)} — Pulang {formatTime(item.clock_out_time)}
                   </div>
                 </div>
                 {statusBadge(item.attendance_status || 'alpha')}
