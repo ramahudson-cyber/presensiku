@@ -38,6 +38,10 @@ export default function EmployeeHistory() {
       const lastDay = new Date(year, month + 1, 0).getDate();
       const dateFrom = `${year}-${String(month + 1).padStart(2, "0")}-01`;
       const dateTo = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+      // Batasi jadwal ke hari ini kalo bulan berjalan (future dates bukan alpha)
+      const schedDateTo = isCurrentMonth
+        ? `${year}-${String(month + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`
+        : dateTo;
 
       try {
         const [attData, schedRes] = await Promise.all([
@@ -47,7 +51,7 @@ export default function EmployeeHistory() {
             .select("date, shift_code")
             .eq("user_id", user.id)
             .gte("date", dateFrom)
-            .lte("date", dateTo),
+            .lte("date", schedDateTo),
         ]);
 
         if (cancelled) return;
