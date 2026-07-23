@@ -262,109 +262,122 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* STATS CARD — GLASSMORPHISM PREMIUM */}
+        {/* STATS CARD — DONUT + RINGKASAN (match history page) */}
         <div className="rounded-3xl p-5 relative overflow-hidden border transition-all duration-500"
           style={{ background: darkMode ? 'rgba(30,30,50,0.6)' : 'rgba(255,255,255,0.05)', borderColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.05)', boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.08)', backdropFilter: 'blur(20px)' }}>
-          <div className="content">
-            {(() => {
-              const total = stats.hadir + stats.izin + stats.sakit + stats.alpha;
-              const items = [
-                { k:'hadir', v:stats.hadir, color:'#ADFF2F', glow:'rgba(173,255,47,0.1)', check:'check', label:'Hadir', desc:'Kehadiran tepat waktu' },
-                { k:'izin', v:stats.izin, color:'#fbbf24', glow:'rgba(251,191,36,0.1)', check:'info', label:'Izin', desc:'Diluar tanggung jawab' },
-                { k:'sakit', v:stats.sakit, color:'#fb923c', glow:'rgba(251,146,60,0.1)', check:'heart', label:'Sakit', desc:'Tidak hadir karena sakit' },
-                { k:'alpha', v:stats.alpha, color:'#f87171', glow:'rgba(248,113,113,0.1)', check:'x', label:'Alpha', desc:'Tanpa keterangan' },
-              ];
 
-              // Icon SVG components
-              const iconCheck = <polyline points="20 6 9 17 4 12"/>;
-              const iconInfo = <> <circle cx="12" cy="12" r="10"/> <line x1="12" y1="8" x2="12" y2="12"/> <line x1="12" y1="16" x2="12.01" y2="16"/> </>;
-              const iconHeart = <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>;
-              const iconX = <> <circle cx="12" cy="12" r="10"/> <line x1="15" y1="9" x2="9" y2="15"/> <line x1="9" y1="9" x2="15" y2="15"/> </>;
+          {/* Header */}
+          <div className="flex items-center justify-between px-1 pt-1 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-1 h-4 rounded-full shrink-0"
+                style={{ background: "linear-gradient(180deg, #BF00FF, #3B82F6)" }} />
+              <span className={`text-xs font-bold tracking-wide ${darkMode ? 'text-white' : 'text-gray-900'}`}>Ringkasan Kehadiran</span>
+            </div>
+            <span className="text-[10px] font-medium" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>
+              {new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+            </span>
+          </div>
 
-              const getIcon = (t) => {
-                const s = "2.5"; const cls = "w-5 h-5";
-                switch(t) {
-                  case 'check': return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={s} strokeLinecap="round" strokeLinejoin="round">{iconCheck}</svg>;
-                  case 'info': return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={s} strokeLinecap="round" strokeLinejoin="round">{iconInfo}</svg>;
-                  case 'heart': return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={s} strokeLinecap="round" strokeLinejoin="round">{iconHeart}</svg>;
-                  case 'x': return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={s} strokeLinecap="round" strokeLinejoin="round">{iconX}</svg>;
-                }
-              };
-
-              const today = new Date();
-              const monthLabel = today.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
-              const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-              const dayRange = `1 — ${lastDay} ${today.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}`;
-
-              return (
-                <>
-                  {/* Card Header */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
-                    <span className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'} tracking-wide`}>Ringkasan Kehadiran</span>
+          {/* Donut */}
+          {(() => {
+            const c = 2 * Math.PI * 42;
+            const pct = stats.jadwalCount > 0 ? Math.round((stats.hadir / stats.jadwalCount) * 100) : 0;
+            const offset = c - (pct / 100) * c;
+            return (
+              <div className="flex items-center justify-center gap-5 px-0 pt-1 pb-2">
+                <div className="relative w-[100px] h-[100px] shrink-0">
+                  <svg width="100" height="100" viewBox="0 0 100 100">
+                    <defs>
+                      <linearGradient id="dgd" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#BF00FF"/>
+                        <stop offset="100%" stopColor="#7066ed"/>
+                      </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="42" fill="none" stroke={darkMode ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.06)"} strokeWidth="8"/>
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="url(#dgd)" strokeWidth="8"
+                      strokeLinecap="round"
+                      strokeDasharray={c}
+                      strokeDashoffset={offset}
+                      transform="rotate(-90, 50, 50)"
+                      style={{ transition: "stroke-dashoffset 0.6s ease-out" }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-[22px] font-extrabold leading-none"
+                      style={{ fontFamily: "'Urbanist', sans-serif", color: darkMode ? "#FFFFFF" : "#111827" }}>{pct}%</span>
+                    <span className="text-[7px] font-medium uppercase tracking-[0.5px] mt-0.5" style={{ color: darkMode ? "#9ba1ae" : "#4b5563" }}>Hadir</span>
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className={`text-[11px] font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Kehadiran Bulan Ini</div>
+                  <div className="text-[9px] mt-0.5" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>
+                    <span className="font-semibold">{stats.hadir}</span> hari hadir dari <span className="font-semibold">{stats.jadwalCount}</span> hari kerja
+                  </div>
+                  <div className="flex gap-3 mt-2.5">
+                    <div className="flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full" style={{ background: "linear-gradient(135deg, #BF00FF, #7066ed)" }} />
+                      <span className="text-[8px]" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>Hadir</span>
                     </div>
-                    <span className={`text-[10px] ${darkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{monthLabel}</span>
+                    <div className="flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full" style={{ background: darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.15)" }} />
+                      <span className="text-[8px]" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>Alpha</span>
+                    </div>
                   </div>
+                </div>
+              </div>
+            );
+          })()}
 
-                  {/* Stat Items List */}
-                  <div className="space-y-2">
-                    {items.map(item => {
-                      const isActive = item.v > 0;
-                      const pct = stats.jadwalCount > 0 ? Math.round((item.v / stats.jadwalCount) * 100) : 0;
-                      return (
-                        <div key={item.k}
-                          className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1"
-                          style={{
-                            background: isActive
-                              ? `linear-gradient(90deg, ${item.color}${darkMode ? '08' : '06'}, transparent)`
-                              : 'transparent',
-                            borderColor: isActive ? 'transparent' : `${item.color}33`,
-                            borderLeftWidth: '3px',
-                            borderLeftStyle: 'solid',
-                            borderLeftColor: item.color,
-                            opacity: isActive ? 1 : 0.5,
-                            boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : 'none'
-                          }}>
-                          {/* Icon */}
-                          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
-                            style={{
-                              background: 'transparent',
-                              boxShadow: 'none'
-                            }}>
-                            <div style={{ color: '#BF00FF' }}>
-                              {getIcon(item.check)}
-                            </div>
-                          </div>
+          {/* Divider */}
+          <div className={`mx-0 my-2 h-px ${darkMode ? 'border-white/5' : 'border-gray-100'}`} />
 
-                          {/* Label + Desc */}
-                          <div className="flex-1 min-w-0">
-                            <div className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.label}</div>
-                            <div className={`text-[9px] ${darkMode ? 'text-white/70' : 'text-gray-500'}`}>{item.desc}</div>
-                          </div>
-
-                          {/* Value */}
-                          <div className="text-right shrink-0">
-                            <div className={`text-xl font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.v}</div>
-                            <div className={`text-[9px] font-medium ${darkMode ? 'text-white/70' : 'text-gray-400'}`}>
-                              {`${item.v} dari ${stats.jadwalCount} hari`}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+          {/* Stat rows */}
+          <div className="px-0 pb-1 pt-0.5">
+            {[
+              { label:'Hadir', desc:'Kehadiran tepat waktu', v:stats.hadir, color:'#ADFF2F' },
+              { label:'Izin', desc:'Diluar tanggung jawab', v:stats.izin, color:'#fbbf24' },
+              { label:'Sakit', desc:'Tidak hadir karena sakit', v:stats.sakit, color:'#fb923c' },
+              { label:'Alpha', desc:'Tanpa keterangan', v:stats.alpha, color:'#f87171' },
+            ].map(item => {
+              const active = item.v > 0;
+              return (
+                <div key={item.label}
+                  className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1"
+                  style={{
+                    background: active ? `linear-gradient(90deg, ${item.color}08, transparent)` : "transparent",
+                    borderLeft: `2px solid ${active ? "transparent" : item.color}33`,
+                    opacity: active ? 1 : 0.5,
+                    boxShadow: darkMode ? "0 1px 3px rgba(0,0,0,0.3)" : "0 1px 3px rgba(0,0,0,0.06)",
+                  }}>
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      {item.label === "Hadir" && <polyline points="20 6 9 17 4 12"/>}
+                      {item.label === "Izin" && <><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></>}
+                      {item.label === "Sakit" && <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>}
+                      {item.label === "Alpha" && <><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></>}
+                    </svg>
                   </div>
-
-                  {/* Footer Summary */}
-                  <div className={`mt-4 pt-4 border-t ${darkMode ? 'border-white/5' : 'border-gray-100'} flex items-center justify-between`}>
-                    <span className={`text-[9px] ${darkMode ? 'text-white' : 'text-gray-900'} font-medium`}>Periode: {dayRange}</span>
-                    <span className={`text-[9px] font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {stats.hadir} dari {stats.jadwalCount} hari kerja
-                    </span>
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.label}</div>
+                    <div className="text-[9px]" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>{item.desc}</div>
                   </div>
-                </>
+                  <div className="text-right shrink-0">
+                    <div className={`text-xl font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.v}</div>
+                    <div className="text-[9px] font-medium" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>{item.v} dari {stats.jadwalCount} hari</div>
+                  </div>
+                </div>
               );
-            })()}
+            })}
+          </div>
+
+          {/* Footer */}
+          <div className={`border-t ${darkMode ? 'border-white/5' : 'border-gray-100'} flex items-center justify-between pt-3 mt-1`}>
+            <span className="text-[9px] font-medium" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>
+              Periode: 1 — {new Date().getDate() > 0 ? new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() : 31} {new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+            </span>
+            <span className="text-[9px] font-medium tabular-nums" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>
+              {stats.hadir} dari {stats.jadwalCount} hari kerja
+            </span>
           </div>
         </div>
 
