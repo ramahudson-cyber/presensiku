@@ -28,7 +28,13 @@ export default function EmployeeDashboard() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [shift, setShift] = useState(null);
-  const [serverTime, setServerTime] = useState(new Date());
+	const [serverTime, setServerTime] = useState(new Date());
+	const getGreeting = (h) => {
+	  if (h >= 3 && h < 12) return "Selamat Pagi";
+	  if (h >= 12 && h < 15) return "Selamat Siang";
+	  if (h >= 15 && h < 18) return "Selamat Sore";
+	  return "Selamat Malam";
+	};
 
   useEffect(() => { fetchData(); }, []);
 
@@ -159,7 +165,7 @@ export default function EmployeeDashboard() {
               </div>
             )}
             <div className="flex-1">
-              <div className="text-[11px] uppercase tracking-[0.2em] opacity-60 text-white">Selamat Pagi,</div>
+              <div className="text-[11px] uppercase tracking-[0.2em] opacity-60 text-white">{getGreeting(serverTime.getHours())},</div>
               <div className="text-2xl font-bold text-white">{user?.full_name || "Rama Hudson"}</div>
               <div className="text-xs opacity-70 mt-0.5 text-white">{user?.role || "Pegawai"}</div>
             </div>
