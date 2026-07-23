@@ -262,19 +262,6 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* SECTION TITLE */}
-        <div className="px-4 flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 flex items-center justify-center shrink-0">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-            </svg>
-          </div>
-          <div className="pt-0.5">
-            <div className="text-lg font-extrabold tracking-tight text-white">Statistik bulan ini</div>
-            <div className="text-[10px] text-black/50 dark:text-white/35 mt-0.5 font-normal">Ringkasan kehadiran anda bulan ini</div>
-          </div>
-        </div>
-
         {/* STATS CARD — GLASSMORPHISM PREMIUM */}
         <div className="rounded-3xl p-5 relative overflow-hidden border transition-all duration-500"
           style={{ background: darkMode ? 'rgba(30,30,50,0.6)' : 'rgba(255,255,255,0.05)', borderColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.05)', boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.08)', backdropFilter: 'blur(20px)' }}>
@@ -282,7 +269,7 @@ export default function EmployeeDashboard() {
             {(() => {
               const total = stats.hadir + stats.izin + stats.sakit + stats.alpha;
               const items = [
-                { k:'hadir', v:stats.hadir, color:'#ADFF2F', glow:'rgba(173,255,47,0.1)', check:'check', label:'Tepat Waktu', desc:'Kehadiran tepat waktu' },
+                { k:'hadir', v:stats.hadir, color:'#ADFF2F', glow:'rgba(173,255,47,0.1)', check:'check', label:'Hadir', desc:'Kehadiran tepat waktu' },
                 { k:'izin', v:stats.izin, color:'#fbbf24', glow:'rgba(251,191,36,0.1)', check:'info', label:'Izin', desc:'Diluar tanggung jawab' },
                 { k:'sakit', v:stats.sakit, color:'#fb923c', glow:'rgba(251,146,60,0.1)', check:'heart', label:'Sakit', desc:'Tidak hadir karena sakit' },
                 { k:'alpha', v:stats.alpha, color:'#f87171', glow:'rgba(248,113,113,0.1)', check:'x', label:'Alpha', desc:'Tanpa keterangan' },
