@@ -304,7 +304,7 @@ export default function EmployeeDashboard() {
                       <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
                     <span className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'} tracking-wide`}>Ringkasan Kehadiran</span>
                     </div>
-                    <span className={`text-[10px] ${darkMode ? 'text-white/70' : 'text-gray-400'} font-medium`}>{monthLabel}</span>
+                    <span className={`text-[10px] ${darkMode ? 'text-white' : 'text-gray-400'} font-medium`}>{monthLabel}</span>
                   </div>
 
                   {/* Stat Items List */}
@@ -357,8 +357,8 @@ export default function EmployeeDashboard() {
 
                   {/* Footer Summary */}
                   <div className={`mt-4 pt-4 border-t ${darkMode ? 'border-white/5' : 'border-gray-100'} flex items-center justify-between`}>
-                    <span className={`text-[9px] ${darkMode ? 'text-white/70' : 'text-gray-400'} font-medium`}>Periode: {dayRange}</span>
-                    <span className={`text-[9px] font-medium tabular-nums ${darkMode ? 'text-white/70' : 'text-gray-400'}`}>
+                    <span className={`text-[9px] ${darkMode ? 'text-white' : 'text-gray-400'} font-medium`}>Periode: {dayRange}</span>
+                    <span className={`text-[9px] font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-400'}`}>
                       {stats.hadir} dari {stats.jadwalCount} hari kerja
                     </span>
                   </div>

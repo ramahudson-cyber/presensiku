@@ -76,7 +76,7 @@ export default function EmployeeHistory() {
                     {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' }) : '-'}
                   </div>
                   <div className="text-[10px] mt-0.5" style={{ color: darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }}>
-                    {item.clock_in_time?.substring(0,5) || '--:--'} — {item.clock_out_time?.substring(0,5) || '--:--'}
+                    Masuk {item.clock_in_time?.substring(0,5) || '--:--'} — Pulang {item.clock_out_time?.substring(0,5) || '--:--'}
                   </div>
                 </div>
                 {statusBadge(item.attendance_status || 'alpha')}
