@@ -186,7 +186,7 @@ export default function EmployeeHistory() {
                     style={{ background: "linear-gradient(180deg, #BF00FF, #3B82F6)" }} />
                   <span className={`text-xs font-bold tracking-wide ${labelColor}`}>Ringkasan Kehadiran</span>
                 </div>
-                <span className="text-[10px] font-medium" style={{ color: darkMode ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.4)" }}>
+                <span className="text-[10px] font-medium" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>
                   {MONTHS[month]} {year}
                 </span>
               </div>
@@ -213,7 +213,7 @@ export default function EmployeeHistory() {
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-[22px] font-extrabold leading-none"
                       style={{ fontFamily: "'Urbanist', sans-serif", color: "#FFFFFF" }}>{pct}%</span>
-                    <span className="text-[7px] font-medium uppercase tracking-[0.5px] mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>Hadir</span>
+                    <span className="text-[7px] font-medium uppercase tracking-[0.5px] mt-0.5" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>Hadir</span>
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -224,11 +224,11 @@ export default function EmployeeHistory() {
                   <div className="flex gap-3 mt-2.5">
                     <div className="flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full" style={{ background: "linear-gradient(135deg, #BF00FF, #7066ed)" }} />
-                      <span className="text-[8px]" style={{ color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>Hadir</span>
+                      <span className="text-[8px]" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>Hadir</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full" style={{ background: "rgba(255,255,255,0.08)" }} />
-                      <span className="text-[8px]" style={{ color: darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}>Alpha</span>
+                      <span className="text-[8px]" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>Alpha</span>
                     </div>
                   </div>
                 </div>
@@ -251,10 +251,10 @@ export default function EmployeeHistory() {
 
               {/* Footer */}
               <div className={`border-t ${cardBorder} flex items-center justify-between px-5 py-3`}>
-                <span className="text-[9px] font-medium" style={{ color: darkMode ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.4)" }}>
+                <span className="text-[9px] font-medium" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>
                   Periode: 1 — {isCurrentMonth ? Math.min(today.getDate(), new Date(year, month + 1, 0).getDate()) : new Date(year, month + 1, 0).getDate()} {MONTHS[month]} {year}
                 </span>
-                <span className="text-[9px] font-medium tabular-nums" style={{ color: darkMode ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.4)" }}>
+                <span className="text-[9px] font-medium tabular-nums" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>
                   {totalHadir} dari {totalDays} hari kerja
                 </span>
               </div>
