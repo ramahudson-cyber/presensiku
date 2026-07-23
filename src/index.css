@@ -316,11 +316,13 @@ html:not(.dark) {
 html:not(.dark) .design-card,
 html:not(.dark) .design-card-hover,
 html:not(.dark) .design-card-empty {
-  background-color: var(--bg-card);
-  border-color: var(--border-color);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 html:not(.dark) .design-card-hover:hover {
-  background-color: #f8fafc;
+  background: rgba(255, 255, 255, 0.8);
 }
 
 html:not(.dark) .design-input {

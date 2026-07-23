@@ -323,14 +323,14 @@ export default function EmployeeDashboard() {
                           className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1"
                           style={{
                             background: isActive
-                              ? (darkMode ? `linear-gradient(90deg, ${item.color}08, transparent)` : '#ffffff')
+                              ? `linear-gradient(90deg, ${item.color}${darkMode ? '08' : '06'}, transparent)`
                               : 'transparent',
-                            borderColor: darkMode ? (isActive ? 'transparent' : `${item.color}33`) : (isActive ? '#f1f5f9' : `${item.color}11`),
+                            borderColor: isActive ? 'transparent' : `${item.color}33`,
                             borderLeftWidth: '3px',
                             borderLeftStyle: 'solid',
                             borderLeftColor: item.color,
-                            opacity: isActive ? 1 : 0.6,
-                            boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : (isActive ? '0 4px 12px rgba(0,0,0,0.05)' : 'none')
+                            opacity: isActive ? 1 : 0.5,
+                            boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : 'none'
                           }}>
                           {/* Icon */}
                           <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
