@@ -80,7 +80,7 @@ export default function BottomNav({ hidden = false }) {
 
         {/* Navbar Base — Glassmorphism */}
         <div
-          className={`w-full h-[85px] rounded-t-3xl flex justify-center items-center gap-1 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] border-t ${
+          className={`w-full h-[85px] rounded-t-3xl flex justify-center items-center gap-4 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] border-t ${
             darkMode ? "border-white/10" : "border-gray-100"
           }`}
           style={{
@@ -103,9 +103,7 @@ export default function BottomNav({ hidden = false }) {
                   to={item.path}
                   end={item.end}
                   className={({ isActive }) =>
-                    `flex flex-col items-center justify-center gap-0.5 h-full pt-2 transition-all ${
-                      (item.label === 'Profil' || item.label === 'Jadwal') ? 'w-[75px]' : 'w-[55px]'
-                    } ${
+                    `flex flex-col items-center justify-center gap-0.5 h-full pt-2 transition-all w-[65px] ${
                       isActive ? "text-electric-violet" : (darkMode ? "text-slate-mist" : "text-slate-500")
                     }`
                   }
