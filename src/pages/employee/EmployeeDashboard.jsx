@@ -293,7 +293,8 @@ export default function EmployeeDashboard() {
 
               const today = new Date();
               const monthLabel = today.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
-              const dayRange = `1 — ${today.getDate()} ${today.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}`;
+              const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+              const dayRange = `1 — ${lastDay} ${today.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}`;
 
               return (
                 <>
@@ -303,7 +304,7 @@ export default function EmployeeDashboard() {
                       <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
                     <span className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'} tracking-wide`}>Ringkasan Kehadiran</span>
                     </div>
-                    <span className={`text-[10px] ${darkMode ? 'text-white/30' : 'text-gray-400'} font-medium`}>{monthLabel}</span>
+                    <span className={`text-[10px] ${darkMode ? 'text-white/70' : 'text-gray-400'} font-medium`}>{monthLabel}</span>
                   </div>
 
                   {/* Stat Items List */}
@@ -339,13 +340,13 @@ export default function EmployeeDashboard() {
                           {/* Label + Desc */}
                           <div className="flex-1 min-w-0">
                             <div className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.label}</div>
-                            <div className={`text-[9px] ${darkMode ? 'text-white/40' : 'text-gray-500'}`}>{item.desc}</div>
+                            <div className={`text-[9px] ${darkMode ? 'text-white/70' : 'text-gray-500'}`}>{item.desc}</div>
                           </div>
 
                           {/* Value */}
                           <div className="text-right shrink-0">
                             <div className={`text-xl font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.v}</div>
-                            <div className={`text-[9px] font-medium ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>
+                            <div className={`text-[9px] font-medium ${darkMode ? 'text-white/70' : 'text-gray-400'}`}>
                               {`${item.v} dari ${stats.jadwalCount} hari`}
                             </div>
                           </div>
@@ -356,8 +357,8 @@ export default function EmployeeDashboard() {
 
                   {/* Footer Summary */}
                   <div className={`mt-4 pt-4 border-t ${darkMode ? 'border-white/5' : 'border-gray-100'} flex items-center justify-between`}>
-                    <span className={`text-[9px] ${darkMode ? 'text-white/25' : 'text-gray-400'} font-medium`}>Periode: {dayRange}</span>
-                    <span className={`text-[9px] font-medium tabular-nums ${darkMode ? 'text-white/25' : 'text-gray-400'}`}>
+                    <span className={`text-[9px] ${darkMode ? 'text-white/70' : 'text-gray-400'} font-medium`}>Periode: {dayRange}</span>
+                    <span className={`text-[9px] font-medium tabular-nums ${darkMode ? 'text-white/70' : 'text-gray-400'}`}>
                       {stats.hadir} dari {stats.jadwalCount} hari kerja
                     </span>
                   </div>
