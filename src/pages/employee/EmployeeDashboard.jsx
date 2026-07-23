@@ -323,13 +323,14 @@ export default function EmployeeDashboard() {
                           className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1"
                           style={{
                             background: isActive
-                              ? `linear-gradient(90deg, ${item.color}08, transparent)`
+                              ? (darkMode ? `linear-gradient(90deg, ${item.color}08, transparent)` : '#ffffff')
                               : 'transparent',
-                            borderColor: isActive ? 'transparent' : `${item.color}33`,
-                            borderLeftWidth: '2px',
+                            borderColor: darkMode ? (isActive ? 'transparent' : `${item.color}33`) : (isActive ? '#f1f5f9' : `${item.color}11`),
+                            borderLeftWidth: '3px',
                             borderLeftStyle: 'solid',
-                            opacity: isActive ? 1 : 0.5,
-                            boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.06)'
+                            borderLeftColor: item.color,
+                            opacity: isActive ? 1 : 0.6,
+                            boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : (isActive ? '0 4px 12px rgba(0,0,0,0.05)' : 'none')
                           }}>
                           {/* Icon */}
                           <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
@@ -386,25 +387,25 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Header Labels */}
-          <div className="grid grid-cols-[1fr_55px_55px_90px] gap-3 mb-2 text-[9px] uppercase tracking-wider">
-            <div className={darkMode ? 'text-white/80' : 'text-gray-800'}>Tanggal</div>
-            <div className={`text-center ${darkMode ? 'text-white/80' : 'text-gray-800'}`}>Masuk</div>
-            <div className={`text-center ${darkMode ? 'text-white/80' : 'text-gray-800'}`}>Pulang</div>
-            <div className={`text-right ${darkMode ? 'text-white/80' : 'text-gray-800'}`}>Status</div>
+          <div className="grid grid-cols-[1fr_55px_55px_90px] gap-3 mb-2 text-[9px] uppercase tracking-wider font-bold">
+            <div className={darkMode ? 'text-white/60' : 'text-gray-500'}>Tanggal</div>
+            <div className={`text-center ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>Masuk</div>
+            <div className={`text-center ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>Pulang</div>
+            <div className={`text-right ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>Status</div>
           </div>
 
           {/* History Items */}
-          <div className="space-y-1">
+          <div className="space-y-0.5">
             {attendanceHistory.length > 0 ? attendanceHistory.slice(0, 5).map(att => {
               const isHadir = att.attendance_status === 'hadir' || att.attendance_status === 'terlambat';
               return (
                 <div key={att.id}
-                  className="grid grid-cols-[1fr_55px_55px_90px] gap-3 items-center py-2 transition-all duration-200 hover:translate-x-1">
-                  <div className="text-left">
-                    <div className={`text-xs font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {new Date(att.date).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                  className="grid grid-cols-[1fr_55px_55px_90px] gap-3 items-center py-1.5 transition-all duration-200 hover:translate-x-1 border-b last:border-0 border-white/5">
+                  <div className="text-left min-w-0">
+                    <div className={`text-[10.5px] font-bold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {new Date(att.date).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'short' })}
                     </div>
-                    <div className={`text-[9px] ${darkMode ? 'text-white/40' : 'text-gray-500'}`}>SHIFT: {getShiftName(att.shift_code)}</div>
+                    <div className={`text-[8px] font-medium ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>SHIFT: {getShiftName(att.shift_code)}</div>
                   </div>
                   <div className={`text-center text-xs font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     {formatTime(att.clock_in_time)}
