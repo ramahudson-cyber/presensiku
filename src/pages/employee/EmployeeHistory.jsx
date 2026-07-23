@@ -1,13 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { getAttendanceHistory } from "../../services/attendanceService";
+import { supabase } from "../../lib/supabase";
 
 const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-
-function getWitaDateString(date = new Date()) {
-  return new Date(date.toLocaleString("en-US", { timeZone: "Asia/Makassar" })).toISOString().split("T")[0];
-}
 
 export default function EmployeeHistory() {
   const { user } = useAuth();
@@ -17,18 +14,10 @@ export default function EmployeeHistory() {
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [history, setHistory] = useState([]);
+  const [totalDays, setTotalDays] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
-
-  const getWorkingDayEstimate = useCallback((y, m) => {
-    const days = new Date(y, m + 1, 0).getDate();
-    let count = 0;
-    for (let d = 1; d <= days; d++) {
-      if (new Date(y, m, d).getDay() !== 0) count++;
-    }
-    return count;
-  }, []);
 
   const navigateMonth = (dir) => {
     let m = month + dir;
@@ -47,9 +36,23 @@ export default function EmployeeHistory() {
     const dateFrom = `${year}-${String(month + 1).padStart(2, "0")}-01`;
     const dateTo = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
 
-    getAttendanceHistory(user.id, null, dateFrom, dateTo)
-      .then(setHistory)
-      .catch(() => setHistory([]))
+    Promise.all([
+      getAttendanceHistory(user.id, null, dateFrom, dateTo),
+      supabase
+        .from("employee_schedules")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .gte("date", dateFrom)
+        .lte("date", dateTo),
+    ])
+      .then(([attData, schedRes]) => {
+        setHistory(attData);
+        setTotalDays(schedRes.count || 0);
+      })
+      .catch(() => {
+        setHistory([]);
+        setTotalDays(0);
+      })
       .finally(() => setLoading(false));
   }, [user?.id, year, month]);
 
@@ -62,7 +65,6 @@ export default function EmployeeHistory() {
   };
 
   // ── Stats ──
-  const totalDays = getWorkingDayEstimate(year, month);
   const hadir = history.filter((r) => r.attendance_status === "hadir").length;
   const terlambat = history.filter((r) => r.attendance_status === "terlambat").length;
   const izin = history.filter((r) => r.attendance_status === "izin").length;
