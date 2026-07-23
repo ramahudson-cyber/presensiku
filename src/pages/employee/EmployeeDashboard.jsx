@@ -282,7 +282,7 @@ export default function EmployeeDashboard() {
             {(() => {
               const total = stats.hadir + stats.izin + stats.sakit + stats.alpha;
               const items = [
-                { k:'hadir', v:stats.hadir, color:'#ADFF2F', glow:'rgba(173,255,47,0.1)', check:'check', label:'Tepat Waktu', desc:'Absen tepat waktu' },
+                { k:'hadir', v:stats.hadir, color:'#ADFF2F', glow:'rgba(173,255,47,0.1)', check:'check', label:'Tepat Waktu', desc:'Kehadiran tepat waktu' },
                 { k:'izin', v:stats.izin, color:'#fbbf24', glow:'rgba(251,191,36,0.1)', check:'info', label:'Izin', desc:'Diluar tanggung jawab' },
                 { k:'sakit', v:stats.sakit, color:'#fb923c', glow:'rgba(251,146,60,0.1)', check:'heart', label:'Sakit', desc:'Tidak hadir karena sakit' },
                 { k:'alpha', v:stats.alpha, color:'#f87171', glow:'rgba(248,113,113,0.1)', check:'x', label:'Alpha', desc:'Tanpa keterangan' },
