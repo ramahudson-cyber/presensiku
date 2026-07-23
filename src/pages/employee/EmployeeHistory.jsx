@@ -27,10 +27,11 @@ export default function EmployeeHistory() {
       alpha: { bg: 'rgba(244,63,94,0.15)', text: '#fca5a5' },
     };
     const c = colors[status] || { bg: 'rgba(255,255,255,0.08)', text: '#9ba1ae' };
+    const labelMap = { hadir: 'Tepat Waktu', terlambat: 'Terlambat', izin: 'Izin', sakit: 'Sakit', alpha: 'Alpha' };
     return (
       <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full"
         style={{ background: c.bg, color: c.text }}>
-        {status?.charAt(0).toUpperCase() + status?.slice(1) || '-'}
+        {labelMap[status] || status?.charAt(0).toUpperCase() + status?.slice(1) || '-'}
       </span>
     );
   };

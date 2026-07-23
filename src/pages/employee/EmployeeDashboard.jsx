@@ -282,7 +282,7 @@ export default function EmployeeDashboard() {
             {(() => {
               const total = stats.hadir + stats.izin + stats.sakit + stats.alpha;
               const items = [
-                { k:'hadir', v:stats.hadir, color:'#ADFF2F', glow:'rgba(173,255,47,0.1)', check:'check', label:'Hadir', desc:'Kehadiran tepat waktu' },
+                { k:'hadir', v:stats.hadir, color:'#ADFF2F', glow:'rgba(173,255,47,0.1)', check:'check', label:'Tepat Waktu', desc:'Absen tepat waktu' },
                 { k:'izin', v:stats.izin, color:'#fbbf24', glow:'rgba(251,191,36,0.1)', check:'info', label:'Izin', desc:'Diluar tanggung jawab' },
                 { k:'sakit', v:stats.sakit, color:'#fb923c', glow:'rgba(251,146,60,0.1)', check:'heart', label:'Sakit', desc:'Tidak hadir karena sakit' },
                 { k:'alpha', v:stats.alpha, color:'#f87171', glow:'rgba(248,113,113,0.1)', check:'x', label:'Alpha', desc:'Tanpa keterangan' },
@@ -419,12 +419,12 @@ export default function EmployeeDashboard() {
                   <div className={`text-center text-xs font-medium tabular-nums ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                     {formatTime(att.clock_out_time)}
                   </div>
-                  <div className={`text-right text-xs font-bold uppercase ${
+                  <div className={`text-right text-xs font-bold ${
                     att.attendance_status === 'terlambat' ? 'text-amber-400' :
                     att.attendance_status === 'hadir' ? 'text-emerald-400' :
                     (darkMode ? 'text-white/40' : 'text-gray-500')
                   }`}>
-                    <div>{att.attendance_status}</div>
+                    <div>{att.attendance_status === 'hadir' ? 'Tepat Waktu' : att.attendance_status === 'terlambat' ? 'Terlambat' : att.attendance_status}</div>
                     {att.attendance_status === 'terlambat' && att.late_minutes > 0 && (
                       <div className="text-[8px] font-semibold opacity-70 leading-tight">{att.late_minutes} menit</div>
                     )}

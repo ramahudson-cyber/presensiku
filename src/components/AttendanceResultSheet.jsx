@@ -33,7 +33,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
   const shiftName = SHIFT_NAMES[data.shift_code] || data.shift_code;
   const duration = calcDuration(data.clock_in_time, data.clock_out_time);
   const shiftLabel = data.shift_code ? `${shiftName} (${data.shift_code})` : "-";
-  const statusText = data.is_late ? `Terlambat ${data.late_minutes} menit` : "Hadir";
+  const statusText = data.is_late ? `Terlambat ${data.late_minutes} menit` : "Tepat Waktu";
   const distance = data.location_in?.distance_from_puskesmas || null;
 
   return (
