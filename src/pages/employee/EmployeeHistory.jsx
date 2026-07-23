@@ -30,30 +30,65 @@ export default function EmployeeHistory() {
 
   useEffect(() => {
     if (!user?.id) return;
-    setLoading(true);
+    let cancelled = false;
 
-    const lastDay = new Date(year, month + 1, 0).getDate();
-    const dateFrom = `${year}-${String(month + 1).padStart(2, "0")}-01`;
-    const dateTo = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+    const fetchData = async () => {
+      setLoading(true);
 
-    Promise.all([
-      getAttendanceHistory(user.id, null, dateFrom, dateTo),
-      supabase
-        .from("employee_schedules")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .gte("date", dateFrom)
-        .lte("date", dateTo),
-    ])
-      .then(([attData, schedRes]) => {
+      const lastDay = new Date(year, month + 1, 0).getDate();
+      const dateFrom = `${year}-${String(month + 1).padStart(2, "0")}-01`;
+      const dateTo = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+
+      try {
+        const [attData, schedRes] = await Promise.all([
+          getAttendanceHistory(user.id, null, dateFrom, dateTo),
+          supabase
+            .from("employee_schedules")
+            .select("date, shift_code")
+            .eq("user_id", user.id)
+            .gte("date", dateFrom)
+            .lte("date", dateTo),
+        ]);
+
+        if (cancelled) return;
         setHistory(attData);
-        setTotalDays(schedRes.count || 0);
-      })
-      .catch(() => {
-        setHistory([]);
-        setTotalDays(0);
-      })
-      .finally(() => setLoading(false));
+
+        // Count hari kerja beneran (is_working_day = true)
+        let workingDays = 0;
+        const schedules = schedRes.data || [];
+        const shiftCodes = [...new Set(schedules.map((s) => s.shift_code).filter(Boolean))];
+
+        if (shiftCodes.length > 0) {
+          const { data: ssData } = await supabase
+            .from("shift_schedules")
+            .select("shift_code, day_of_week, is_working_day")
+            .in("shift_code", shiftCodes);
+
+          schedules.forEach((sch) => {
+            if (sch.shift_code) {
+              const dateObj = new Date(sch.date + "T00:00:00");
+              const dayOfWeek = (dateObj.getDay() + 6) % 7;
+              const shiftSch = (ssData || []).find(
+                (ss) => ss.shift_code === sch.shift_code && ss.day_of_week === dayOfWeek
+              );
+              if (shiftSch?.is_working_day) workingDays++;
+            }
+          });
+        }
+
+        if (!cancelled) setTotalDays(workingDays);
+      } catch {
+        if (!cancelled) {
+          setHistory([]);
+          setTotalDays(0);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    fetchData();
+    return () => { cancelled = true; };
   }, [user?.id, year, month]);
 
   const formatTime = (timeStr) => {
