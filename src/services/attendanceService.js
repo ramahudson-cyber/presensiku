@@ -239,13 +239,20 @@ export async function clockOut(userId, location) {
 /**
  * Riwayat absensi
  */
-export async function getAttendanceHistory(userId, limit = 30) {
-  const { data, error } = await supabase
+export async function getAttendanceHistory(userId, limit = 30, dateFrom, dateTo) {
+  let query = supabase
     .from("attendance")
     .select("*")
     .eq("user_id", userId)
-    .order("date", { ascending: false })
-    .limit(limit);
+    .order("date", { ascending: false });
+
+  if (dateFrom && dateTo) {
+    query = query.gte("date", dateFrom).lte("date", dateTo);
+  } else {
+    query = query.limit(limit);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data || [];
 }
