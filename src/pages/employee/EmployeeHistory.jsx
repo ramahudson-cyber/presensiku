@@ -242,7 +242,7 @@ export default function EmployeeHistory() {
                         <stop offset="100%" stopColor="#7066ed"/>
                       </linearGradient>
                     </defs>
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="8"/>
+                    <circle cx="50" cy="50" r="42" fill="none" stroke={darkMode ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.06)"} strokeWidth="8"/>
                     <circle cx="50" cy="50" r="42" fill="none" stroke="url(#dg)" strokeWidth="8"
                       strokeLinecap="round"
                       strokeDasharray={circumference}
@@ -253,8 +253,8 @@ export default function EmployeeHistory() {
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-[22px] font-extrabold leading-none"
-                      style={{ fontFamily: "'Urbanist', sans-serif", color: "#FFFFFF" }}>{pct}%</span>
-                    <span className="text-[7px] font-medium uppercase tracking-[0.5px] mt-0.5" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>Hadir</span>
+                      style={{ fontFamily: "'Urbanist', sans-serif", color: darkMode ? "#FFFFFF" : "#111827" }}>{pct}%</span>
+                    <span className="text-[7px] font-medium uppercase tracking-[0.5px] mt-0.5" style={{ color: darkMode ? "#9ba1ae" : "#4b5563" }}>Hadir</span>
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -268,7 +268,7 @@ export default function EmployeeHistory() {
                       <span className="text-[8px]" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>Hadir</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full" style={{ background: "rgba(255,255,255,0.08)" }} />
+                      <span className="w-2 h-2 rounded-full" style={{ background: darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.15)" }} />
                       <span className="text-[8px]" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>Alpha</span>
                     </div>
                   </div>
