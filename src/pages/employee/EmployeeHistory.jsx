@@ -293,7 +293,7 @@ export default function EmployeeHistory() {
               {/* Footer */}
               <div className={`border-t ${cardBorder} flex items-center justify-between px-5 py-3`}>
                 <span className="text-[9px] font-medium" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>
-                  Periode: 1 — {isCurrentMonth ? Math.min(today.getDate(), new Date(year, month + 1, 0).getDate()) : new Date(year, month + 1, 0).getDate()} {MONTHS[month]} {year}
+                  Periode: 1 — {new Date(year, month + 1, 0).getDate()} {MONTHS[month]} {year}
                 </span>
                 <span className="text-[9px] font-medium tabular-nums" style={{ color: darkMode ? "#9ba1ae" : "#6b7280" }}>
                   {totalHadir} dari {totalDays} hari kerja
