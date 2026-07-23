@@ -98,15 +98,15 @@ export default function BottomNav({ hidden = false }) {
             }
             const Icon = item.icon;
             return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                end={item.end}
-                className={({ isActive }) =>
-                  `flex flex-col items-center justify-center gap-0.5 flex-1 h-full pt-2 px-3 transition-all ${
-                    isActive ? "text-electric-violet" : (darkMode ? "text-slate-mist" : "text-slate-500")
-                  }`
-                }
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    `flex flex-col items-center justify-center gap-0.5 h-full pt-2 px-2 transition-all min-w-[60px] ${
+                      isActive ? "text-electric-violet" : (darkMode ? "text-slate-mist" : "text-slate-500")
+                    }`
+                  }
               >
                 {({ isActive }) => (
                   <>
