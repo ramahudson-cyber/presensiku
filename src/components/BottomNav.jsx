@@ -80,7 +80,7 @@ export default function BottomNav({ hidden = false }) {
 
         {/* Navbar Base — Glassmorphism */}
         <div
-          className={`w-full h-[85px] rounded-t-3xl flex justify-center items-center gap-4 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] border-t ${
+          className={`w-full h-[85px] rounded-t-3xl flex justify-between items-center px-4 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] border-t ${
             darkMode ? "border-white/10" : "border-gray-100"
           }`}
           style={{
@@ -92,9 +92,7 @@ export default function BottomNav({ hidden = false }) {
         >
           {displayMenus.map((item, i) => {
             if (item === null) {
-              return (
-                <div key="center-placeholder" className="w-32 shrink-0 h-full" />
-              );
+              return <div key="center-placeholder" className="w-16 shrink-0" />;
             }
             const Icon = item.icon;
             return (
@@ -103,7 +101,7 @@ export default function BottomNav({ hidden = false }) {
                   to={item.path}
                   end={item.end}
                   className={({ isActive }) =>
-                    `flex flex-col items-center justify-center gap-0.5 h-full pt-2 transition-all w-[65px] ${
+                    `flex flex-col items-center justify-center gap-0.5 h-full pt-2 transition-all flex-1 ${
                       isActive ? "text-electric-violet" : (darkMode ? "text-slate-mist" : "text-slate-500")
                     }`
                   }
@@ -113,7 +111,7 @@ export default function BottomNav({ hidden = false }) {
                     <div className={`p-1 rounded-xl transition-all ${isActive ? "bg-electric-violet/15 scale-110" : ""}`}>
                       <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                     </div>
-                    <span className={`text-xs mt-0.5 ${isActive ? "font-semibold" : "font-medium"}`}>{item.label}</span>
+                    <span className={`text-[10px] mt-0.5 ${isActive ? "font-semibold" : "font-medium"}`}>{item.label}</span>
                   </>
                 )}
               </NavLink>
