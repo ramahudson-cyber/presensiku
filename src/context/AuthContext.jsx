@@ -68,27 +68,42 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
+    let cancelled = false;
+
     const initializeAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      
-      if (session?.user) {
-        const profile = await fetchUserProfile(session.user.id);
-        
-        if (profile) {
-          const userData = {
-            ...session.user,
-            ...profile
-          };
-          setUser(userData);
+      try {
+        // Timeout: jika session tidak terverifikasi dalam 15 detik, anggap expired
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Session verification timeout')), 15000)
+        );
+
+        const sessionPromise = supabase.auth.getSession();
+        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]);
+
+        if (cancelled) return;
+        setSession(session);
+
+        if (session?.user) {
+          const profile = await fetchUserProfile(session.user.id);
+          if (!cancelled) {
+            if (profile) {
+              setUser({ ...session.user, ...profile });
+            } else {
+              setUser(session.user);
+            }
+          }
         } else {
-          setUser(session.user);
+          if (!cancelled) setUser(null);
         }
-      } else {
-        setUser(null);
+      } catch (err) {
+        console.warn('⚠️ Session init failed or timed out:', err.message);
+        if (!cancelled) {
+          setSession(null);
+          setUser(null);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-      
-      setLoading(false);
     };
 
     initializeAuth();
@@ -97,27 +112,25 @@ export function AuthProvider({ children }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
-      
-      if (session?.user) {
+
+      if (session?.user && event !== 'SIGNED_OUT') {
         const profile = await fetchUserProfile(session.user.id);
-        
         if (profile) {
-          const userData = {
-            ...session.user,
-            ...profile
-          };
-          setUser(userData);
+          setUser({ ...session.user, ...profile });
         } else {
           setUser(session.user);
         }
       } else {
         setUser(null);
       }
-      
+
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const value = {
