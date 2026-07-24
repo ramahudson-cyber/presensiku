@@ -51,7 +51,7 @@ export default function EmployeeHistory() {
             .select("date, shift_code")
             .eq("user_id", user.id)
             .gte("date", dateFrom)
-            .lte("date", schedDateTo),
+            .lte("date", dateTo),
         ]);
 
         if (cancelled) return;
