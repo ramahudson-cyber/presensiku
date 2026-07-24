@@ -90,7 +90,10 @@ export default function EmployeeDashboard() {
 
       // Jadwal count: 2 queries instead of N+1 loop
       let jadwalCount = 0;
+      let alphaCount = 0;
+      const today = new Date().toISOString().split("T")[0];
       const schedules = schedRes.data || [];
+      const attendance = monthAttRes.data || [];
       const shiftCodes = [...new Set(schedules.map(s => s.shift_code).filter(Boolean))];
       let shiftSchedulesData = [];
       if (shiftCodes.length > 0) {
@@ -105,11 +108,18 @@ export default function EmployeeDashboard() {
           const dateObj = new Date(sch.date + 'T00:00:00');
           const dayOfWeek = (dateObj.getDay() + 6) % 7;
           const shiftSch = shiftSchedulesData.find(ss => ss.shift_code === sch.shift_code && ss.day_of_week === dayOfWeek);
-          if (shiftSch?.is_working_day) jadwalCount++;
+          if (shiftSch?.is_working_day) {
+            jadwalCount++;
+            // Check if past date and no attendance
+            if (sch.date <= today) {
+              const hasAttendance = attendance.some(a => a.date === sch.date);
+              if (!hasAttendance) alphaCount++;
+            }
+          }
         }
       });
 
-      setStats({ ...s, jadwalCount });
+      setStats({ ...s, alpha: alphaCount, jadwalCount });
       setAnnouncements(annRes.data || []);
       setAttendanceHistory(histRes || []);
     } catch (e) {
