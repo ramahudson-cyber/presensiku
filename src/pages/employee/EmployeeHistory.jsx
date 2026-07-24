@@ -15,6 +15,7 @@ export default function EmployeeHistory() {
   const [month, setMonth] = useState(today.getMonth());
   const [history, setHistory] = useState([]);
   const [totalDays, setTotalDays] = useState(0);
+  const [workingDaysPassed, setWorkingDaysPassed] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
@@ -57,34 +58,22 @@ export default function EmployeeHistory() {
         if (cancelled) return;
         setHistory(attData);
 
-        // Count hari kerja beneran (is_working_day = true)
-        let workingDays = 0;
         const schedules = schedRes.data || [];
-        const shiftCodes = [...new Set(schedules.map((s) => s.shift_code).filter(Boolean))];
+        const totalWorkingDaysInMonth = schedules.length;
 
-        if (shiftCodes.length > 0) {
-          const { data: ssData } = await supabase
-            .from("shift_schedules")
-            .select("shift_code, day_of_week, is_working_day")
-            .in("shift_code", shiftCodes);
+        const workingDaysSoFar = schedules.filter(
+          (sch) => new Date(sch.date + "T00:00:00") <= today
+        ).length;
 
-          schedules.forEach((sch) => {
-            if (sch.shift_code) {
-              const dateObj = new Date(sch.date + "T00:00:00");
-              const dayOfWeek = (dateObj.getDay() + 6) % 7;
-              const shiftSch = (ssData || []).find(
-                (ss) => ss.shift_code === sch.shift_code && ss.day_of_week === dayOfWeek
-              );
-              if (shiftSch?.is_working_day) workingDays++;
-            }
-          });
+        if (!cancelled) {
+          setTotalDays(totalWorkingDaysInMonth);
+          setWorkingDaysPassed(workingDaysSoFar);
         }
-
-        if (!cancelled) setTotalDays(workingDays);
       } catch {
         if (!cancelled) {
           setHistory([]);
           setTotalDays(0);
+          setWorkingDaysPassed(0);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -109,7 +98,7 @@ export default function EmployeeHistory() {
   const izin = history.filter((r) => r.attendance_status === "izin").length;
   const sakit = history.filter((r) => r.attendance_status === "sakit").length;
   const totalHadir = hadir + terlambat;
-  const alpha = Math.max(0, totalDays - totalHadir - izin - sakit);
+  const alpha = Math.max(0, workingDaysPassed - totalHadir - izin - sakit);
 
   // ── Donut ──
   const circumference = 2 * Math.PI * 42;
