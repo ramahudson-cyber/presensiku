@@ -62,14 +62,14 @@ export default function EmployeeDashboard() {
       const monthEndStr = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
 
       // Parallel: all independent queries (timeout 20s)
-      const [stRes, attRes, shiftRes, schedRes, monthAttRes, annRes, histRes] = await withTimeout(Promise.all([
+      const [stRes, attRes, shiftRes, monthAttRes, annRes, histRes, workDaysRes] = await withTimeout(Promise.all([
         supabase.rpc('get_server_time'),
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
-        supabase.from("employee_schedules").select("date, shift_code").eq("user_id", user.id).gte("date", monthStartStr).lte("date", monthEndStr),
         supabase.from("attendance").select("attendance_status").eq("user_id", user.id).gte("date", monthStartStr),
         supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3),
         getAttendanceHistory(user.id),
+        supabase.rpc('get_monthly_work_days', { p_user_id: user.id, p_month: today.substring(0, 7) })
       ]), 20000, "fetchAll");
 
       // Server time
@@ -88,26 +88,7 @@ export default function EmployeeDashboard() {
         if (s[st] !== undefined) s[st]++;
       });
 
-      // Jadwal count: 2 queries instead of N+1 loop
-      let jadwalCount = 0;
-      const schedules = schedRes.data || [];
-      const shiftCodes = [...new Set(schedules.map(s => s.shift_code).filter(Boolean))];
-      let shiftSchedulesData = [];
-      if (shiftCodes.length > 0) {
-        const { data: ssData } = await withTimeout(supabase
-          .from("shift_schedules")
-          .select("shift_code, day_of_week, is_working_day")
-          .in("shift_code", shiftCodes), 10000, "shiftSchedules");
-        shiftSchedulesData = ssData || [];
-      }
-      schedules.forEach(sch => {
-        if (sch.shift_code) {
-          const dateObj = new Date(sch.date + 'T00:00:00');
-          const dayOfWeek = (dateObj.getDay() + 6) % 7;
-          const shiftSch = shiftSchedulesData.find(ss => ss.shift_code === sch.shift_code && ss.day_of_week === dayOfWeek);
-          if (shiftSch?.is_working_day) jadwalCount++;
-        }
-      });
+      const jadwalCount = workDaysRes.data || 0;
 
       setStats({ ...s, jadwalCount });
       setAnnouncements(annRes.data || []);
