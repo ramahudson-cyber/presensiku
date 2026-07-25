@@ -62,14 +62,13 @@ export default function EmployeeDashboard() {
       const monthEndStr = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
 
       // Parallel: all independent queries (timeout 20s)
-      const [stRes, attRes, shiftRes, monthAttRes, annRes, histRes, workDaysRes, schedRes] = await withTimeout(Promise.all([
+      const [stRes, attRes, shiftRes, monthAttRes, annRes, histRes, schedRes] = await withTimeout(Promise.all([
         supabase.rpc('get_server_time'),
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("attendance").select("attendance_status, date").eq("user_id", user.id).gte("date", monthStartStr),
         supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3),
         getAttendanceHistory(user.id),
-        supabase.rpc('get_monthly_work_days', { p_user_id: user.id, p_month: today.substring(0, 7) }),
         supabase.from("employee_schedules").select("date, shift_code").eq("user_id", user.id).gte("date", monthStartStr).lte("date", monthEndStr),
       ]), 20000, "fetchAll");
 
@@ -89,10 +88,8 @@ export default function EmployeeDashboard() {
         if (s[st] !== undefined) s[st]++;
       });
 
-      // Get total work days from the new DB function
-      const jadwalCount = workDaysRes.data || 0;
-
-      // Calculate alpha count based on schedules and attendance (from remote changes)
+      // Calculate jadwalCount and alphaCount manually from schedules (same logic as EmployeeHistory page)
+      let jadwalCount = 0;
       let alphaCount = 0;
       const schedules = schedRes.data || [];
       const attendance = monthAttRes.data || [];
@@ -111,7 +108,8 @@ export default function EmployeeDashboard() {
           const dayOfWeek = (dateObj.getDay() + 6) % 7;
           const shiftSch = shiftSchedulesData.find(ss => ss.shift_code === sch.shift_code && ss.day_of_week === dayOfWeek);
           if (shiftSch?.is_working_day) {
-            // Check if past date and no attendance
+            jadwalCount++;
+            // Check if past date and no attendance -> alpha
             if (sch.date <= today) {
               const hasAttendance = attendance.some(a => a.date === sch.date);
               if (!hasAttendance) alphaCount++;
