@@ -11,15 +11,18 @@ function AdminLayout() {
   const isAttendancePath = location.pathname === "/employee/attendance" || location.pathname === "/admin/attendance";
 
   return (
-    <div className="min-h-screen relative overflow-x-hidden bg-transparent dark:bg-obsidian transition-colors duration-500">
-      {/* Magenta Purple Gradient Background */}
-      <div className="fixed inset-0" style={{ background: 'linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%)', opacity: 0.08, pointerEvents: 'none' }}></div>
-
-      {/* Floating Orbs — magenta purple — dark mode only */}
-      <div className="fixed top-[-10%] left-[5%] w-[400px] h-[400px] bg-[#BF00FF] rounded-full mix-blend-screen filter blur-[120px] opacity-25 animate-orb pointer-events-none hidden dark:block"></div>
-      <div className="fixed bottom-[-10%] right-[5%] w-[400px] h-[400px] bg-[#BF00FF] rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-orb animate-orb-delay pointer-events-none hidden dark:block"></div>
-      <div className="fixed inset-0 professional-ambient-bg pointer-events-none"></div>
-      <div className="fixed inset-0 professional-grid-bg pointer-events-none"></div>
+    <div className="min-h-screen relative overflow-x-hidden bg-[#05020b] transition-colors duration-500">
+      {/* Premium Nebula Background — purple, magenta, black */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(circle at 22% 18%, rgba(191,0,255,0.46), transparent 34%), radial-gradient(circle at 86% 10%, rgba(255,0,153,0.28), transparent 30%), radial-gradient(circle at 70% 84%, rgba(112,102,237,0.20), transparent 34%), linear-gradient(135deg,#05020b 0%,#160520 44%,#07020c 100%)",
+        }}
+      ></div>
+      <div className="fixed inset-0 bg-black/10 pointer-events-none"></div>
+      <div className="fixed inset-0 professional-grid-bg opacity-45 pointer-events-none"></div>
+      <div className="fixed top-[-12%] left-[7%] w-[460px] h-[460px] bg-[#BF00FF] rounded-full mix-blend-screen blur-[140px] opacity-30 animate-orb pointer-events-none hidden dark:block"></div>
+      <div className="fixed top-[4%] right-[6%] w-[380px] h-[380px] bg-[#FF0099] rounded-full mix-blend-screen blur-[140px] opacity-20 animate-orb animate-orb-delay pointer-events-none hidden dark:block"></div>
 
       <Sidebar menuOpen={false} />
 
