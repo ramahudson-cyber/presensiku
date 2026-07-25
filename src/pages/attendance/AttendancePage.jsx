@@ -438,7 +438,7 @@ const handleCheckIn = async () => {
     : puskesmasLocation;
 
   return (
-    <div className="fixed inset-0 z-10 top-[var(--header-h,0px)] overflow-hidden bg-[#0d0a14]">
+    <div className="fixed inset-0 z-10 top-[var(--header-h,0px)] lg:ml-[280px] overflow-hidden bg-[#0d0a14]">
       {/* Ambient Glow Orbs */}
       <div className="absolute top-[-120px] right-[-80px] w-[300px] h-[300px] bg-[radial-gradient(circle,rgba(191,0,255,0.08)_0%,transparent_70%)] rounded-full pointer-events-none z-[1]"></div>
       <div className="absolute bottom-[-100px] left-[-60px] w-[250px] h-[250px] bg-[radial-gradient(circle,rgba(74,222,128,0.05)_0%,transparent_70%)] rounded-full pointer-events-none z-[1]"></div>
