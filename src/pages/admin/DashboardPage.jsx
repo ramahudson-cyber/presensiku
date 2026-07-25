@@ -187,7 +187,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Content Section */}
-      <div className="px-4 sm:px-6 lg:px-8 py-6 rounded-t-[28px] bg-[#0A0A1A] flex-1">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 rounded-t-[28px] flex-1">
         <div className="flex justify-end mb-4">
           <button onClick={fetchDashboardData} className="flex items-center gap-1.5 px-3 py-2 bg-white/[0.06] backdrop-blur border border-white/[0.08] text-white/70 rounded-full text-xs hover:bg-white/[0.1] transition-all duration-200"><RefreshCw size={13} className={loading ? "animate-spin" : ""} />Refresh</button>
         </div>
