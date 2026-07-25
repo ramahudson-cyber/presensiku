@@ -27,7 +27,7 @@ const PhotoStack = ({ users = [], max = 4 }) => {
   );
 };
 
-export function PremiumStatCard({ title, sub, value, detail, users, trendValue, trendDirection }) {
+export function PremiumStatCard({ title, sub, value, detail, users, trendValue, trendDirection, loading }) {
   let trendIcon = null;
   let trendClass = 'bg-white/5 text-white/30 border-white/[0.04]'; // neutral
   if (trendDirection === 'up') {
@@ -35,7 +35,23 @@ export function PremiumStatCard({ title, sub, value, detail, users, trendValue, 
     trendClass = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'; // up
   } else if (trendDirection === 'down') {
     trendIcon = <ArrowDown size={10} />;
-    trendClass = 'bg-rose-500/10 text-rose-400 border-rose-500/20'; // down
+    trendClass = 'down';
+  }
+
+  if (loading) {
+    return <div className="card bg-[#161228]/60 backdrop-blur-2xl border border-white/5 rounded-2xl p-5 animate-pulse">
+      <div className="h-4 bg-white/10 rounded w-3/4"></div>
+      <div className="h-3 bg-white/5 rounded w-1/2 mt-2"></div>
+      <div className="h-8 bg-white/10 rounded w-1/4 mt-3"></div>
+      <div className="flex justify-between items-center mt-auto pt-4">
+        <div className="flex -space-x-2">
+          <div className="w-8 h-8 rounded-full bg-white/10"></div>
+          <div className="w-8 h-8 rounded-full bg-white/10"></div>
+          <div className="w-8 h-8 rounded-full bg-white/10"></div>
+        </div>
+        <div className="h-6 w-12 bg-white/10 rounded-full"></div>
+      </div>
+    </div>
   }
 
   return (

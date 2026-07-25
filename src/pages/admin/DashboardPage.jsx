@@ -194,10 +194,10 @@ export default function DashboardPage() {
 
         {/* Premium Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
-          <PremiumStatCard title="Total Pegawai" sub="Seluruh status" value={stats.totalPegawai} users={userGroups.all} />
-          <PremiumStatCard title="Hadir Hari Ini" sub="Sudah check-in" value={stats.hadirHariIni} users={userGroups.present} />
-          <PremiumStatCard title="Izin / Sakit" sub="Hari ini" value={stats.izinSakit} users={userGroups.absent} />
-          <PremiumStatCard title="Cuti" sub="Hari ini" value={stats.cuti} users={userGroups.on_leave} />
+          <PremiumStatCard title="Total Pegawai" sub="Seluruh status" value={stats.totalPegawai} users={userGroups.all} loading={loading} />
+          <PremiumStatCard title="Hadir Hari Ini" sub="Sudah check-in" value={stats.hadirHariIni} users={userGroups.present} loading={loading} />
+          <PremiumStatCard title="Izin / Sakit" sub="Hari ini" value={stats.izinSakit} users={userGroups.absent} loading={loading} />
+          <PremiumStatCard title="Cuti" sub="Hari ini" value={stats.cuti} users={userGroups.on_leave} loading={loading} />
         </div>
 
         {/* Grafik + Pengumuman */}
