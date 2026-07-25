@@ -154,31 +154,41 @@ export default function DashboardPage() {
   const userInitial = user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "S";
 
   return (
-    <div className="flex flex-col flex-1 -mx-3 sm:-mx-4 md:-mx-5 lg:-mx-6 xl:-mx-8 -mt-3 sm:-mt-4 md:-mt-5 lg:-mt-6 xl:-mt-8">
+    <div className="flex-1">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-[#BF00FF] via-[#9900CC] via-[#660099] to-[#33004D] px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-4">
-        <div className="flex justify-between items-start mb-4">
+      <div className="px-4 pt-3 pb-4 sm:px-6 lg:px-8">
+        {/* Top row: Time and actions */}
+        <div className="flex items-center justify-between">
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white tracking-wide tabular-nums">{witaTime()}</div>
-            <div className="text-[11px] sm:text-xs text-white/50 font-medium mt-0.5">{witaDate()}</div>
+            <div className="text-3xl font-bold tracking-tight text-white">{witaTime()}</div>
+            <div className="text-xs font-medium text-white/50">{witaDate()}</div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button onClick={() => navigate("/admin/announcements")} className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors"><Bell size={17} className="text-white/70" /><span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-[#9900CC]"></span></button>
-            <button onClick={toggleTheme} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors">{darkMode ? <Sun size={17} className="text-white/70" /> : <Moon size={17} className="text-white/70" />}</button>
-            <button onClick={handleLogout} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] hover:bg-rose-500/20 transition-colors"><LogOut size={17} className="text-white/70" /></button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate("/admin/announcements")} className="relative w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors"><Bell size={17} className="text-white/70" /><span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-[#0A0018]"></span></button>
+            <button onClick={toggleTheme} className="w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors">{darkMode ? <Sun size={17} className="text-white/70" /> : <Moon size={17} className="text-white/70" />}</button>
+            <button onClick={handleLogout} className="w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-rose-500/20 transition-colors"><LogOut size={17} className="text-white/70" /></button>
           </div>
         </div>
-        <div className="text-center">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-purple-300 via-purple-400 to-indigo-500 mx-auto border-[3px] border-white/20 shadow-xl flex items-center justify-center"><span className="text-3xl sm:text-4xl font-bold text-white">{userInitial}</span></div>
-          <div className="text-white/60 text-xs sm:text-sm font-medium mt-2 sm:mt-3">Selamat datang,</div>
-          <div className="text-white text-lg sm:text-xl font-bold mt-0.5">{user?.full_name || "Super Admin"}</div>
-          <div className="text-white/40 text-[11px] sm:text-xs mt-0.5 flex items-center justify-center gap-1.5"><span className="px-2 py-0.5 rounded-full bg-white/[0.08] text-white/60 text-[10px] font-medium">{user?.role || "super_admin"}</span><span className="text-white/30">•</span><span>{user?.email || "admin@puskesmas"}</span></div>
+
+        {/* Bottom row: Profile */}
+        <div className="flex items-center gap-4 mt-5">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-300 via-purple-400 to-indigo-500 border-2 border-white/20 shadow-xl flex items-center justify-center">
+            <span className="text-2xl font-bold text-white">{userInitial}</span>
+          </div>
+          <div>
+            <div className="text-sm font-medium text-white/60">Selamat datang,</div>
+            <div className="text-xl font-bold text-white">{user?.full_name || "Super Admin"}</div>
+            <div className="text-xs text-white/40 mt-1 flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded-md bg-white/[0.08] text-white/60 text-[10px] font-medium">{user?.role || "super_admin"}</span>
+              <span>{user?.email || "admin@puskesmas"}</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Content Section */}
-      <div className="px-4 sm:px-6 lg:px-8 -mt-5 pt-6 pb-24 rounded-t-[28px] relative z-10 flex-1">
-        <div className="flex justify-end mb-3">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 rounded-t-[28px] bg-[#0A0A1A] flex-1">
+        <div className="flex justify-end mb-4">
           <button onClick={fetchDashboardData} className="flex items-center gap-1.5 px-3 py-2 bg-white/[0.06] backdrop-blur border border-white/[0.08] text-white/70 rounded-full text-xs hover:bg-white/[0.1] transition-all duration-200"><RefreshCw size={13} className={loading ? "animate-spin" : ""} />Refresh</button>
         </div>
 
