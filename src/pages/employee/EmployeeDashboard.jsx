@@ -66,7 +66,7 @@ export default function EmployeeDashboard() {
         supabase.rpc('get_server_time'),
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
-        supabase.from("attendance").select("attendance_status, date").eq("user_id", user.id).gte("date", monthStartStr),
+        supabase.from("attendance").select("attendance_status").eq("user_id", user.id).gte("date", monthStartStr),
         supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3),
         getAttendanceHistory(user.id),
         supabase.from("employee_schedules").select("date, shift_code").eq("user_id", user.id).gte("date", monthStartStr).lte("date", monthEndStr),
@@ -88,35 +88,16 @@ export default function EmployeeDashboard() {
         if (s[st] !== undefined) s[st]++;
       });
 
-      // Calculate jadwalCount and alphaCount manually from schedules (same logic as EmployeeHistory page)
-      let jadwalCount = 0;
-      let alphaCount = 0;
+      // Calculate jadwalCount and alphaCount the same way as EmployeeHistory page
       const schedules = schedRes.data || [];
-      const attendance = monthAttRes.data || [];
-      const shiftCodes = [...new Set(schedules.map(s => s.shift_code).filter(Boolean))];
-      let shiftSchedulesData = [];
-      if (shiftCodes.length > 0) {
-        const { data: ssData } = await withTimeout(supabase
-          .from("shift_schedules")
-          .select("shift_code, day_of_week, is_working_day")
-          .in("shift_code", shiftCodes), 10000, "shiftSchedules");
-        shiftSchedulesData = ssData || [];
-      }
-      schedules.forEach(sch => {
-        if (sch.shift_code) {
-          const dateObj = new Date(sch.date + 'T00:00:00');
-          const dayOfWeek = (dateObj.getDay() + 6) % 7;
-          const shiftSch = shiftSchedulesData.find(ss => ss.shift_code === sch.shift_code && ss.day_of_week === dayOfWeek);
-          if (shiftSch?.is_working_day) {
-            jadwalCount++;
-            // Check if past date and no attendance -> alpha
-            if (sch.date <= today) {
-              const hasAttendance = attendance.some(a => a.date === sch.date);
-              if (!hasAttendance) alphaCount++;
-            }
-          }
-        }
-      });
+      const jadwalCount = schedules.length;
+
+      const workingDaysSoFar = schedules.filter(
+        (sch) => new Date(sch.date + 'T00:00:00') <= new Date(today + 'T00:00:00')
+      ).length;
+
+      const totalHadir = s.hadir;
+      const alphaCount = Math.max(0, workingDaysSoFar - totalHadir - s.izin - s.sakit);
 
       setStats({ ...s, alpha: alphaCount, jadwalCount });
       setAnnouncements(annRes.data || []);
