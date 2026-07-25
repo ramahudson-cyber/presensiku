@@ -66,8 +66,8 @@ export function PremiumStatCard({ title, sub, value, users, trendValue, trendDir
       <div className="absolute -right-12 -top-14 h-36 w-36 rounded-full bg-white/10 blur-2xl"></div>
       <div className="relative z-10 flex justify-between items-start">
         <div>
-          <div className="text-[11px] font-black text-white/58 uppercase tracking-[0.18em]">{title}</div>
-          <div className="text-xs text-white/36 mt-1 font-semibold">{sub}</div>
+          <div className="text-[11px] font-black text-white uppercase tracking-[0.18em]">{title}</div>
+          <div className="text-xs text-white mt-1 font-semibold">{sub}</div>
         </div>
         <div className="h-11 w-11 rounded-2xl bg-white/[0.08] border border-white/10 grid place-items-center shadow-lg shadow-black/20">
           <Icon size={20} strokeWidth={1.9} className="text-white/86" />
@@ -75,11 +75,11 @@ export function PremiumStatCard({ title, sub, value, users, trendValue, trendDir
       </div>
       <div className="relative z-10 mt-7 flex items-end gap-2">
         <div className="text-5xl font-black leading-none tracking-tight text-white">{value}</div>
-        <div className="text-xs text-white/38 mb-1.5 font-bold">{title === "Total Pegawai" ? "pegawai" : "hari ini"}</div>
+        <div className="text-xs text-white mb-1.5 font-bold">{title === "Total Pegawai" ? "pegawai" : "hari ini"}</div>
       </div>
       <div className="relative z-10 mt-4 flex items-center justify-between gap-3">
-        {users?.length > 0 ? <PhotoStack users={users} /> : <span className="text-xs font-bold text-white/42">{meta.note}</span>}
-        {trendValue ? <div className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border ${trendClass}`}>{trendIcon}{trendValue}</div> : <span className="text-[10px] font-bold text-white/36 text-right">{meta.note}</span>}
+        {users?.length > 0 ? <PhotoStack users={users} /> : <span className="text-xs font-bold text-white">{meta.note}</span>}
+        {trendValue && <div className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border ${trendClass}`}>{trendIcon}{trendValue}</div>}
       </div>
     </div>
   );
