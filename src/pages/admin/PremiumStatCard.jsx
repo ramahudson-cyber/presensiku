@@ -14,8 +14,12 @@ const PhotoStack = ({ users = [], max = 4 }) => {
   return (
     <div className="flex flex-row-reverse items-center flex-shrink-0">
       {visibleUsers.map((u, i) => (
-        <div key={u.id || i} className={`item w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs text-white border-2 border-[#0e0a1c] -ml-2 shadow-md flex-shrink-0 ${getColor(u.full_name?.charAt(0))}`}>
-          {u.full_name?.charAt(0)?.toUpperCase() || 'P'}
+        <div key={u.id || i} className={`item w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs text-white border-2 border-[#0e0a1c] -ml-2 shadow-md flex-shrink-0 overflow-hidden ${u.avatar_url ? "bg-white/10" : getColor(u.full_name?.charAt(0))}`}>
+          {u.avatar_url ? (
+            <img src={u.avatar_url} alt={u.full_name || "Pegawai"} className="w-full h-full object-cover" />
+          ) : (
+            u.full_name?.charAt(0)?.toUpperCase() || 'P'
+          )}
         </div>
       ))}
       {remainingCount > 0 && (
