@@ -38,6 +38,9 @@ bundle.zip
 # Screenshots
 Screenshot*.png
 
+# Dev tools
+src/scraper.ts
+
 # Android
 android/.kotlin/
 
