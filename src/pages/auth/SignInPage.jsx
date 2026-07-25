@@ -464,17 +464,8 @@ export default function SignInPage() {
                       </button>
                     </div>
                   </div>
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => alert("Silahkan hubungi Admin untuk reset password.")}
-                      className="text-xs text-white/55 hover:text-white/80 transition-colors"
-                    >
-                      Lupa password?
-                    </button>
-                  </div>
-
-                  <div className="space-y-3 py-2">
+                  {/* Remember Me & Forgot Password Row */}
+                  <div className="flex justify-between items-center py-2">
                     <label className="flex items-start gap-3 cursor-pointer group">
                       <div className="relative mt-0.5">
                         <input
@@ -493,41 +484,48 @@ export default function SignInPage() {
                       </div>
                       <div>
                         <p className="text-sm text-pure-white font-medium leading-tight">Ingat Saya</p>
-                        <p className="text-[10px] text-slate-mist/60 leading-relaxed mt-0.5">
-                          Username & password tersimpan untuk login cepat
-                        </p>
                       </div>
                     </label>
 
-                    {isNativePlatform() && rememberMe && (
-                      <label className="flex items-start gap-3 cursor-pointer group">
-                        <div className="relative mt-0.5">
-                          <input
-                            type="checkbox"
-                            checked={useBiometric}
-                            onChange={(e) => setUseBiometric(e.target.checked)}
-                            className="peer sr-only"
-                          />
-                          <div className="w-[18px] h-[18px] rounded-[6px] border border-slate-mist/40 bg-obsidian peer-checked:bg-electric-violet peer-checked:border-electric-violet transition-all duration-200" />
-                          <svg
-                            className="absolute inset-0 w-[18px] h-[18px] text-pure-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
-                            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm text-pure-white font-medium leading-tight flex items-center gap-1.5">
-                            <ShieldCheck size={14} className="text-periwinkle-glow" />
-                            Gunakan Sidik Jari
-                          </p>
-                          <p className="text-[10px] text-slate-mist/60 leading-relaxed mt-0.5">
-                            Login cepat dengan fingerprint di perangkat ini
-                          </p>
-                        </div>
-                      </label>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => alert("Silahkan hubungi Admin untuk reset password.")}
+                      className="text-xs text-white/55 hover:text-white/80 transition-colors"
+                    >
+                      Lupa password?
+                    </button>
                   </div>
+
+                  {/* Biometric Checkbox (only if Remember Me enabled) */}
+                  {rememberMe && isNativePlatform() && (
+                    <label className="flex items-start gap-3 cursor-pointer group mb-4">
+                      <div className="relative mt-0.5">
+                        <input
+                          type="checkbox"
+                          checked={useBiometric}
+                          onChange={(e) => setUseBiometric(e.target.checked)}
+                          className="peer sr-only"
+                        />
+                        <div className="w-[18px] h-[18px] rounded-[6px] border border-slate-mist/40 bg-obsidian peer-checked:bg-electric-violet peer-checked:border-electric-violet transition-all duration-200" />
+                        <svg
+                          className="absolute inset-0 w-[18px] h-[18px] text-pure-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
+                          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm text-pure-white font-medium leading-tight flex items-center gap-1.5">
+                          <ShieldCheck size={14} className="text-periwinkle-glow" />
+                          Gunakan Sidik Jari
+                        </p>
+                      </div>
+                    </label>
+                  )}
+                  
+                  {/* Note for Ingat Saya removed from checkbox label */}
+                  {rememberMe && <p className="text-[10px] text-slate-mist/60 leading-relaxed -mt-2 mb-4 ml-[30px]">Username & password tersimpan untuk login cepat</p>}
+
 
                   <button
                     type="submit"
