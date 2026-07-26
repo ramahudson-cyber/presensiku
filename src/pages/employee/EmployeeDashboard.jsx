@@ -437,7 +437,7 @@ export default function EmployeeDashboard() {
                           </div>
                         </div>
                       )
-                    })() : (
+                    }) : (
                       <div className={`text-xs text-center py-6 ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Belum ada riwayat.</div>
                     )}
           </div>
