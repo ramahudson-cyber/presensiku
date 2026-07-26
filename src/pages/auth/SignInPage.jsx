@@ -425,11 +425,6 @@ export default function SignInPage() {
                     <p className="text-xs sm:text-sm text-periwinkle-glow/90">{error}</p>
                   </div>
                 )}
-                {deviceDebug && (
-                  <div className="mb-4 p-3 bg-onyx rounded-[16px] border border-periwinkle-glow/20">
-                    <p className="text-[10px] text-slate-mist font-mono whitespace-pre-wrap break-all">{deviceDebug}</p>
-                  </div>
-                )}
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
                     <label className="block text-[11px] font-medium text-white/70 uppercase tracking-[0.05em] mb-1.5">Username / Email</label>
