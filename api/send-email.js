@@ -69,7 +69,7 @@ export default async function handler(req, res) {
 
   try {
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"SIAP Puskesmas" <mediapuskamasampen@11572409.brevo.send.com>`,
+      from: process.env.SMTP_FROM || `"SIAP Puskesmas" <RAMAHUDSON@GMAIL.COM>`,
       to,
       subject: "Akun SIAP Puskesmas Ampenan",
       html,
