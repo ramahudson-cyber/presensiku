@@ -386,60 +386,86 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Header Labels */}
-          <div className="grid grid-cols-[1fr_55px_55px_90px] gap-3 mb-2 text-[9px] uppercase tracking-wider font-bold">
-            <div className={darkMode ? 'text-white/60' : 'text-gray-500'}>Tanggal</div>
-            <div className={`text-center ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>Masuk</div>
-            <div className={`text-center ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>Pulang</div>
-            <div className={`text-right ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>Status</div>
+          <div className="grid grid-cols-[1fr_50px_50px_80px] gap-3 px-3.5 mb-1 text-[9px] uppercase tracking-[0.15em] font-bold">
+            <div className={darkMode ? 'text-white/40' : 'text-gray-400'}>Tanggal</div>
+            <div className={`text-center ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>Masuk</div>
+            <div className={`text-center ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>Pulang</div>
+            <div className={`text-right ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>Status</div>
           </div>
 
           {/* History Items */}
-          <div className="space-y-0.5">
+          <div className="space-y-1">
             {attendanceHistory.length > 0 ? (() => {
               const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
               return attendanceHistory.filter(att => new Date(att.date) >= weekAgo);
             })().map(att => {
-              const isHadir = att.attendance_status === 'hadir' || att.attendance_status === 'terlambat';
-                      return (
-                        <div key={att.id} className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-200 hover:translate-x-1"
-                          style={{
-                            boxShadow: darkMode ? "0 1px 3px rgba(0,0,0,0.3)" : "0 1px 3px rgba(0,0,0,0.06)",
-                            borderLeft: att.attendance_status === "terlambat" ? "2px solid rgba(249,115,22,0.2)" : "2px solid transparent",
-                          }}>
-                          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                            </svg>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className={`text-[10.5px] font-bold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                              {new Date(att.date).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'short' })}
-                            </div>
-                            <div className={`text-[10px] mt-0.5 ${darkMode ? 'text-white/50' : 'text-gray-500'}`}>
-                              Masuk {formatTime(att.clock_in_time)} — Pulang {formatTime(att.clock_out_time)}
-                            </div>
-                          </div>
-                          <div className="text-right shrink-0">
-                            <div className={`text-xs font-bold ${
-                              att.attendance_status === 'terlambat' ? 'text-amber-400' :
-                              att.attendance_status === 'hadir' ? 'text-emerald-400' :
-                              (darkMode ? 'text-white/40' : 'text-gray-500')
-                            }`}>
-                              {att.attendance_status === 'hadir' ? 'Tepat Waktu' :
-                               att.attendance_status === 'terlambat' ? 'Terlambat' :
-                               att.attendance_status.charAt(0).toUpperCase() + att.attendance_status.slice(1)}
-                            </div>
-                            {att.attendance_status === 'terlambat' && att.late_minutes > 0 && (
-                              <div className={`text-[9px] font-semibold leading-tight ${
-                                darkMode ? 'text-white/40' : 'text-gray-400'
-                              }`}>{att.late_minutes} menit</div>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    }) : (
-                      <div className={`text-xs text-center py-6 ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Belum ada riwayat.</div>
+              const isLate = att.attendance_status === 'terlambat';
+              const isHadir = att.attendance_status === 'hadir';
+              const fmtIn = formatTime(att.clock_in_time);
+              const fmtOut = att.clock_out_time ? formatTime(att.clock_out_time) : '-';
+              const dateObj = new Date(att.date + 'T00:00:00');
+              const dateLabel = dateObj.toLocaleDateString("id-ID", { day: 'numeric', month: 'short' });
+              const dayLabel = dateObj.toLocaleDateString("id-ID", { weekday: 'short' });
+              return (
+                <div key={att.id}
+                  className="grid grid-cols-[1fr_50px_50px_80px] gap-3 items-center px-3.5 py-3 rounded-xl transition-all duration-200"
+                  style={{
+                    background: darkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                    borderLeft: isLate ? "2px solid rgba(249,115,22,0.3)" : "2px solid transparent",
+                  }}>
+                  {/* Kolom Tanggal */}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: darkMode ? 'rgba(191,0,255,0.15)' : 'rgba(109,40,217,0.1)' }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <div className={`text-[11px] font-bold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {dateLabel}
+                      </div>
+                      <div className={`text-[9px] uppercase tracking-wider ${darkMode ? 'text-white/40' : 'text-gray-500'}`}>
+                        {dayLabel}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Kolom Masuk */}
+                  <div className="text-center">
+                    <div className={`text-[11px] font-semibold tabular-nums ${darkMode ? 'text-white/90' : 'text-gray-800'}`}>
+                      {fmtIn}
+                    </div>
+                  </div>
+
+                  {/* Kolom Pulang */}
+                  <div className="text-center">
+                    <div className={`text-[11px] font-semibold tabular-nums ${darkMode ? 'text-white/90' : 'text-gray-800'}`}>
+                      {fmtOut}
+                    </div>
+                  </div>
+
+                  {/* Kolom Status */}
+                  <div className="text-right">
+                    <div className={`text-[10px] font-bold ${
+                      isLate ? 'text-amber-400' :
+                      isHadir ? 'text-emerald-400' :
+                      (darkMode ? 'text-white/50' : 'text-gray-500')
+                    }`}>
+                      {isHadir ? 'Tepat Waktu' : isLate ? 'Terlambat' :
+                       att.attendance_status ? att.attendance_status.charAt(0).toUpperCase() + att.attendance_status.slice(1) : '-'}
+                    </div>
+                    {isLate && att.late_minutes > 0 && (
+                      <div className={`text-[9px] font-medium ${darkMode ? 'text-white/35' : 'text-gray-400'}`}>
+                        {att.late_minutes} menit
+                      </div>
                     )}
+                  </div>
+                </div>
+              );
+            }) : (
+              <div className={`text-xs text-center py-6 ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Belum ada riwayat.</div>
+            )}
           </div>
         </div>
 
