@@ -128,22 +128,27 @@ const EmployeesPage = () => {
 
         if (error) throw error;
         if (!rpcResult?.success) throw new Error(rpcResult?.error || "Gagal membuat pegawai");
-        // Kirim notif email
-        try {
-          const API_BASE = "https://presensiku.vercel.app";
-          await fetch(API_BASE + '/api/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              to: formData.email,
-              username: formData.username,
-              full_name: formData.full_name,
-              password: defaultPass,
-            }),
-          });
-        } catch (emailErr) {
-          console.warn('Email notif gagal:', emailErr);
-        }
+	        // Kirim notif email
+	        try {
+	          const API_BASE = window.location.origin;
+	          const resp = await fetch(API_BASE + '/api/send-email', {
+	            method: 'POST',
+	            headers: { 'Content-Type': 'application/json' },
+	            body: JSON.stringify({
+	              to: formData.email,
+	              username: formData.username,
+	              full_name: formData.full_name,
+	              password: defaultPass,
+	            }),
+	          });
+	          if (!resp.ok) {
+	            const errBody = await resp.json().catch(() => ({}));
+	            throw new Error(errBody.error || `HTTP ${resp.status}`);
+	          }
+	        } catch (emailErr) {
+	          console.warn('Email notif gagal:', emailErr);
+	          toast.warning(`Email gagal dikirim ke ${formData.email}: ${emailErr.message}. Pegawai tetap tersimpan.`);
+	        }
         toast.success('Pegawai berhasil ditambahkan');
       }
 
