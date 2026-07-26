@@ -21,6 +21,7 @@ import NotFoundPage from "../pages/NotFoundPage";
 import ProtectedRoute from "./ProtectedRoute";
 import PlatformGuard from "../lib/PlatformGuard";
 import AdminLayout from "../layouts/AdminLayout";
+import { useAuth } from "../context/AuthContext";
 
 import KepalaUnitDashboard from "../pages/kepala_unit/MonitoringDashboardPage";
 
