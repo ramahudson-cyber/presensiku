@@ -57,7 +57,7 @@ export default async function handler(req, res) {
 
   try {
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"SIAP Puskesmas" <${process.env.SMTP_LOGIN}>`,
+      from: process.env.SMTP_FROM || `"SIAP Puskesmas" <presensiku@11572409.brevo.send.com>`,
       to: email,
       subject: "Kode OTP - Verifikasi Perangkat SIAP",
       html,
