@@ -22,6 +22,16 @@ import ProtectedRoute from "./ProtectedRoute";
 import PlatformGuard from "../lib/PlatformGuard";
 import AdminLayout from "../layouts/AdminLayout";
 
+import KepalaUnitDashboard from "../pages/kepala_unit/MonitoringDashboardPage";
+
+function RoleBasedDashboard() {
+  const { user } = useAuth();
+  if (user?.role === "kepala_unit") {
+    return <KepalaUnitDashboard />;
+  }
+  return <DashboardPage />;
+}
+
 function AppRoutes() {
   return (
     <Routes>
@@ -42,7 +52,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<DashboardPage />} />
+        <Route index element={<RoleBasedDashboard />} />
         <Route path="employees" element={<EmployeesPage />} />
         <Route path="attendance" element={<AttendancePage />} />
         <Route path="attendance-history" element={<AttendanceHistoryPage />} />

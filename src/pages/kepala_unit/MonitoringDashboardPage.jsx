@@ -67,7 +67,7 @@ const getWitaDateString = (date = new Date()) => {
   return new Date(witaMs).toISOString().split("T")[0];
 };
 
-export default function DashboardPage() {
+export default function KepalaUnitDashboard() {
   const { user } = useAuth();
   const { darkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -460,7 +460,7 @@ export default function DashboardPage() {
 
         {/* Versi Aplikasi */}
         <footer className="text-center text-[10px] text-white/[0.15] pb-2 select-none mt-6">
-          v{getCurrentVersion().version} &mdash; Presensiku
+          v-debug-ku
         </footer>
       </div>
     </div>
