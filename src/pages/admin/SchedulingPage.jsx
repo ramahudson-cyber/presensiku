@@ -12,10 +12,10 @@ import BottomSheet from "../../components/BottomSheet";
 import ConfirmSheet from "../../components/ConfirmSheet";
 
 const SHIFTS = [
-  { code: "PG", name: "Pagi", icon: Sun, color: "text-green-yellow", bg: "bg-green-yellow/15", ring: "ring-green-yellow/30" },
-  { code: "SR", name: "Sore", icon: Sunset, color: "text-green-yellow", bg: "bg-green-yellow/15", ring: "ring-green-yellow/30" },
-  { code: "SI", name: "Siang", icon: CloudSun, color: "text-sky-400", bg: "bg-sky-500/15", ring: "ring-sky-500/30" },
-  { code: "ML", name: "Malam", icon: Moon, color: "text-periwinkle-glow", bg: "bg-electric-violet/15", ring: "ring-violet-500/30" },
+  { code: "PG", name: "Pagi", icon: Sun, premiumClass: "cal-premium-pg", badgeClass: "cal-badge-pg" },
+  { code: "SR", name: "Sore", icon: Sunset, premiumClass: "cal-premium-sr", badgeClass: "cal-badge-sr" },
+  { code: "SI", name: "Siang", icon: CloudSun, premiumClass: "cal-premium-si", badgeClass: "cal-badge-si" },
+  { code: "ML", name: "Malam", icon: Moon, premiumClass: "cal-premium-ml", badgeClass: "cal-badge-ml" },
 ];
 
 const SHIFT_MAP = Object.fromEntries(SHIFTS.map(s => [s.code, s]));
@@ -170,7 +170,7 @@ export default function SchedulingPage() {
         {SHIFTS.map(s => {
           const Icon = s.icon;
           return (
-            <span key={s.code} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium ${s.bg} ${s.color} ring-1 ${s.ring}`}>
+            <span key={s.code} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium ${s.badgeClass}`}>
               <Icon size={11} /> {s.name}
             </span>
           );
@@ -218,12 +218,12 @@ export default function SchedulingPage() {
                       ${isToday ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-obsidian" : ""}
                       ${!shiftInfo
                         ? "bg-white/[0.02] hover:bg-white/[0.06] hover:shadow-lg"
-                        : `${shiftInfo.bg} hover:brightness-110 hover:shadow-lg hover:shadow-${shiftInfo.code === "PG" ? "amber" : shiftInfo.code === "SR" ? "orange" : shiftInfo.code === "SI" ? "sky" : "violet"}-900/20`
+                        : `${shiftInfo.premiumClass} hover:brightness-110 hover:shadow-lg`
                       }
                     `}>
                     <span className={`text-[11px] font-bold leading-none ${isToday ? "text-violet-300" : "text-slate-mist"}`}>{day}</span>
                     {shiftInfo && (
-                      <div className={`flex items-center gap-0.5 mt-0.5 ${shiftInfo.color}`}>
+                      <div className="flex items-center gap-0.5 mt-0.5">
                         <shiftInfo.icon size={9} />
                         <span className="text-[7px] font-bold tracking-wider">{shiftInfo.name}</span>
                       </div>
@@ -248,8 +248,8 @@ export default function SchedulingPage() {
               <button key={s.code} onClick={() => assignShift(s.code)}
                 className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all text-sm
                   ${isActive ? "bg-electric-violet/30 border border-violet-500/50 text-pure-white shadow-lg" : "bg-onyx border border-transparent text-slate-mist hover:bg-white/[0.03] hover:border-white/[0.06]"}`}>
-                <div className={`w-8 h-8 rounded-2xl flex items-center justify-center ${s.bg}`}>
-                  <Icon size={16} className={s.color} />
+                <div className={`w-8 h-8 rounded-2xl flex items-center justify-center ${s.badgeClass}`}>
+                  <Icon size={16} />
                 </div>
                 <span className="flex-1 text-left font-medium">{s.name}</span>
                 {isActive && <CheckCircle2 size={16} className="text-emerald-400" />}
