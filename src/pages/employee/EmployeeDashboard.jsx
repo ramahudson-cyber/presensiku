@@ -101,7 +101,42 @@ export default function EmployeeDashboard() {
 
       setStats({ ...s, alpha: alphaCount, jadwalCount });
       setAnnouncements(annRes.data || []);
-      setAttendanceHistory(histRes || []);
+
+      // Gabungkan jadwal kerja + absensi untuk 7 hari terakhir
+      const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+      const weekAgoStr = weekAgo.toISOString().split("T")[0];
+      const recentSchedules = schedRes.data
+        ? schedRes.data.filter(sch => sch.date >= weekAgoStr)
+          .sort((a, b) => b.date.localeCompare(a.date))
+        : [];
+
+      // Map absensi berdasarkan tanggal
+      const attMap = {};
+      (histRes || []).forEach(a => { attMap[a.date] = a; });
+
+      // Gabungkan: setiap hari kerja ada dalam daftar (bahkan yang tidak absen)
+      const mergedHistory = recentSchedules.map(sch => {
+        const att = attMap[sch.date] || null;
+        return {
+          ...sch,
+          shift_code: sch.shift_code,
+          ...(att ? {
+            attendance_status: att.attendance_status,
+            clock_in_time: att.clock_in_time,
+            clock_out_time: att.clock_out_time,
+            late_minutes: att.late_minutes,
+            id: att.id,
+          } : {
+            attendance_status: 'alpha',
+            clock_in_time: null,
+            clock_out_time: null,
+            late_minutes: 0,
+            id: sch.date + '-alpha',
+          }),
+        };
+      });
+
+      setAttendanceHistory(mergedHistory);
     } catch (e) {
       console.error(e);
       setFetchError(e.message?.includes('Timeout') ? 'Koneksi lambat. Coba lagi.' : 'Gagal memuat data. Periksa koneksi.');
@@ -401,6 +436,7 @@ export default function EmployeeDashboard() {
             })().map(att => {
               const isLate = att.attendance_status === 'terlambat';
               const isHadir = att.attendance_status === 'hadir';
+              const isAlpha = att.attendance_status === 'alpha';
               const fmtIn = formatTime(att.clock_in_time);
               const fmtOut = att.clock_out_time ? formatTime(att.clock_out_time) : '-';
               const dateObj = new Date(att.date + 'T00:00:00');
@@ -411,7 +447,7 @@ export default function EmployeeDashboard() {
                   className="grid grid-cols-[1fr_44px_44px_70px] gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200"
                   style={{
                     background: darkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
-                    borderLeft: isLate ? "2px solid rgba(249,115,22,0.3)" : "2px solid transparent",
+                    borderLeft: isLate ? "2px solid rgba(249,115,22,0.3)" : isAlpha ? "2px solid rgba(239,68,68,0.4)" : "2px solid transparent",
                   }}>
                   {/* Kolom Tanggal */}
                   <div className="min-w-0">
@@ -442,9 +478,10 @@ export default function EmployeeDashboard() {
                     <div className={`text-[10px] font-bold ${
                       isLate ? 'text-amber-400' :
                       isHadir ? 'text-emerald-400' :
+                      isAlpha ? 'text-red-400' :
                       (darkMode ? 'text-white/50' : 'text-gray-500')
                     }`}>
-                      {isHadir ? 'Tepat Waktu' : isLate ? 'Terlambat' :
+                      {isHadir ? 'Tepat Waktu' : isLate ? 'Terlambat' : isAlpha ? 'Alpha' :
                        att.attendance_status ? att.attendance_status.charAt(0).toUpperCase() + att.attendance_status.slice(1) : '-'}
                     </div>
                     {isLate && att.late_minutes > 0 && (
@@ -456,7 +493,7 @@ export default function EmployeeDashboard() {
                 </div>
               );
             }) : (
-              <div className={`text-xs text-center py-6 ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Belum ada riwayat.</div>
+              <div className={`text-xs text-center py-6 ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Tidak ada jadwal kerja 7 hari terakhir.</div>
             )}
           </div>
         </div>
