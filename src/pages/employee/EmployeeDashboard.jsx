@@ -114,9 +114,10 @@ export default function EmployeeDashboard() {
       const attMap = {};
       (histRes || []).forEach(a => { attMap[a.date] = a; });
 
-      // Gabungkan: setiap hari kerja ada dalam daftar (bahkan yang tidak absen)
+      // Gabungkan: setiap hari kerja ada dalam daftar
       const mergedHistory = recentSchedules.map(sch => {
         const att = attMap[sch.date] || null;
+        const isPast = sch.date < today; // Alpha hanya jika hari sudah lewat
         return {
           ...sch,
           shift_code: sch.shift_code,
@@ -127,11 +128,11 @@ export default function EmployeeDashboard() {
             late_minutes: att.late_minutes,
             id: att.id,
           } : {
-            attendance_status: 'alpha',
+            attendance_status: isPast ? 'alpha' : 'belum',
             clock_in_time: null,
             clock_out_time: null,
             late_minutes: 0,
-            id: sch.date + '-alpha',
+            id: sch.date + '-merged',
           }),
         };
       });
@@ -437,6 +438,7 @@ export default function EmployeeDashboard() {
               const isLate = att.attendance_status === 'terlambat';
               const isHadir = att.attendance_status === 'hadir';
               const isAlpha = att.attendance_status === 'alpha';
+              const isBelum = att.attendance_status === 'belum';
               const fmtIn = formatTime(att.clock_in_time);
               const fmtOut = att.clock_out_time ? formatTime(att.clock_out_time) : '-';
               const dateObj = new Date(att.date + 'T00:00:00');
@@ -447,7 +449,7 @@ export default function EmployeeDashboard() {
                   className="grid grid-cols-[1fr_44px_44px_70px] gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200"
                   style={{
                     background: darkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
-                    borderLeft: isLate ? "2px solid rgba(249,115,22,0.3)" : isAlpha ? "2px solid rgba(239,68,68,0.4)" : "2px solid transparent",
+                    borderLeft: isLate ? "2px solid rgba(249,115,22,0.3)" : isAlpha ? "2px solid rgba(239,68,68,0.4)" : isBelum ? "2px solid rgba(59,130,246,0.25)" : "2px solid transparent",
                   }}>
                   {/* Kolom Tanggal */}
                   <div className="min-w-0">
@@ -479,9 +481,10 @@ export default function EmployeeDashboard() {
                       isLate ? 'text-amber-400' :
                       isHadir ? 'text-emerald-400' :
                       isAlpha ? 'text-red-400' :
+                      isBelum ? 'text-blue-400' :
                       (darkMode ? 'text-white/50' : 'text-gray-500')
                     }`}>
-                      {isHadir ? 'Tepat Waktu' : isLate ? 'Terlambat' : isAlpha ? 'Alpha' :
+                      {isHadir ? 'Tepat Waktu' : isLate ? 'Terlambat' : isAlpha ? 'Alpha' : isBelum ? 'Belum' :
                        att.attendance_status ? att.attendance_status.charAt(0).toUpperCase() + att.attendance_status.slice(1) : '-'}
                     </div>
                     {isLate && att.late_minutes > 0 && (
