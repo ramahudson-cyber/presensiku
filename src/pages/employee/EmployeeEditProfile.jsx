@@ -23,11 +23,37 @@ export default function EmployeeEditProfile() {
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setAvatarFile(file);
-    // Preview local
-    const reader = new FileReader();
-    reader.onload = (ev) => setPreview(ev.target?.result);
-    reader.readAsDataURL(file);
+    
+    // Kompres dulu jika lebih dari 500KB
+    if (file.size > 500 * 1024) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const MAX = 512;
+          let w = img.width, h = img.height;
+          if (w > h) { h = (MAX / w) * h; w = MAX; } else { w = (MAX / h) * w; h = MAX; }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+          canvas.toBlob((blob) => {
+            if (!blob) { setAvatarFile(file); setPreview(ev.target.result); return; }
+            const compressed = new File([blob], file.name, { type: "image/jpeg" });
+            setAvatarFile(compressed);
+            setPreview(ev.target.result);
+          }, "image/jpeg", 0.8);
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onload = (ev) => setPreview(ev.target.result);
+      reader.readAsDataURL(file);
+    }
   };
 
   const uploadAvatar = async (file) => {
@@ -38,7 +64,12 @@ export default function EmployeeEditProfile() {
       .from("avatars")
       .upload(fileName, file, { upsert: true });
 
-    if (uploadError) throw uploadError;
+    if (uploadError) {
+      if (uploadError.message?.includes("exceeded") || uploadError.message?.includes("size")) {
+        throw new Error("Ukuran foto terlalu besar. Silakan pilih foto yang lebih kecil (max 500KB).");
+      }
+      throw uploadError;
+    }
 
     const { data: { publicUrl } } = supabase.storage
       .from("avatars")
