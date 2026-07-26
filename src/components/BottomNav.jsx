@@ -142,8 +142,12 @@ export default function BottomNav({ hidden = false }) {
               <NavLink key={item.path} to={item.path} onClick={() => setMoreOpen(false)}
                      className={({ isActive }) =>
                   `flex flex-col items-center gap-2 p-4 rounded-3xl transition-all ${isActive
-                    ? "bg-white/10 text-pure-white"
-                    : "bg-white/5 hover:bg-white/[0.07]"}`
+                    ? darkMode
+                      ? "bg-white/10 text-pure-white"
+                      : "bg-electric-violet/10 text-electric-violet"
+                    : darkMode
+                      ? "bg-white/5 hover:bg-white/[0.07] text-gray-300"
+                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"}`
                 }>
                 <Icon size={24} />
                 <span className="text-[10px] font-medium text-center leading-tight">{item.label}</span>

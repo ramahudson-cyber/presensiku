@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 
 export default function BottomSheet({ open, onClose, title, subtitle, children, snap = "auto" }) {
+  const { darkMode } = useTheme();
   const sheetRef = useRef(null);
 
   useEffect(() => {
@@ -20,26 +22,28 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
 
           <div ref={sheetRef} onClick={e => e.stopPropagation()}
             style={{ maxHeight: snap === "full" ? "95vh" : snap === "half" ? "60vh" : "90vh" }}
-            className="relative z-[9999] w-full max-w-lg bg-white border border-gray-100 rounded-t-[28px] md:rounded-3xl shadow-2xl animate-slide-up md:animate-fade-in overflow-hidden flex flex-col mt-auto md:mt-0">
+            className={`relative z-[9999] w-full max-w-lg rounded-t-[28px] md:rounded-3xl shadow-2xl animate-slide-up md:animate-fade-in overflow-hidden flex flex-col mt-auto md:mt-0 ${
+              darkMode ? "bg-[#161320] border border-white/10" : "bg-white border border-gray-100"
+            }`}>
 
             <div className="flex md:hidden justify-center pt-2.5 pb-1 shrink-0">
-              <div className="w-10 h-1 rounded-full bg-black/10" />
+              <div className={`w-10 h-2 rounded-full ${darkMode ? "bg-white/10" : "bg-black/10"}`} />
             </div>
 
             {(title || subtitle) && (
               <div className="flex items-center justify-between px-5 pt-2 md:pt-5 pb-3 shrink-0">
                 <div className="min-w-0 flex-1">
-                  {title && <h3 className="text-sm font-bold text-gray-900">{title}</h3>}
+                  {title && <h3 className={`text-sm font-bold ${darkMode ? "text-pure-white" : "text-gray-900"}`}>{title}</h3>}
                   {subtitle && <p className="text-[10px] text-gray-400 mt-0.5">{subtitle}</p>}
                 </div>
                 <button onClick={onClose}
-                  className="bg-gray-100 hover:bg-gray-200 text-gray-600 w-8 h-8 flex items-center justify-center rounded-xl transition-all active:scale-90 shrink-0 ml-3">
+                  className={`${darkMode ? "bg-white/10 hover:bg-white/20 text-white/70" : "bg-gray-100 hover:bg-gray-200 text-gray-600"} w-8 h-8 flex items-center justify-center rounded-xl transition-all active:scale-90 shrink-0 ml-3`}>
                   <X size={16} />
                 </button>
               </div>
             )}
 
-            <div className="flex-1 overflow-y-auto px-5 pb-[120px] scrollbar-thin">
+            <div className="flex-1 overflow-y-auto px-5 pb-6 scrollbar-thin">
               {children}
             </div>
           </div>
