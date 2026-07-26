@@ -386,7 +386,7 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Header Labels */}
-          <div className="grid grid-cols-[1fr_50px_50px_80px] gap-3 px-3.5 mb-1 text-[9px] uppercase tracking-[0.15em] font-bold">
+          <div className="grid grid-cols-[1fr_44px_44px_70px] gap-3 px-3.5 mb-1 text-[9px] uppercase tracking-[0.15em] font-bold">
             <div className={darkMode ? 'text-white/40' : 'text-gray-400'}>Tanggal</div>
             <div className={`text-center ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>Masuk</div>
             <div className={`text-center ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>Pulang</div>
@@ -408,26 +408,18 @@ export default function EmployeeDashboard() {
               const dayLabel = dateObj.toLocaleDateString("id-ID", { weekday: 'short' });
               return (
                 <div key={att.id}
-                  className="grid grid-cols-[1fr_50px_50px_80px] gap-3 items-center px-3.5 py-3 rounded-xl transition-all duration-200"
+                  className="grid grid-cols-[1fr_44px_44px_70px] gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200"
                   style={{
                     background: darkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
                     borderLeft: isLate ? "2px solid rgba(249,115,22,0.3)" : "2px solid transparent",
                   }}>
                   {/* Kolom Tanggal */}
-                  <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-                      style={{ background: darkMode ? 'rgba(191,0,255,0.15)' : 'rgba(109,40,217,0.1)' }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                      </svg>
+                  <div className="min-w-0">
+                    <div className={`text-[11px] font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {dateLabel}
                     </div>
-                    <div className="min-w-0">
-                      <div className={`text-[11px] font-bold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {dateLabel}
-                      </div>
-                      <div className={`text-[9px] uppercase tracking-wider ${darkMode ? 'text-white/40' : 'text-gray-500'}`}>
-                        {dayLabel}
-                      </div>
+                    <div className={`text-[9px] uppercase tracking-wider ${darkMode ? 'text-white/40' : 'text-gray-500'}`}>
+                      {dayLabel}
                     </div>
                   </div>
 
