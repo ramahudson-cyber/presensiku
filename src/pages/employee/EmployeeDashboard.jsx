@@ -137,7 +137,7 @@ export default function EmployeeDashboard() {
         };
       });
 
-      setAttendanceHistory(mergedHistory);
+      setAttendanceHistory(mergedHistory.filter(h => h.attendance_status !== 'belum'));
     } catch (e) {
       console.error(e);
       setFetchError(e.message?.includes('Timeout') ? 'Koneksi lambat. Coba lagi.' : 'Gagal memuat data. Periksa koneksi.');
