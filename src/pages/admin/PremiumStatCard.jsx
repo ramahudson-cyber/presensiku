@@ -78,7 +78,7 @@ export function PremiumStatCard({ title, sub, value, users, trendValue, trendDir
         <div className="text-xs text-white/75 mb-1.5 font-bold">{title === "Total Pegawai" ? "pegawai" : "hari ini"}</div>
       </div>
       <div className="relative z-10 mt-4 flex items-center justify-between gap-3">
-        {users?.length > 0 ? <PhotoStack users={users} /> : <span className="text-xs font-bold text-white/80">{meta.note}</span>}
+        {users?.length > 0 ? <PhotoStack users={users} /> : <span className="text-xs font-medium text-white/55">{meta.note}</span>}
         {trendValue && <div className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border ${trendClass}`}>{trendIcon}{trendValue}</div>}
       </div>
     </div>
