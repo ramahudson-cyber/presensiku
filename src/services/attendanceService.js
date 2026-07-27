@@ -131,50 +131,51 @@ export async function clockIn(userId, location) {
     .eq("date", today)
     .maybeSingle();
 
-  if (schedule?.shift_code) {
-    shiftCode = schedule.shift_code;
-    const dayOfWeek = (witaDate.getUTCDay() + 6) % 7; // Senin=0
-
-    const { data: shiftSched } = await supabase
-      .from("shift_schedules")
-      .select("start_time, latest_check_in, is_working_day")
-      .eq("shift_code", shiftCode)
-      .eq("day_of_week", dayOfWeek)
-      .single();
-
-    if (shiftSched?.start_time) {
-      let effectiveStart = shiftSched.start_time;
-      let effectiveLatest = shiftSched.latest_check_in;
-
-      // Fallback kalo start_time '00:00' (non-working day), ambil jam asli dari hari kerja
-      if (effectiveStart === '00:00' || !shiftSched.is_working_day) {
-        const { data: workingSched } = await supabase
-          .from("shift_schedules")
-          .select("start_time, latest_check_in")
-          .eq("shift_code", shiftCode)
-          .eq("is_working_day", true)
-          .limit(1)
-          .maybeSingle();
-
-        if (workingSched) {
-          effectiveStart = workingSched.start_time;
-          effectiveLatest = workingSched.latest_check_in || workingSched.start_time;
-        }
-      }
-
-      const witaHour = witaDate.getUTCHours();
-      const witaMinute = witaDate.getUTCMinutes();
-      const totalWitaMinutes = witaHour * 60 + witaMinute;
-
-      const [lh, lm] = (effectiveLatest || effectiveStart).split(":").map(Number);
-      const lateThreshold = lh * 60 + lm;
-
-      isLate = totalWitaMinutes > lateThreshold;
-      const [sh, sm] = effectiveStart.split(":").map(Number);
-      lateMinutes = isLate ? totalWitaMinutes - (sh * 60 + sm) : 0;
-      attendanceStatus = isLate ? "terlambat" : "hadir";
-    }
+  if (!schedule?.shift_code) {
+    throw new Error("Tidak ada jadwal kerja hari ini");
   }
+
+  shiftCode = schedule.shift_code;
+  const dayOfWeek = (witaDate.getUTCDay() + 6) % 7; // Senin=0
+
+  const { data: shiftSched } = await supabase
+    .from("shift_schedules")
+    .select("start_time, latest_check_in, is_working_day")
+    .eq("shift_code", shiftCode)
+    .eq("day_of_week", dayOfWeek)
+    .single();
+
+  if (shiftSched?.start_time) {
+    let effectiveStart = shiftSched.start_time;
+    let effectiveLatest = shiftSched.latest_check_in;
+
+    // Fallback kalo start_time '00:00' (non-working day), ambil jam asli dari hari kerja
+    if (effectiveStart === '00:00' || !shiftSched.is_working_day) {
+      const { data: workingSched } = await supabase
+        .from("shift_schedules")
+        .select("start_time, latest_check_in")
+        .eq("shift_code", shiftCode)
+        .eq("is_working_day", true)
+        .limit(1)
+        .maybeSingle();
+
+      if (workingSched) {
+        effectiveStart = workingSched.start_time;
+        effectiveLatest = workingSched.latest_check_in || workingSched.start_time;
+      }
+    }
+
+    const witaHour = witaDate.getUTCHours();
+    const witaMinute = witaDate.getUTCMinutes();
+    const totalWitaMinutes = witaHour * 60 + witaMinute;
+
+    const [lh, lm] = (effectiveLatest || effectiveStart).split(":").map(Number);
+    const lateThreshold = lh * 60 + lm;
+
+    isLate = totalWitaMinutes > lateThreshold;
+    const [sh, sm] = effectiveStart.split(":").map(Number);
+    lateMinutes = isLate ? totalWitaMinutes - (sh * 60 + sm) : 0;
+    attendanceStatus = isLate ? "terlambat" : "hadir";
 
   const { data, error } = await supabase
     .from("attendance")

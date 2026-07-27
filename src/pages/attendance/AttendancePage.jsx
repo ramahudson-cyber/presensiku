@@ -272,7 +272,12 @@ const handleCheckIn = async () => {
       const today = witaDate.toISOString().split("T")[0];
 
       const schedule = await getTodayScheduleInfo(witaDate, user.id);
-      const shiftCode = schedule?.shift_code || "PG";
+      if (!schedule?.shift_code) {
+        setError("Tidak ada jadwal kerja hari ini");
+        setSaving(false);
+        return;
+      }
+      const shiftCode = schedule.shift_code;
 
       const pgDayOfWeek = (witaDate.getUTCDay() + 6) % 7;
       const shiftSchedule = await getShiftSchedule(shiftCode, pgDayOfWeek);
