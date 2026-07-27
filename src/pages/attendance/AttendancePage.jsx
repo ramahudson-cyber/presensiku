@@ -10,6 +10,7 @@ import AttendanceResultSheet from "../../components/AttendanceResultSheet";
 import BottomNav from "../../components/BottomNav";
 import { getCurrentPosition } from "../../services/geoService";
 import { getPuskesmasLocation, calculateDistance, verifyLocationServer } from "../../services/attendanceService";
+import { toast } from "react-toastify";
 
 const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
 
@@ -274,6 +275,7 @@ const handleCheckIn = async () => {
 	      const schedule = await getTodayScheduleInfo(witaDate, user.id);
 	      if (!schedule?.shift_code) {
 	        setError("Tidak ada jadwal kerja hari ini");
+	        toast.error("Tidak ada jadwal kerja hari ini", { autoClose: false });
 	        setSaving(false);
 	        return;
 	      }
