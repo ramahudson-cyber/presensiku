@@ -93,10 +93,10 @@ function IconBox({ children }) {
 
 export default function AttendanceResultSheet({ open, onClose, data, type }) {
   const navigate = useNavigate();
+  const uid = useRef(Math.random().toString(36).slice(2, 8)).current;
   if (!data) return null;
   const isCheckIn = type === "in";
   const isLate = data.is_late;
-  const uid = useRef(Math.random().toString(36).slice(2, 8)).current;
 
   const clockIn = formatTime(data.clock_in_time);
   const clockOut = formatTime(data.clock_out_time);
