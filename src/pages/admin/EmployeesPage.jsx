@@ -265,7 +265,7 @@ const EmployeesPage = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-5 md:p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-5 md:p-6 space-y-4 pb-28">
               {!formData.id && (
                 <div>
                   <label className={labelBase}>
@@ -356,13 +356,13 @@ const EmployeesPage = () => {
                 </select>
               </div>
 
-              <div className="flex gap-3 pt-2 sticky bottom-0 bg-onyx/95 backdrop-blur-md -mx-5 md:-mx-6 px-5 md:px-6 pb-2 -mb-2">
+              <div className="flex gap-3 pt-2 sticky bottom-0 bg-onyx/98 backdrop-blur-md z-10 -mx-5 md:-mx-6 px-5 md:px-6 pb-4 pt-3 shadow-[0_-8px_24px_rgba(0,0,0,0.4)]">
                 <button type="button" onClick={resetForm}
-                  className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-full text-sm font-medium hover:bg-white/[0.03] transition-all">
+                  className="flex-1 py-2.5 border border-white/10 bg-white/5 text-white rounded-full text-sm font-medium hover:bg-white/[0.08] transition-all">
                   Batal
                 </button>
                 <button type="submit" disabled={loading}
-                  className="flex-1 py-2.5 border-gradient bg-transparent text-white rounded-full text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                  className="flex-1 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium hover:brightness-110 active:brightness-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20">
                   {loading && <RefreshCwIconSpinning />}
                   {loading ? 'Menyimpan...' : formData.id ? 'Update' : 'Simpan'}
                 </button>
