@@ -29,7 +29,17 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        globPatterns: ["**/*.{ico,png,svg,woff2,html}"],
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.destination === "script" || request.destination === "style",
+            handler: "NetworkFirst",
+            options: {
+              networkTimeoutSeconds: 5,
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
         clientsClaim: true,
         skipWaiting: true,
       },
