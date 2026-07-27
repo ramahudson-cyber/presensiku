@@ -259,7 +259,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
                 }}
                 className="active:scale-[0.98]"
               >
-                Lanjut
+                Tutup
               </button>
             </div>
           </div>
