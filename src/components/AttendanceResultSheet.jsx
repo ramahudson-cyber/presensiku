@@ -138,7 +138,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
               boxShadow: "0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(191,0,255,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
               position: "relative", overflow: "hidden",
             }}
-            className="md:rounded-3xl mx-auto flex flex-col animate-slide-up"
+            className="md:rounded-3xl mx-auto flex flex-col animate-slide-up z-[9999]"
           >
             <Confetti id={uid} />
 
