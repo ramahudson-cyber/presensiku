@@ -37,7 +37,13 @@ function getDeviceInfoLite() {
   else if (/iPad/i.test(ua)) deviceName = "iPad";
   else deviceName = `${deviceOs} ${deviceBrowser}`;
 
-  return deviceName;
+	return deviceName;
+}
+
+function formatDistance(meters) {
+  if (meters === null || meters === undefined) return "—";
+  if (meters >= 1000) return (meters / 1000).toFixed(1) + " km";
+  return Math.round(meters) + " m";
 }
 
 export default function AttendancePage() {
@@ -537,7 +543,7 @@ const handleCheckIn = async () => {
               <div className="flex items-center gap-1 px-2 py-1 rounded-full">
                 <span className="text-[9px] text-black">📍</span>
                 <span className="text-[9px] font-medium text-black">
-                  <strong className="text-black font-bold">{distance || "—"}</strong> dari {puskesmasLocation.name?.toLowerCase?.() || "puskesmas"}
+                  <strong className="text-black font-bold">{formatDistance(distance)}</strong> dari {puskesmasLocation.name || "puskesmas"}
                 </span>
               </div>
               <div className="ml-auto px-2 py-1 rounded-full border border-electric-violet/4">
