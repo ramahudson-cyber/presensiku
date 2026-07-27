@@ -131,9 +131,9 @@ export async function clockIn(userId, location) {
     .eq("date", today)
     .maybeSingle();
 
-  if (!schedule?.shift_code) {
-    throw new Error("Tidak ada jadwal kerja hari ini");
-  }
+	  if (!schedule?.shift_code) {
+	    throw new Error("Tidak ada jadwal kerja hari ini");
+	  }
 
   shiftCode = schedule.shift_code;
   const dayOfWeek = (witaDate.getUTCDay() + 6) % 7; // Senin=0
@@ -175,9 +175,10 @@ export async function clockIn(userId, location) {
     isLate = totalWitaMinutes > lateThreshold;
     const [sh, sm] = effectiveStart.split(":").map(Number);
     lateMinutes = isLate ? totalWitaMinutes - (sh * 60 + sm) : 0;
-    attendanceStatus = isLate ? "terlambat" : "hadir";
+	    attendanceStatus = isLate ? "terlambat" : "hadir";
+	  }
 
-  const { data, error } = await supabase
+	  const { data, error } = await supabase
     .from("attendance")
     .insert({
       user_id: userId,
