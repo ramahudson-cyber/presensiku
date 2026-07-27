@@ -10,7 +10,6 @@ import AttendanceResultSheet from "../../components/AttendanceResultSheet";
 import BottomNav from "../../components/BottomNav";
 import { getCurrentPosition } from "../../services/geoService";
 import { getPuskesmasLocation, calculateDistance, verifyLocationServer } from "../../services/attendanceService";
-import { toast } from "react-toastify";
 
 const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
 
@@ -71,6 +70,7 @@ export default function AttendancePage() {
   const [resultSheetOpen, setResultSheetOpen] = useState(false);
   const [resultType, setResultType] = useState("in");
   const [resultData, setResultData] = useState(null);
+  const [showScheduleAlert, setShowScheduleAlert] = useState(false);
 
   const syncServerTime = async () => {
     try {
@@ -275,7 +275,7 @@ const handleCheckIn = async () => {
 	      const schedule = await getTodayScheduleInfo(witaDate, user.id);
 	      if (!schedule?.shift_code) {
 	        setError("Tidak ada jadwal kerja hari ini");
-	        toast.error("Tidak ada jadwal kerja hari ini", { autoClose: false });
+	        setShowScheduleAlert(true);
 	        setSaving(false);
 	        return;
 	      }
@@ -658,8 +658,66 @@ const handleCheckIn = async () => {
           type={resultType}
         />
       </div>
-      <BottomNav hidden={true} />
-    </div>
+	      <BottomNav hidden={true} />
+
+	      {/* Premium Schedule Alert */}
+	      {showScheduleAlert && (
+	        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
+	             onClick={() => setShowScheduleAlert(false)}>
+	          <div className="relative w-full max-w-sm rounded-3xl bg-[#13111C] border border-white/[0.06] overflow-hidden shadow-[0_0_60px_rgba(191,0,255,0.15),0_0_120px_rgba(191,0,255,0.08),inset_0_1px_0_rgba(255,255,255,0.06)] animate-slide-up"
+	               onClick={e => e.stopPropagation()}>
+	            {/* Gradient orbs */}
+	            <div className="absolute top-[-60px] right-[-60px] w-[180px] h-[180px] rounded-full bg-[radial-gradient(circle,rgba(191,0,255,0.06)_0%,transparent_70%)] pointer-events-none"></div>
+	            <div className="absolute bottom-[-40px] left-[-40px] w-[120px] h-[120px] rounded-full bg-[radial-gradient(circle,rgba(74,222,128,0.04)_0%,transparent_70%)] pointer-events-none"></div>
+
+	            {/* Close button */}
+	            <div className="absolute top-4 right-4 z-10">
+	              <button onClick={() => setShowScheduleAlert(false)}
+	                className="w-8 h-8 rounded-full bg-white/[0.05] border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.1] hover:border-white/[0.15] transition-all group">
+	                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" className="group-hover:stroke-white/70 transition-colors">
+	                  <line x1="18" y1="6" x2="6" y2="18"/>
+	                  <line x1="6" y1="6" x2="18" y2="18"/>
+	                </svg>
+	              </button>
+	            </div>
+
+	            {/* Content */}
+	            <div className="relative px-7 pt-12 pb-7 flex flex-col items-center text-center">
+	              {/* Icon */}
+	              <div className="relative mb-5">
+	                <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ boxShadow: '0 0 0 0 rgba(191,0,255,0.3)', animationDuration: '2s' }}></div>
+	                <div className="relative w-20 h-20 rounded-2xl flex items-center justify-center bg-[linear-gradient(135deg,rgba(191,0,255,0.15)_0%,rgba(139,0,204,0.1)_100%)] border border-[rgba(191,0,255,0.15)]">
+	                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 12px rgba(191,0,255,0.4))' }}>
+	                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+	                    <line x1="16" y1="2" x2="16" y2="6"/>
+	                    <line x1="8" y1="2" x2="8" y2="6"/>
+	                    <line x1="3" y1="10" x2="21" y2="10"/>
+	                    <line x1="10" y1="13" x2="14" y2="17"/>
+	                    <line x1="14" y1="13" x2="10" y2="17"/>
+	                  </svg>
+	                </div>
+	              </div>
+
+	              {/* Title */}
+	              <h2 className="text-xl font-extrabold text-white mb-1.5 tracking-tight">
+	                Tidak Ada Jadwal Hari Ini
+	              </h2>
+
+	              {/* Description */}
+	              <p className="text-sm text-white/50 leading-relaxed mb-6 max-w-[260px]">
+	                Kamu belum memiliki jadwal shift untuk hari ini. Silakan hubungi admin untuk mendapatkan jadwal.
+	              </p>
+
+	              {/* Tutup button */}
+	              <button onClick={() => setShowScheduleAlert(false)}
+	                className="w-full py-3.5 px-6 rounded-xl text-white font-bold text-sm tracking-wide shadow-lg active:scale-[0.97] transition-all duration-150 bg-[linear-gradient(135deg,#BF00FF,#8B00CC,#6600CC)] hover:shadow-[0_0_40px_rgba(191,0,255,0.4)] hover:scale-[1.02]">
+	                Tutup
+	              </button>
+	            </div>
+	          </div>
+	        </div>
+	      )}
+	    </div>
   );
 }
 
