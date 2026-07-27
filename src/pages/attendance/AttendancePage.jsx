@@ -542,7 +542,7 @@ const handleCheckIn = async () => {
               </div>
               <div className="ml-auto px-2 py-1 rounded-full border border-electric-violet/4">
                 <span className="text-[8px] font-bold text-black uppercase tracking-[1px]">
-                  {"Shift " + (todaySchedule?.name || (todayAttendance?.shift_code ? SHIFT_NAMES[todayAttendance.shift_code] : ""))}
+                  {"Shift " + (todaySchedule?.name || (todayAttendance?.shift_code ? SHIFT_NAMES[todayAttendance.shift_code] : "Tidak Ada"))}
                 </span>
               </div>
             </div>
