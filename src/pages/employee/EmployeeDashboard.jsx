@@ -496,11 +496,7 @@ export default function EmployeeDashboard() {
                 </div>
               );
             }) : (
-<<<<<<< HEAD
-              <div className={`text-xs text-center py-6 ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Tidak ada jadwal kerja 7 hari terakhir.</div>
-=======
               <div className={`text-xs text-center py-6 ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>Belum ada riwayat absensi.</div>
->>>>>>> 76d304c (fix(employee-dashboard): improve riwayat absensi empty state text)
             )}
           </div>
         </div>
