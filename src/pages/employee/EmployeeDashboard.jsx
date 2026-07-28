@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
-import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, ArrowRight } from "lucide-react";
+import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, ArrowRight } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 
 function withTimeout(promise, ms, label) {
