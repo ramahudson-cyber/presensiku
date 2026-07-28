@@ -8,7 +8,7 @@ import { getCurrentVersion } from "../../services/updateService";
 import { PremiumStatCard } from "./PremiumStatCard";
 import {
   TrendingUp, Calendar, Bell, RefreshCw, BellOff, Inbox,
-  Moon, LogOut, Sunset, CloudSun,
+  Sun, Moon, LogOut, Sunset, CloudSun,
 } from "lucide-react";
 
 function AttendanceBadge({ status }) {

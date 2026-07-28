@@ -8,7 +8,7 @@ import { getCurrentVersion } from "../../services/updateService";
 import {
   Users, UserCheck, UserMinus, UserX,
   TrendingUp, Calendar, Bell, RefreshCw, BellOff, Inbox,
-  Moon, LogOut, Sunset, CloudSun,
+  Sun, Moon, LogOut, Sunset, CloudSun,
 } from "lucide-react";
 
 
