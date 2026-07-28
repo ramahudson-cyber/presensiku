@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
-import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, Moon, ArrowRight } from "lucide-react";
+import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, ArrowRight } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 
 function withTimeout(promise, ms, label) {
@@ -20,7 +20,7 @@ const getShiftName = (code) => SHIFT_NAMES[code] || (code || 'Shift').toUpperCas
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
-  const { darkMode, toggleTheme } = useTheme();
+  const { darkMode } = useTheme();
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0, jadwalCount: 0 });
@@ -195,14 +195,6 @@ export default function EmployeeDashboard() {
               <div className="text-2xl font-bold text-white">{user?.full_name || "Rama Hudson"}</div>
               <div className="text-xs opacity-70 mt-0.5 text-white">{user?.role || "Pegawai"}</div>
             </div>
-            <button
-              onClick={toggleTheme}
-              className="relative w-11 h-11 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-all duration-300 group shrink-0"
-              aria-label="Toggle tema"
-            >
-              <Sun size={18} className={`absolute transition-all duration-500 ${darkMode ? 'opacity-0 rotate-90 scale-50' : 'opacity-100 rotate-0 scale-100'}`} />
-              <Moon size={18} className={`absolute transition-all duration-500 ${darkMode ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-50'}`} />
-            </button>
           </div>
           <div className="flex justify-between items-end">
             <div>

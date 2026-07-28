@@ -132,7 +132,7 @@ const glassCard = (darkMode) => ({
 // ==============================
 export default function EmployeeProfile() {
   const { user } = useAuth();
-  const { darkMode, toggleTheme } = useTheme();
+  const { darkMode } = useTheme();
   const navigate = useNavigate();
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -252,11 +252,6 @@ export default function EmployeeProfile() {
                 </span>
               }
               onClick={() => {}}
-              darkMode={darkMode} />
-            <MenuRow icon={icons.moon} title="Tema"
-              desc="Tampilan gelap / terang"
-              right={<Toggle on />}
-              onClick={toggleTheme}
               darkMode={darkMode} />
           </div>
         </div>

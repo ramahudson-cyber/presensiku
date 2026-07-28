@@ -8,7 +8,7 @@ import { getCurrentVersion } from "../../services/updateService";
 import {
   Users, UserCheck, UserMinus, UserX,
   TrendingUp, Calendar, Bell, RefreshCw, BellOff, Inbox,
-  Moon, LogOut, Sun, Sunset, CloudSun,
+  Moon, LogOut, Sunset, CloudSun,
 } from "lucide-react";
 
 
@@ -69,7 +69,7 @@ const getWitaDateString = (date = new Date()) => {
 
 export default function KepalaUnitDashboard() {
   const { user } = useAuth();
-  const { darkMode, toggleTheme } = useTheme();
+  const { darkMode } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalPegawai: 0, hadirHariIni: 0, izinSakit: 0, cuti: 0 });
@@ -275,16 +275,6 @@ export default function KepalaUnitDashboard() {
             >
               <Bell size={17} className="text-white/70" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-[#9900CC]"></span>
-            </button>
-            <button
-              onClick={toggleTheme}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors"
-            >
-              {darkMode ? (
-                <Sun size={17} className="text-white/70" />
-              ) : (
-                <Moon size={17} className="text-white/70" />
-              )}
             </button>
             <button
               onClick={handleLogout}

@@ -8,7 +8,7 @@ import { getCurrentVersion } from "../../services/updateService";
 import { PremiumStatCard } from "./PremiumStatCard";
 import {
   TrendingUp, Calendar, Bell, RefreshCw, BellOff, Inbox,
-  Moon, LogOut, Sun, Sunset, CloudSun,
+  Moon, LogOut, Sunset, CloudSun,
 } from "lucide-react";
 
 function AttendanceBadge({ status }) {
@@ -46,7 +46,7 @@ const getWitaDateString = (date = new Date()) => {
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { darkMode, toggleTheme } = useTheme();
+  const { darkMode } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalPegawai: 0, hadirHariIni: 0, izinSakit: 0, cuti: 0 });
@@ -165,7 +165,6 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => navigate("/admin/announcements")} className="relative w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors"><Bell size={17} className="text-white/70" /><span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-[#0A0018]"></span></button>
-            <button onClick={toggleTheme} className="w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors">{darkMode ? <Sun size={17} className="text-white/70" /> : <Moon size={17} className="text-white/70" />}</button>
             <button onClick={handleLogout} className="w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-rose-500/20 transition-colors"><LogOut size={17} className="text-white/70" /></button>
           </div>
         </div>
