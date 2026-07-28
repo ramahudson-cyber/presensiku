@@ -374,7 +374,7 @@ export default function AttendanceHistoryPage() {
             </div>
 
             {/* Mobile cards */}
-            <div className="md:hidden divide-y divide-white/[0.06]">
+            <div className="md:hidden divide-y divide-white/[0.06] pb-28">
               {records.map(r => (
                 <div key={r.id} className="p-4 hover:bg-white/[0.03] transition-all">
                   <div className="flex items-start gap-3">
