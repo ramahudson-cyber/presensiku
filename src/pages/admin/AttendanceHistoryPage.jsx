@@ -394,11 +394,11 @@ export default function AttendanceHistoryPage() {
                       </div>
                       <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
                         <div className="bg-onyx rounded-2xl p-2">
-                          <p className="text-slate-mist uppercase tracking-wider text-[10px]">Check In</p>
+                          <p className="text-slate-mist uppercase tracking-wider text-[10px]">Masuk</p>
                           <p className="text-emerald-300 font-mono tabular-nums mt-0.5">{fmtTime(r.clock_in_time)}</p>
                         </div>
                         <div className="bg-onyx rounded-2xl p-2">
-                          <p className="text-slate-mist uppercase tracking-wider text-[10px]">Check Out</p>
+                          <p className="text-slate-mist uppercase tracking-wider text-[10px]">Pulang</p>
                           <p className="text-rose-300 font-mono tabular-nums mt-0.5">{fmtTime(r.clock_out_time)}</p>
                         </div>
                       </div>
