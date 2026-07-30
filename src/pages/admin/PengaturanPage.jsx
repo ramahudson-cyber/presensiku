@@ -1578,7 +1578,7 @@ export default function PengaturanPage() {
       </div>
 
       {/* Tab nav — elegant mobile-first design */}
-      <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-2">
+      <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-7 gap-2">
         {tabs.map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
