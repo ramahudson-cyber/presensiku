@@ -1551,10 +1551,10 @@ export default function PengaturanPage() {
     { id: "profil", label: "Profil & Lokasi", icon: MapPin },
     { id: "jam-kerja", label: "Jam Kerja & Settings", icon: Clock },
     { id: "shift", label: "Kelola Shift", icon: Sun },
-    { id: "master-data", label: "Master Data", icon: Briefcase },
     { id: "user", label: "Manajemen User", icon: Users },
     { id: "approval", label: "Approval Device", icon: Smartphone },
     { id: "audit", label: "Audit Log", icon: Activity },
+    { id: "master-data", label: "Master Data", icon: Briefcase },
   ];
 
   const renderTab = () => {
