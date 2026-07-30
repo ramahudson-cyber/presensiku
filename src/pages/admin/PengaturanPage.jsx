@@ -1577,8 +1577,8 @@ export default function PengaturanPage() {
         </p>
       </div>
 
-      {/* Tab nav — elegant mobile-first design */}
-      <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-7 gap-2">
+      {/* Tab nav — horizontal scroll on mobile, grid on desktop */}
+      <div className="flex md:grid md:grid-cols-7 gap-2 overflow-x-auto pb-2 md:overflow-visible md:pb-0">
         {tabs.map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -1586,7 +1586,7 @@ export default function PengaturanPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all ${
+              className={`flex-shrink-0 flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all ${
                 isActive
                   ? "bg-violet-600/20 border-violet-500/50 text-pure-white shadow-lg"
                   : "bg-white/5 border-white/[0.06] text-slate-mist hover:bg-white/[0.03]"
