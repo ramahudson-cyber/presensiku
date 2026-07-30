@@ -8,13 +8,16 @@ export const MasterService = {
 
   // CRUD Jabatan
   addPosition: async (name) => await supabase.from('positions').insert({ name }),
+  updatePosition: async (id, name) => await supabase.from('positions').update({ name }).eq('id', id),
   deletePosition: async (id) => await supabase.from('positions').delete().eq('id', id),
 
   // CRUD Role
   addRole: async (name) => await supabase.from('roles').insert({ name }),
+  updateRole: async (id, name) => await supabase.from('roles').update({ name }).eq('id', id),
   deleteRole: async (id) => await supabase.from('roles').delete().eq('id', id),
 
   // CRUD Status
   addStatus: async (name) => await supabase.from('employment_statuses').insert({ name }),
+  updateStatus: async (id, name) => await supabase.from('employment_statuses').update({ name }).eq('id', id),
   deleteStatus: async (id) => await supabase.from('employment_statuses').delete().eq('id', id),
 };
