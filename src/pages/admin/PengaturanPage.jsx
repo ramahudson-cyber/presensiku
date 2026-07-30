@@ -1534,8 +1534,8 @@ export default function PengaturanPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("profil");
 
-  // Cek role (double safety)
-  if (user?.role !== "super_admin") {
+// Cek role (double safety)
+if (!["super_admin", "admin_puskesmas"].includes(user?.role)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8 animate-fade-in">
         <div className="p-5 rounded-3xl bg-rose-500/10 mb-4">
