@@ -55,7 +55,7 @@ export default function SchedulingPage() {
   const assignedCount = Object.keys(schedules).length;
 
   useEffect(() => {
-    supabase.from("profiles").select("id, full_name, role").neq("role", "super_admin").order("full_name")
+    supabase.from("profiles").select("id, full_name, role").order("full_name")
       .then(({ data }) => setEmployees(data || []));
   }, []);
 
