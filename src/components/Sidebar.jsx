@@ -65,8 +65,12 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
         {/* User Info */}
         <div className="px-5 py-4 border-b border-white/10 bg-white/[0.03]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-electric-violet to-deep-indigo flex items-center justify-center text-xs font-bold shrink-0 text-pure-white">
-              {user?.full_name?.charAt(0) || user?.username?.charAt(0) || "U"}
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-electric-violet to-deep-indigo flex items-center justify-center text-xs font-bold shrink-0 text-pure-white overflow-hidden">
+              {user?.avatar_url || user?.user_metadata?.avatar_url ? (
+                <img src={user?.avatar_url || user?.user_metadata?.avatar_url} alt="" className="w-full h-full object-cover" />
+              ) : (
+                user?.full_name?.charAt(0) || user?.username?.charAt(0) || "U"
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate text-pure-white">{user?.full_name || user?.username || "User"}</p>

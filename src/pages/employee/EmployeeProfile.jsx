@@ -136,6 +136,8 @@ export default function EmployeeProfile() {
   const navigate = useNavigate();
   const [loggingOut, setLoggingOut] = useState(false);
 
+  console.log("👤 EmployeeProfile user:", { avatar_url: user?.avatar_url, user_metadata: user?.user_metadata, role: user?.role });
+  const avatarUrl = user?.avatar_url || user?.user_metadata?.avatar_url || null;
   const initial = user?.full_name?.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() || '--';
   const nip = user?.nip || user?.user_metadata?.nip || '-';
 
@@ -167,8 +169,8 @@ export default function EmployeeProfile() {
                      boxShadow: '0 0 24px rgba(191,0,255,0.25), 0 0 48px rgba(191,0,255,0.08)' }}>
             <div className="w-full h-full rounded-full flex items-center justify-center relative overflow-hidden"
               style={{ background: user?.avatar_url ? 'transparent' : (darkMode ? '#161320' : '#f0f0f0') }}>
-              {user?.avatar_url ? (
-                <img src={user.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
                 <>
                   <div className="absolute inset-0 rounded-full"
