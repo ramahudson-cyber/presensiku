@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase'; // ✅ FIX: path yang benar
+import { MasterService } from '../../services/masterService';
 import { getSetting } from '../../lib/settings';
 import { toast } from 'react-toastify';
 import {
@@ -29,6 +30,7 @@ const EmployeesPage = () => {
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [masterData, setMasterData] = useState({ positions: [], roles: [], statuses: [] });
   const [formData, setFormData] = useState({
     id: '',
     username: '',
@@ -39,8 +41,18 @@ const EmployeesPage = () => {
     position: '',
   });
 
+  const fetchMasterData = async () => {
+    const [p, r, s] = await Promise.all([
+      MasterService.getPositions(),
+      MasterService.getRoles(),
+      MasterService.getStatuses(),
+    ]);
+    setMasterData({ positions: p.data || [], roles: r.data || [], statuses: s.data || [] });
+  };
+
   const fetchEmployees = async () => {
     setLoading(true);
+    await fetchMasterData();
     try {
       const { data, error } = await supabase.from('profiles').select('*');
       if (error) {
@@ -316,10 +328,9 @@ const EmployeesPage = () => {
                   <select name="role" value={formData.role} onChange={handleInputChange} required
                     className={inputBase}>
                     <option value="" className="bg-onyx">Pilih Role</option>
-                    <option value="super_admin" className="bg-onyx">Super Admin</option>
-                    <option value="admin_puskesmas" className="bg-onyx">Admin Puskesmas</option>
-                    <option value="kepala_unit" className="bg-onyx">Kepala Unit</option>
-                    <option value="pegawai" className="bg-onyx">Pegawai</option>
+                    {masterData.roles.map(r => (
+                      <option key={r.id} value={r.name} className="bg-onyx">{r.name}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -331,10 +342,9 @@ const EmployeesPage = () => {
                   <select name="employee_status" value={formData.employee_status} onChange={handleInputChange} required
                     className={inputBase}>
                     <option value="" className="bg-onyx">Pilih Status</option>
-                    <option value="asn" className="bg-onyx">ASN</option>
-                    <option value="pppk_penuh_waktu" className="bg-onyx">PPPK Penuh Waktu</option>
-                    <option value="pppk_paruh_waktu" className="bg-onyx">PPPK Paruh Waktu</option>
-                    <option value="tpk" className="bg-onyx">TPK</option>
+                    {masterData.statuses.map(s => (
+                      <option key={s.id} value={s.name} className="bg-onyx">{s.name}</option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -347,12 +357,9 @@ const EmployeesPage = () => {
                 <select name="position" value={formData.position} onChange={handleInputChange} required
                   className={inputBase}>
                   <option value="" className="bg-onyx">Pilih Jabatan</option>
-                  {POSITIONS.map(p => (
-                    <option key={p} value={p} className="bg-onyx">{p}</option>
+                  {masterData.positions.map(p => (
+                    <option key={p.id} value={p.name} className="bg-onyx">{p.name}</option>
                   ))}
-                  {formData.position && !POSITIONS.includes(formData.position) && (
-                    <option value={formData.position} className="bg-onyx">{formData.position}</option>
-                  )}
                 </select>
               </div>
 
