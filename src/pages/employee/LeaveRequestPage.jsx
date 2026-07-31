@@ -196,7 +196,7 @@ export default function LeaveRequestPage() {
                 <div key={r.id} className="bg-white/5 border border-white/10 rounded-xl p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm text-pure-white capitalize">{r.type}</span>
+                      <span className="font-semibold text-sm text-pure-white capitalize">{r.request_type}</span>
                       <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${sc.class}`}>
                         {sc.label}
                       </span>

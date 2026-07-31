@@ -16,7 +16,7 @@ export async function createLeaveRequest({ userId, type, startDate, endDate, rea
     .from("leave_requests")
     .insert({
       user_id: userId,
-      type,
+      request_type: type,
       start_date: startDate,
       end_date: endDate,
       reason: reason.trim(),

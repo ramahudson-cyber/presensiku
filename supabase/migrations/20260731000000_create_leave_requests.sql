@@ -10,7 +10,7 @@ ALTER TABLE attendance ALTER COLUMN clock_in_time DROP NOT NULL;
 CREATE TABLE IF NOT EXISTS leave_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-  type VARCHAR NOT NULL CHECK (type IN ('izin', 'sakit')),
+  request_type VARCHAR NOT NULL CHECK (request_type IN ('izin', 'sakit')),
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
   reason TEXT NOT NULL,
@@ -91,8 +91,8 @@ BEGIN
       v_skipped := v_skipped + 1;
     ELSE
       INSERT INTO attendance (user_id, date, attendance_status, schedule_match, is_late, late_minutes, notes)
-      VALUES (v_request.user_id, v_day, v_request.type, false, false, 0,
-              'Auto dari permohonan ' || v_request.type);
+      VALUES (v_request.user_id, v_day, v_request.request_type, false, false, 0,
+              'Auto dari permohonan ' || v_request.request_type);
       v_created := v_created + 1;
     END IF;
   END LOOP;

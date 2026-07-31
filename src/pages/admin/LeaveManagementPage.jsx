@@ -135,7 +135,7 @@ export default function LeaveManagementPage() {
                         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
                           <div className="flex flex-col">
                             <span className="text-[10px] text-slate-mist uppercase font-semibold">Jenis</span>
-                            <span className="text-pure-white capitalize">{item.type}</span>
+                            <span className="text-pure-white capitalize">{item.request_type}</span>
                           </div>
                           <div className="flex flex-col">
                             <span className="text-[10px] text-slate-mist uppercase font-semibold">Tanggal</span>
