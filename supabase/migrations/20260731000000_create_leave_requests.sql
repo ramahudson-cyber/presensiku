@@ -91,8 +91,8 @@ BEGIN
       v_skipped := v_skipped + 1;
     ELSE
       INSERT INTO attendance (user_id, date, attendance_status, schedule_match, is_late, late_minutes, notes)
-      VALUES (v_request.user_id, v_day, v_request.request_type, false, false, 0,
-              'Auto dari permohonan ' || v_request.request_type);
+      VALUES (v_request.user_id, v_day, v_request.leave_type, false, false, 0,
+              'Auto dari permohonan ' || v_request.leave_type);
       v_created := v_created + 1;
     END IF;
   END LOOP;

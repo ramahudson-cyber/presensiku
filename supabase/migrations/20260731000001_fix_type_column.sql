@@ -1,17 +1,18 @@
 -- ============================================================
--- Fix: rename 'type' column to 'request_type'
+-- Fix: rename 'type' column to 'leave_type'
 -- 'type' is a PostgreSQL reserved keyword causing Supabase schema cache error
 -- "Could not find the 'type' column of 'leave_requests' in the schema cache"
+-- Tabel asli sudah punya kolom 'leave_type' (enum) + 'total_days' (NOT NULL)
 -- ============================================================
 
--- Drop old check constraint before rename
+-- Drop old constraint if exists
 ALTER TABLE leave_requests DROP CONSTRAINT IF EXISTS leave_requests_type_check;
 
 -- Rename column
-ALTER TABLE leave_requests RENAME COLUMN type TO request_type;
+ALTER TABLE leave_requests RENAME COLUMN type TO leave_type;
 
 -- Re-create check constraint with new name
-ALTER TABLE leave_requests ADD CONSTRAINT leave_requests_request_type_check CHECK (request_type IN ('izin', 'sakit'));
+ALTER TABLE leave_requests ADD CONSTRAINT leave_requests_leave_type_check CHECK (leave_type IN ('izin', 'sakit'));
 
--- Rename existing data to use lowercase for consistency
-UPDATE leave_requests SET request_type = LOWER(request_type);
+-- Convert existing data to lowercase
+UPDATE leave_requests SET leave_type = LOWER(leave_type);

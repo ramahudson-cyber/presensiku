@@ -16,7 +16,8 @@ export async function createLeaveRequest({ userId, type, startDate, endDate, rea
     .from("leave_requests")
     .insert({
       user_id: userId,
-      request_type: type,
+      leave_type: type,
+      total_days: countLeaveDays(startDate, endDate),
       start_date: startDate,
       end_date: endDate,
       reason: reason.trim(),
