@@ -1,40 +1,18 @@
 -- ============================================================
--- Migration: Fitur Izin & Sakit
--- Tabel leave_requests + RLS + RPC approve/reject
--- Approve => otomatis buat catatan attendance per tanggal
+-- Sync leave_requests ke schema yang dipakai aplikasi
+-- Idempotent: aman dijalankan berulang kali
 -- ============================================================
 
--- Izin/sakit tidak punya jam absen, jadi kolom ini harus boleh NULL
-ALTER TABLE attendance ALTER COLUMN clock_in_time DROP NOT NULL;
-
--- Enum leave_type (izin/sakit), idempotent
-DO $$
-BEGIN
-  CREATE TYPE leave_type AS ENUM ('izin', 'sakit');
-EXCEPTION WHEN duplicate_object THEN NULL;
-END $$;
-
-CREATE TABLE IF NOT EXISTS leave_requests (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-  leave_type leave_type NOT NULL,
-  start_date DATE NOT NULL,
-  end_date DATE NOT NULL,
-  total_days INTEGER NOT NULL DEFAULT 1,
-  reason TEXT NOT NULL,
-  attachment_url TEXT,
-  status VARCHAR NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
-  rejection_reason TEXT,
-  approved_by UUID REFERENCES profiles(id) ON DELETE SET NULL,
-  approved_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  CONSTRAINT leave_date_order CHECK (end_date >= start_date)
-);
+-- Kolom yang dipakai aplikasi (total_days di insert leaveService.js)
+ALTER TABLE leave_requests ADD COLUMN IF NOT EXISTS total_days INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE leave_requests ADD COLUMN IF NOT EXISTS attachment_url TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_leave_requests_user_id ON leave_requests(user_id);
 CREATE INDEX IF NOT EXISTS idx_leave_requests_status ON leave_requests(status);
 
+-- ============================================================
+-- RLS policies (idempotent)
+-- ============================================================
 ALTER TABLE leave_requests ENABLE ROW LEVEL SECURITY;
 
 -- Pegawai baca permohonannya sendiri
@@ -61,10 +39,8 @@ DROP POLICY IF EXISTS user_delete_own_pending_leave ON leave_requests;
 CREATE POLICY user_delete_own_pending_leave ON leave_requests
   FOR DELETE USING (auth.uid() = user_id AND status = 'pending');
 
--- Approve/reject lewat RPC SECURITY DEFINER (tidak perlu policy UPDATE)
-
 -- ============================================================
--- RPC: approve_leave_request
+-- RPC: approve_leave_request (pakai leave_type, bukan request_type)
 -- ============================================================
 CREATE OR REPLACE FUNCTION approve_leave_request(p_request_id UUID)
 RETURNS JSON
@@ -108,7 +84,7 @@ BEGIN
   END LOOP;
 
   UPDATE leave_requests
-  SET status = 'approved', approved_by = auth.uid(), approved_at = NOW(), rejection_reason = NULL
+  SET status = 'approved', approved_by = auth.uid(), approved_at = NOW(), rejection_reason = NULL, updated_at = NOW()
   WHERE id = p_request_id;
 
   RETURN json_build_object(
@@ -146,9 +122,13 @@ BEGIN
   END IF;
 
   UPDATE leave_requests
-  SET status = 'rejected', rejection_reason = p_reason, approved_by = auth.uid(), approved_at = NOW()
+  SET status = 'rejected', rejection_reason = p_reason, approved_by = auth.uid(), approved_at = NOW(), updated_at = NOW()
   WHERE id = p_request_id;
 
   RETURN json_build_object('success', true, 'message', 'Permohonan ditolak');
 END;
 $$;
+
+-- Grant execute ke semua role (RPC SECURITY DEFINER mengontrol akses sendiri)
+GRANT EXECUTE ON FUNCTION approve_leave_request(UUID) TO authenticated, anon;
+GRANT EXECUTE ON FUNCTION reject_leave_request(UUID, TEXT) TO authenticated, anon;

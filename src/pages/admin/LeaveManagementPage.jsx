@@ -40,7 +40,8 @@ export default function LeaveManagementPage() {
     try {
       setProcessing(true);
       const data = await approveLeaveRequest(id);
-      alert(data.message || "Disetujui");
+      const extra = data.created > 0 ? ` (${data.created} absen dibuat, ${data.skipped} dilewati)` : data.skipped > 0 ? ` (${data.skipped} tanggal sudah ada absen)` : "";
+      alert((data.message || "Disetujui") + extra);
       await load();
     } catch (e) {
       alert(e.message || "Gagal menyetujui");

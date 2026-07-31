@@ -11,7 +11,36 @@ import {
 export default function LeaveRequestPage() {
   const { user, loading: authLoading } = useAuth();
 
-  // Guard: tunggu auth load selesai
+  // Hooks HARUS sebelum early return (React #310: hook count mismatch)
+  const [formType, setFormType] = useState("izin");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [reason, setReason] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [requests, setRequests] = useState([]);
+  const [fetching, setFetching] = useState(true);
+  const [fetchError, setFetchError] = useState("");
+
+  const loadRequests = async () => {
+    try {
+      setFetchError("");
+      const data = await getMyLeaveRequests(user.id);
+      setRequests(data);
+    } catch (e) {
+      setFetchError(e.message || "Gagal memuat riwayat");
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.id) loadRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  // Guard: tunggu auth load selesai (setelah hooks)
   if (authLoading) {
     return (
       <div className="max-w-2xl mx-auto flex items-center justify-center py-20">
@@ -28,30 +57,8 @@ export default function LeaveRequestPage() {
     );
   }
 
-  const [formType, setFormType] = useState("izin");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [reason, setReason] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [formError, setFormError] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
-  const [requests, setRequests] = useState([]);
-  const [fetching, setFetching] = useState(true);
-
-  const loadRequests = async () => {
-    try {
-      const data = await getMyLeaveRequests(user.id);
-      setRequests(data);
-    } catch (e) {
-      // silent
-    } finally {
-      setFetching(false);
-    }
-  };
-
-  useEffect(() => {
-    if (user?.id) loadRequests();
-  }, [user?.id]);
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -137,7 +144,7 @@ export default function LeaveRequestPage() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                min={new Date().toISOString().split("T")[0]}
+                min={todayStr}
                 className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-pure-white text-sm focus:outline-none focus:border-electric-violet focus:ring-1 focus:ring-electric-violet [color-scheme:dark]"
               />
             </div>
@@ -147,7 +154,7 @@ export default function LeaveRequestPage() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                min={startDate || new Date().toISOString().split("T")[0]}
+                min={startDate || todayStr}
                 className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-pure-white text-sm focus:outline-none focus:border-electric-violet focus:ring-1 focus:ring-electric-violet [color-scheme:dark]"
               />
             </div>
@@ -155,7 +162,7 @@ export default function LeaveRequestPage() {
 
           {startDate && endDate && endDate >= startDate && (
             <p className="text-xs text-slate-mist">
-              {countLeaveDays(startDate, endDate)} hari kerja
+              {countLeaveDays(startDate, endDate)} hari
             </p>
           )}
 
@@ -183,6 +190,12 @@ export default function LeaveRequestPage() {
       {/* RIWAYAT */}
       <div className="bg-gradient-to-br from-electric-violet/[0.08] to-deep-indigo/[0.08] border border-white/10 rounded-2xl p-5 shadow-xl">
         <h2 className="text-lg font-bold text-pure-white mb-4">Riwayat Permohonan</h2>
+
+        {fetchError && (
+          <p className="text-sm text-rose-400 bg-rose-500/10 px-4 py-3 rounded-xl border border-rose-500/20 text-center">
+            {fetchError}
+          </p>
+        )}
 
         {fetching && requests.length === 0 ? (
           <p className="text-sm text-slate-mist text-center py-6">Memuat...</p>
