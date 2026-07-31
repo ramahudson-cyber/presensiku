@@ -4,7 +4,7 @@ import { useTheme } from "../context/ThemeContext";
 import {
   LayoutDashboard, CalendarCheck, CalendarDays,
   Users, History, FileText, Megaphone, Settings, MoreHorizontal,
-  FingerprintPattern, User,
+  FingerprintPattern, User, ClipboardList,
 } from "lucide-react";
 import { useState } from "react";
 import BottomSheet from "./BottomSheet";
@@ -22,6 +22,7 @@ export default function BottomNav({ hidden = false }) {
     { path: "/employee", label: "Home", icon: LayoutDashboard, end: true },
     { path: "/employee/profile", label: "Profil", icon: User },
     { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
+    { path: "/employee/leave", label: "Izin / Sakit", icon: ClipboardList },
     { path: "/employee/history", label: "Riwayat", icon: History },
   ];
 

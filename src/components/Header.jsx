@@ -15,6 +15,7 @@ const TITLES = {
   "/admin/settings": "Pengaturan",
   "/employee": "Dashboard",
   "/employee/attendance": "Absensi",
+  "/employee/leave": "Izin / Sakit",
 };
 
 function Header() {

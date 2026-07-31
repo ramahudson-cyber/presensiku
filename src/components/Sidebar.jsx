@@ -5,7 +5,7 @@ import { getCurrentVersion } from "../services/updateService";
 import {
   LayoutDashboard, Users, CalendarCheck, CalendarDays,
   FileText, Megaphone, Settings, LogOut,
-  History, X, MapPin
+  History, X, MapPin, ClipboardList
 } from "lucide-react";
 
 export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
@@ -23,6 +23,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
     { path: "/employee", label: "Dashboard", icon: LayoutDashboard, end: true },
     { path: "/employee/attendance", label: "Absensi", icon: CalendarCheck },
     { path: "/employee/schedule", label: "Jadwal Shift", icon: CalendarDays },
+    { path: "/employee/leave", label: "Izin / Sakit", icon: ClipboardList },
   ];
 
   const adminMenus = [
