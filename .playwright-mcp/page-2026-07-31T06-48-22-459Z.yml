@@ -1,0 +1,19 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e64]:
+    - generic [ref=e65]:
+      - heading "Terjadi Kesalahan" [level=2] [ref=e69]
+      - paragraph [ref=e70]: Aplikasi mengalami error. Silahkan muat ulang halaman.
+      - paragraph [ref=e71]: Cannot read properties of null (reading 'id')
+    - button "Muat Ulang" [ref=e72]
+  - generic [ref=e75]:
+    - generic [ref=e76]: "[plugin:vite:oxc] Transform failed with 1 error: [PARSE_ERROR] Identifier `loading` has already been declared ╭─[ src/pages/employee/LeaveRequestPage.jsx:12:17 ] │ 12 │ const { user, loading } = useAuth(); │ ───┬─── │ ╰───── `loading` has already been declared here │ 35 │ const [loading, setLoading] = useState(false); │ ───┬─── │ ╰───── It can not be redeclared here ────╯"
+    - generic [ref=e77]: C:/Users/user/ZCodeProject/src/pages/employee/LeaveRequestPage.jsx
+    - generic [ref=e79]: at transformWithOxc (file:///C:/Users/user/ZCodeProject/node_modules/vite/dist/node/chunks/node.js:3344:19) at TransformPluginContext.transform (file:///C:/Users/user/ZCodeProject/node_modules/vite/dist/node/chunks/node.js:3415:26) at EnvironmentPluginContainer.transform (file:///C:/Users/user/ZCodeProject/node_modules/vite/dist/node/chunks/node.js:30387:51) at async loadAndTransform (file:///C:/Users/user/ZCodeProject/node_modules/vite/dist/node/chunks/node.js:24646:26) at async viteTransformMiddleware (file:///C:/Users/user/ZCodeProject/node_modules/vite/dist/node/chunks/node.js:24440:20)
+    - generic [ref=e80]:
+      - text: Click outside, press Esc key, or fix the code to dismiss.You can also disable this overlay by setting
+      - code [ref=e81]: server.hmr.overlay
+      - text: to
+      - code [ref=e82]: "false"
+      - text: in
+      - code [ref=e83]: vite.config.js
+      - text: .

@@ -1,0 +1,7 @@
+feat(location): attendance location from DB + map picker
+
+- Add migration: attendance_locations table + get_active_location RPC
+- Add LocationPicker component (Leaflet map, click/drag marker)
+- Integrate map picker into PengaturanPage Profil & Lokasi tab
+- AttendancePage now fetches location from DB via getPuskesmasLocation()
+- Remove hardcoded PUSKESMAS_LOCATION & local calculateDistance

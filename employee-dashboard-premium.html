@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Dashboard - Premium Design</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background:#0a0017;
+      color:white;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      padding:20px;
+    }
+    .phone-frame {
+      position:relative;
+      width:375px;
+      height:812px;
+      background:black;
+      border-radius:48px;
+      box-shadow:0 20px 60px rgba(191,0,255,0.3),0 0 0 4px rgba(255,255,255,0.05);
+      overflow:hidden;
+    }
+    .status-bar {
+      display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-size:13px;color:white;background:rgba(0,0,0,0.3);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.05);
+    }
+    .screen { height:calc(100vh - 48px);background:linear-gradient(180deg,#0d001e 0%,#1a0033 50%,#0d001e 100%);padding:16px;overflow-y:auto;}
+    .header {display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+    .avatar {width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#BF00FF,#8B00CC);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;color:white;box-shadow:0 4px 12px rgba(191,0,255,0.3);}
+    .user-info h2 {font-size:16px;font-weight:600;margin-bottom:2px;line-height:1.2;}
+    .user-info span {font-size:11px;color:#aaa;}
+    .stats-grid {display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;}
+    .stat-card {background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:16px;text-align:center;background-image:url('data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 26c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm56-76c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm57-65c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" fill="%23BF00FF" fill-opacity="0.03" fill-rule="evenodd"/%3E%3C/svg%3E');background-repeat:repeat;}
+    .stat-value {font-size:20px;font-weight:700;margin:8px 0;}
+    .stat-label {font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;}
+    .stat-change {font-size:11px;color:#ADFF2F;margin-top:4px;}
+    .bg-group {display:flex;gap:12px;margin-bottom:20px;}
+    .bg-card {flex:1;background:linear-gradient(135deg,BF00FF to #8B00CC);padding:12px;border-radius:12px;color:white;}
+    .bg-card h4 {font-size:11px;opacity:0.8;margin-bottom:6px;}
+    .bg-card .money {font-size:16px;font-weight:600;}
+    .bg-card .diff {font-size:10px;margin-top:4px;opacity:0.9;}
+    .watchlist {margin-bottom:20px;}
+    .tab-nav {display:flex;gap:12px;margin-bottom:12px;font-size:12px;}
+    .tab {padding:6px 12px;border-radius:20px;background:rgba(255,255,255,0.05);cursor:pointer;color:#aaa;font-size:11px;}
+    .tab.active {background:linear-gradient(to right,BF00FF,#8B00CC);color:white;}
+    .coin-item {display:flex;justify-content:space-between;align-items:center;padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;margin-bottom:8px;transition:all 0.2s ease;}
+    .coin-item:hover {background:rgba(255,255,255,0.06);transform:translateX(4px);}
+    .coin-left {display:flex;align-items:center;gap:10px;}
+    .coin-icon {width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:11px;}
+    .coin-info h4 {font-size:13px;font-weight:600;}
+    .coin-info span {font-size:10px;color:#888;}
+    .coin-price {text-align:right;font-size:13px;font-weight:600;}
+    .coin-pos {font-size:10px;align-self:center;}
+    .btn-float {position:fixed;bottom:30px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#BF00FF,#8B00CC);border:3px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(191,0,255,0.4);cursor:pointer;z-index:10;}
+    .grid-influence {display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+    .influence-circle {aspect-ratio:1;border-radius:50%;background:linear-gradient(135deg,inherit);display:flex;align-items:center;justify-content:center;font-size:18px;color:black;position:relative;border:2px solid white;}
+    .influence-dot {position:absolute;width:8px;height:8px;background:#00ff88;border-radius:50%;bottom:-4px;right:-4px;}
+    @media (max-width:600px){.phone-frame{width:100vw;height:100vh;border-radius:0;}}
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <div class="status-bar"><span>Axiatel LTE</span><span>9:41</span><span>🔋 33%</span></div>
+    <div class="screen">
+      <!-- Header -->
+      <div class="header">
+        <div class="avatar">RC</div>
+        <div class="user-info">
+          <h2>Richard Cooper</h2>
+          <span>Premium User · 1.2K KULI</span>
+        </div>
+      </div>
+
+      <!-- Total Balance -->
+      <div style="margin-bottom:20px;"><div style="font-size:12px;color:#aaa;margin-bottom:8px;">Total Balance</div><div style="font-size:32px;font-weight:700;margin-bottom:8px;">$17,258.13</div><div style="color:#ADFF2F;font-size:12px;">+$4,972.2 · 37.4% all time</div></div>
+
+      <!-- Wallets & Earnings -->
+      <div class="bg-group">
+        <div class="bg-card"><h4>Wallets</h4><div class="money">$5,212.17</div><div class="diff">+1,546.8 · 42.2% for month</div></div>
+        <div class="bg-card"><h4>Earnings</h4><div class="money">$12,045.96</div><div class="diff">+1,534.6 · 14.6% for month</div></div>
+      </div>
+
+      <!-- Watchlist -->
+      <div class="watchlist">
+        <div class="tab-nav"><div class="tab active">Watchlist</div><div class="tab">All Coins</div></div>
+        <div class="coin-item">
+          <div class="coin-left"><div class="coin-icon" style="background:#f093fb;">T</div><div class="coin-info"><h4>Tron</h4><span>TRX</span></div></div>
+          <div style="text-align:right;"><div class="coin-price">$0.06629</div><div class="coin-pos" style="color:#ADFF2F;">+0.58%</div></div>
+        </div>
+        <div class="coin-item">
+          <div class="coin-left"><div class="coin-icon" style="background:#3b82f6;">Ξ</div><div class="coin-info"><h4>Ethereum</h4><span>ETH</span></div></div>
+          <div style="text-align:right;"><div class="coin-price">$1,914.66</div><div class="coin-pos" style="color:#ADFF2F;">+4.88%</div></div>
+        </div>
+        <div class="coin-item">
+          <div class="coin-left"><div class="coin-icon" style="background:#ff2d75;">P</div><div class="coin-info"><h4>Polkadot</h4><span>DOT</span></div></div>
+          <div style="text-align:right;"><div class="coin-price">$6.09</div><div class="coin-pos" style="color:#ADFF2F;">+2.73%</div></div>
+        </div>
+      </div>
+
+      <!-- Validator Influence -->
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:16px;margin-bottom:20px;">
+        <h4 style="font-size:13px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">Validator Influence<span style="font-size:11px;color:#8B00FF;cursor:pointer;">Learn about Kujira</span></h4>
+        <div class="grid-influence">
+          <div class="influence-circle" style="background:linear-gradient(135deg,#00ff88,#00cc6a);">👦<div class="influence-dot"></div></div>
+          <div class="influence-circle" style="background:linear-gradient(135deg,#ff2d75,#c9184a);">👧</div>
+          <div class="influence-circle" style="background:linear-gradient(135deg,#ffd93d,#ffcd00);">🧑</div>
+          <div class="influence-circle" style="background:linear-gradient(135deg,#6c5ce7,#5649c0);">👤</div>
+          <div class="influence-circle" style="background:linear-gradient(135deg,#ffeaa7,#fdcb6e);">👨‍🦱</div>
+          <div class="influence-circle" style="background:linear-gradient(135deg,#a29bfe,#744ecc);">🐶</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;">
+        <div style="text-align:center"><div style="width:44px;height:44px;margin:0 auto 6px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;">⛏️</div><div style="font-size:10px;color:#8B00FF">Unstake</div></div>
+        <div style="text-align:center"><div style="width:44px;height:44px;margin:0 auto 6px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;">⚡</div><div style="font-size:10px;color:#8B00FF">Attack</div></div>
+        <div style="text-align:center"><div style="width:44px;height:44px;margin:0 auto 6px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;">💥</div><div style="font-size:10px;color:#8B00FF">Hack</div></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

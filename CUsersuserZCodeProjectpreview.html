@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #0b0e14; color: white; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .card { background: rgba(255, 255, 255, 0.05); }
+        .bottom-nav { background: rgba(16, 20, 27, 0.8); backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.05); }
+        .tab-active { border-bottom: 2px solid white; padding-bottom: 8px; }
+    </style>
+</head>
+<body class="p-4 pb-24">
+    <header class="flex justify-between items-center mb-6 pt-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-blue-500"></div>
+            <div>
+                <div class="font-semibold">Richard Cooper</div>
+            </div>
+        </div>
+        <div class="opacity-60 text-xl">🔔</div>
+    </header>
+
+    <div class="mb-6">
+        <p class="text-sm opacity-50 mb-1">Total Balance</p>
+        <h1 class="text-4xl font-bold mb-1">7,258.13</h1>
+        <p class="text-sm text-emerald-500 font-medium">+4,972.2 • 37.4% <span class="opacity-40 text-white">all time</span></p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 mb-8">
+        <div class="card p-4 rounded-3xl">
+            <p class="text-sm opacity-50 mb-2">Wallets</p>
+            <h2 class="text-lg font-bold mb-1">,212.17</h2>
+            <p class="text-xs text-emerald-500">+1,546.8 • 42.2%</p>
+            <p class="text-[10px] opacity-30 mt-1">for month</p>
+        </div>
+        <div class="card p-4 rounded-3xl">
+            <p class="text-sm opacity-50 mb-2">Earnings</p>
+            <h2 class="text-lg font-bold mb-1">2,045.96</h2>
+            <p class="text-xs text-emerald-500">+1,534.6 • 14.6%</p>
+            <p class="text-[10px] opacity-30 mt-1">for month</p>
+        </div>
+    </div>
+
+    <div class="glass rounded-[2rem] p-5">
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex gap-6 font-semibold text-sm">
+                <span class="tab-active">Watchlist</span>
+                <span class="opacity-40">All Coins</span>
+            </div>
+            <div class="opacity-40 text-lg">🔍</div>
+        </div>
+        
+        <div class="flex gap-3 text-[11px] font-medium opacity-50 mb-6 overflow-x-auto">
+            <span class="bg-white/10 px-4 py-1.5 rounded-full text-white">Date Added</span>
+            <span>Value</span><span>Price Change</span><span>Popular</span>
+        </div>
+
+        <div class="space-y-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-red-500 flex items-center justify-center font-bold">T</div>
+                    <div><div class="font-bold text-sm">Tron</div><div class="text-[10px] opacity-40">TRX</div></div>
+                </div>
+                <div class="text-right">
+                    <div class="font-bold text-sm">/usr/bin/bash.06629</div>
+                    <div class="text-[10px] text-emerald-500">+0.58%</div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center font-bold">E</div>
+                    <div><div class="font-bold text-sm">Ethereum</div><div class="text-[10px] opacity-40">ETH</div></div>
+                </div>
+                <div class="text-right">
+                    <div class="font-bold text-sm">,914.66</div>
+                    <div class="text-[10px] text-emerald-500">+4.88%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav fixed bottom-6 left-6 right-6 rounded-full py-4 px-8 flex justify-between items-center">
+        <div class="opacity-40 text-xl">🏠</div>
+        <div class="bg-blue-600 p-4 rounded-full -mt-12 border-[6px] border-[#0b0e14] text-xl">⇄</div>
+        <div class="opacity-40 text-xl">▦</div>
+    </div>
+</body>
+</html>

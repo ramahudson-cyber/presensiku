@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Hadir.Kuy — Arena Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0a0a;
+    color: white;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* === Section divider === */
+  .page-separator {
+    background: rgba(255,255,255,0.03);
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .page-separator .label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+  }
+  .page-separator .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); margin: 10px auto 0;
+  }
+
+  /* === Page 1: Arena === */
+  .arena-page {
+    background: linear-gradient(180deg, #1a0533 0%, #0d0d0d 18%, #111111 100%);
+    padding-bottom: 60px;
+  }
+
+  /* Nav header */
+  .nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px 18px;
+  }
+  .nav-header .title { font-size: 18px; font-weight: 700; color: white; }
+  .icon-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 16px; cursor: pointer;
+    border: none;
+  }
+
+  /* Hero */
+  .hero-text { padding: 4px 20px 20px; }
+  .hero-text h1 { font-size: 24px; font-weight: 800; color: white; line-height: 1.15; }
+  .hero-text .sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 6px; }
+
+  /* Challenge cards row */
+  .challenges-row {
+    display: flex;
+    gap: 10px;
+    padding: 0 20px;
+    margin-bottom: 28px;
+  }
+  .challenge-card {
+    flex: 1;
+    min-height: 200px;
+    border-radius: 20px;
+    padding: 16px 14px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .challenge-card.purple { background: linear-gradient(150deg, #a855f7 0%, #7c3aed 60%, #4c1d95 100%); box-shadow: 0 8px 30px rgba(168,85,247,0.25); }
+  .challenge-card.orange { background: linear-gradient(150deg, #fb923c 0%, #ea580c 60%, #9a3412 100%); box-shadow: 0 8px 30px rgba(251,146,60,0.25); }
+
+  .badge {
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .badge.global { background: rgba(255,255,255,0.2); color: white; }
+  .badge.local { background: rgba(255,255,255,0.2); color: white; }
+  .badge.timer { background: rgba(0,0,0,0.3); color: white; }
+  .badge.timer.red { background: #ef4444; }
+  .badge.timer.green { background: #22c55e; }
+
+  .badge-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+
+  .challenge-card h3 { font-size: 16px; font-weight: 800; color: white; line-height: 1.15; margin-bottom: 4px; }
+  .challenge-card .hosts { font-size: 9px; color: rgba(255,255,255,0.65); margin-bottom: 10px; line-height: 1.3; }
+
+  .avatar-row { display: flex; }
+  .avatar-row img { width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; margin-left: -6px; object-fit: cover; }
+  .avatar-row img:first-child { margin-left: 0; }
+
+  .card-footer {
+    position: absolute; bottom: 14px; left: 14px; right: 14px;
+    display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: white; font-weight: 600;
+  }
+  .card-footer .left { display: flex; align-items: center; gap: 6px; }
+  .card-footer .icon-box {
+    width: 20px; height: 20px; border-radius: 6px;
+    background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 10px;
+  }
+
+  /* Arenas section */
+  .arenas-section { padding: 0 20px; }
+  .section-title { font-size: 16px; font-weight: 700; color: white; margin-bottom: 12px; }
+
+  .filter-tabs {
+    display: flex; gap: 6px; margin-bottom: 16px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+  }
+  .filter-tab {
+    font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 999px;
+    white-space: nowrap; cursor: pointer; border: none;
+  }
+  .filter-tab.active { background: white; color: #111; }
+  .filter-tab.inactive { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+  .filter-tab .dot {
+    background: #f87171; color: white; font-size: 9px; font-weight: 700;
+    padding: 0 5px; border-radius: 999px; margin-left: 4px;
+  }
+
+  /* Arena card */
+  .arena-card {
+    border-radius: 16px; overflow: hidden; position: relative; margin-bottom: 12px;
+    height: 120px; cursor: pointer;
+  }
+  .arena-card .bg-img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
+  .arena-card .overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.9) 100%); }
+  .arena-card .card-content { position: relative; padding: 12px 14px; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+  .arena-card .top-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .arena-card h4 { font-size: 16px; font-weight: 800; color: white; }
+  .arena-card .desc { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+
+  .arena-card .bottom-row { display: flex; justify-content: space-between; align-items: center; }
+  .arena-card .avatars { display: flex; align-items: center; }
+  .arena-card .avatars img { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); margin-left: -4px; object-fit: cover; }
+  .arena-card .avatars img:first-child { margin-left: 0; }
+  .tap-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 14px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer;
+  }
+  .rank-badge { font-size: 10px; color: #adff2f; font-weight: 700; display: flex; align-items: center; gap: 3px; }
+  .rank-badge::before { content: ''; display: inline-block; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 7px solid #adff2f; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 56px;
+    background: rgba(15,15,15,0.95); backdrop-filter: blur(20px);
+    display: flex; justify-content: space-around; align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.05); z-index: 10;
+  }
+  .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; color: rgba(255,255,255,0.35); cursor: pointer; }
+  .bottom-nav .nav-item.active { color: #BF00FF; }
+  .bottom-nav .nav-item svg { width: 20px; height: 20px; }
+  .bottom-nav .nav-item .label { font-size: 9px; font-weight: 500; }
+  .nav-plus {
+    width: 44px; height: 44px; border-radius: 14px;
+    background: linear-gradient(135deg, #BF00FF, #660099);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 22px; font-weight: 300; box-shadow: 0 4px 20px rgba(191,0,255,0.3);
+  }
+
+  /* === Page 2: Challenge Detail === */
+  .detail-page {
+    background: linear-gradient(180deg, #7c3aed 0%, #4c1d95 28%, #0d0d0d 55%, #111111 100%);
+    padding-bottom: 60px;
+  }
+  .detail-title-area { padding: 0 20px 16px; }
+  .detail-title-area h2 { font-size: 26px; font-weight: 800; color: white; line-height: 1.1; margin-bottom: 12px; }
+  .detail-badges { display: flex; gap: 6px; }
+
+  /* Best Entry Card */
+  .best-entry-card {
+    margin: 0 20px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 18px 16px;
+    margin-bottom: 24px;
+  }
+  .best-entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .best-entry-header .label { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 600; }
+  .best-entry-header .value { font-size: 36px; font-weight: 900; color: #adff2f; line-height: 1; margin-top: 4px; }
+  .add-entry-btn {
+    background: rgba(255,255,255,0.1); color: white; font-size: 11px; font-weight: 600;
+    padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;
+  }
+  .rank-info { display: flex; align-items: center; gap: 12px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .rank-info .rank-num { font-size: 13px; color: #adff2f; font-weight: 800; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .rank-info .rank-num::before { content: ''; display: inline-block; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 7px solid #adff2f; }
+  .rank-info .msg { font-size: 11px; color: rgba(255,255,255,0.55); line-height: 1.4; }
+
+  /* Leaderboard */
+  .leaderboard-section { padding: 0 20px; }
+  .leaderboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .leaderboard-header .title { font-size: 16px; font-weight: 700; color: white; }
+  .leaderboard-header .global-btn { color: rgba(255,255,255,0.4); font-size: 14px; cursor: pointer; }
+
+  .leader-tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+  .leader-tab {
+    font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 999px; cursor: pointer; border: none;
+  }
+  .leader-tab.active { background: white; color: #111; }
+  .leader-tab.inactive { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.55); }
+
+  /* Top 3 */
+  .top3-row {
+    display: flex; justify-content: center; align-items: flex-end; gap: 6px; margin-bottom: 20px;
+  }
+  .top3-item { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
+  .top3-item .avatar-wrap {
+    width: 70px; height: 70px; border-radius: 50%;
+    border: 3px solid; overflow: hidden; position: relative;
+  }
+  .top3-item.first .avatar-wrap { width: 86px; height: 86px; border-color: #adff2f; box-shadow: 0 0 24px rgba(173,255,47,0.3); margin-top: -8px; }
+  .top3-item.second .avatar-wrap { border-color: rgba(255,255,255,0.3); }
+  .top3-item.third .avatar-wrap { border-color: rgba(255,255,255,0.2); }
+  .top3-item .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .rank-num-badge {
+    position: absolute; top: -4px; right: -4px; width: 22px; height: 22px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800;
+  }
+  .top3-item.first .rank-num-badge { background: #adff2f; color: #111; }
+  .top3-item.second .rank-num-badge { background: rgba(255,255,255,0.2); color: white; }
+  .top3-item.third .rank-num-badge { background: rgba(255,255,255,0.2); color: white; }
+  .top3-item .name { font-size: 13px; font-weight: 700; color: white; text-align: center; }
+  .top3-item.first .name { color: #adff2f; }
+  .top3-item .reps { font-size: 12px; color: #adff2f; font-weight: 600; }
+
+  /* Your entry */
+  .your-entry {
+    background: linear-gradient(135deg, #adff2f 0%, #85c600 100%);
+    border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; color: #111;
+  }
+  .your-entry .rank { font-size: 14px; font-weight: 800; }
+  .your-entry .avatar { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(0,0,0,0.2); }
+  .your-entry .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .your-entry .name { font-size: 14px; font-weight: 700; flex: 1; }
+  .your-entry .reps { font-size: 14px; font-weight: 800; }
+</style>
+</head>
+<body>
+
+<!-- ======================== -->
+<!-- PAGE 1: ARENA            -->
+<!-- ======================== -->
+<div class="arena-page">
+
+  <!-- Nav -->
+  <div class="nav-header">
+    <button class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="title">Arena</div>
+    <button class="icon-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero-text">
+    <h1>Become the Top Challenger in our special events!</h1>
+  </div>
+
+  <!-- Challenge Cards -->
+  <div class="challenges-row">
+    <div class="challenge-card purple">
+      <div class="badge-row">
+        <span class="badge global">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>
+          Global
+        </span>
+        <span class="badge timer">2d left</span>
+      </div>
+      <h3>Gymshark Opening Weekend!</h3>
+      <div class="hosts">Hosted by DFYNE, Gymshark, Squat Wolf, Woman's Best</div>
+      <div class="avatar-row">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=A&backgroundColor=fff" alt="">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=B&backgroundColor=fff" alt="">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=C&backgroundColor=fff" alt="">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=D&backgroundColor=fff" alt="">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=E&backgroundColor=fff" alt="">
+      </div>
+      <div class="card-footer">
+        <div class="left">
+          <span class="icon-box">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><rect x="3" y="8" width="4" height="8" rx="1"/><rect x="17" y="8" width="4" height="8" rx="1"/><rect x="7" y="10" width="10" height="4" rx="1"/></svg>
+          </span>
+          <span>3 arenas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="challenge-card orange">
+      <div class="badge-row">
+        <span class="badge local">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 22s7-7 7-12a7 7 0 10-14 0c0 5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          Local
+        </span>
+        <span class="badge timer">4d left</span>
+      </div>
+      <h3>Endless Design League</h3>
+      <div class="hosts">Hosts: Design Studio, Pixel Art Co.</div>
+      <div class="avatar-row">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=F&backgroundColor=fff" alt="">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=G&backgroundColor=fff" alt="">
+      </div>
+      <div class="card-footer">
+        <div class="left">
+          <span class="icon-box">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 6.8L21 10l-5.5 4.2L17 21l-5-3.5L7 21l1.5-6.8L3 10l6.6-1.2z"/></svg>
+          </span>
+          <span>2 arenas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arenas -->
+  <div class="arenas-section">
+    <div class="section-title">Arenas</div>
+    <div class="filter-tabs">
+      <button class="filter-tab active">Today</button>
+      <button class="filter-tab inactive">Tomorrow <span class="dot">1</span></button>
+      <button class="filter-tab inactive">This month <span class="dot">3</span></button>
+      <button class="filter-tab inactive">Later</button>
+    </div>
+
+    <div class="arena-card">
+      <img class="bg-img" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop" alt="">
+      <div class="overlay"></div>
+      <div class="card-content">
+        <div class="top-row">
+          <span class="badge global">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>
+            Global
+          </span>
+          <span class="badge timer red">4hrs left</span>
+        </div>
+        <div>
+          <h4>Pull Ups</h4>
+          <div class="desc">As many reps as possible</div>
+        </div>
+        <div class="bottom-row">
+          <div class="avatars">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=H&backgroundColor=fff" alt="">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=I&backgroundColor=fff" alt="">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=J&backgroundColor=fff" alt="">
+          </div>
+          <button class="tap-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="arena-card">
+      <img class="bg-img" src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=300&fit=crop" alt="">
+      <div class="overlay"></div>
+      <div class="card-content">
+        <div class="top-row">
+          <span class="badge local">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 22s7-7 7-12a7 7 0 10-14 0c0 5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            Local
+          </span>
+          <span class="badge timer green">Ongoing</span>
+        </div>
+        <div>
+          <div class="rank-badge">2nd place</div>
+        </div>
+        <div class="bottom-row">
+          <div class="avatars">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=K&backgroundColor=fff" alt="">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=L&backgroundColor=fff" alt="">
+          </div>
+          <button class="tap-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======================== -->
+<!-- PAGE SEPARATOR             -->
+<!-- ======================== -->
+<div class="page-separator">
+  <div class="label">Challenge Detail Page</div>
+  <div class="dot"></div>
+</div>
+
+<!-- ======================== -->
+<!-- PAGE 2: CHALLENGE DETAIL   -->
+<!-- ======================== -->
+<div class="detail-page">
+
+  <!-- Nav -->
+  <div class="nav-header">
+    <button class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="title"></div>
+    <button class="icon-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    </button>
+  </div>
+
+  <!-- Title -->
+  <div class="detail-title-area">
+    <h2>Barbell Deadlift:<br>Max rep</h2>
+    <div class="detail-badges">
+      <span class="badge global">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>
+        Global
+      </span>
+      <span class="badge timer red">6hr left</span>
+    </div>
+  </div>
+
+  <!-- Best Entry Card -->
+  <div class="best-entry-card">
+    <div class="best-entry-header">
+      <div>
+        <div class="label">Best entry:</div>
+        <div class="value">36 reps</div>
+      </div>
+      <div class="add-entry-btn">+ Add entry</div>
+    </div>
+    <div class="rank-info">
+      <span class="rank-num">4th</span>
+      <span class="msg">You're so close to getting number 1.<br>Add another entry and get that gold!</span>
+    </div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="leaderboard-section">
+    <div class="leaderboard-header">
+      <div class="title">Leaderboard</div>
+      <div class="global-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>
+      </div>
+    </div>
+    <div class="leader-tabs">
+      <button class="leader-tab inactive">All</button>
+      <button class="leader-tab active">Male</button>
+      <button class="leader-tab inactive">Female</button>
+    </div>
+
+    <div class="top3-row">
+      <div class="top3-item second">
+        <div class="avatar-wrap">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=M&backgroundColor=666" alt="">
+          <div class="rank-num-badge">2</div>
+        </div>
+        <div class="name">willp899</div>
+        <div class="reps">25 reps</div>
+      </div>
+      <div class="top3-item first">
+        <div class="avatar-wrap">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=N&backgroundColor=666" alt="">
+          <div class="rank-num-badge">1</div>
+        </div>
+        <div class="name">Tedi ⭐</div>
+        <div class="reps">36 reps</div>
+      </div>
+      <div class="top3-item third">
+        <div class="avatar-wrap">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=O&backgroundColor=666" alt="">
+          <div class="rank-num-badge">3</div>
+        </div>
+        <div class="name">quinlan</div>
+        <div class="reps">25 reps</div>
+      </div>
+    </div>
+
+    <div class="your-entry">
+      <span class="rank">#4</span>
+      <div class="avatar"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=You&backgroundColor=fff" alt=""></div>
+      <span class="name">You</span>
+      <span class="reps">25 reps</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======================== -->
+<!-- BOTTOM NAV (Shared)        -->
+<!-- ======================== -->
+<div class="bottom-nav">
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+    <span class="label">Home</span>
+  </div>
+  <div class="nav-item active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/></svg>
+    <span class="label">Explore</span>
+  </div>
+  <div class="nav-plus">+</div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="8" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><path d="M15 20c0-2 2-3.5 5-3.5"/></svg>
+    <span class="label">Social</span>
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+    <span class="label">Profile</span>
+  </div>
+</div>
+
+</body>
+</html>

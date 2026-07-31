@@ -1,0 +1,33 @@
+- generic [ref=e2]:
+  - generic [ref=e18]:
+    - generic [ref=e20]:
+      - heading "Presensiku" [level=1] [ref=e21]
+      - paragraph [ref=e22]: Absen anti ribet, kerja makin greget!
+      - generic [ref=e23]:
+        - generic [ref=e24]: Disiplin
+        - generic [ref=e25]: •
+        - generic [ref=e26]: Akurat
+        - generic [ref=e27]: •
+        - generic [ref=e28]: Optimal
+      - paragraph [ref=e29]: Puskesmas Ampenan
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - heading "Masuk" [level=2] [ref=e32]
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - generic [ref=e35]: Username / Email
+            - textbox "nama@puskesmas.com" [ref=e36]
+          - generic [ref=e37]:
+            - generic [ref=e38]: Password
+            - generic [ref=e39]:
+              - textbox "••••••••" [ref=e40]
+              - button [ref=e41]
+          - generic [ref=e45]:
+            - generic [ref=e46] [cursor=pointer]:
+              - checkbox "Ingat Saya" [ref=e48]
+              - paragraph [ref=e51]: Ingat Saya
+            - button "Lupa password?" [ref=e52]
+          - button "Masuk" [ref=e53]
+        - generic [ref=e54]: Device baru memerlukan verifikasi OTP & approval admin
+      - paragraph [ref=e58]: Presensiku v1.6.10
+  - region "Notifications Alt+T"

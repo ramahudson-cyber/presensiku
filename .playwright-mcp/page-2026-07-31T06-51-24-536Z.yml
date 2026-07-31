@@ -1,0 +1,6 @@
+- generic [ref=e64]:
+  - generic [ref=e65]:
+    - heading "Terjadi Kesalahan" [level=2] [ref=e69]
+    - paragraph [ref=e70]: Aplikasi mengalami error. Silahkan muat ulang halaman.
+    - paragraph [ref=e71]: Cannot read properties of null (reading 'id')
+  - button "Muat Ulang" [ref=e72]

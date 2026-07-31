@@ -1,0 +1,11 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e75]:
+    - generic [ref=f3e76]:
+      - img "Presensiku" [ref=f3e77]
+      - paragraph [ref=f3e78]: Absen anti ribet,kerja makin greget!
+      - paragraph [ref=f3e79]: Disiplin · Akurat · Optimal
+      - button "Mulai Sekarang" [ref=f3e80]
+    - generic [ref=f3e83]:
+      - paragraph [ref=f3e84]: Puskesmas Ampenan
+      - paragraph [ref=f3e85]: v1.6.10 — Presensiku
+  - region "Notifications Alt+T"

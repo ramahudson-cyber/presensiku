@@ -1,0 +1,16 @@
+2a6db29415269cc94bd146d4b05aadfbfbad19ca commit	refs/heads/feat/employee-profile
+d2817a557192f884108e967a90560079099866d5 commit	refs/heads/main
+dec520f399f8330754431e54af47b0594d18f51f commit	refs/remotes/origin/HEAD
+2a6db29415269cc94bd146d4b05aadfbfbad19ca commit	refs/remotes/origin/feat/employee-profile
+dec520f399f8330754431e54af47b0594d18f51f commit	refs/remotes/origin/main
+c9117b2dc7ea35a80116c47dfb0667052227f8cd commit	refs/remotes/origin/master
+a73d9963a079a176715793aa0ec59f2e721fd275 commit	refs/tags/v1.5.0
+c6caf4c2024e61be91c4d5eef32fe23e52efac7a commit	refs/tags/v1.6.1
+d735ec2fda5fa04e6c000f4bcb24725588ff58e9 commit	refs/tags/v1.6.10
+f66a1f4e121358bcedd87155a2790079e1f649da commit	refs/tags/v1.6.2
+d046b725a04da446bb677b5b002c73ec82a5037f commit	refs/tags/v1.6.3
+d046b725a04da446bb677b5b002c73ec82a5037f commit	refs/tags/v1.6.4
+20515b99ce59d4ae3ff6b9d63fe525446252a760 commit	refs/tags/v1.6.5
+714686d05c60186963817e93971736000a9f3546 commit	refs/tags/v1.6.6
+6946308607f4a680227818c2551124136b9e7eef commit	refs/tags/v1.6.7
+9a3a8a7ca74e675a60f8fc975ff1618c252de068 commit	refs/tags/v1.6.8

@@ -1,0 +1,11 @@
+tree 01b89de143b5de2dc3add7a9678493032c1ab9d0
+parent 3c48b563a27d6cf7baf7325a872d6fb93508ede9
+author ramahudson-cyber <ramahudson@gmail.com> 1783435491 +0800
+committer ramahudson-cyber <ramahudson@gmail.com> 1783435491 +0800
+
+fix(login): add timeout to Preferences & BiometricAuth dynamic imports
+
+- Wrap import('@capacitor/preferences') with 8s timeout
+- Wrap import('@aparajita/capacitor-biometric-auth') with 8s timeout
+- Update withTimeout helper to accept label
+- Wrap step 3 credential ops with 15s timeout in LoginPage

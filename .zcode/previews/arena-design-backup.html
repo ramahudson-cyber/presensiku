@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hadir.Kuy — Arena Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0a0a;
+    display: flex;
+    gap: 40px;
+    padding: 40px;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  /* Phone frame */
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: #111111;
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 0;
+    scrollbar-width: none;
+  }
+  .phone-screen::-webkit-scrollbar { display: none; }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .status-bar .right { display: flex; gap: 6px; align-items: center; font-size: 12px; }
+  .status-bar .battery { width: 24px; height: 11px; border: 1.5px solid white; border-radius: 2px; position: relative; }
+  .status-bar .battery-fill { position: absolute; left: 1px; top: 1px; bottom: 1px; width: 18px; background: white; border-radius: 1px; }
+
+  /* === ARENA PAGE === */
+  .arena-page { background: linear-gradient(180deg, #1a0533 0%, #0d0d0d 15%, #111111 100%); }
+
+  .nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px 14px;
+  }
+  .nav-header .title { font-size: 18px; font-weight: 700; color: white; }
+  .nav-header .icon-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 16px; cursor: pointer;
+  }
+
+  .hero-text { padding: 0 20px 16px; }
+  .hero-text h1 { font-size: 22px; font-weight: 800; color: white; line-height: 1.2; }
+  .hero-text .sub { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+
+  .challenges-row { display: flex; gap: 10px; padding: 0 20px; margin-bottom: 24px; }
+  .challenge-card {
+    flex: 1; height: 200px; border-radius: 20px; padding: 16px 14px;
+    position: relative; overflow: hidden; cursor: pointer;
+  }
+  .challenge-card.purple { background: linear-gradient(150deg, #a855f7 0%, #7c3aed 60%, #4c1d95 100%); box-shadow: 0 8px 30px rgba(168,85,247,0.3); }
+  .challenge-card.orange { background: linear-gradient(150deg, #fb923c 0%, #ea580c 60%, #9a3412 100%); box-shadow: 0 8px 30px rgba(251,146,60,0.3); }
+  .challenge-card .badge-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .badge {
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .badge.global { background: rgba(255,255,255,0.2); color: white; }
+  .badge.local { background: rgba(255,255,255,0.2); color: white; }
+  .badge.timer { background: rgba(0,0,0,0.3); color: white; }
+  .challenge-card h3 { font-size: 17px; font-weight: 800; color: white; line-height: 1.2; margin-bottom: 4px; }
+  .challenge-card .hosts { font-size: 10px; color: rgba(255,255,255,0.7); margin-bottom: 10px; }
+  .avatar-row { display: flex; }
+  .avatar-row img { width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; margin-left: -6px; object-fit: cover; }
+  .avatar-row img:first-child { margin-left: 0; }
+  .card-footer {
+    position: absolute; bottom: 14px; left: 14px;
+    display: flex; align-items: center; gap: 6px; font-size: 11px; color: white; font-weight: 600;
+  }
+  .card-footer .icon {
+    width: 20px; height: 20px; border-radius: 6px;
+    background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 10px;
+  }
+
+  .arenas-section { padding: 0 20px; }
+  .section-title { font-size: 16px; font-weight: 700; color: white; margin-bottom: 12px; }
+  .filter-tabs { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; }
+  .filter-tab { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 999px; white-space: nowrap; cursor: pointer; }
+  .filter-tab.active { background: white; color: #111; }
+  .filter-tab.inactive { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+  .filter-tab .dot { background: #f87171; color: white; font-size: 9px; font-weight: 700; padding: 0 5px; border-radius: 999px; margin-left: 4px; }
+
+  .arena-card {
+    border-radius: 20px; overflow: hidden; position: relative; margin-bottom: 10px;
+    height: 130px; cursor: pointer;
+  }
+  .arena-card .bg-img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
+  .arena-card .overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.85) 100%); }
+  .arena-card .card-content { position: relative; padding: 12px 14px; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+  .arena-card .top-row { display: flex; gap: 6px; }
+  .arena-card h4 { font-size: 16px; font-weight: 800; color: white; }
+  .arena-card .desc { font-size: 11px; color: rgba(255,255,255,0.7); }
+  .arena-card .bottom-row { display: flex; justify-content: space-between; align-items: center; }
+  .arena-card .avatars { display: flex; align-items: center; gap: 4px; }
+  .arena-card .avatars img { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); margin-left: -4px; object-fit: cover; }
+  .arena-card .avatars img:first-child { margin-left: 0; }
+  .arena-card .tap-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 14px; border: 1px solid rgba(255,255,255,0.2);
+  }
+  .rank-badge { font-size: 10px; color: #adff2f; font-weight: 700; display: flex; align-items: center; gap: 3px; }
+  .rank-badge::before { content: ''; display: inline-block; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 7px solid #adff2f; margin-right: 2px; }
+
+  .badge.timer.purple-timer { background: rgba(168,85,247,0.4); }
+  .badge.timer.orange-timer { background: rgba(249,115,22,0.4); }
+  .badge.timer.red-timer { background: #ef4444; color: white; }
+  .badge.timer.green-timer { background: #22c55e; color: white; }
+
+  /* === CHALLENGE DETAIL PAGE === */
+  .detail-page { background: linear-gradient(180deg, #7c3aed 0%, #4c1d95 25%, #0d0d0d 50%, #111111 100%); padding-bottom: 24px; }
+  .detail-header { position: relative; padding: 0 20px 20px; }
+  .detail-title-area { color: white; }
+  .detail-title-area h2 { font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+  .detail-badges { display: flex; gap: 6px; }
+
+  .best-entry-card {
+    margin: 0 20px; background: rgba(255,255,255,0.06); backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 16px; margin-bottom: 20px;
+  }
+  .best-entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .best-entry-header .label { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 600; }
+  .best-entry-header .value { font-size: 28px; font-weight: 900; color: #adff2f; }
+  .add-entry-btn {
+    background: rgba(255,255,255,0.1); color: white; font-size: 11px; font-weight: 600;
+    padding: 6px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;
+  }
+  .rank-info { display: flex; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .rank-info .rank-num { font-size: 13px; color: #adff2f; font-weight: 800; display: flex; align-items: center; gap: 4px; }
+  .rank-info .rank-num::before { content: ''; display: inline-block; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 7px solid #adff2f; }
+  .rank-info .msg { font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.4; }
+
+  .leaderboard-section { padding: 0 20px; }
+  .leaderboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .leaderboard-header .title { font-size: 16px; font-weight: 700; color: white; }
+  .leaderboard-header .global-btn { color: rgba(255,255,255,0.5); font-size: 14px; }
+  .leader-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+  .leader-tab { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+  .leader-tab.active { background: white; color: #111; }
+  .leader-tab.inactive { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+
+  .top3-row { display: flex; justify-content: center; align-items: flex-end; gap: 8px; margin-bottom: 20px; }
+  .top3-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .top3-item .avatar { border-radius: 50%; border: 3px solid; width: 70px; height: 70px; overflow: hidden; position: relative; }
+  .top3-item.first .avatar { width: 80px; height: 80px; border-color: #adff2f; box-shadow: 0 0 20px rgba(173,255,47,0.3); margin-top: -8px; }
+  .top3-item.second .avatar { border-color: rgba(255,255,255,0.3); }
+  .top3-item.third .avatar { border-color: rgba(255,255,255,0.2); }
+  .top3-item .rank-num-badge {
+    position: absolute; top: -4px; right: -4px; width: 20px; height: 20px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800;
+  }
+  .top3-item.first .rank-num-badge { background: #adff2f; color: #111; }
+  .top3-item.second .rank-num-badge { background: rgba(255,255,255,0.2); color: white; }
+  .top3-item.third .rank-num-badge { background: rgba(255,255,255,0.2); color: white; }
+  .top3-item .name { font-size: 13px; font-weight: 700; color: white; }
+  .top3-item .reps { font-size: 12px; color: #adff2f; font-weight: 600; }
+  .top3-item.first .name { color: #adff2f; }
+
+  .your-entry {
+    background: linear-gradient(135deg, #adff2f 0%, #85c600 100%);
+    border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; color: #111;
+  }
+  .your-entry .rank { font-size: 14px; font-weight: 800; color: #111; }
+  .your-entry .avatar { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(0,0,0,0.2); }
+  .your-entry .name { font-size: 14px; font-weight: 700; flex: 1; }
+  .your-entry .reps { font-size: 14px; font-weight: 800; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
+    background: rgba(20,20,20,0.95); backdrop-filter: blur(20px);
+    display: flex; justify-content: space-around; align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; color: rgba(255,255,255,0.3); font-size: 10px; cursor: pointer; }
+  .bottom-nav .nav-item.active { color: #BF00FF; }
+  .bottom-nav .nav-item .icon { font-size: 18px; }
+  .bottom-nav .nav-item .label { font-size: 9px; font-weight: 500; }
+  .nav-plus {
+    width: 40px; height: 40px; border-radius: 14px;
+    background: linear-gradient(135deg, #BF00FF, #660099);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 20px; font-weight: 300; box-shadow: 0 4px 20px rgba(191,0,255,0.3);
+  }
+</style>
+</head>
+<body>
+
+<!-- LEFT: Arena Page -->
+<div class="phone">
+  <div class="phone-screen arena-page">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="right">
+        <span style="font-size:12px">📶</span>
+        <div class="battery"><div class="battery-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="nav-header">
+      <div class="icon-btn">←</div>
+      <div class="title">Arena</div>
+      <div class="icon-btn">📷</div>
+    </div>
+
+    <div class="hero-text">
+      <h1>Become the Top Challenger<br>in our special events!</h1>
+    </div>
+
+    <div class="challenges-row">
+      <div class="challenge-card purple">
+        <div class="badge-row">
+          <span class="badge global">🌐 Global</span>
+          <span class="badge timer purple-timer">⏱ 2d</span>
+        </div>
+        <h3>Gymshark Opening Weekend!</h3>
+        <div class="hosts">Hosted by DFYNE, Gymshark, Squat Wolf, Woman's Best</div>
+        <div class="avatar-row">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=A" alt="">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=B" alt="">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=C" alt="">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=D" alt="">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=E" alt="">
+        </div>
+        <div class="card-footer">
+          <span class="icon">🏋️</span>
+          <span>3 arenas</span>
+        </div>
+      </div>
+
+      <div class="challenge-card orange">
+        <div class="badge-row">
+          <span class="badge local">📍 Local</span>
+          <span class="badge timer orange-timer">⏱ 4d</span>
+        </div>
+        <h3>Endless Design League</h3>
+        <div class="hosts">Hosts:</div>
+        <div class="avatar-row">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=F" alt="">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=G" alt="">
+        </div>
+        <div class="card-footer">
+          <span class="icon">🔥</span>
+          <span>2 arenas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="arenas-section">
+      <div class="section-title">Arenas</div>
+      <div class="filter-tabs">
+        <div class="filter-tab active">Today</div>
+        <div class="filter-tab inactive">Tomorrow <span class="dot">1</span></div>
+        <div class="filter-tab inactive">This month <span class="dot">3</span></div>
+        <div class="filter-tab inactive">Later</div>
+      </div>
+
+      <div class="arena-card">
+        <img class="bg-img" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop" alt="">
+        <div class="overlay"></div>
+        <div class="card-content">
+          <div class="top-row">
+            <span class="badge global">🌐 Global</span>
+            <span class="badge timer red-timer">⏱ 4hrs</span>
+          </div>
+          <div>
+            <h4>Pull Ups</h4>
+            <div class="desc">As many reps as possible</div>
+          </div>
+          <div class="bottom-row">
+            <div class="avatars">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=H" alt="">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=I" alt="">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=J" alt="">
+            </div>
+            <div class="tap-btn">→</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arena-card">
+        <img class="bg-img" src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=300&fit=crop" alt="">
+        <div class="overlay"></div>
+        <div class="card-content">
+          <div class="top-row">
+            <span class="badge local">📍 Local</span>
+            <span class="badge timer green-timer">⏱ Ongoing</span>
+          </div>
+          <div>
+            <div class="rank-badge">5th</div>
+          </div>
+          <div class="bottom-row">
+            <div class="avatars">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=K" alt="">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=L" alt="">
+            </div>
+            <div class="tap-btn">→</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><span class="icon">🏠</span><span class="label">Home</span></div>
+      <div class="nav-item active"><span class="icon">🔍</span><span class="label">Explore</span></div>
+      <div class="nav-plus">+</div>
+      <div class="nav-item"><span class="icon">👥</span><span class="label">Social</span></div>
+      <div class="nav-item"><span class="icon">👤</span><span class="label">Profile</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT: Challenge Detail -->
+<div class="phone">
+  <div class="phone-screen detail-page">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="right">
+        <span style="font-size:12px">📶</span>
+        <div class="battery"><div class="battery-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="nav-header">
+      <div class="icon-btn">←</div>
+      <div class="title"></div>
+      <div class="icon-btn">📋 Rules</div>
+    </div>
+
+    <div class="detail-header">
+      <div class="detail-title-area">
+        <h2>Barbell Deadlift:<br>Max rep</h2>
+      </div>
+      <div class="detail-badges">
+        <span class="badge global">🌐 Global</span>
+        <span class="badge timer red-timer">⏱ 6hr left</span>
+      </div>
+    </div>
+
+    <div class="best-entry-card">
+      <div class="best-entry-header">
+        <div>
+          <div class="label">Best entry:</div>
+          <div class="value">36 reps</div>
+        </div>
+        <div class="add-entry-btn">+ Add entry</div>
+      </div>
+      <div class="rank-info">
+        <span class="rank-num">4th</span>
+        <span class="msg">You're so close to getting number.<br>Add another entry and get that gold!</span>
+      </div>
+    </div>
+
+    <div class="leaderboard-section">
+      <div class="leaderboard-header">
+        <div class="title">Leaderboard</div>
+        <div class="global-btn">🌐</div>
+      </div>
+      <div class="leader-tabs">
+        <div class="leader-tab inactive">All</div>
+        <div class="leader-tab active">Male</div>
+        <div class="leader-tab inactive">Female</div>
+      </div>
+
+      <div class="top3-row">
+        <div class="top3-item second">
+          <div class="avatar">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=M" alt="" style="width:100%;height:100%;object-fit:cover;">
+            <div class="rank-num-badge">2</div>
+          </div>
+          <div class="name">willp899</div>
+          <div class="reps">25 reps</div>
+        </div>
+        <div class="top3-item first">
+          <div class="avatar">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=N" alt="" style="width:100%;height:100%;object-fit:cover;">
+            <div class="rank-num-badge">1</div>
+          </div>
+          <div class="name">Tedi ⭐</div>
+          <div class="reps">36 reps</div>
+        </div>
+        <div class="top3-item third">
+          <div class="avatar">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=O" alt="" style="width:100%;height:100%;object-fit:cover;">
+            <div class="rank-num-badge">3</div>
+          </div>
+          <div class="name">quinlan</div>
+          <div class="reps">25 reps</div>
+        </div>
+      </div>
+
+      <div class="your-entry">
+        <span class="rank">#4</span>
+        <img class="avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=You" alt="">
+        <span class="name">You</span>
+        <span class="reps">25 reps</span>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><span class="icon">🏠</span><span class="label">Home</span></div>
+      <div class="nav-item active"><span class="icon">🔍</span><span class="label">Explore</span></div>
+      <div class="nav-plus">+</div>
+      <div class="nav-item"><span class="icon">👥</span><span class="label">Social</span></div>
+      <div class="nav-item"><span class="icon">👤</span><span class="label">Profile</span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

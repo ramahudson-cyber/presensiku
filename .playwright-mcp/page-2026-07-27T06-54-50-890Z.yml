@@ -1,0 +1,12 @@
+- generic [ref=e3]:
+  - generic [ref=e4]: "[plugin:vite:oxc] Transform failed with 1 error: [PARSE_ERROR] Expected `}` but found `EOF` ╭─[ src/services/attendanceService.js:283:50 ] │ 112 │ export async function clockIn(userId, location) { │ ┬ │ ╰── Opened here │ 283 │ export const RADIUS_METER = DEFAULT_RADIUS_METER; │ │ │ ╰─ `}` expected ─────╯"
+  - generic [ref=e5]: C:/Users/user/ZCodeProject/src/services/attendanceService.js
+  - generic [ref=e7]: at transformWithOxc (file:///C:/Users/user/ZCodeProject/node_modules/vite/dist/node/chunks/node.js:3344:19) at TransformPluginContext.transform (file:///C:/Users/user/ZCodeProject/node_modules/vite/dist/node/chunks/node.js:3415:26) at EnvironmentPluginContainer.transform (file:///C:/Users/user/ZCodeProject/node_modules/vite/dist/node/chunks/node.js:30387:51) at async loadAndTransform (file:///C:/Users/user/ZCodeProject/node_modules/vite/dist/node/chunks/node.js:24646:26) at async viteTransformMiddleware (file:///C:/Users/user/ZCodeProject/node_modules/vite/dist/node/chunks/node.js:24440:20)
+  - generic [ref=e8]:
+    - text: Click outside, press Esc key, or fix the code to dismiss.You can also disable this overlay by setting
+    - code [ref=e9]: server.hmr.overlay
+    - text: to
+    - code [ref=e10]: "false"
+    - text: in
+    - code [ref=e11]: vite.config.js
+    - text: .

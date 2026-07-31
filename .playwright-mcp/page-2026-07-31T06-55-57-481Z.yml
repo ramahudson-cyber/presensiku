@@ -1,0 +1,31 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e16]:
+    - complementary [ref=f3e17]:
+      - generic [ref=f3e18]:
+        - generic [ref=f3e24]:
+          - heading "Presensiku" [level=1] [ref=f3e25]
+          - paragraph [ref=f3e26]: Absen anti ribet, kerja makin greget!
+        - button [ref=f3e27]
+      - generic [ref=f3e32]:
+        - generic [ref=f3e33]: U
+        - generic [ref=f3e34]:
+          - paragraph [ref=f3e35]: User
+          - paragraph [ref=f3e36]: pegawai
+      - navigation [ref=f3e37]:
+        - paragraph [ref=f3e38]: Menu Utama
+        - link "Dashboard" [ref=f3e39] [cursor=pointer]:
+          - /url: "#/employee"
+        - link "Absensi" [ref=f3e46] [cursor=pointer]:
+          - /url: "#/employee/attendance"
+        - link "Jadwal Shift" [ref=f3e51] [cursor=pointer]:
+          - /url: "#/employee/schedule"
+        - link "Izin / Sakit" [ref=f3e55] [cursor=pointer]:
+          - /url: "#/employee/leave"
+      - generic [ref=f3e60]:
+        - button "Logout" [ref=f3e61]
+        - paragraph [ref=f3e66]: v1.6.10
+    - main [ref=f3e68]:
+      - generic [ref=f3e69]:
+        - paragraph [ref=f3e71]: Silakan login untuk mengakses halaman ini.
+        - generic [ref=f3e72]: v1.6.10 — Presensiku
+  - region "Notifications Alt+T"
