@@ -167,7 +167,7 @@ export default function LeaveRequestPage() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen w-full bg-transparent text-white font-sans absolute top-0 left-0 pb-24">
       <div style={bgStyle} />
       <div style={gridStyle} />
       <div style={glow1} />
