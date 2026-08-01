@@ -167,7 +167,7 @@ export default function LeaveRequestPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-transparent text-white font-sans absolute top-0 left-0 pb-24" style={{ position: "relative" }}>
+    <div className="min-h-screen w-full bg-transparent text-white font-sans absolute top-0 left-0 right-0 pb-24">
       <div style={bgStyle} />
       <div style={gridStyle} />
       <div style={glow1} />
@@ -181,7 +181,7 @@ export default function LeaveRequestPage() {
         <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>Ajukan permohonan atau lihat riwayat</p>
       </div>
 
-      <div className="max-w-md mx-auto px-4 mt-5">
+      <div className="w-full px-3 mt-5">
 
         {/* ─── STAT CARDS ROW ─── */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 14 }}>
