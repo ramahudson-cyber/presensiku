@@ -142,3 +142,25 @@ if (Capacitor.isNativePlatform()) {
 Buka folder project lalu bilang ke AI:
 
 > **"Lanjut rencana, mulai dari task 3"**
+
+---
+
+## Task Baru: Izin/Sakit (Cuti & Sakit) — **SELESAI**
+
+**Tujuan:** Pegawai bisa buat permohonan izin/sakit, admin bisa approve/reject
+
+### Files Created/Modified
+| File | Action | Keterangan |
+|------|--------|------------|
+| `src/pages/employee/LeaveRequestPage.jsx` | **Baru** | Form permohonan izin/sakit (start_date, end_date, leave_type, notes) |
+| `src/pages/admin/LeaveManagementPage.jsx` | **Baru** | Admin approval list + approve/reject action |
+| `src/services/leaveService.js` | **Baru** | CRUD leave requests: create, getMy, get, approve, reject |
+| `src/components/BottomNav.jsx` | **Ubah** | Tambah menu "Izin/Sakit" (ClipboardList icon) |
+| `supabase/migrations/20260731000000_create_leave_requests.sql` | **Baru** | Tabel leave_requests + RPC approve/reject + function auto-insert attendance |
+| `supabase/migrations/20260731000002_add_izin_to_leave_type_enum.sql` | **Baru** | ALTER TYPE leave_type ADD VALUE 'izin' |
+
+### Status
+- ✅ UI selesai (form + admin page)
+- ✅ Service layer selesai
+- ✅ Migration selesai
+- ⏳ Tinggal run SQL di Supabase Dashboard: `ALTER TYPE leave_type ADD VALUE IF NOT EXISTS 'izin';`

@@ -1,23 +1,31 @@
-# Context Sesi — siap-ampenan
+# Context Sesi — Hadir.Kuy (PresensiKU)
 
 ## Project
-- Repo: ramahudson-cyber/siap-ampenan → https://siap-puskesmas.vercel.app
-- React + Vite + Tailwind + Supabase (Hadir.Kuy / SIAP Puskesmas)
+- Repo: ramahudson-cyber/siap-ampenan → https://presensiku.vercel.app
+- Stack: React 19 + Vite 8 + Tailwind CSS v4 + Supabase + Capacitor v8
+- Deployment: Vercel (web), APK via Capacitor (Android)
 
-## Yang sudah dikerjakan:
-1. Clone repo dari GitHub
-2. Build & preview lokal (npm run build, npm run preview)
-3. Review EmployeeDashboard.jsx — struktur, error handling, saran
-4. Buat preview statis (preview-employee-dashboard-v2.html, preview-vercel-dashboard.html)
-5. Fix warna jam masuk/pulang di preview-employee-FINAL.html
-6. Push ke GitHub + deploy Vercel ✅
-7. File diakses di: https://siap-puskesmas.vercel.app/preview-employee-FINAL.html
+## Progress Terbaru
+1. ✅ **Izin/Sakit (Cuti & Sakit)** — Feature UI + service + migration selesai. Tinggal run SQL: `ALTER TYPE leave_type ADD VALUE IF NOT EXISTS 'izin';`
+2. ✅ **Dashboard dark-glass** — Robinhood style selesai
+3. ✅ **Fix React error #310** — Blank screen di UpdateDialog.jsx
+4. ✅ **Fix OOM Gradle** — JVM heap 2048m
+5. ✅ **Bump version** → 1.6.6
+6. ✅ **Remember Me & Biometric** — UI selesai
+7. ✅ **Device binding** — Android ID (Task 2 PLAN.md selesai)
 
-## Preview file di repo:
-- preview-employee-FINAL.html — dashboard employee (fix warna)
-- preview-employee-dashboard-v2.html — versi gue
-- preview-vercel-dashboard.html — versi purple theme
+## Cara Pakai AI Notes
+- Baca `AI-NOTES.md` → progress terkini yang selalu perlu AI tau
+- Selesai kerja → bilang "catat progress" → AI update file otomatis
 
-## Status Vercel:
-- siap-puskesmas.vercel.app (build React app)
-- siap-ampenan.vercel.app (alias lain)
+## File Dokumentasi
+| File | Isi |
+|------|-----|
+| `AGENTS.md` | Aturan project (shift, role, database, route) |
+| `AI-NOTES.md` | Progress terkini, catatan penting |
+| `PLAN.md` | Execution plan lengkap semua task |
+| `PRD.md` | Specs fitur lengkap |
+| `DESIGN.md` | Design system tokens |
+
+## Status Vercel
+- https://presensiku.vercel.app

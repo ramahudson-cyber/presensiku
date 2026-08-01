@@ -164,10 +164,10 @@ export default function EmployeeHistory() {
   );
 
   return (
-    <div className="min-h-screen w-full bg-transparent absolute top-0 left-0 pb-24">
+    <div className="min-h-screen w-full bg-transparent absolute top-0 left-0 pb-24" style={{ position: "relative" }}>
       {/* ── HERO HEADER ── */}
       <div className="w-full pt-12 pb-6 px-6 shadow-2xl border-b border-white/5 rounded-b-[40px]"
-        style={{ background: "linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)" }}>
+        style={{ background: "linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)", zIndex: 50, position: "relative" }}>
         <h1 className="text-lg font-bold" style={{ fontFamily: "'Urbanist', sans-serif", color: "#FFFFFF" }}>Riwayat Absensi</h1>
         <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>Riwayat kehadiran Anda</p>
 

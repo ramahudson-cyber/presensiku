@@ -31,12 +31,21 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{ico,png,svg,woff2,html}"],
         runtimeCaching: [
+          // JS/CSS: NetworkFirst with longer timeout for reliability on slow networks
           {
             urlPattern: ({ request }) => request.destination === "script" || request.destination === "style",
             handler: "NetworkFirst",
             options: {
-              networkTimeoutSeconds: 5,
+              networkTimeoutSeconds: 10,
               cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          // HTML: NetworkFirst
+          {
+            urlPattern: ({ request }) => request.destination === "document",
+            handler: "NetworkFirst",
+            options: {
+              networkTimeoutSeconds: 5,
             },
           },
         ],

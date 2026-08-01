@@ -1,34 +1,42 @@
-## Fix: "type" column not found in leave_requests schema cache
+## Perbaikan Dokumentasi untuk AI Coding Maksimal
 
-### Root Cause
-Kolom `type` di tabel `leave_requests` adalah **reserved keyword** di PostgreSQL. Supabase tidak bisa mencach-nya di schema introspection, menyebabkan error:
-> Could not find the 'type' column of 'leave_requests' in the schema cache
+### Masalah Saat Ini
+1. **AGENTS.md** — tercampur antara "aturan tetap" (shift, role, database) dan "progress session" (bisa kadaluwarsa)
+2. **CONTEXT_THIS_SESSION.md** — terlalu tipis, cuma catatan sesi lama
+3. **PLAN.md** — masih ada yang belum di-update (Izin/Sakit sudah selesai, tapi PLAN.md belum)
 
-### Changes
+### Perubahan
 
-1. **Migration DB** — `supabase/migrations/20260731000000_create_leave_requests.sql`
-   - Rename kolom `type VARCHAR` → `request_type VARCHAR`
-   - Update `CHECK` constraint: `CHECK (request_type IN ('izin', 'sakit'))`
+#### 1. Rapikan AGENTS.md
+- Pisahkan section "Progress" ke file terpisah
+- Bagian atas tetap: aturan shift, role, database, route, preview workflow
+- Progress & rencana pindah ke `AI-NOTES.md`
 
-2. **Frontend** — `src/services/leaveService.js`
-   - `createLeaveRequest`: `.insert({ request_type: type, ... })`
-   - `getMyLeaveRequests`: `.select("*")` → tetap `*` (tidak perlu change)
-   - `getLeaveRequests`: `.select("*, profiles!...")` → tetap `*`
+#### 2. Buat `AI-NOTES.md`
+Berisi progress terkini yang selalu perlu AI tau:
+- ✅ Izin/Sakit selesai, tinggal run SQL
+- ❌ Enum belum ditambah 'izin', service key expired
+- ✅ Dashboard dark-glass selesai, testing APK belum
+- ✅ Update Dialog fix, OOM fix, version bump, deploy Vercel
+- ✅ Remember Me & Biometric UI
+- ⏳ WebAuthn (rencana)
 
-3. **Frontend** — `src/pages/employee/LeaveRequestPage.jsx`
-   - Line 67: `createLeaveRequest({ ..., type: formType, ... })` — tetap `type: formType` karena service layer yang map ke `request_type`
-   - Line 199: `r.type` → `r.request_type`
-   - Line 193: `r.type` → `r.request_type`
+Setiap selesai tugas → bilang "catat progress" → saya update file ini.
 
-4. **Frontend** — `src/pages/admin/LeaveManagementPage.jsx`
-   - Line 138: `item.type` → `item.request_type`
-   - Line 121: style lookup berdasarkan `item.status` — OK (tidak berubah)
+#### 3. Update `CONTEXT_THIS_SESSION.md`
+- Tambahkan info Izin/Sakit
+- Tambahkan status terbaru
+- Tambahkan cara pakai AI-NOTES.md
 
-5. **Frontend** — `src/components\Sidebar.jsx` line 35: label "Cuti & Izin" — OK, tidak berubah
+#### 4. Update `PLAN.md`
+- Tandai Izin/Sakit sebagai DONE (sebelumnya tidak ada di PLAN.md)
 
-### Notable: DB Migration Note for User
-Karena tabel `leave_requests` sudah ada (berdasarkan screenshot user sudah bisa fill form), migration rename kolom harus menggunakan:
-```sql
-ALTER TABLE leave_requests RENAME COLUMN type TO request_type;
-```
-Dan constraint check perlu di-drop & re-create.
+### Hasil Akhir
+| File | Isi | Kapan diubah |
+|------|-----|--------------|
+| `AGENTS.md` | Aturan project (shift, role, database, route) | Jarang |
+| `AI-NOTES.md` | Progress terkini, catatan penting | Setiap selesai tugas |
+| `PLAN.md` | Execution plan lengkap | Setiap task baru |
+| `CONTEXT_THIS_SESSION.md` | Ringkasan sesi | Otomatis saat update |
+| `PRD.md` | Specs fitur (tidak berubah) | Sangat jarang |
+| `DESIGN.md` | Design system (tidak berubah) | Sangat jarang |

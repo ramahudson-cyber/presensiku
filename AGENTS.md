@@ -60,36 +60,6 @@
 - /admin/settings → PengaturanPage (tab "Kelola Shift" untuk edit shift_schedules)
 - AttendancePage → otomatis baca shift dari employee_schedules & hitung terlambat
 
-## Progress & Rencana — Session Juli 2026
-
-### Done
-- Fix React error #310 (blank screen): `UpdateDialog.jsx` — useEffect cleanup ditempatkan setelah early return. Hook count mismatch (11 vs 12 hooks).
-- Fix OOM Gradle: `android/gradle.properties` — `org.gradle.jvmargs=-Xmx2048m`
-- Bump version: `updateService.js` → `CURRENT_VERSION="1.6.6"`, `CURRENT_VERSION_CODE=18`
-- Deploy Vercel: https://presensiku.vercel.app
-- Remember Me & Biometric UI: checkbox "Ingat Saya" + "Gunakan Sidik Jari" (APK only)
-
-### Blankscreen Cause (sept 7 juli)
-- Bukan dari dynamic import storageService (seperti yang diduga sebelumnya)
-- Penyebab: `UpdateDialog.jsx` — `useEffect` cleanup `fallbackTimerRef` di line 98 (original), setelah early return `if (!update) return null` di line 40. Render pertama 11 hooks, render kedua 12 hooks → React error #310.
-
-### Storage Service Strategy
-- Web: localStorage (fallback)
-- Native APK: `@capacitor/preferences` (Keychain/Keystore) + `@aparajita/capacitor-biometric-auth`
-- Dynamic import dengan try/catch, jika gagal → fallback localStorage + mock
-- `authenticateBiometric()` di native: panggil BiometricAuth.authenticate()
-- `authenticateBiometric()` di web: return true (skip, tidak ada biometric di web)
-
-### Next (setelah APK build)
-1. Testing APK — remember me & biometric benar-benar berfungsi
-2. Jika icon fingerprint diinginkan: ganti `ShieldCheck` dengan `ScanFace` atau custom SVG
-3. **(Rencana) WebAuthn untuk PWA** — nanti setelah APK selesai:
-   - Butuh Vercel Functions: `/api/webauthn/register` & `/api/webauthn/authenticate`
-   - Tambah tabel `webauthn_credentials` di Supabase (user_id, credential_id, public_key, counter)
-   - Integrasi login: cek WebAuthn dulu, jika ada → auto-login seperti biometric APK
-   - Biaya: gratis (memanfaatkan Vercel Functions & Supabase yang sudah ada)
-   - CATATAN: WebAuthn tidak sesederhana plugin Capacitor — butuh backend endpoint + DB + logika kriptografi.
-
 ## Preview Workflow
 - Sebelum commit perubahan UI, buat preview HTML dulu, buka via `Invoke-Item`
 - Tunggu approval user sebelum commit & push
@@ -101,3 +71,15 @@
 - Pendaftaran sidik jari dilakukan di Settings HP, bukan di aplikasi
 - Face ID (tanpa tombol): lihat ke layar
 - Touch ID (tombol home): tempel jari ke tombol bundar
+
+## ⚠️ TARGET DEPLOYMENT — HARUS DIPAKAI
+- **URL live:** `https://presensiku-beige.vercel.app`
+- **Project name di Vercel:** `presensiku-beige`
+- **CI secret `VERCEL_PROJECT_ID`** harus mengarah ke project **presensiku-beige**
+- ❌ **JANGAN deploy ke `presensiku.vercel.app`** — itu project lama yang sudah tidak dipakai
+- ✅ Setelah `git push`, pastikan CI deploying ke `presensiku-beige` (cek via `gh run` / log CI)
+
+## Progress & Catatan
+Untuk detail progress terkini dan catatan penting, lihat:
+- **AI-NOTES.md** — progress terbaru yang perlu AI tau sebelum mulai kerja
+- **PLAN.md** — execution plan lengkap semua task
