@@ -174,44 +174,14 @@ export default function LeaveRequestPage() {
       <div style={glow2} />
       <div style={glow3} />
 
-      {/* ─── GRADIENT HERO CARD HEADER ─── */}
-      <div style={{
-        width: "100%", padding: "48px 18px 22px 18px",
-        background: "linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)",
-        borderRadius: "0 0 40px 40px",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
-        borderBottom: "1px solid rgba(255,255,255,0.05)",
-      }}>
-        <div style={{ maxWidth: 720, margin: "0 auto", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-          <div>
-            <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff", margin: 0 }}>Izin &amp; Sakit</h1>
-            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", margin: "4px 0 0 0" }}>Ajukan permohonan atau lihat riwayat</p>
-            <div style={{
-              display: "flex", alignItems: "center", gap: 8, marginTop: 14,
-              padding: "8px 14px", background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12,
-            }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2">
-                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-              </svg>
-              <span style={{ fontSize: 11, fontWeight: 600, color: "#fff", textTransform: "uppercase", letterSpacing: "0.05em" }}>{fmtDay(today)}</span>
-              <span style={{ flex: 1 }} />
-              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>WITA</span>
-            </div>
-          </div>
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
-            padding: "6px 14px", borderRadius: 9999,
-            background: "rgba(173,255,47,0.08)", border: "1px solid rgba(173,255,47,0.15)",
-            fontSize: 11, fontWeight: 600, color: "#adff2f",
-          }}>
-            <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#adff2f", boxShadow: "0 0 8px rgba(173,255,47,0.5)" }} />
-            Aktif
-          </div>
-        </div>
+      {/* ─── HERO HEADER ─── */}
+      <div className="w-full pt-12 pb-6 px-6 shadow-2xl border-b border-white/5 rounded-b-[40px]"
+        style={{ background: "linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)" }}>
+        <h1 className="text-lg font-bold" style={{ fontFamily: "'Urbanist', sans-serif", color: "#FFFFFF" }}>Izin &amp; Sakit</h1>
+        <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>Ajukan permohonan atau lihat riwayat</p>
       </div>
 
-      <div style={{ position: "relative", zIndex: 2, maxWidth: 720, margin: "0 auto", padding: "14px 14px 32px 14px" }}>
+      <div className="max-w-md mx-auto px-4 mt-5">
 
         {/* ─── STAT CARDS ROW ─── */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 14 }}>
