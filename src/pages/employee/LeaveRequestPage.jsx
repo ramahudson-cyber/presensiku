@@ -23,12 +23,6 @@ function todayStr() {
   return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
 }
 
-function fmtDate(str) {
-  if (!str) return "";
-  const d = new Date(str + "T00:00:00");
-  return d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-}
-
 function fmtDay(dateStr) {
   const d = new Date(dateStr + "T00:00:00");
   return DAY_NAMES[d.getDay()] + ", " + d.getDate() + " " + MONTHS[d.getMonth()] + " " + d.getFullYear();
@@ -180,31 +174,33 @@ export default function LeaveRequestPage() {
       <div style={glow2} />
       <div style={glow3} />
 
-      <div style={{ position: "relative", zIndex: 2, maxWidth: 720, margin: "0 auto", padding: "16px 14px 32px 14px" }}>
-
-        {/* ─── HEADER ─── */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      {/* ─── GRADIENT HERO CARD HEADER ─── */}
+      <div style={{
+        width: "100%", padding: "48px 18px 22px 18px",
+        background: "linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)",
+        borderRadius: "0 0 40px 40px",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+        borderBottom: "1px solid rgba(255,255,255,0.05)",
+      }}>
+        <div style={{ maxWidth: 720, margin: "0 auto", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+          <div>
+            <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff", margin: 0 }}>Izin &amp; Sakit</h1>
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", margin: "4px 0 0 0" }}>Ajukan permohonan atau lihat riwayat</p>
             <div style={{
-              width: 42, height: 42, borderRadius: 16, flexShrink: 0,
-              background: "linear-gradient(135deg, #BF40FF, #9900CC)",
-              boxShadow: "0 6px 20px rgba(191,0,255,0.3)",
-              display: "flex", alignItems: "center", justifyContent: "center",
+              display: "flex", alignItems: "center", gap: 8, marginTop: 14,
+              padding: "8px 14px", background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12,
             }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
-                <rect x="3" y="4" width="18" height="18" rx="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2">
+                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
               </svg>
-            </div>
-            <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff", margin: 0 }}>Izin &amp; Sakit</h1>
-              <p style={{ fontSize: 12, color: "#9ba1ae", margin: "2px 0 0 0" }}>Ajukan permohonan atau lihat riwayat</p>
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#fff", textTransform: "uppercase", letterSpacing: "0.05em" }}>{fmtDay(today)}</span>
+              <span style={{ flex: 1 }} />
+              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>WITA</span>
             </div>
           </div>
           <div style={{
-            display: "inline-flex", alignItems: "center", gap: 6,
+            display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
             padding: "6px 14px", borderRadius: 9999,
             background: "rgba(173,255,47,0.08)", border: "1px solid rgba(173,255,47,0.15)",
             fontSize: 11, fontWeight: 600, color: "#adff2f",
@@ -213,21 +209,9 @@ export default function LeaveRequestPage() {
             Aktif
           </div>
         </div>
+      </div>
 
-        {/* ─── DATE BAR ─── */}
-        <div style={{
-          display: "flex", alignItems: "center", gap: 8, marginTop: 14, padding: "10px 14px",
-          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 12,
-        }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ba1ae" strokeWidth="2">
-            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-          </svg>
-          <span style={{ fontSize: 11, fontWeight: 600, color: "#fff", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            {fmtDay(today)}
-          </span>
-          <span style={{ flex: 1 }} />
-          <span style={{ fontSize: 11, color: "#9ba1ae" }}>WITA</span>
-        </div>
+      <div style={{ position: "relative", zIndex: 2, maxWidth: 720, margin: "0 auto", padding: "14px 14px 32px 14px" }}>
 
         {/* ─── STAT CARDS ROW ─── */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 14 }}>

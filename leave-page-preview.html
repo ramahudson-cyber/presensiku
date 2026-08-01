@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview Premium — Izin & Sakit</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scrollbar-width:thin;scrollbar-color:#1e1b2e #060311}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#060311}::-webkit-scrollbar-thumb{background:#1e1b2e;border-radius:999px}
+body{font-family:"Inter",sans-serif;background:#060311;min-height:100vh;color:#fff;overflow-x:hidden}
+.bg-primary{position:fixed;inset:0;background:radial-gradient(circle at 50% -20%,#1a0a35 0%,#050505 70%);z-index:0}
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:64px 64px;mask:radial-gradient(circle at 30% 30%,rgba(0,0,0,0.5),transparent 75%);-webkit-mask:radial-gradient(circle at 30% 30%,rgba(0,0,0,0.5),transparent 75%);z-index:0}
+.bg-glow-1{position:fixed;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(191,0,255,0.12),transparent 60%);border-radius:50%;filter:blur(60px);z-index:0;animation:floatGlow1 8s ease-in-out infinite}
+.bg-glow-2{position:fixed;bottom:-200px;right:-200px;width:500px;height:500px;background:radial-gradient(circle,rgba(153,0,204,0.10),transparent 60%);border-radius:50%;filter:blur(60px);z-index:0;animation:floatGlow2 10s ease-in-out infinite}
+.bg-glow-3{position:fixed;top:40%;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(112,102,237,0.08),transparent 60%);border-radius:50%;filter:blur(50px);z-index:0;animation:floatGlow3 12s ease-in-out infinite}
+@keyframes floatGlow1{0%,100%{transform:translate(0,0)}50%{transform:translate(80px,60px)}}@keyframes floatGlow2{0%,100%{transform:translate(0,0)}50%{transform:translate(-60px,-40px)}}@keyframes floatGlow3{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,30px)}}
+.content{position:relative;z-index:2}
+.glass-card{position:relative;background:linear-gradient(140deg,rgba(255,255,255,0.07) 0%,rgba(255,255,255,0.015) 60%,rgba(153,0,204,0.02) 100%);backdrop-filter:blur(24px);border-radius:28px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.25),0 0 80px rgba(191,0,255,0.03)}
+.glass-card::before{content:"";position:absolute;inset:0;border-radius:28px;padding:1px;background:linear-gradient(140deg,rgba(191,0,255,0.15),rgba(255,255,255,0.03) 30%,rgba(255,255,255,0.03) 70%,rgba(153,0,204,0.12));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.glass-sm{background:rgba(255,255,255,0.04);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.06);border-radius:20px}
+.hero-card{position:relative;background:linear-gradient(160deg,#BF40FF 0%,#7020CC 25%,#2B0066 55%,#000000 100%);border-radius:30px;overflow:hidden;box-shadow:0 16px 60px rgba(0,0,0,0.5),0 0 40px rgba(191,0,255,0.08);border:1px solid rgba(255,255,255,0.1)}
+.hero-card::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)}
+.hero-card::before{content:"";position:absolute;top:-30%;right:-20%;width:280px;height:280px;background:radial-gradient(circle,rgba(255,255,255,0.06),transparent 65%);border-radius:50%}
+.stat-card{position:relative;background:linear-gradient(160deg,rgba(30,25,45,0.6),rgba(15,10,25,0.3) 100%);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:22px;padding:18px;overflow:hidden;transition:transform .2s,border-color .2s}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-card::before{content:"";position:absolute;inset:0;border-radius:22px;padding:1px;background:linear-gradient(140deg,var(--stat-color,rgba(191,0,255,0.2)),transparent 50%,rgba(255,255,255,0.02));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.stat-glow{position:absolute;top:-40px;right:-40px;width:100px;height:100px;border-radius:50%;filter:blur(30px);opacity:0.5}
+.pill-tabs{position:relative;display:inline-flex;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:4px;width:100%;overflow:hidden}
+.pill-tabs .slide-bg{position:absolute;top:5px;left:5px;width:calc(50% - 5px);height:calc(100% - 10px);background:linear-gradient(135deg,#BF00FF,#9900CC);border-radius:14px;transition:left .35s cubic-bezier(0.65,0,0.35,1);box-shadow:0 4px 20px rgba(191,0,255,0.4),inset 0 1px 0 rgba(255,255,255,0.2);z-index:0}
+.pill-tabs button{position:relative;z-index:1;flex:1;padding:11px 18px;border:none;background:transparent;color:rgba(255,255,255,0.5);font-size:13px;font-weight:600;cursor:pointer;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:6px;transition:color .3s;text-transform:uppercase;letter-spacing:0.05em}
+.pill-tabs button.active{color:#fff}
+.input-wrap{position:relative;margin-bottom:0}
+.static-label{display:block;font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;padding-left:14px}
+
+.premium-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:18px 16px 12px 16px;color:#fff;font-size:15px;outline:none;transition:all .25s;font-family:inherit}
+.premium-input:focus{background:rgba(191,0,255,0.04);border-color:rgba(191,0,255,0.5);box-shadow:0 0 0 3px rgba(191,0,255,0.12)}
+
+
+.premium-input::placeholder{color:rgba(255,255,255,0.2);font-size:14px}
+input[type="date"].premium-input{color-scheme:dark}
+textarea.premium-input{min-height:110px;resize:vertical;padding:18px 16px}
+.days-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(191,0,255,0.08);border:1px solid rgba(191,0,255,0.2);border-radius:9999px;font-size:12px;font-weight:600;color:#c084fc;transition:all .2s}
+.btn-primary{position:relative;width:100%;padding:16px 24px;border:none;border-radius:16px;background:linear-gradient(135deg,#BF00FF 0%,#9900CC 50%,#7020CC 100%);color:#fff;font-size:15px;font-weight:700;cursor:pointer;overflow:hidden;transition:all .2s;box-shadow:0 8px 24px rgba(191,0,255,0.35),inset 0 1px 0 rgba(255,255,255,0.2);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(191,0,255,0.45),inset 0 1px 0 rgba(255,255,255,0.2)}
+.btn-primary:active{transform:translateY(0);box-shadow:0 4px 16px rgba(191,0,255,0.3),inset 0 1px 0 rgba(255,255,255,0.1)}
+.btn-primary::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);transform:translateX(-100%);animation:shimmer 3s ease-in-out infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.history-item{position:relative;display:flex;align-items:center;padding:16px 12px;border-radius:18px;transition:all .2s;cursor:pointer}
+.history-item:hover{background:rgba(255,255,255,0.03);transform:translateX(2px)}
+.history-item:hover .history-icon{transform:scale(1.05)}
+.history-item .history-icon{width:44px;height:44px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .2s}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:700;letter-spacing:0.03em;text-transform:uppercase}
+.badge-dot{width:6px;height:6px;border-radius:50%}
+.badge-approved{background:rgba(45,212,191,0.10);color:#2dd4bf;border:1px solid rgba(45,212,191,0.15)}
+.badge-approved .badge-dot{background:#2dd4bf}
+.badge-pending{background:rgba(165,180,252,0.10);color:#a5b4fc;border:1px solid rgba(165,180,252,0.15)}
+.badge-pending .badge-dot{background:#a5b4fc;animation:pulse 1.5s ease-in-out infinite}
+.badge-rejected{background:rgba(253,164,175,0.10);color:#fda4af;border:1px solid rgba(253,164,175,0.15)}
+.badge-rejected .badge-dot{background:#fda4af}
+.admin-item{position:relative;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:22px;padding:20px;transition:all .2s;overflow:hidden}
+.admin-item:hover{background:rgba(255,255,255,0.06);transform:translateY(-1px)}
+.admin-item::after{content:"";position:absolute;top:0;left:0;width:4px;height:100%;border-radius:22px 0 0 22px;background:linear-gradient(180deg,#BF00FF,#9900CC)}
+.admin-btn{padding:9px 18px;border-radius:12px;font-size:12px;font-weight:600;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s;font-family:inherit}
+.admin-btn-approve{background:rgba(45,212,191,0.10);color:#2dd4bf;border:1px solid rgba(45,212,191,0.18)}
+.admin-btn-approve:hover{background:rgba(45,212,191,0.15);box-shadow:0 0 16px rgba(45,212,191,0.12)}
+.admin-btn-reject{background:rgba(253,164,175,0.10);color:#fda4af;border:1px solid rgba(253,164,175,0.18)}
+.admin-btn-reject:hover{background:rgba(253,164,175,0.15);box-shadow:0 0 16px rgba(253,164,175,0.12)}
+.btn-cancel{width:36px;height:36px;border-radius:12px;border:1px solid rgba(253,164,175,0.15);background:rgba(251,114,133,0.06);color:#fda4af;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0}
+.btn-cancel:hover{background:rgba(253,164,175,0.12)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:24px;z-index:50;opacity:0;visibility:hidden;transition:all .25s}
+.modal-overlay.active{opacity:1;visibility:visible}
+.modal-content{background:linear-gradient(140deg,rgba(30,25,45,0.95),rgba(15,10,25,0.95));backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:32px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 40px rgba(191,0,255,0.05);transform:scale(0.95);transition:transform .25s cubic-bezier(0.34,1.56,0.64,1)}
+.modal-overlay.active .modal-content{transform:scale(1)}
+.modal-title{font-size:20px;font-weight:800;color:#fff}
+.modal-text{font-size:13px;color:#9ba1ae;margin-top:4px}
+.modal-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 16px;color:#fff;font-size:14px;outline:none;resize:none;min-height:90px;margin:12px 0;font-family:inherit;transition:border-color .2s}
+.modal-input:focus{border-color:rgba(251,114,133,0.5);box-shadow:0 0 0 3px rgba(251,114,133,0.1)}
+.modal-actions{display:flex;gap:10px;margin-top:16px}
+.modal-btn{flex:1;padding:13px;border-radius:12px;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .15s}
+.modal-btn-cancel{background:rgba(255,255,255,0.06);color:#9ba1ae}
+.modal-btn-cancel:hover{background:rgba(255,255,255,0.1)}
+.modal-btn-reject{background:linear-gradient(135deg,#fda4af,#e11d48);color:#fff;box-shadow:0 6px 16px rgba(251,114,133,0.3)}
+.modal-btn-reject:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(251,114,133,0.4)}
+.skeleton{animation:pulseAnim 1.5s ease-in-out infinite}
+@keyframes pulseAnim{0%,100%{opacity:0.4}50%{opacity:0.8}}
+.fade-up{animation:fadeUp .4s ease-out both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.num-highlight{font-variant-numeric:tabular-nums;background:linear-gradient(135deg,#c084fc,#fff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-20px);background:rgba(45,212,191,0.12);border:1px solid rgba(16,185,129,0.3);color:#2dd4bf;padding:12px 24px;border-radius:14px;font-size:13px;font-weight:600;z-index:100;opacity:0;visibility:hidden;transition:all .35s;backdrop-filter:blur(10px);display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+.success-bar{padding:12px 16px;background:rgba(16,185,129,0.1);border:1px solid rgba(45,212,191,0.15);border-radius:14px;color:#2dd4bf;font-size:13px;display:flex;align-items:center;gap:8px;margin-bottom:16px}
+</style>
+</head>
+<body>
+<div class="bg-primary"></div><div class="bg-grid"></div><div class="bg-glow-1"></div><div class="bg-glow-2"></div><div class="bg-glow-3"></div>
+<div class="content max-w-3xl mx-auto p-5 md:p-6 space-y-5">
+<div class="fade-up" style="animation-delay:0s">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div style="width:42px;height:42px;border-radius:16px;background:linear-gradient(135deg,#BF40FF,#9900CC);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(191,0,255,0.3)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+</div>
+<div>
+<h1 style="font-size:20px;font-weight:800;letter-spacing:-0.02em;color:#fff">Izin &amp; Sakit</h1>
+<p style="font-size:12px;color:#9ba1ae;margin-top:1px">Ajukan permohonan atau lihat riwayat</p>
+</div>
+</div>
+<div style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(173,255,47,0.08);border:1px solid rgba(173,255,47,0.15);border-radius:999px;font-size:11px;font-weight:600;color:#adff2f">
+<span style="width:7px;height:7px;border-radius:50%;background:#adff2f;box-shadow:0 0 8px rgba(173,255,47,0.5)"></span>
+<span>Aktif</span>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:12px">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ba1ae" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+<span style="font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.05em">Rabu, 1 Agu 2026</span>
+<span style="flex:1"></span>
+<span style="font-size:11px;color:#9ba1ae">WITA</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-3 fade-up" style="animation-delay:0.05s">
+<div class="stat-card" style="--stat-color:rgba(173,255,47,0.3)"><div class="stat-glow" style="background:rgba(173,255,47,0.3);top:-40px;right:-40px;width:100px;height:100px"></div><div class="relative z-10"><div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><span style="width:20px;height:20px;border-radius:6px;background:rgba(173,255,47,0.3)20;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#adff2f" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span><span style="font-size:10px;font-weight:700;color:rgba(173,255,47,0.95);text-transform:uppercase;letter-spacing:0.08em">Disetujui</span></div><div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:30px;font-weight:800;color:#fff;line-height:1">8</span><span style="font-size:11px;color:#9ba1ae">total</span></div></div></div>
+<div class="stat-card" style="--stat-color:rgba(165,180,252,0.3)"><div class="stat-glow" style="background:rgba(165,180,252,0.3);top:-40px;right:-40px;width:100px;height:100px"></div><div class="relative z-10"><div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><span style="width:20px;height:20px;border-radius:6px;background:rgba(165,180,252,0.3)20;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="3"><circle cx="12" cy="12" r="3"/><path d="M12 5v2M12 17v2M5 12h2M17 12h2"/></svg></span><span style="font-size:10px;font-weight:700;color:rgba(165,180,252,0.95);text-transform:uppercase;letter-spacing:0.08em">Pending</span></div><div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:30px;font-weight:800;color:#fff;line-height:1">2</span><span style="font-size:11px;color:#9ba1ae">total</span></div></div></div>
+<div class="stat-card" style="--stat-color:rgba(153,0,204,0.3)"><div class="stat-glow" style="background:rgba(153,0,204,0.3);top:-40px;right:-40px;width:100px;height:100px"></div><div class="relative z-10"><div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><span style="width:20px;height:20px;border-radius:6px;background:rgba(153,0,204,0.3)20;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2.5"><path d="M3 12h18M12 3v18"/></svg></span><span style="font-size:10px;font-weight:700;color:rgba(192,132,252,0.95);text-transform:uppercase;letter-spacing:0.08em">Total Hari</span></div><div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:30px;font-weight:800;color:#fff;line-height:1">14</span><span style="font-size:11px;color:#9ba1ae">total</span></div></div></div>
+</div>
+<div class="hero-card fade-up" style="animation-delay:0.1s">
+<div style="position:relative;z-index:2;padding:28px 24px 24px 24px">
+<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.08)">
+<span style="font-size:15px;font-weight:700;color:#fff">Ajukan Permohonan Izin/Sakit</span>
+</div>
+<div class="success-bar" style="display:none">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+<span>Permohonan berhasil dikirim! Status: Menunggu disetujui</span>
+</div>
+<div style="margin-bottom:16px">
+<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;display:block">Jenis Permohonan</span>
+<div class="pill-tabs">
+<span class="slide-bg" id="pillSlide"></span>
+<button class="active" data-type="izin" onclick="setPill(0)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Izin</button>
+<button data-type="sakit" onclick="setPill(1)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 6h8M12 2v4M6 12h12M4 18h16"/></svg>Sakit</button>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+<div class="input-wrap"><span class="static-label">Tanggal Mulai</span><input type="date" class="premium-input" value="2026-08-03" min="2026-08-01" onchange="countDays()"></div>
+<div class="input-wrap"><span class="static-label">Tanggal Selesai</span><input type="date" class="premium-input" value="2026-08-05" min="2026-08-03" onchange="countDays()"></div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+<span class="days-pill"><span style="font-size:13px;font-weight:800" id="dayCount">3</span> hari</span>
+<span style="font-size:11px;color:rgba(255,255,255,0.4)">Jumlah hari kalender</span>
+</div>
+<div class="input-wrap" style="margin-bottom:16px"><span class="static-label">Alasan Permohonan</span><textarea class="premium-input" rows="3" placeholder="Jelaskan alasan permohonan Anda...">Sakit demam tinggi, tidak bisa hadir di tempat kerja.</textarea></div>
+<button class="btn-primary" onclick="showSuccess()">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4z"/></svg>
+<span>Kirim Permohonan</span>
+</button>
+</div></div>
+<div class="glass-card p-5 fade-up" style="animation-delay:0.2s">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="width:3px;height:20px;border-radius:2px;background:linear-gradient(180deg,#BF00FF,#9900CC)"></span>
+<h2 style="font-size:17px;font-weight:800;color:#fff">Riwayat Permohonan</h2>
+</div>
+<div style="display:inline-flex;gap:2px;background:rgba(255,255,255,0.04);border-radius:10px;padding:3px;border:1px solid rgba(255,255,255,0.05)">
+<button style="padding:7px 14px;border-radius:8px;border:none;background:rgba(191,0,255,0.15);color:#fff;font-size:11px;font-weight:600">Semua</button>
+<button style="padding:7px 14px;border-radius:8px;border:none;background:transparent;color:#9ba1ae;font-size:11px;font-weight:600">Pending</button>
+</div>
+</div>
+<p style="font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:8px">5 permohonan terakhir</p>
+<div style="display:flex;flex-direction:column">
+<div class="history-item" style="animation-delay:0ss;border-bottom:1px solid rgba(255,255,255,0.04)"><div class="history-icon" style="background:rgba(45,212,191,0.10);border:1px solid rgba(45,212,191,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div><div style="flex:1;min-width:0;padding:0 12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:3px"><span style="font-size:13px;font-weight:700;color:#fff;text-transform:capitalize">Sakit</span><span class="badge badge-approved"><span class="badge-dot" style="background:#2dd4bf"></span>Disetujui</span></div><p style="font-size:12px;color:#9ba1ae;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Demam tinggi, tidak bisa masuk</p><p style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px">22–25 Jul 2026 · 4 hari</p></div></div>
+<div class="history-item" style="animation-delay:0.05ss;border-bottom:1px solid rgba(255,255,255,0.04)"><div class="history-icon" style="background:rgba(165,180,252,0.10);border:1px solid rgba(165,180,252,0.15)"><span style="display:block;width:8px;height:8px;border-radius:50%;background:#a5b4fc;box-shadow:0 0 8px rgba(165,180,252,0.5);animation:pulse 1.5s ease-in-out infinite"></span></div><div style="flex:1;min-width:0;padding:0 12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:3px"><span style="font-size:13px;font-weight:700;color:#fff;text-transform:capitalize">Izin</span><span class="badge badge-pending"><span class="badge-dot" style="background:#a5b4fc"></span>Menunggu</span></div><p style="font-size:12px;color:#9ba1ae;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Keperluan keluarga mendadak</p><p style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px">3–5 Agu 2026 · 3 hari</p></div><button class="btn-cancel"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div class="history-item" style="animation-delay:0.1ss;border-bottom:1px solid rgba(255,255,255,0.04)"><div class="history-icon" style="background:rgba(253,164,175,0.10);border:1px solid rgba(253,164,175,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fda4af" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div style="flex:1;min-width:0;padding:0 12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:3px"><span style="font-size:13px;font-weight:700;color:#fff;text-transform:capitalize">Izin</span><span class="badge badge-rejected"><span class="badge-dot" style="background:#fda4af"></span>Ditolak</span></div><p style="font-size:12px;color:#9ba1ae;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Acara keluarga</p><p style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px">10–12 Jul 2026 · 3 hari</p></div></div>
+<div class="history-item" style="animation-delay:0.15ss;border-bottom:1px solid rgba(255,255,255,0.04)"><div class="history-icon" style="background:rgba(45,212,191,0.10);border:1px solid rgba(45,212,191,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div><div style="flex:1;min-width:0;padding:0 12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:3px"><span style="font-size:13px;font-weight:700;color:#fff;text-transform:capitalize">Sakit</span><span class="badge badge-approved"><span class="badge-dot" style="background:#2dd4bf"></span>Disetujui</span></div><p style="font-size:12px;color:#9ba1ae;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Flu berat</p><p style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px">28–30 Jun 2026 · 3 hari</p></div></div>
+<div class="history-item" style="animation-delay:0.2ss;border-bottom:1px solid rgba(255,255,255,0.04)"><div class="history-icon" style="background:rgba(45,212,191,0.10);border:1px solid rgba(45,212,191,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div><div style="flex:1;min-width:0;padding:0 12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:3px"><span style="font-size:13px;font-weight:700;color:#fff;text-transform:capitalize">Izin</span><span class="badge badge-approved"><span class="badge-dot" style="background:#2dd4bf"></span>Disetujui</span></div><p style="font-size:12px;color:#9ba1ae;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Nikahan saudara</p><p style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px">15–16 Jun 2026 · 2 hari</p></div></div>
+</div>
+<button style="width:100%;margin-top:14px;padding:12px;border-radius:12px;font-size:12px;font-weight:600;color:#9ba1ae;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+<span>Lihat Semua Riwayat</span>
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+</button>
+</div>
+<div class="glass-card p-5 fade-up" style="animation-delay:0.25s">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+<div style="width:32px;height:32px;border-radius:10px;background:rgba(165,180,252,0.10);border:1px solid rgba(251,191,36,0.25);display:flex;align-items:center;justify-content:center">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+</div>
+<div>
+<h2 style="font-size:17px;font-weight:800;color:#fff">Manajemen Izin &amp; Sakit</h2>
+<p style="font-size:11px;color:rgba(255,255,255,0.4)">Admin — Kelola permohonan pegawai</p>
+</div>
+</div>
+<div style="display:inline-flex;gap:2px;background:rgba(255,255,255,0.04);border-radius:12px;padding:3px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.05)">
+<button style="padding:8px 16px;border-radius:9px;border:none;background:linear-gradient(135deg,#BF00FF,#9900CC);color:#fff;font-size:12px;font-weight:600;box-shadow:0 4px 16px rgba(191,0,255,0.3)">Pending <span style="background:rgba(239,68,68,0.8);padding:2px 8px;border-radius:999px;margin-left:6px;font-size:11px">2</span></button>
+<button style="padding:8px 16px;border-radius:9px;border:none;background:transparent;color:#9ba1ae;font-size:12px;font-weight:600">Semua</button>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div class="admin-item"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:14px;font-weight:700;color:#fff">Ahmad Fauzi</span><span class="badge badge-pending"><span class="badge-dot" style="background:#a5b4fc"></span>Menunggu</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px"><div><span style="font-size:10px;font-weight:700;color:#9ba1ae;text-transform:uppercase;letter-spacing:0.05em">Jenis</span><br><span style="font-size:13px;color:#fff;text-transform:capitalize;font-weight:600">Izin</span></div><div><span style="font-size:10px;font-weight:700;color:#9ba1ae;text-transform:uppercase;letter-spacing:0.05em">Tanggal</span><br><span style="font-size:13px;color:#fff;font-weight:600">3–5 Agu 2026 (3 hari)</span></div></div><div><span style="font-size:10px;font-weight:700;color:#9ba1ae;text-transform:uppercase;letter-spacing:0.05em">Alasan</span><br><span style="font-size:12px;color:rgba(255,255,255,0.85)">Keperluan keluarga mendadak</span></div></div><div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0"><button class="admin-btn admin-btn-approve"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Setujui</button><button class="admin-btn admin-btn-reject" onclick="openRejectModal('Ahmad Fauzi')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>Tolak</button></div></div></div>
+<div class="admin-item"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:14px;font-weight:700;color:#fff">Siti Rahma</span><span class="badge badge-pending"><span class="badge-dot" style="background:#a5b4fc"></span>Menunggu</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px"><div><span style="font-size:10px;font-weight:700;color:#9ba1ae;text-transform:uppercase;letter-spacing:0.05em">Jenis</span><br><span style="font-size:13px;color:#fff;text-transform:capitalize;font-weight:600">Sakit</span></div><div><span style="font-size:10px;font-weight:700;color:#9ba1ae;text-transform:uppercase;letter-spacing:0.05em">Tanggal</span><br><span style="font-size:13px;color:#fff;font-weight:600">6–7 Agu 2026 (2hari)</span></div></div><div><span style="font-size:10px;font-weight:700;color:#9ba1ae;text-transform:uppercase;letter-spacing:0.05em">Alasan</span><br><span style="font-size:12px;color:rgba(255,255,255,0.85)">Demam tinggi, tidak bisa masuk</span></div></div><div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0"><button class="admin-btn admin-btn-approve"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Setujui</button><button class="admin-btn admin-btn-reject" onclick="openRejectModal('Siti Rahma')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>Tolak</button></div></div></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;margin-top:4px">
+<span style="font-size:10px;color:rgba(255,255,255,0.2)">Hadir.Kuy © 2026</span>
+<span style="font-size:10px;color:rgba(255,255,255,0.2)">v1.6.6 · Preview UI</span>
+</div>
+</div>
+<div class="modal-overlay" id="rejectModal">
+<div class="modal-content">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+<div>
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:rgba(253,164,175,0.10);border:1px solid rgba(253,164,175,0.15);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fda4af" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><span class="modal-title">Tolak Permohonan</span></div>
+<p class="modal-text">Pegawai: <span style="color:#fff;font-weight:600" id="rejectName">Ahmad Fauzi</span></p>
+</div>
+<button onclick="closeRejectModal()" style="width:30px;height:30px;border-radius:8px;border:none;background:rgba(255,255,255,0.05);color:#9ba1ae;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+</div>
+<textarea class="modal-input" id="rejectReason" placeholder="Masukkan alasan penolakan..." rows="4"></textarea>
+<div class="modal-actions">
+<button class="modal-btn modal-btn-cancel" onclick="closeRejectModal()">Batal</button>
+<button class="modal-btn modal-btn-reject">Tolak Permohonan</button>
+</div>
+</div></div>
+<div class="toast" id="successToast"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Permohonan berhasil dikirim!</div>
+<script>
+function setPill(i){var slide=document.getElementById("pillSlide");var tabs=document.querySelectorAll(".pill-tabs button");tabs.forEach(function(b){b.classList.remove("active")});tabs[i].classList.add("active");slide.style.left=(i*50+0.5)+"%"}
+function countDays(){var s=document.querySelector("input[type=date]");var e=document.querySelectorAll("input[type=date]")[1];if(s.value&&e.value){var ms=Date.parse(e.value)-Date.parse(s.value);var d=Math.max(0,Math.floor(ms/86400000)+1);document.getElementById("dayCount").textContent=d}}
+function showSuccess(){var t=document.getElementById("successToast");t.classList.add("show");setTimeout(function(){t.classList.remove("show")},2500)}
+function openRejectModal(name){document.getElementById("rejectName").textContent=name;document.getElementById("rejectModal").classList.add("active")}
+function closeRejectModal(){document.getElementById("rejectModal").classList.remove("active")}
+document.getElementById("rejectModal").addEventListener("click",function(e){if(e.target===this)closeRejectModal()});
+document.addEventListener("DOMContentLoaded",function(){countDays()});
+</script>
+</body>
+</html>

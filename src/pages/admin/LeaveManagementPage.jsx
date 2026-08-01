@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
 import { getLeaveRequests, approveLeaveRequest, rejectLeaveRequest, countLeaveDays } from "../../services/leaveService";
 
 // Premium badge config
@@ -13,37 +12,6 @@ const TABS = [
   { id: "pending", label: "Menunggu", badge: true },
   { id: "all",     label: "Semua" },
 ];
-
-function StatusIcon({ status }) {
-  const s = STATUS[status] || STATUS.pending;
-  return (
-    <div style={{
-      width: 36, height: 36, borderRadius: 12,
-      background: s.bg, border: "1px solid " + s.border,
-      display: "flex", alignItems: "center", justifyContent: "center",
-    }}>
-      {status === "approved" && (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={s.color} strokeWidth="2.5">
-          <path d="M20 6L9 17l-5-5"/>
-        </svg>
-      )}
-      {status === "pending" && (
-        <span style={{
-          width: 8, height: 8, borderRadius: "50%", background: s.color,
-          boxShadow: "0 0 8px " + s.color,
-        }}/>
-      )}
-      {status === "rejected" && (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={s.color} strokeWidth="2.5">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="15" y1="9" x2="9" y2="15"/>
-          <line x1="9" y1="9" x2="15" y2="15"/>
-        </svg>
-      )}
-    </div>
-  );
-}
-
 function LeaveItemCard({ item, profile, onApprove, onRejectClick, processing }) {
   const s = STATUS[item.status] || STATUS.pending;
   const initial = (profile?.full_name || profile?.username || "P")[0].toUpperCase();
@@ -134,8 +102,7 @@ function LeaveItemCard({ item, profile, onApprove, onRejectClick, processing }) 
 }
 
 export default function LeaveManagementPage() {
-  const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("pending");
+    const [activeTab, setActiveTab] = useState("pending");
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [rejectModal, setRejectModal] = useState(null);
@@ -157,7 +124,9 @@ export default function LeaveManagementPage() {
     }
   };
 
+  /* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
   useEffect(() => { load(); }, [activeTab]);
+  /* eslint-enable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 
   const pendingCount = items.filter(i => i.status === "pending").length;
   const approvedCount = items.filter(i => i.status === "approved").length;
