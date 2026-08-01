@@ -194,29 +194,29 @@ export default function LeaveRequestPage() {
               icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c084fc" strokeWidth="2.5"><path d="M3 12h18M12 3v18"/></svg> },
           ].map((st) => (
             <div key={st.label} style={{
-              position: "relative", padding: 16,
+              position: "relative", padding: 10,
               background: "linear-gradient(160deg, rgba(30,25,45,0.6), rgba(15,10,25,0.3))",
               backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: 22, overflow: "hidden",
+              borderRadius: 18, overflow: "hidden",
             }}>
               <div style={{
-                position: "absolute", top: -30, right: -30, width: 80, height: 80,
+                position: "absolute", top: -25, right: -25, width: 70, height: 70,
                 background: st.statColor, borderRadius: "50%", filter: "blur(30px)", opacity: 0.5,
               }} />
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, position: "relative", zIndex: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 4, position: "relative", zIndex: 1 }}>
                 <span style={{
-                  width: 20, height: 20, borderRadius: 6,
+                  width: 18, height: 18, borderRadius: 6,
                   background: st.statColor, display: "flex", alignItems: "center", justifyContent: "center",
                 }}>{st.icon}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: st.valueColor, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                <span style={{ fontSize: 9, fontWeight: 700, color: st.valueColor, textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>
                   {st.label}
                 </span>
               </div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 6, position: "relative", zIndex: 1 }}>
-                <span style={{ fontSize: 28, fontWeight: 800, color: "#fff", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 5, position: "relative", zIndex: 1 }}>
+                <span style={{ fontSize: 22, fontWeight: 800, color: "#fff", lineHeight: 1.1, fontVariantNumeric: "tabular-nums" }}>
                   {st.value}
                 </span>
-                <span style={{ fontSize: 11, color: "#9ba1ae" }}>total</span>
+                <span style={{ fontSize: 10, color: "#9ba1ae" }}>total</span>
               </div>
             </div>
           ))}
