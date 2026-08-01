@@ -15,10 +15,9 @@ const STATUS = {
   rejected:  { label: "Ditolak",  color: "#fda4af", bg: "rgba(253,164,175,0.12)", border: "rgba(253,164,175,0.2)" },
 };
 
-// ─── Helper: initials ───
-function getInitial(name) {
-  return (name || "?").charAt(0).toUpperCase();
-}
+
+const today = new Date();
+const todayStr = today.getFullYear() + "-" + String(today.getMonth()+1).padStart(2,"0") + "-" + String(today.getDate()).padStart(2,"0");
 
 export default function LeaveRequestPage() {
   const { user, loading: authLoading } = useAuth();
@@ -67,9 +66,11 @@ export default function LeaveRequestPage() {
     }
   };
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (user?.id) loadRequests();
   }, [user?.id]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -126,31 +127,16 @@ export default function LeaveRequestPage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>Cuti & Izin</h1>
-          <p style={{ fontSize: 11, color: "#9ba1ae", marginTop: 2 }}>Kelola permohonan cuti, izin, dan sakit</p>
+          <p style={{ fontSize: 11, color: "#9ba1ae", marginTop: 2 }}>Ajukan permohonan atau lihat riwayat</p>
         </div>
-        <div style={{ display: "flex", gap: 6 }}>
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                padding: "8px 18px", borderRadius: 9999, fontSize: 13, fontWeight: 600,
-                border: "none", cursor: "pointer", transition: "all .2s",
-                background: activeTab === tab.id ? "#5800fd" : "rgba(255,255,255,0.06)",
-                color: activeTab === tab.id ? "#fff" : "#9ba1ae",
-                boxShadow: activeTab === tab.id ? "0 4px 15px rgba(88,0,253,0.35)" : "none",
-                display: "inline-flex", alignItems: "center", gap: 6,
-              }}
-            >
-              {tab.label}
-              {tab.badge && pendingCount > 0 && (
-                <span style={{
-                  background: "rgba(255,255,255,0.2)", padding: "1px 8px",
-                  borderRadius: 9999, fontSize: 11,
-                }}>{pendingCount}</span>
-              )}
-            </button>
-          ))}
+        <div style={{
+          display: "inline-flex", alignItems: "center", gap: 6,
+          padding: "6px 14px", borderRadius: 9999,
+          background: "rgba(173,255,47,0.08)", border: "1px solid rgba(173,255,47,0.15)",
+          fontSize: 11, fontWeight: 600, color: "#adff2f",
+        }}>
+          <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#adff2f" }} />
+          Aktif
         </div>
       </div>
 
