@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { toast } from "react-toastify";
 import {
   LEAVE_TYPES,
   createLeaveRequest,
@@ -102,17 +103,28 @@ export default function LeaveRequestPage() {
     e.preventDefault();
     setFormError("");
     setSuccessMsg("");
-    if (!startDate || !endDate) { setFormError("Tanggal wajib diisi"); return; }
-    if (endDate < startDate) { setFormError("Tanggal selesai tidak boleh sebelum tanggal mulai"); return; }
-    if (!reason.trim()) { setFormError("Alasan wajib diisi"); return; }
+
+    if (!startDate || !endDate) {
+      toast.warning("Tanggal wajib diisi", { position: "bottom-center" });
+      return;
+    }
+    if (endDate < startDate) {
+      toast.error("Tanggal selesai tidak boleh sebelum tanggal mulai", { position: "bottom-center" });
+      return;
+    }
+    if (!reason.trim()) {
+      toast.error("Alasan wajib diisi terlebih dahulu", { position: "bottom-center" });
+      return;
+    }
+
     setLoading(true);
     try {
       await createLeaveRequest({ userId: user.id, type: formType, startDate, endDate, reason });
-      setSuccessMsg("Permohonan berhasil dikirim (pending)");
+      toast.success("Permohonan berhasil dikirim (pending)", { position: "bottom-center" });
       setStartDate(""); setEndDate(""); setReason("");
       await loadRequests();
     } catch (err) {
-      setFormError(err.message || "Gagal mengirim permohonan");
+      toast.error(err.message || "Gagal mengirim permohonan", { position: "bottom-center" });
     } finally {
       setLoading(false);
     }
@@ -122,10 +134,10 @@ export default function LeaveRequestPage() {
     if (!confirm("Batalkan permohonan ini?")) { setCancelId(null); return; }
     try {
       await cancelLeaveRequest(cancelId);
-      setSuccessMsg("Permohonan berhasil dibatalkan");
+      toast.success("Permohonan berhasil dibatalkan", { position: "bottom-center" });
       await loadRequests();
     } catch (err) {
-      setFormError(err.message || "Gagal membatalkan");
+      toast.error(err.message || "Gagal membatalkan", { position: "bottom-center" });
     }
     setCancelId(null);
   };
@@ -259,6 +271,7 @@ export default function LeaveRequestPage() {
                 color: "#fda4af", fontSize: 13,
               }}>{formError}</div>
             )}
+            <form onSubmit={handleSubmit}>
 
             <form onSubmit={handleSubmit}>
               {/* PILL TAB Izin/Sakit */}
