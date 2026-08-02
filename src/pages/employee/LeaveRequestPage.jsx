@@ -529,7 +529,7 @@ export default function LeaveRequestPage() {
       {/* ─── SUCCESS POPUP ─── */}
       {showSuccessPopup && (
         <div
-          className="fixed inset-0 z-[9999] flex items-end justify-center px-4 pb-14"
+          className="fixed inset-0 z-[9999] flex items-end justify-center px-4 pb-28"
           onClick={() => setShowSuccessPopup(false)}
         >
           {/* Backdrop */}
@@ -541,7 +541,7 @@ export default function LeaveRequestPage() {
               position: "relative", width: "100%", maxWidth: 360, zIndex: 10000,
               background: "linear-gradient(160deg, #0a2616 0%, #0f2d1f 100%)",
               border: "1px solid rgba(45,212,191,0.25)",
-              borderRadius: 28, padding: "28px 22px 22px",
+              borderRadius: 28, padding: "24px 22px 20px",
               boxShadow: "0 24px 80px rgba(0,0,0,0.5), 0 0 40px rgba(45,212,191,0.15)",
               animation: "slideUp .35s cubic-bezier(0.34,1.56,0.64,1)",
             }}
@@ -557,12 +557,12 @@ export default function LeaveRequestPage() {
 
             {/* Icon Circle */}
             <div style={{
-              width: 60, height: 60, borderRadius: "50%",
+              width: 56, height: 56, borderRadius: "50%",
               background: "rgba(45,212,191,0.12)", border: "2px solid rgba(45,212,191,0.4)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              margin: "0 auto 14px", position: "relative",
+              margin: "0 auto 12px", position: "relative",
             }}>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" strokeWidth="2.5"
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" strokeWidth="2.5"
                 strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
@@ -570,7 +570,7 @@ export default function LeaveRequestPage() {
 
             {/* Title */}
             <div style={{
-              textAlign: "center", marginBottom: 16, position: "relative",
+              textAlign: "center", marginBottom: 14, position: "relative",
             }}>
               <h3 style={{
                 fontSize: 17, fontWeight: 800, color: "#FFFFFF", margin: "0 0 4px",
@@ -589,11 +589,11 @@ export default function LeaveRequestPage() {
             <div style={{
               background: "rgba(45,212,191,0.06)",
               border: "1px solid rgba(45,212,191,0.12)",
-              borderRadius: 16, padding: "12px 14px", marginBottom: 18, position: "relative",
+              borderRadius: 16, padding: "10px 14px", marginBottom: 12, position: "relative",
             }}>
               <div style={{
                 display: "flex", justifyContent: "space-between", alignItems: "center",
-                marginBottom: 8,
+                marginBottom: 6,
               }}>
                 <span style={{
                   fontSize: 11, fontWeight: 700, textTransform: "capitalize",
@@ -618,13 +618,13 @@ export default function LeaveRequestPage() {
               }}>
                 <div>
                   <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Tanggal</div>
-                  <div style={{ color: "rgba(255,255,255,0.85)", marginTop: 1 }}>
-                    {popupData.start.replace("-", "–")}–{popupData.end.substring(5)}
+                  <div style={{ color: "#FFFFFF", marginTop: 1, fontSize: 12, fontWeight: 700, lineHeight: 1.3 }}>
+                    {fmtDay(popupData.start)} — {fmtDay(popupData.end)}
                   </div>
                 </div>
                 <div>
                   <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Durasi</div>
-                  <div style={{ color: "rgba(255,255,255,0.85)", marginTop: 1 }}>
+                  <div style={{ color: "#FFFFFF", marginTop: 1, fontSize: 12, fontWeight: 700 }}>
                     {popupData.days} hari
                   </div>
                 </div>
@@ -635,10 +635,10 @@ export default function LeaveRequestPage() {
             <div style={{
               background: "rgba(255,255,255,0.04)",
               border: "1px solid rgba(255,255,255,0.06)",
-              borderRadius: 14, padding: "10px 12px", marginBottom: 16,
+              borderRadius: 14, padding: "8px 12px", marginBottom: 12,
             }}>
-              <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Alasan</div>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", margin: 0, lineHeight: 1.5 }}>
+              <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 2 }}>Alasan</div>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", margin: 0, lineHeight: 1.4 }}>
                 {popupData.reason}
               </p>
             </div>
@@ -647,7 +647,7 @@ export default function LeaveRequestPage() {
             <button
               onClick={() => setShowSuccessPopup(false)}
               style={{
-                width: "100%", padding: "14px 0",
+                width: "100%", padding: "12px 0",
                 background: "linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%)",
                 color: "#062e1e", fontSize: 14, fontWeight: 800,
                 borderRadius: 14, border: "none", cursor: "pointer",
