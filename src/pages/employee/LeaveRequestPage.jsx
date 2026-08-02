@@ -529,144 +529,138 @@ export default function LeaveRequestPage() {
       {/* ─── SUCCESS POPUP ─── */}
       {showSuccessPopup && (
         <div
-          className="fixed inset-0 z-[9999] flex items-end justify-center px-4 pb-28"
+          className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center px-4 pb-8 animate-fade-in"
           onClick={() => setShowSuccessPopup(false)}
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-sm" onClick={() => setShowSuccessPopup(false)} />
 
-          {/* Popup Card */}
+          {/* Popup Card — Purple Magenta, same style as attendance result sheet */}
           <div
             style={{
-              position: "relative", width: "100%", maxWidth: 360, zIndex: 10000,
-              background: "linear-gradient(160deg, #0a2616 0%, #0f2d1f 100%)",
-              border: "1px solid rgba(45,212,191,0.25)",
-              borderRadius: 28, padding: "24px 22px 20px",
-              boxShadow: "0 24px 80px rgba(0,0,0,0.5), 0 0 40px rgba(45,212,191,0.15)",
-              animation: "slideUp .35s cubic-bezier(0.34,1.56,0.64,1)",
+              maxHeight: "93vh", width: "100%", maxWidth: 400,
+              borderRadius: "28px 28px 0 0",
+              background: "linear-gradient(165deg, #8B00CC 0%, #7B00E0 20%, #4A0099 55%, #05020b 100%)",
+              border: "1px solid rgba(255,0,153,0.4)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(191,0,255,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
+              position: "relative", overflow: "hidden", zIndex: 9999,
             }}
+            className="md:rounded-3xl mx-auto flex flex-col animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Glow */}
+            {/* Gradient overlay */}
             <div style={{
-              position: "absolute", top: -60, left: "50%", transform: "translateX(-50%)",
-              width: 200, height: 200, borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(45,212,191,0.25), transparent 65%)",
-              filter: "blur(20px)", pointerEvents: "none",
+              position: "absolute", inset: 0,
+              background: "radial-gradient(circle at 50% 5%, rgba(255,0,153,0.35), transparent 50%), radial-gradient(circle at 50% 95%, rgba(112,102,237,0.25), transparent 50%)",
+              pointerEvents: "none", zIndex: 1,
             }} />
 
-            {/* Icon Circle */}
-            <div style={{
-              width: 56, height: 56, borderRadius: "50%",
-              background: "rgba(45,212,191,0.12)", border: "2px solid rgba(45,212,191,0.4)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              margin: "0 auto 12px", position: "relative",
-            }}>
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" strokeWidth="2.5"
-                strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </div>
-
-            {/* Title */}
-            <div style={{
-              textAlign: "center", marginBottom: 14, position: "relative",
-            }}>
-              <h3 style={{
-                fontSize: 17, fontWeight: 800, color: "#FFFFFF", margin: "0 0 4px",
-                fontFamily: "'Urbanist', sans-serif", letterSpacing: "-0.01em",
-              }}>
-                Permohonan Terkirim
-              </h3>
-              <p style={{
-                fontSize: 12, color: "rgba(255,255,255,0.5)", margin: 0,
-              }}>
-                Status menunggu persetujuan admin
-              </p>
-            </div>
-
-            {/* Summary Row */}
-            <div style={{
-              background: "rgba(45,212,191,0.06)",
-              border: "1px solid rgba(45,212,191,0.12)",
-              borderRadius: 16, padding: "10px 14px", marginBottom: 12, position: "relative",
-            }}>
-              <div style={{
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-                marginBottom: 6,
-              }}>
-                <span style={{
-                  fontSize: 11, fontWeight: 700, textTransform: "capitalize",
-                  color: "#2dd4bf", letterSpacing: "0.04em",
-                }}>
-                  {popupData.type.toUpperCase()}
-                </span>
-                <span style={{
-                  display: "inline-flex", alignItems: "center", gap: 4,
-                  padding: "2px 9px", borderRadius: 9999,
-                  fontSize: 9, fontWeight: 700, color: "#2dd4bf",
-                  background: "rgba(45,212,191,0.1)", border: "1px solid rgba(45,212,191,0.2)",
-                  textTransform: "uppercase", letterSpacing: "0.03em",
-                }}>
-                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#2dd4bf" }} />
-                  PENDING
-                </span>
+            {/* Content */}
+            <div style={{ position: "relative", zIndex: 2, padding: "10px 22px 24px", display: "flex", flexDirection: "column", alignItems: "center", overflowY: "auto" }}>
+              {/* Handle */}
+              <div style={{ display: "flex", justifyContent: "center", paddingBottom: 10 }}>
+                <div style={{ width: 40, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.15)" }} />
               </div>
+
+              {/* 3D Badge — purple gradient like attendance */}
               <div style={{
-                display: "grid", gridTemplateColumns: "1fr 1fr",
-                gap: "0 12px", fontSize: 11,
+                width: 76, height: 76, borderRadius: 18,
+                background: "linear-gradient(145deg, #FF0099 0%, #BF00FF 50%, #7B00E0 100%)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                marginBottom: 16, position: "relative",
+                boxShadow: "0 10px 24px rgba(191,0,255,0.4), 0 4px 8px rgba(0,0,0,0.3), inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 3px 6px rgba(255,255,255,0.2)",
               }}>
-                <div>
-                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Mulai</div>
-                  <div style={{ color: "#FFFFFF", marginTop: 1, fontSize: 12, fontWeight: 700, lineHeight: 1.3 }}>
-                    {fmtDay(popupData.start)}
+                <div style={{ position: "absolute", inset: -4, borderRadius: 22, background: "linear-gradient(145deg, #FF0099 0%, #BF00FF 50%, #7B00E0 100%)", zIndex: -1, opacity: 0.35, filter: "blur(6px)" }} />
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m9 12 2 2 4-4" />
+                  <circle cx="12" cy="12" r="9" />
+                </svg>
+              </div>
+
+              {/* Title */}
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: "white", textAlign: "center", marginBottom: 4, fontFamily: "'Urbanist', sans-serif" }}>
+                Permohonan Terkirim!
+              </h2>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", textAlign: "center", marginBottom: 16 }}>
+                {popupData.type === "sakit" ? "Permohonan sakit sedang diproses admin" : "Permohonan izin sedang diproses admin"}
+              </p>
+
+              {/* Status badge */}
+              <span style={{
+                fontSize: 10, fontWeight: 700, color: "#FBBF24",
+                background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.25)",
+                borderRadius: 20, padding: "3px 12px", marginBottom: 16,
+                display: "inline-flex", alignItems: "center", gap: 6, letterSpacing: "0.04em", textTransform: "uppercase",
+              }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#FBBF24" }} />
+                Menunggu Persetujuan
+              </span>
+
+              {/* Summary */}
+              <div style={{
+                background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 16, padding: "12px 14px", marginBottom: 12, width: "100%",
+              }}>
+                {/* Type + Duration row */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#fff", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    {popupData.type === "sakit" ? "SAKIT" : "IZIN"}
+                  </span>
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", gap: 5,
+                    padding: "3px 10px", borderRadius: 9999,
+                    fontSize: 11, fontWeight: 700, color: "#c084fc",
+                    background: "rgba(192,132,252,0.1)", border: "1px solid rgba(192,132,252,0.25)",
+                  }}>
+                    📅 {popupData.days} hari
+                  </span>
+                </div>
+
+                {/* Mulai / Berakhir grid */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 12px" }}>
+                  <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "10px 12px" }}>
+                    <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Mulai</div>
+                    <div style={{ color: "#FFFFFF", fontSize: 12, fontWeight: 700, lineHeight: 1.35 }}>
+                      {fmtDay(popupData.start)}
+                    </div>
+                  </div>
+                  <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "10px 12px" }}>
+                    <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Berakhir</div>
+                    <div style={{ color: "#FFFFFF", fontSize: 12, fontWeight: 700, lineHeight: 1.35 }}>
+                      {fmtDay(popupData.end)}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Berakhir</div>
-                  <div style={{ color: "#FFFFFF", marginTop: 1, fontSize: 12, fontWeight: 700, lineHeight: 1.3 }}>
-                    {fmtDay(popupData.end)}
-                  </div>
-                </div>
               </div>
-            </div>
 
-            {/* Durasi + Alasan */}
-            <div style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.06)",
-              borderRadius: 14, padding: "8px 12px", marginBottom: 12,
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                <span style={{
-                  display: "inline-flex", alignItems: "center", gap: 5,
-                  padding: "3px 10px", borderRadius: 9999,
-                  fontSize: 11, fontWeight: 700, color: "#c084fc",
-                  background: "rgba(192,132,252,0.08)", border: "1px solid rgba(192,132,252,0.2)",
-                }}>
-                  {popupData.days} hari
-                </span>
-                <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Alasan</div>
+              {/* Alasan */}
+              <div style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.06)",
+                borderRadius: 14, padding: "10px 12px", marginBottom: 16, width: "100%",
+              }}>
+                <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Alasan</div>
+                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", margin: 0, lineHeight: 1.5 }}>
+                  {popupData.reason}
+                </p>
               </div>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", margin: 0, lineHeight: 1.4 }}>
-                {popupData.reason}
-              </p>
-            </div>
 
-            {/* OK Button */}
-            <button
-              onClick={() => setShowSuccessPopup(false)}
-              style={{
-                width: "100%", padding: "12px 0",
-                background: "linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%)",
-                color: "#062e1e", fontSize: 14, fontWeight: 800,
-                borderRadius: 14, border: "none", cursor: "pointer",
-                fontFamily: "inherit", letterSpacing: "0.02em",
-                boxShadow: "0 8px 24px rgba(45,212,191,0.3)",
-              }}
-            >
-              Tutup
-            </button>
+              {/* Button */}
+              <button
+                onClick={() => setShowSuccessPopup(false)}
+                style={{
+                  width: "100%", padding: "14px 0",
+                  background: "linear-gradient(135deg, #BF00FF 0%, #9900CC 50%, #7B00E0 100%)",
+                  border: "none", borderRadius: 16, color: "white",
+                  fontSize: 14, fontWeight: 700, cursor: "pointer", letterSpacing: 0.3,
+                  fontFamily: "inherit",
+                  boxShadow: "0 8px 24px rgba(191,0,255,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
+                }}
+                className="active:scale-[0.98]"
+              >
+                Tutup
+              </button>
+            </div>
           </div>
         </div>
       )}
