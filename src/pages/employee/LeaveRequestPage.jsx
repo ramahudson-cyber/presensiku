@@ -59,6 +59,8 @@ export default function LeaveRequestPage() {
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [popupData, setPopupData] = useState({ type: "", start: "", end: "", reason: "", days: 0 });
   const [requests, setRequests] = useState([]);
   const [fetching, setFetching] = useState(true);
   const [fetchError, setFetchError] = useState("");
@@ -120,7 +122,8 @@ export default function LeaveRequestPage() {
     setLoading(true);
     try {
       await createLeaveRequest({ userId: user.id, type: formType, startDate, endDate, reason });
-      toast.success("Permohonan berhasil dikirim (pending)", { position: "bottom-center" });
+      setPopupData({ type: formType, start: startDate, end: endDate, reason, days: dayCount });
+      setShowSuccessPopup(true);
       setStartDate(""); setEndDate(""); setReason("");
       await loadRequests();
     } catch (err) {
@@ -253,25 +256,6 @@ export default function LeaveRequestPage() {
             }}>
               <span style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>Ajukan Permohonan Izin/Sakit</span>
             </div>
-
-            {successMsg && (
-              <div style={{
-                marginBottom: 14, padding: "10px 14px", borderRadius: 14,
-                background: "rgba(16,185,129,0.1)", border: "1px solid rgba(45,212,191,0.15)",
-                color: "#2dd4bf", fontSize: 13, display: "flex", alignItems: "center", gap: 8,
-              }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                {successMsg}
-              </div>
-            )}
-            {formError && (
-              <div style={{
-                marginBottom: 14, padding: "10px 14px", borderRadius: 14,
-                background: "rgba(253,164,175,0.1)", border: "1px solid rgba(253,164,175,0.15)",
-                color: "#fda4af", fontSize: 13,
-              }}>{formError}</div>
-            )}
-            <form onSubmit={handleSubmit}>
 
             <form onSubmit={handleSubmit}>
               {/* PILL TAB Izin/Sakit */}
@@ -539,6 +523,141 @@ export default function LeaveRequestPage() {
           )}
         </div>
       </div>
+
+      {/* ─── SUCCESS POPUP ─── */}
+      {showSuccessPopup && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-end justify-center px-4 pb-6"
+          onClick={() => setShowSuccessPopup(false)}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+
+          {/* Popup Card */}
+          <div
+            style={{
+              position: "relative", width: "100%", maxWidth: 360,
+              background: "linear-gradient(160deg, #0a2616 0%, #0f2d1f 100%)",
+              border: "1px solid rgba(45,212,191,0.25)",
+              borderRadius: 28, padding: "28px 22px 22px",
+              boxShadow: "0 24px 80px rgba(0,0,0,0.5), 0 0 40px rgba(45,212,191,0.15)",
+              animation: "slideUp .35s cubic-bezier(0.34,1.56,0.64,1)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Glow */}
+            <div style={{
+              position: "absolute", top: -60, left: "50%", transform: "translateX(-50%)",
+              width: 200, height: 200, borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(45,212,191,0.25), transparent 65%)",
+              filter: "blur(20px)", pointerEvents: "none",
+            }} />
+
+            {/* Icon Circle */}
+            <div style={{
+              width: 60, height: 60, borderRadius: "50%",
+              background: "rgba(45,212,191,0.12)", border: "2px solid rgba(45,212,191,0.4)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              margin: "0 auto 14px", position: "relative",
+            }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" strokeWidth="2.5"
+                strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+
+            {/* Title */}
+            <div style={{
+              textAlign: "center", marginBottom: 16, position: "relative",
+            }}>
+              <h3 style={{
+                fontSize: 17, fontWeight: 800, color: "#FFFFFF", margin: "0 0 4px",
+                fontFamily: "'Urbanist', sans-serif", letterSpacing: "-0.01em",
+              }}>
+                Permohonan Terkirim
+              </h3>
+              <p style={{
+                fontSize: 12, color: "rgba(255,255,255,0.5)", margin: 0,
+              }}>
+                Status menunggu persetujuan admin
+              </p>
+            </div>
+
+            {/* Summary Row */}
+            <div style={{
+              background: "rgba(45,212,191,0.06)",
+              border: "1px solid rgba(45,212,191,0.12)",
+              borderRadius: 16, padding: "12px 14px", marginBottom: 18, position: "relative",
+            }}>
+              <div style={{
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+                marginBottom: 8,
+              }}>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, textTransform: "capitalize",
+                  color: "#2dd4bf", letterSpacing: "0.04em",
+                }}>
+                  {popupData.type.toUpperCase()}
+                </span>
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: 4,
+                  padding: "2px 9px", borderRadius: 9999,
+                  fontSize: 9, fontWeight: 700, color: "#2dd4bf",
+                  background: "rgba(45,212,191,0.1)", border: "1px solid rgba(45,212,191,0.2)",
+                  textTransform: "uppercase", letterSpacing: "0.03em",
+                }}>
+                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#2dd4bf" }} />
+                  PENDING
+                </span>
+              </div>
+              <div style={{
+                display: "grid", gridTemplateColumns: "1fr 1fr",
+                gap: "0 12px", fontSize: 11,
+              }}>
+                <div>
+                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Tanggal</div>
+                  <div style={{ color: "rgba(255,255,255,0.85)", marginTop: 1 }}>
+                    {popupData.start.replace("-", "–")}–{popupData.end.substring(5)}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Durasi</div>
+                  <div style={{ color: "rgba(255,255,255,0.85)", marginTop: 1 }}>
+                    {popupData.days} hari
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Alasan */}
+            <div style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              borderRadius: 14, padding: "10px 12px", marginBottom: 16,
+            }}>
+              <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Alasan</div>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", margin: 0, lineHeight: 1.5 }}>
+                {popupData.reason}
+              </p>
+            </div>
+
+            {/* OK Button */}
+            <button
+              onClick={() => setShowSuccessPopup(false)}
+              style={{
+                width: "100%", padding: "14px 0",
+                background: "linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%)",
+                color: "#062e1e", fontSize: 14, fontWeight: 800,
+                borderRadius: 14, border: "none", cursor: "pointer",
+                fontFamily: "inherit", letterSpacing: "0.02em",
+                boxShadow: "0 8px 24px rgba(45,212,191,0.3)",
+              }}
+            >
+              Kembali ke Beranda
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

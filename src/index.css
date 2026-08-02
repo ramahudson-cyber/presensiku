@@ -901,3 +901,14 @@ html:not(.dark) .dashboard-status-masuk { color: #ffffff !important; }
     transform: translateY(0) scale(1);
   }
 }
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
