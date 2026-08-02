@@ -617,27 +617,37 @@ export default function LeaveRequestPage() {
                 gap: "0 12px", fontSize: 11,
               }}>
                 <div>
-                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Tanggal</div>
+                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Mulai</div>
                   <div style={{ color: "#FFFFFF", marginTop: 1, fontSize: 12, fontWeight: 700, lineHeight: 1.3 }}>
-                    {fmtDay(popupData.start)} — {fmtDay(popupData.end)}
+                    {fmtDay(popupData.start)}
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Durasi</div>
-                  <div style={{ color: "#FFFFFF", marginTop: 1, fontSize: 12, fontWeight: 700 }}>
-                    {popupData.days} hari
+                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Berakhir</div>
+                  <div style={{ color: "#FFFFFF", marginTop: 1, fontSize: 12, fontWeight: 700, lineHeight: 1.3 }}>
+                    {fmtDay(popupData.end)}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Alasan */}
+            {/* Durasi + Alasan */}
             <div style={{
               background: "rgba(255,255,255,0.04)",
               border: "1px solid rgba(255,255,255,0.06)",
               borderRadius: 14, padding: "8px 12px", marginBottom: 12,
             }}>
-              <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 2 }}>Alasan</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: 5,
+                  padding: "3px 10px", borderRadius: 9999,
+                  fontSize: 11, fontWeight: 700, color: "#c084fc",
+                  background: "rgba(192,132,252,0.08)", border: "1px solid rgba(192,132,252,0.2)",
+                }}>
+                  {popupData.days} hari
+                </span>
+                <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Alasan</div>
+              </div>
               <p style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", margin: 0, lineHeight: 1.4 }}>
                 {popupData.reason}
               </p>
@@ -655,7 +665,7 @@ export default function LeaveRequestPage() {
                 boxShadow: "0 8px 24px rgba(45,212,191,0.3)",
               }}
             >
-              Kembali ke Beranda
+              Tutup
             </button>
           </div>
         </div>
