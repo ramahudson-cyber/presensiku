@@ -529,7 +529,7 @@ export default function LeaveRequestPage() {
       {/* ─── SUCCESS POPUP ─── */}
       {showSuccessPopup && (
         <div
-          className="fixed inset-0 z-[9999] flex items-end justify-center px-4 pb-6"
+          className="fixed inset-0 z-[9999] flex items-end justify-center px-4 pb-14"
           onClick={() => setShowSuccessPopup(false)}
         >
           {/* Backdrop */}
@@ -538,7 +538,7 @@ export default function LeaveRequestPage() {
           {/* Popup Card */}
           <div
             style={{
-              position: "relative", width: "100%", maxWidth: 360,
+              position: "relative", width: "100%", maxWidth: 360, zIndex: 10000,
               background: "linear-gradient(160deg, #0a2616 0%, #0f2d1f 100%)",
               border: "1px solid rgba(45,212,191,0.25)",
               borderRadius: 28, padding: "28px 22px 22px",
