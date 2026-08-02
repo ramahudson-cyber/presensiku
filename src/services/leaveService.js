@@ -61,13 +61,27 @@ async function callLeaveRpc(fn, args) {
   return data;
 }
 
-export const approveLeaveRequest = (id) =>
-  callLeaveRpc("approve_leave_request", { p_request_id: id });
+// Guard for UUID validation — prevents "invalid input syntax for type uuid: null"
+function guardUuid(id, label) {
+  if (!id || typeof id !== "string" || id === "null" || id === "undefined") {
+    throw new Error(`${label} tidak valid`);
+  }
+}
 
-export const rejectLeaveRequest = (id, reason) =>
-  callLeaveRpc("reject_leave_request", { p_request_id: id, p_reason: reason || null });
+export const approveLeaveRequest = (id) => {
+  guardUuid(id, "ID permohonan");
+  return callLeaveRpc("approve_leave_request", { p_request_id: id });
+};
+
+export const rejectLeaveRequest = (id, reason) => {
+  guardUuid(id, "ID permohonan");
+  return callLeaveRpc("reject_leave_request", { p_request_id: id, p_reason: reason || null });
+};
 
 export async function cancelLeaveRequest(id) {
+  if (!id || typeof id !== "string" || id === "null" || id === "undefined") {
+    throw new Error("ID permohonan tidak valid");
+  }
   const { error } = await supabase.from("leave_requests").delete().eq("id", id);
   if (error) throw error;
 }

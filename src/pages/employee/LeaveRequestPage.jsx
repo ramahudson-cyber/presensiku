@@ -64,7 +64,6 @@ export default function LeaveRequestPage() {
   const [requests, setRequests] = useState([]);
   const [fetching, setFetching] = useState(true);
   const [fetchError, setFetchError] = useState("");
-  const [cancelId, setCancelId] = useState(null);
   const [filterTab, setFilterTab] = useState("semua");
 
   // Stats
@@ -133,16 +132,19 @@ export default function LeaveRequestPage() {
     }
   };
 
-  const handleCancel = async () => {
-    if (!confirm("Batalkan permohonan ini?")) { setCancelId(null); return; }
+  const handleCancel = async (requestId) => {
+    if (!confirm("Batalkan permohonan ini?")) return;
+    if (!requestId) {
+      toast.error("ID permohonan tidak valid", { position: "bottom-center" });
+      return;
+    }
     try {
-      await cancelLeaveRequest(cancelId);
+      await cancelLeaveRequest(requestId);
       toast.success("Permohonan berhasil dibatalkan", { position: "bottom-center" });
       await loadRequests();
     } catch (err) {
       toast.error(err.message || "Gagal membatalkan", { position: "bottom-center" });
     }
-    setCancelId(null);
   };
 
   // ─── Guard (after hooks) ───
@@ -502,7 +504,7 @@ export default function LeaveRequestPage() {
                     {/* CANCEL BUTTON */}
                     {r.status === "pending" && (
                       <button
-                        onClick={() => { setCancelId(r.id); handleCancel(); }}
+                        onClick={() => handleCancel(r.id)}
                         style={{
                           width: 36, height: 36, borderRadius: 12,
                           border: "1px solid rgba(253,164,175,0.15)",

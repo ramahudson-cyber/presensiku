@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getLeaveRequests, approveLeaveRequest, rejectLeaveRequest, countLeaveDays } from "../../services/leaveService";
+import { toast } from "react-toastify";
 
 // Premium badge config
 const STATUS = {
@@ -140,27 +141,28 @@ export default function LeaveManagementPage() {
       const data = await approveLeaveRequest(id);
       const extra = data.created > 0 ? ` (${data.created} absen dibuat, ${data.skipped} dilewati)` : data.skipped > 0 ? ` (${data.skipped} tanggal sudah ada absen)` : "";
       setSuccessToast((data.message || "Disetujui") + extra);
+      toast.success((data.message || "Disetujui") + extra, { position: "bottom-center" });
       await load();
       setTimeout(() => setSuccessToast(""), 4000);
     } catch (e) {
-      alert(e.message || "Gagal menyetujui");
+      toast.error(e.message || "Gagal menyetujui", { position: "bottom-center" });
     } finally {
       setProcessing(false);
     }
   };
 
   const handleReject = async () => {
-    if (!rejectionReason.trim()) { alert("Alasan penolakan wajib diisi"); return; }
+    if (!rejectModal?.id) { toast.error("ID permohonan tidak valid", { position: "bottom-center" }); return; }
+    if (!rejectionReason.trim()) { toast.warning("Alasan penolakan wajib diisi", { position: "bottom-center" }); return; }
     try {
       setProcessing(true);
       await rejectLeaveRequest(rejectModal.id, rejectionReason.trim());
-      setSuccessToast("Permohonan ditolak");
+      toast.success("Permohonan ditolak", { position: "bottom-center" });
       setRejectModal(null);
       setRejectionReason("");
       await load();
-      setTimeout(() => setSuccessToast(""), 4000);
     } catch (e) {
-      alert(e.message || "Gagal menolak");
+      toast.error(e.message || "Gagal menolak", { position: "bottom-center" });
     } finally {
       setProcessing(false);
     }
