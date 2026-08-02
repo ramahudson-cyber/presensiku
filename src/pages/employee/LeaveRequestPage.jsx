@@ -497,7 +497,7 @@ export default function LeaveRequestPage() {
                         {r.reason}
                       </p>
                       <p style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", margin: 0 }}>
-                        {r.start_date.substring(0,10).replace("-", "–")}–{r.end_date.substring(5)} · {days} hari
+                        {fmtDay(r.start_date)} — {fmtDay(r.end_date)} · {days} hari
                       </p>
                     </div>
 
