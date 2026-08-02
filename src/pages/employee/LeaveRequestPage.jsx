@@ -392,34 +392,34 @@ export default function LeaveRequestPage() {
           boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
           padding: 20,
         }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ width: 3, height: 20, borderRadius: 2, background: "linear-gradient(180deg, #BF00FF, #9900CC)" }} />
-              <h2 style={{ fontSize: 16, fontWeight: 800, color: "#fff", margin: 0 }}>Riwayat Permohonan</h2>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ width: 3, height: 18, borderRadius: 2, background: "linear-gradient(180deg, #BF00FF, #9900CC)" }} />
+              <h2 style={{ fontSize: 14, fontWeight: 700, color: "#fff", margin: 0, lineHeight: 1.2, letterSpacing: "-0.01em" }}>Riwayat Permohonan</h2>
             </div>
-            <div style={{ display: "inline-flex", gap: 2, background: "rgba(255,255,255,0.04)", borderRadius: 10, padding: 3, border: "1px solid rgba(255,255,255,0.05)" }}>
+            <div style={{ display: "inline-flex", gap: 2, background: "rgba(255,255,255,0.04)", borderRadius: 9, padding: 2, border: "1px solid rgba(255,255,255,0.05)" }}>
               <button
                 onClick={() => setFilterTab("semua")}
                 style={{
-                  padding: "7px 14px", borderRadius: 8, border: "none", cursor: "pointer",
-                  fontSize: 11, fontWeight: 600, fontFamily: "inherit",
-                  background: filterTab === "semua" ? "rgba(191,0,255,0.15)" : "transparent",
-                  color: filterTab === "semua" ? "#fff" : "#9ba1ae",
+                  padding: "6px 12px", borderRadius: 7, border: "none", cursor: "pointer",
+                  fontSize: 10, fontWeight: 600, fontFamily: "inherit",
+                  background: filterTab === "semua" ? "rgba(191,0,255,0.18)" : "transparent",
+                  color: filterTab === "semua" ? "#fff" : "rgba(155,161,174,0.7)",
                 }}
               >Semua</button>
               <button
                 onClick={() => setFilterTab("pending")}
                 style={{
-                  padding: "7px 14px", borderRadius: 8, border: "none", cursor: "pointer",
-                  fontSize: 11, fontWeight: 600, fontFamily: "inherit",
-                  background: filterTab === "pending" ? "rgba(191,0,255,0.15)" : "transparent",
-                  color: filterTab === "pending" ? "#fff" : "#9ba1ae",
+                  padding: "6px 12px", borderRadius: 7, border: "none", cursor: "pointer",
+                  fontSize: 10, fontWeight: 600, fontFamily: "inherit",
+                  background: filterTab === "pending" ? "rgba(191,0,255,0.18)" : "transparent",
+                  color: filterTab === "pending" ? "#fff" : "rgba(155,161,174,0.7)",
                 }}
               >Pending</button>
             </div>
           </div>
-          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", margin: "0 0 10px 0" }}>
-            {filteredRequests.length} permohonan terakhir
+          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.32)", margin: "0 0 6px 0" }}>
+            {filteredRequests.length} permohonan
           </p>
 
           {fetchError ? (
@@ -476,23 +476,24 @@ export default function LeaveRequestPage() {
 
                     {/* CONTENT */}
                     <div style={{ flex: 1, minWidth: 0, padding: "0 12px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
                         <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", textTransform: "capitalize" }}>
                           {r.leave_type}
                         </span>
                         <span style={{
-                          display: "inline-flex", alignItems: "center", gap: 5,
-                          padding: "3px 10px", borderRadius: 9999, fontSize: 11, fontWeight: 700,
+                          display: "inline-flex", alignItems: "center", gap: 4,
+                          padding: "2px 9px", borderRadius: 9999, fontSize: 10, fontWeight: 700,
                           color: s.color, background: s.bg, border: "1px solid " + s.border,
-                          letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap",
+                          letterSpacing: "0.02em", textTransform: "uppercase", whiteSpace: "nowrap",
                         }}>
-                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: s.color }} />
+                          <span style={{ width: 5, height: 5, borderRadius: "50%", background: s.color }} />
                           {s.label}
                         </span>
                       </div>
                       <p style={{
-                        fontSize: 12, color: "#9ba1ae", marginBottom: 2,
-                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                        fontSize: 11, color: "rgba(255,255,255,0.55)", marginBottom: 2,
+                        lineHeight: 1.4,
+                        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
                       }}>
                         {r.reason}
                       </p>
