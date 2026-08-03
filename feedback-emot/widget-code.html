@@ -1,0 +1,308 @@
+<!-- 
+  FEEDBACK EMOT WIDGET
+  Copy kode ini ke Elementor → Custom HTML widget
+  Pastikan plugin "Feedback Emot" sudah aktif di WordPress
+-->
+
+<style>
+/* ============ FEEDBACK EMOT CSS ============ */
+.feedback-emot-wrapper {
+  max-width: 420px;
+  margin: 20px auto;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(139, 92, 246, 0.15);
+}
+
+.feedback-emot-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.feedback-emot-header h2 {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+.feedback-emot-header p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  margin-bottom: 0;
+}
+
+.feedback-emot-emoji-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.feedback-emot-emoji-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  font-size: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.feedback-emot-emoji-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.feedback-emot-emoji-btn.selected {
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.3);
+  transform: scale(1.08);
+}
+
+.feedback-emot-form-group {
+  margin-bottom: 16px;
+}
+
+.feedback-emot-form-group label {
+  display: block;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.feedback-emot-form-group input,
+.feedback-emot-form-group textarea {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.feedback-emot-form-group input:focus,
+.feedback-emot-form-group textarea:focus {
+  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+.feedback-emot-form-group input::placeholder,
+.feedback-emot-form-group textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.feedback-emot-form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.feedback-emot-submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  border: none;
+  border-radius: 16px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+}
+
+.feedback-emot-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.4);
+}
+
+.feedback-emot-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.feedback-emot-message {
+  padding: 14px 16px;
+  border-radius: 14px;
+  margin-top: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  display: none;
+}
+
+.feedback-emot-message.success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #4ade80;
+  display: block;
+}
+
+.feedback-emot-message.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  display: block;
+}
+
+.feedback-emot-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: feedbackEmotSpin 0.6s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes feedbackEmotSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .feedback-emot-wrapper {
+    padding: 24px;
+    border-radius: 20px;
+  }
+  
+  .feedback-emot-emoji-btn {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+  }
+  
+  .feedback-emot-emoji-row {
+    gap: 12px;
+  }
+}
+</style>
+
+<div class="feedback-emot-wrapper">
+  <div class="feedback-emot-header">
+    <h2>💬 Feedback Anda</h2>
+    <p>Berikan feedback untuk pelayanan kami</p>
+  </div>
+
+  <div class="feedback-emot-emoji-row">
+    <button class="feedback-emot-emoji-btn" data-emoji="😊" data-label="Senang" type="button">😊</button>
+    <button class="feedback-emot-emoji-btn" data-emoji="😐" data-label="Biasa" type="button">😐</button>
+    <button class="feedback-emot-emoji-btn" data-emoji="😢" data-label="Kecewa" type="button">😢</button>
+  </div>
+
+  <div class="feedback-emot-form-group">
+    <label>Nama</label>
+    <input type="text" id="feedbackNama" placeholder="Nama Anda (opsional)" />
+  </div>
+
+  <div class="feedback-emot-form-group">
+    <label>Komentar</label>
+    <textarea id="feedbackKomentar" placeholder="Tulis masukan atau saran Anda..."></textarea>
+  </div>
+
+  <button class="feedback-emot-submit-btn" id="feedbackSubmit" disabled>
+    Kirim Feedback
+  </button>
+
+  <div class="feedback-emot-message" id="feedbackMessage"></div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  
+  const emojiBtns = document.querySelectorAll('.feedback-emot-emoji-btn');
+  const submitBtn = document.getElementById('feedbackSubmit');
+  const messageEl = document.getElementById('feedbackMessage');
+  const namaInput = document.getElementById('feedbackNama');
+  let selectedEmoji = null;
+  let selectedLabel = null;
+
+  // Emoji selection
+  emojiBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      emojiBtns.forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedEmoji = btn.dataset.emoji;
+      selectedLabel = btn.dataset.label;
+      submitBtn.disabled = false;
+      messageEl.className = 'feedback-emot-message';
+    });
+  });
+
+  // Submit handler
+  submitBtn.addEventListener('click', async function() {
+    if (!selectedEmoji) return;
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="feedback-emot-spinner"></span> Mengirim...';
+
+    const formData = new FormData();
+    formData.append('action', 'submit_feedback');
+    formData.append('emoji', selectedEmoji);
+    formData.append('label', selectedLabel);
+    formData.append('nama', namaInput.value.trim() || 'Anonim');
+    formData.append('komentar', document.getElementById('feedbackKomentar').value.trim());
+
+    try {
+      const response = await fetch('/wp-admin/admin-ajax.php?action=submit_feedback', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        messageEl.className = 'feedback-emot-message success';
+        messageEl.textContent = '✅ ' + (result.data?.message || 'Terima kasih atas feedback Anda!');
+        resetForm();
+      } else {
+        messageEl.className = 'feedback-emot-message error';
+        messageEl.textContent = '❌ ' + (result.data?.message || 'Gagal mengirim feedback');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Kirim Feedback';
+      }
+    } catch (err) {
+      messageEl.className = 'feedback-emot-message error';
+      messageEl.textContent = '❌ Terjadi kesalahan. Coba lagi.';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Kirim Feedback';
+    }
+  });
+
+  function resetForm() {
+    emojiBtns.forEach(b => b.classList.remove('selected'));
+    selectedEmoji = null;
+    selectedLabel = null;
+    namaInput.value = '';
+    document.getElementById('feedbackKomentar').value = '';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Kirim Feedback';
+    setTimeout(() => {
+      messageEl.className = 'feedback-emot-message';
+    }, 3000);
+  }
+})();
+</script>
