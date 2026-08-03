@@ -529,7 +529,7 @@ export default function LeaveRequestPage() {
       {/* ─── SUCCESS POPUP ─── */}
       {showSuccessPopup && (
         <div
-          className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center px-4 pb-8 animate-fade-in"
+          className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center px-4 pb-[120px] md:pb-8 animate-fade-in"
           onClick={() => setShowSuccessPopup(false)}
         >
           {/* Backdrop */}
