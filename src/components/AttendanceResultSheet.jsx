@@ -150,7 +150,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
             }} />
 
             {/* Content */}
-            <div style={{ position: "relative", zIndex: 2, padding: "8px 22px 24px", display: "flex", flexDirection: "column", alignItems: "center", overflowY: "auto" }}>
+            <div style={{ position: "relative", zIndex: 2, padding: "8px 22px 24px", display: "flex", flexDirection: "column", alignItems: "center", overflowY: "auto", flex: "1 1 auto", minHeight: 0, paddingBottom: "calc(24px + env(safe-area-inset-bottom, 0px))" }}>
               {/* Handle */}
               <div style={{ display: "flex", justifyContent: "center", paddingBottom: 8 }}>
                 <div style={{ width: 40, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.15)" }} />
