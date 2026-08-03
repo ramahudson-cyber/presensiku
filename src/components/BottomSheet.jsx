@@ -43,7 +43,8 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
               </div>
             )}
 
-            <div className="flex-1 overflow-y-auto px-5 pb-[100px] md:pb-6 scrollbar-thin">
+            <div className="flex-1 overflow-y-auto px-5 md:pb-6 scrollbar-thin"
+              style={{ paddingBottom: "calc(100px + env(safe-area-inset-bottom, 0px))" }}>
               {children}
             </div>
           </div>
