@@ -21,6 +21,24 @@ const IconCheckCircle = () => <svg width="22" height="22" viewBox="0 0 24 24" fi
 const IconWarning = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>;
 
 /* ═══ LeaveItemCard (ledger row — wide, hairline-separated, no card box) ═══ */
+/* ═══ Editor-style date label (no marketing fluff) ═══ */
+const monthLabel = new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+
+/* ═══ Decorative SVG: organic radial composition (no purple glow) ═══ */
+const HeroOrb = () => (
+  <svg width="260" height="260" viewBox="0 0 200 200" fill="none" stroke="currentColor"
+    style={{ opacity: 0.6 }} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="100" cy="100" r="80" strokeWidth="0.6" />
+    <circle cx="100" cy="100" r="58" strokeWidth="0.6" />
+    <circle cx="100" cy="100" r="36" strokeWidth="0.6" />
+    <path d="M 30 100 Q 60 70 100 100 Q 140 130 170 100" strokeWidth="0.8" />
+    <path d="M 100 20 Q 130 60 100 100 Q 70 140 100 180" strokeWidth="0.8" />
+    <circle cx="100" cy="100" r="3" fill="currentColor" strokeWidth="0" style={{ fill: "#f2a93b", color: "transparent" }} />
+    <circle cx="158" cy="42" r="2.5" fill="currentColor" strokeWidth="0" style={{ fill: "#a5b4fc", color: "transparent" }} />
+    <circle cx="42" cy="158" r="2.5" fill="currentColor" strokeWidth="0" style={{ fill: "#34d399", color: "transparent" }} />
+  </svg>
+);
+
 function fmtDate(d) {
   return d ? new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "—";
 }
@@ -237,54 +255,75 @@ export default function LeaveManagementPage() {
       }}
     >
 
-      {/* ═══ AIDA: Attention — Editorial Hero (laptop-wide, no meta-labels) ═══ */}
-      <section style={{ padding: "40px 0 28px" }} aria-label="Hero">
-        <h1
-          style={{
-            fontSize: "clamp(4.2rem,8vw,7.5rem)", lineHeight: 1.02,
-            letterSpacing: "-0.05em", fontWeight: 800, maxWidth: "80rem",
-            textWrap: "balance", color: "#fff",
-          }}
-        >
-          <span style={{ color: "rgba(255,255,255,0.2)", display: "block", letterSpacing: "-0.04em" }}>Kelola semua</span>
-          <span style={{ display: "block" }}>permohonan cuti</span>
-        </h1>
-        <p style={{ marginTop: 24, fontSize: 18, lineHeight: 1.55, color: "#9a9692", maxWidth: "60ch", textWrap: "pretty" }}>
-          Admin melihat, menyetujui, atau menolak setiap permohonan izin, cuti, dan sakit secara real-time dari seluruh pegawai.
-        </p>
+      {/* ═══ AIDA: Attention — Editorial hero, no AI-slop marketing copy ═══ */}
+      <section style={{ padding: "32px 0 28px", display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 48, alignItems: "end" }} aria-label="Hero">
 
-        <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 44 }}>
-          <a
-            href="#workbench"
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
+            {monthLabel}
+          </div>
+          <h1
             style={{
-              display: "inline-flex", alignItems: "center", gap: 14,
-              padding: "20px 40px", borderRadius: 9999,
-              fontFamily: "inherit", fontSize: 16, fontWeight: 700,
-              color: "#052e1b", background: "linear-gradient(180deg,#34d399,#0ea872)",
-              border: "none", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35), 0 24px 52px -14px rgba(70,203,138,0.55)",
-              textDecoration: "none", transition: "all .35s cubic-bezier(0.32,0.72,0,1)",
+              fontSize: "clamp(2.6rem,5.5vw,4.4rem)", lineHeight: 1.04,
+              letterSpacing: "-0.045em", fontWeight: 800, color: "#fff",
+              marginTop: 14, textWrap: "balance",
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "inset 0 1px 0 rgba(255,255,255,0.35), 0 32px 64px -12px rgba(70,203,138,0.65)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "inset 0 1px 0 rgba(255,255,255,0.35), 0 24px 52px -14px rgba(70,203,138,0.55)"; }}
           >
-            Proses Menunggu <span style={{ width: 32, height: 32, borderRadius: 9999, background: "rgba(5,46,27,0.14)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}><IconArrowRight /></span>
-          </a>
-          <a
-            href="#summary"
-            style={{
-              display: "inline-flex", alignItems: "center", gap: 10,
-              padding: "20px 34px", borderRadius: 9999,
-              fontFamily: "inherit", fontSize: 15, fontWeight: 600,
-              color: "rgba(255,255,255,0.6)", background: "rgba(255,255,255,0.02)",
-              border: "1px solid rgba(255,255,255,0.12)", textDecoration: "none",
-              transition: "all .35s cubic-bezier(0.32,0.72,0,1)",
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.22)"; e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.6)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}
-          >
-            Lihat Ringkasan
-          </a>
+            <span style={{ color: "rgba(255,255,255,0.18)" }}>Permintaan</span>
+            <span style={{ color: "#fff" }}> dari pegawai</span>
+          </h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 22, fontSize: 12.5, color: "rgba(255,255,255,0.4)", letterSpacing: "0.02em" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#34d399", display: "inline-block" }} />
+              {items.length} pengajuan masuk
+            </span>
+            <span style={{ width: 1, height: 10, background: "rgba(255,255,255,0.15)", display: "inline-block" }} />
+            <span>{pendingCount > 0 ? `${pendingCount} butuh keputusan` : "semua sudah diproses"}</span>
+          </div>
         </div>
+
+        {/* Right: single most-urgent pending preview card (no button soup) */}
+        {items.length > 0 && (
+          <div
+            style={{
+              padding: 22, background: "rgba(255,255,255,0.02)",
+              border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20,
+              boxShadow: "0 30px 70px -30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06)",
+              maxWidth: 440,
+            }}
+          >
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>
+              Paling Mendesak
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 14 }}>
+              <div style={{ width: 38, height: 38, borderRadius: 12, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.92)", fontSize: 13, fontWeight: 800, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)" }}>
+                {(items[0].profiles?.full_name || items[0].profiles?.username || "P")[0].toUpperCase()}
+              </div>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.92)", letterSpacing: "-0.01em" }}>
+                  {items[0].profiles?.full_name || items[0].profiles?.username || "Pegawai"}
+                </div>
+                <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.4)", marginTop: 3, letterSpacing: "0.04em" }}>
+                  {(items[0].leave_type || "izin") === "izin" ? "Izin" : (items[0].leave_type || "izin") === "sakit" ? "Sakit" : (items[0].leave_type || "izin")}
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 16, fontSize: 12, color: "rgba(255,255,255,0.5)", fontVariantNumeric: "tabular-nums" }}>
+              <span><IconCalendar /></span>
+              <span>{fmtDate(items[0].start_date)} <span style={{ color: "rgba(255,255,255,0.3)" }}>→</span> {fmtDate(items[0].end_date)}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#c4b5fd", marginLeft: "auto", background: "rgba(196,181,253,0.1)", padding: "3px 10px", borderRadius: 9999 }}>{countLeaveDays(items[0].start_date, items[0].end_date)} hari</span>
+            </div>
+            <a
+              href="#workbench"
+              style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 18, padding: "12px 18px", borderRadius: 14, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", textDecoration: "none", color: "rgba(255,255,255,0.75)", fontSize: 12.5, fontWeight: 600, transition: "all .35s cubic-bezier(0.32,0.72,0,1)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.07)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.14)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+            >
+              <span>Lihat &amp; Proses</span>
+              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}><IconArrowRight /></span>
+            </a>
+          </div>
+        )}
       </section>
 
       {/* ═══ AIDA: Interest — Gapless Bento Stats (wide, big numbers) ═══ */}
