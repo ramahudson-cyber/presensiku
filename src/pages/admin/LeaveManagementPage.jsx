@@ -21,14 +21,22 @@ const IconCheckCircle = () => <svg width="22" height="22" viewBox="0 0 24 24" fi
 const IconWarning = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>;
 
 /* ═══ LeaveItemCard (ledger row — wide, hairline-separated, no card box) ═══ */
+function fmtDate(d) {
+  return d ? new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "—";
+}
+
 function LeaveItemCard({ item, profile, onApprove, onRejectClick, processing }) {
   const s = STATUS[item.status] || STATUS.pending;
   const initial = (profile?.full_name || profile?.username || "P")[0].toUpperCase();
+  const days = countLeaveDays(item.start_date, item.end_date);
+  const name = profile?.full_name || profile?.username || "Pegawai";
+  const type = item.leave_type || "izin";
+  const reason = item.reason || "Tidak ada keterangan";
 
   return (
     <div
       style={{
-        padding: "32px 0",
+        padding: "34px 0",
         borderBottom: "1px solid rgba(255,255,255,0.06)",
         transition: "background .35s cubic-bezier(0.32,0.72,0,1)",
         borderRadius: 16,
@@ -51,11 +59,8 @@ function LeaveItemCard({ item, profile, onApprove, onRejectClick, processing }) 
 
         <div style={{ minWidth: 0, flex: 1 }}>
           <h4 style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.01em", color: "rgba(255,255,255,0.92)", lineHeight: 1.2 }}>
-            {profile?.full_name || profile?.username || "Pegawai"}
+            {name}
           </h4>
-          <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.4)", marginTop: 4, letterSpacing: "0.02em" }}>
-            {item.leave_type}
-          </p>
         </div>
 
         <span
@@ -74,30 +79,57 @@ function LeaveItemCard({ item, profile, onApprove, onRejectClick, processing }) 
         </span>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18, fontSize: 14.5, color: "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>
-        <span><IconCalendar /></span>
-        <span>
-          {new Date(item.start_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-          {" — "}
-          {new Date(item.end_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+      {/* ═══ Jenis Permohonan (eksplisit) ═══ */}
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 20 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", flexShrink: 0 }}>
+          Jenis Permohonan
         </span>
-        <span style={{ fontSize: 13, fontWeight: 700, color: "#c4b5fd", letterSpacing: "0.02em" }}>
-          {countLeaveDays(item.start_date, item.end_date)} hari
+        <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.01em", color: "#e8e4df" }}>
+          {type === "izin" ? "Izin" : type === "sakit" ? "Sakit" : type === "cuti" ? "Cuti" : type}
         </span>
       </div>
 
-      <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "rgba(255,255,255,0.5)", marginTop: 14, maxWidth: "80ch", textWrap: "pretty" }}>
-        {item.reason}
-      </p>
+      {/* ═══ Tanggal Mulai — Berakhir + Jumlah Hari (eksplisit) ═══ */}
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 14 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", flexShrink: 0 }}>
+          Periode
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15.5, fontWeight: 600, color: "rgba(255,255,255,0.9)", fontVariantNumeric: "tabular-nums" }}>
+          <IconCalendar />
+          <span>{fmtDate(item.start_date)}</span>
+          <span style={{ color: "rgba(255,255,255,0.35)" }}>s/d</span>
+          <span>{fmtDate(item.end_date)}</span>
+        </span>
+        <span
+          style={{
+            fontSize: 13.5, fontWeight: 800, letterSpacing: "0.02em", color: "#c4b5fd",
+            background: "rgba(196,181,253,0.1)", border: "1px solid rgba(196,181,253,0.25)",
+            padding: "5px 14px", borderRadius: 9999, fontVariantNumeric: "tabular-nums",
+            marginLeft: 8,
+          }}
+        >
+          {days} hari
+        </span>
+      </div>
+
+      {/* ═══ Alasan (eksplisit) ═══ */}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginTop: 14 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", flexShrink: 0, paddingTop: 4 }}>
+          Alasan
+        </span>
+        <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "rgba(255,255,255,0.7)", flex: 1, maxWidth: "80ch", textWrap: "pretty" }}>
+          {reason}
+        </p>
+      </div>
 
       {item.status === "rejected" && item.rejection_reason && (
         <div style={{ marginTop: 18, paddingLeft: 18, borderLeft: "2px solid rgba(251,113,133,0.45)", fontSize: 13.5, lineHeight: 1.6, color: "rgba(253,164,175,0.75)", maxWidth: "80ch" }}>
-          <span style={{ fontWeight: 700, color: "rgba(232,92,92,0.7)" }}><IconWarning /></span> {item.rejection_reason}
+          <span style={{ fontWeight: 700, color: "rgba(232,92,92,0.7)" }}><IconWarning /></span> <b style={{ color: "rgba(255,255,255,0.6)", letterSpacing: "0.1em", fontSize: 11 }}>Penolakan:</b> {item.rejection_reason}
         </div>
       )}
 
       {item.status === "pending" && (
-        <div style={{ display: "flex", gap: 18, marginTop: 26 }}>
+        <div style={{ display: "flex", gap: 18, marginTop: 28 }}>
           <button
             onClick={() => onApprove(item.id)}
             disabled={processing}
