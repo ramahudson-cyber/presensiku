@@ -146,13 +146,6 @@ export default function EmployeeProfile() {
       <div className="pt-14 px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <button onClick={() => navigate(-1)} aria-label="Kembali"
-              className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:shadow-sm active:scale-90"
-              style={{ color: T.text }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="15 18 9 12 15 6" />
-              </svg>
-            </button>
             <span className="text-[17px] font-bold tracking-tight" style={{ color: T.text }}>Profil Saya</span>
           </div>
           <div className="flex flex-col items-center gap-1">

@@ -187,11 +187,6 @@ export default function EmployeeSchedule() {
       <div className="pt-14 px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <button onClick={() => navigate(-1)} aria-label="Kembali"
-              className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:shadow-sm active:scale-90"
-              style={{ color: T.text }}>
-              <ChevronLeft size={20} />
-            </button>
             <span className="text-[17px] font-bold tracking-tight" style={{ color: T.text }}>Jadwal Shift</span>
           </div>
           <div className="flex flex-col items-center gap-1">
