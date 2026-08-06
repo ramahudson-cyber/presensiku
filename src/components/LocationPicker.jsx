@@ -3,6 +3,16 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Crosshair, Check, Search, Loader2, AlertTriangle } from "lucide-react";
 
+// Light-mode tokens — per DESIGN.md
+const T = {
+  surface: '#FFFFFF',
+  border: 'rgba(31,41,55,0.08)',
+  text: '#0F172A',
+  textSec: '#475569',
+  textMuted: '#94A3B8',
+  rowBg: 'rgba(15,23,42,0.02)',
+};
+
 export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.5697, initialLng = 116.0821 }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -40,7 +50,7 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
 
       const icon = L.divIcon({
         className: "",
-        html: `<div style="width:28px;height:28px;background:#8b5cf6;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(139,92,246,0.5);font-size:14px;">📍</div>`,
+        html: `<div style="width:28px;height:28px;background:#BF00FF;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(191,0,255,0.4);font-size:14px;">📍</div>`,
         iconSize: [28, 28],
         iconAnchor: [14, 14],
       });
@@ -150,30 +160,33 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
     onCancel();
   };
 
+  const inputBase = `w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#BF00FF]/50`;
+  const ghostBtn = "flex-1 py-2.5 border border-gray-300 text-gray-600 rounded-full text-sm font-medium hover:bg-gray-50 transition-all";
+
   return (
-    <div className="border-t border-white/10 pt-4 mt-4 space-y-4">
+    <div className="border-t pt-4 mt-4 space-y-4" style={{ borderColor: T.border }}>
       <div>
         <div className="relative">
-          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-mist" />
+          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari alamat atau tempat..."
-            className="w-full pl-9 pr-9 py-2.5 bg-obsidian border border-white/10 rounded-xl text-sm text-pure-white placeholder-slate-mist/60 focus:outline-none focus:border-electric-violet/40"
+            className={`${inputBase} pl-9 pr-9`}
           />
-          {searching && <Loader2 size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-periwinkle-glow animate-spin" />}
+          {searching && <Loader2 size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#BF00FF] animate-spin" />}
         </div>
 
         {showResults && searchResults.length > 0 && (
-          <div className="bg-onyx border border-white/10 rounded-xl overflow-hidden shadow-xl mt-1">
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-xl mt-1">
             <div className="overflow-y-auto" style={{ maxHeight: 192 }}>
               {searchResults.map((r, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => goToResult(r)}
-                  className="w-full text-left px-3.5 py-2.5 text-xs text-pure-white hover:bg-white/5 border-b border-white/[0.04] last:border-0 transition-colors"
+                  className="w-full text-left px-3.5 py-2.5 text-xs text-gray-700 hover:bg-gray-50 border-b border-gray-100 last:border-0 transition-colors"
                 >
                   <span className="line-clamp-2">{r.display_name}</span>
                 </button>
@@ -184,13 +197,13 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
       </div>
 
       {!mapError ? (
-        <div className="relative rounded-2xl overflow-hidden border border-white/10" style={{ height: 350, touchAction: "none" }}>
+        <div className="relative rounded-2xl overflow-hidden border border-gray-200" style={{ height: 350, touchAction: "none" }}>
           <div ref={mapRef} className="w-full h-full" />
           <div className="absolute top-3 right-3 z-[1000] flex flex-col gap-2">
             <button
               type="button"
               onClick={handleLocateMe}
-              className="p-2.5 bg-black/70 backdrop-blur-sm rounded-full text-white hover:bg-black/90 transition-all"
+              className="p-2.5 bg-white shadow-lg rounded-full text-[#BF00FF] border border-gray-200 hover:bg-gray-50 transition-all"
               title="Pakai lokasi saya"
             >
               <Crosshair size={16} />
@@ -198,37 +211,37 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
           </div>
         </div>
       ) : (
-        <div className="rounded-2xl border border-amber/30 bg-amber/5 p-4 space-y-3">
-          <div className="flex items-center gap-2 text-amber text-sm">
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 space-y-3">
+          <div className="flex items-center gap-2 text-amber-600 text-sm">
             <AlertTriangle size={16} />
             <span>Peta tidak dapat dimuat. Masukkan koordinat manual:</span>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] text-slate-mist uppercase tracking-wider mb-1 block">Latitude</label>
+              <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 block">Latitude</label>
               <input
                 type="number"
                 step="any"
                 value={manualLat}
                 onChange={(e) => setManualLat(e.target.value)}
-                className="w-full px-3 py-2 bg-obsidian border border-white/10 rounded-xl text-sm text-pure-white"
+                className={inputBase}
               />
             </div>
             <div>
-              <label className="text-[10px] text-slate-mist uppercase tracking-wider mb-1 block">Longitude</label>
+              <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 block">Longitude</label>
               <input
                 type="number"
                 step="any"
                 value={manualLng}
                 onChange={(e) => setManualLng(e.target.value)}
-                className="w-full px-3 py-2 bg-obsidian border border-white/10 rounded-xl text-sm text-pure-white"
+                className={inputBase}
               />
             </div>
           </div>
           <button
             type="button"
             onClick={handleManualInput}
-            className="w-full py-2 border border-white/10 text-slate-mist rounded-full text-sm font-medium hover:text-pure-white transition-all"
+            className="w-full py-2 border border-gray-300 text-gray-600 rounded-full text-sm font-medium hover:bg-gray-50 transition-all"
           >
             Terapkan Koordinat
           </button>
@@ -237,12 +250,12 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-[10px] text-slate-mist uppercase tracking-wider">Latitude</label>
-          <p className="font-mono text-sm text-pure-white">{lat}</p>
+          <label className="text-[10px] text-gray-500 uppercase tracking-wider">Latitude</label>
+          <p className="font-mono text-sm font-semibold text-gray-900">{lat}</p>
         </div>
         <div>
-          <label className="text-[10px] text-slate-mist uppercase tracking-wider">Longitude</label>
-          <p className="font-mono text-sm text-pure-white">{lng}</p>
+          <label className="text-[10px] text-gray-500 uppercase tracking-wider">Longitude</label>
+          <p className="font-mono text-sm font-semibold text-gray-900">{lng}</p>
         </div>
       </div>
 
@@ -250,20 +263,20 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 py-2.5 border border-white/10 text-slate-mist rounded-full text-sm font-medium hover:text-pure-white transition-all"
+          className={ghostBtn}
         >
           Batal
         </button>
         <button
           type="button"
           onClick={handleConfirm}
-          className="flex-1 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium hover:brightness-110 transition-all flex items-center justify-center gap-2"
+          className="flex-1 py-2.5 bg-[#BF00FF] hover:bg-[#a000e6] text-white rounded-full text-sm font-medium transition-all flex items-center justify-center gap-2"
         >
           <Check size={14} /> Konfirmasi
         </button>
       </div>
 
-      <p className="text-[10px] text-slate-mist/60 text-center">
+      <p className="text-[10px] text-gray-400 text-center">
         Klik di peta, seret marker, atau cari alamat untuk memilih lokasi
       </p>
     </div>

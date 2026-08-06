@@ -342,7 +342,7 @@ function TabProfilPuskesmas() {
             <button
               type="button"
               onClick={() => setFormView("map")}
-              className="w-full py-2.5 border border-white/10 text-slate-mist rounded-full text-sm hover:text-pure-white hover:border-white/20 transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 border border-gray-300 text-gray-600 rounded-full text-sm hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
             >
               <MapPin size={14} /> Pilih dari Peta
             </button>
@@ -360,14 +360,14 @@ function TabProfilPuskesmas() {
               />
             </div>
 
-            <label className="flex items-center gap-3 cursor-pointer p-3 rounded-3xl bg-white/5 border border-white/[0.06] hover:bg-white/[0.03] transition-all">
+            <label className="flex items-center gap-3 cursor-pointer p-3 rounded-3xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-all">
               <input
                 type="checkbox"
                 checked={formData.is_active}
                 onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                className="w-4 h-4 rounded accent-violet-500"
+                className="w-4 h-4 rounded accent-[#BF00FF]"
               />
-              <span className="text-sm text-pure-white/90">
+              <span className="text-sm text-gray-800">
                 Jadikan lokasi aktif (untuk absensi)
               </span>
             </label>
@@ -375,13 +375,13 @@ function TabProfilPuskesmas() {
             <div className="flex gap-3 pt-2">
               <button
                 type="button" onClick={resetForm}
-                className="flex-1 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:bg-white/[0.03] transition-all"
+                className="flex-1 py-2.5 border border-gray-300 text-gray-600 rounded-full text-sm font-medium hover:bg-gray-50 transition-all"
               >
                 Batal
               </button>
               <button
                 type="submit" disabled={saving}
-                className="flex-1 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-[#BF00FF] hover:bg-[#a000e6] text-white rounded-full text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {saving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
                 {editingId ? "Update" : "Simpan"}
@@ -847,16 +847,16 @@ function TabManajemenUser() {
 
       <BottomSheet open={resetModal.show} onClose={() => setResetModal({ show: false, user: null, password: "" })}
         title="Reset Password" subtitle={resetModal.user?.full_name}>
-        <p className="text-sm text-slate-mist mb-4">Masukkan password baru</p>
+        <p className="text-sm text-gray-600 mb-4">Masukkan password baru</p>
         <input type="text" value={resetModal.password}
           onChange={(e) => setResetModal({ ...resetModal, password: e.target.value })}
           placeholder="Masukkan password baru..."
           className={inputBase + " mb-4"} autoFocus />
         <div className="flex gap-3">
           <button onClick={() => setResetModal({ show: false, user: null, password: "" })}
-            className="flex-1 py-2.5 rounded-full border-gradient bg-transparent text-pure-white text-sm hover:bg-white/[0.03] transition-all">Batal</button>
+            className="flex-1 py-2.5 rounded-full border border-gray-300 text-gray-600 text-sm hover:bg-gray-50 transition-all">Batal</button>
           <button onClick={confirmResetPassword}
-            className="flex-1 py-2.5 rounded-full border-gradient bg-transparent text-pure-white text-sm font-semibold transition-all">Konfirmasi</button>
+            className="flex-1 py-2.5 rounded-full bg-[#BF00FF] hover:bg-[#a000e6] text-white text-sm font-semibold transition-all">Konfirmasi</button>
         </div>
       </BottomSheet>
 
@@ -1015,19 +1015,19 @@ function TabManajemenUser() {
           <button
             onClick={() => handleResetDevice(deviceSheetUser)}
             disabled={resettingDeviceId === deviceSheetUser?.id}
-            className="w-full py-2.5 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 rounded-full text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-2.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-full text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2 border border-rose-200"
           >
             {resettingDeviceId === deviceSheetUser?.id ? <RefreshCw size={14} className="animate-spin" /> : <Trash2 size={14} />}
             Reset Semua Device
           </button>
 
           {!deviceSheetUser ? null : !userDevices[deviceSheetUser.id] ? (
-            <div className="text-center py-10 text-slate-mist text-sm flex flex-col items-center gap-2">
+            <div className="text-center py-10 text-gray-400 text-sm flex flex-col items-center gap-2">
               <RefreshCw size={24} className="animate-spin" />
               Memuat device...
             </div>
           ) : userDevices[deviceSheetUser.id].length === 0 ? (
-            <div className="text-center py-10 text-slate-mist text-sm flex flex-col items-center gap-2">
+            <div className="text-center py-10 text-gray-400 text-sm flex flex-col items-center gap-2">
               <Smartphone size={36} className="opacity-40" />
               Belum ada device terdaftar
             </div>
@@ -1035,20 +1035,20 @@ function TabManajemenUser() {
             <div className="space-y-2">
               {userDevices[deviceSheetUser.id].map((device) => (
                 <div key={device.id}
-                  className="flex items-center justify-between p-3 bg-white/5 rounded-3xl border border-white/[0.06] gap-3"
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-3xl border border-gray-200 gap-3"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className={`p-2 rounded-3xl ${device.is_trusted ? "bg-emerald-500/15" : "bg-rose-500/15"}`}>
-                      <Smartphone size={16} className={device.is_trusted ? "text-emerald-300" : "text-rose-300"} />
+                    <div className={`p-2 rounded-3xl ${device.is_trusted ? "bg-emerald-50" : "bg-rose-50"}`}>
+                      <Smartphone size={16} className={device.is_trusted ? "text-emerald-600" : "text-rose-500"} />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-pure-white truncate">{device.device_name || "Unknown Device"}</p>
-                      <p className="text-xs text-slate-mist font-mono mt-0.5 truncate">ID: {device.visitor_id?.substring(0, 20)}…</p>
-                      {device.imei && <p className="text-xs text-emerald-300 font-mono mt-0.5">IMEI: {device.imei}</p>}
-                      {device.serial && <p className="text-xs text-sky-300 font-mono mt-0.5">Serial: {device.serial}</p>}
-                      <p className="text-xs text-slate-mist mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
+                      <p className="text-sm font-medium text-gray-900 truncate">{device.device_name || "Unknown Device"}</p>
+                      <p className="text-xs text-gray-400 font-mono mt-0.5 truncate">ID: {device.visitor_id?.substring(0, 20)}…</p>
+                      {device.imei && <p className="text-xs text-emerald-600 font-mono mt-0.5">IMEI: {device.imei}</p>}
+                      {device.serial && <p className="text-xs text-sky-600 font-mono mt-0.5">Serial: {device.serial}</p>}
+                      <p className="text-xs text-gray-400 mt-0.5">Login terakhir: {new Date(device.last_login_at).toLocaleString("id-ID")}</p>
                       {device.device_type && (
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 text-[10px] font-medium rounded-full ring-1 ${device.device_type === 'android' ? 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30' : device.device_type === 'ios' ? 'bg-sky-500/15 text-sky-300 ring-sky-500/30' : 'bg-slate-500/15 text-slate-mist ring-slate-500/30'}`}>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 text-[10px] font-medium rounded-full ring-1 ${device.device_type === 'android' ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' : device.device_type === 'ios' ? 'bg-sky-50 text-sky-700 ring-sky-200' : 'bg-gray-100 text-gray-500 ring-gray-200'}`}>
                           {device.device_type === 'android' ? '📱 Android' : device.device_type === 'ios' ? '🍎 iOS' : '🌐 Web'}
                         </span>
                       )}
@@ -1056,14 +1056,14 @@ function TabManajemenUser() {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {device.is_trusted ? (
-                      <span className="text-xs px-2 py-1 bg-emerald-500/15 text-emerald-300 rounded-full font-medium">Trusted</span>
+                      <span className="text-xs px-2 py-1 bg-emerald-50 text-emerald-700 rounded-full font-medium">Trusted</span>
                     ) : (
-                      <span className="text-xs px-2 py-1 bg-rose-500/15 text-rose-300 rounded-full font-medium">Blocked</span>
+                      <span className="text-xs px-2 py-1 bg-rose-50 text-rose-600 rounded-full font-medium">Blocked</span>
                     )}
                     <button
                       onClick={() => handleResetDevice(deviceSheetUser, device.visitor_id)}
                       disabled={resettingDeviceId === device.visitor_id}
-                      className="p-1.5 text-rose-300 hover:bg-rose-500/15 rounded-full transition-all disabled:opacity-50"
+                      className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-full transition-all disabled:opacity-50"
                       title="Hapus device ini"
                     >
                       {resettingDeviceId === device.visitor_id ? <RefreshCw size={13} className="animate-spin" /> : <Trash2 size={13} />}

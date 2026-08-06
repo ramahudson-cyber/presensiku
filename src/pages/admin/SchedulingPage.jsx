@@ -247,19 +247,19 @@ export default function SchedulingPage() {
             return (
               <button key={s.code} onClick={() => assignShift(s.code)}
                 className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all text-sm
-                  ${isActive ? "bg-electric-violet/30 border border-violet-500/50 text-pure-white shadow-lg" : "bg-onyx border border-transparent text-slate-mist hover:bg-white/[0.03] hover:border-white/[0.06]"}`}>
+                  ${isActive ? "bg-[#BF00FF]/10 border border-[#BF00FF]/40 text-gray-900 shadow-sm" : "bg-gray-50 border border-transparent text-gray-600 hover:bg-gray-100 hover:border-gray-200"}`}>
                 <div className={`w-8 h-8 rounded-2xl flex items-center justify-center ${s.badgeClass}`}>
                   <Icon size={16} />
                 </div>
                 <span className="flex-1 text-left font-medium">{s.name}</span>
-                {isActive && <CheckCircle2 size={16} className="text-emerald-400" />}
+                {isActive && <CheckCircle2 size={16} className="text-[#BF00FF]" />}
               </button>
             );
           })}
         </div>
         {schedules[showShiftPicker] && (
           <button onClick={() => assignShift(schedules[showShiftPicker].shift_code)}
-            className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border-gradient bg-transparent text-pure-white text-xs font-medium hover:bg-red-500/20 transition-all active:scale-95">
+            className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-red-200 bg-transparent text-red-600 text-xs font-medium hover:bg-red-50 transition-all active:scale-95">
             <Trash2 size={13} /> Hapus Jadwal
           </button>
         )}
@@ -422,26 +422,26 @@ function EmployeeSearchContent({ employees, value, onSelect }) {
   return (
     <div className="space-y-2">
       <div className="relative">
-        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-mist" />
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input ref={inputRef} value={q} onChange={e => setQ(e.target.value)}
           placeholder="Ketik nama pegawai..."
-          className="w-full pl-9 pr-3 py-2.5 text-sm design-input placeholder:text-slate-mist focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all" />
+          className="w-full pl-9 pr-3 py-2.5 text-sm rounded-2xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#BF00FF]/40 transition-all" />
       </div>
       <div className="max-h-56 overflow-y-auto space-y-0.5 -mx-1 px-1">
         {filtered.map(emp => (
           <button key={emp.id} onClick={() => onSelect(emp.id)}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm text-left transition-all hover:bg-white/[0.06] ${emp.id === value ? "bg-electric-violet/20 text-pure-white ring-1 ring-electric-violet/30" : "text-slate-mist"}`}>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-electric-violet to-deep-indigo flex items-center justify-center text-xs font-bold text-pure-white shrink-0">
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm text-left transition-all hover:bg-gray-50 ${emp.id === value ? "bg-[#BF00FF]/10 text-gray-900 ring-1 ring-[#BF00FF]/40" : "text-gray-600"}`}>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#BF00FF] to-[#7066ed] flex items-center justify-center text-xs font-bold text-white shrink-0">
               {emp.full_name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium truncate">{emp.full_name}</p>
-              <p className="text-[10px] text-slate-mist">{emp.role}</p>
+              <p className="text-[10px] text-gray-400">{emp.role}</p>
             </div>
-            {emp.id === value && <CheckCircle2 size={16} className="text-periwinkle-glow shrink-0" />}
+            {emp.id === value && <CheckCircle2 size={16} className="text-[#BF00FF] shrink-0" />}
           </button>
         ))}
-        {!filtered.length && <p className="text-xs text-slate-mist text-center py-6">Tidak ditemukan</p>}
+        {!filtered.length && <p className="text-xs text-gray-400 text-center py-6">Tidak ditemukan</p>}
       </div>
     </div>
   );

@@ -1,9 +1,17 @@
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
-import { useTheme } from "../context/ThemeContext";
+
+// Light-mode only — per DESIGN.md
+const T = {
+  surface: '#FFFFFF',
+  border: 'rgba(31,41,55,0.08)',
+  div: '#F1F5F9',
+  text: '#0F172A',
+  textSec: '#475569',
+  textMuted: '#94A3B8',
+};
 
 export default function BottomSheet({ open, onClose, title, subtitle, children, snap = "auto" }) {
-  const { darkMode } = useTheme();
   const sheetRef = useRef(null);
 
   useEffect(() => {
@@ -18,26 +26,25 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
     <>
       {open && (
         <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center pb-0 animate-fade-in" onClick={onClose}>
-        <div className="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-sm" onClick={onClose} />
+        <div className="fixed inset-0 z-[9998] bg-black/50" onClick={onClose} />
 
           <div ref={sheetRef} onClick={e => e.stopPropagation()}
             style={{ maxHeight: snap === "full" ? "95vh" : snap === "half" ? "60vh" : "90vh" }}
-            className={`relative z-[9999] w-full max-w-lg rounded-t-[28px] md:rounded-3xl shadow-2xl animate-slide-up md:animate-fade-in overflow-hidden flex flex-col mt-auto md:mt-0 ${
-              darkMode ? "bg-[#161320] border border-white/10" : "bg-white border border-gray-100"
-            }`}>
+            className={`relative z-[9999] w-full max-w-lg rounded-t-[28px] md:rounded-3xl shadow-2xl animate-slide-up md:animate-fade-in overflow-hidden flex flex-col mt-auto md:mt-0 bg-white border`}
+            style={{ borderColor: T.border }}>
 
             <div className="flex md:hidden justify-center pt-2.5 pb-1 shrink-0">
-              <div className={`w-10 h-2 rounded-full ${darkMode ? "bg-white/10" : "bg-black/10"}`} />
+              <div className="w-10 h-2 rounded-full bg-black/10" />
             </div>
 
             {(title || subtitle) && (
               <div className="flex items-center justify-between px-5 pt-2 md:pt-5 pb-3 shrink-0">
                 <div className="min-w-0 flex-1">
-                  {title && <h3 className={`text-sm font-bold ${darkMode ? "text-pure-white" : "text-gray-900"}`}>{title}</h3>}
-                  {subtitle && <p className="text-[10px] text-gray-400 mt-0.5">{subtitle}</p>}
+                  {title && <h3 className="text-sm font-bold" style={{ color: T.text }}>{title}</h3>}
+                  {subtitle && <p className="text-[10px] mt-0.5" style={{ color: T.textMuted }}>{subtitle}</p>}
                 </div>
                 <button onClick={onClose}
-                  className={`${darkMode ? "bg-white/10 hover:bg-white/20 text-white/70" : "bg-gray-100 hover:bg-gray-200 text-gray-600"} w-8 h-8 flex items-center justify-center rounded-xl transition-all active:scale-90 shrink-0 ml-3`}>
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-600 w-8 h-8 flex items-center justify-center rounded-xl transition-all active:scale-90 shrink-0 ml-3">
                   <X size={16} />
                 </button>
               </div>
