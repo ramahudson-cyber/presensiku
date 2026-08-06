@@ -2,18 +2,32 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { useTheme } from "../../context/ThemeContext";
 import BottomSheet from "../../components/BottomSheet";
 import {
   ChevronLeft, ChevronRight, ChevronDown, Calendar, Sun, Moon, Sunset, CloudSun,
   Loader2, Info
 } from "lucide-react";
 
+// Light-mode tokens — per DESIGN.md
+const T = {
+  bg: '#F4F2FB',
+  surface: '#FFFFFF',
+  border: 'rgba(31,41,55,0.08)',
+  div: '#F1F5F9',
+  text: '#0F172A',
+  textSec: '#475569',
+  textMuted: '#94A3B8',
+  sub: '#6B7280',
+  shadow: '0 4px 16px rgba(15,23,42,0.06)',
+  rowBg: 'rgba(15,23,42,0.02)',
+  iconBg: '#F5F3FF',
+};
+
 const SHIFTS = [
-  { code: "PG", name: "Pagi", icon: Sun, premiumClass: "cal-premium-pg", badgeClass: "cal-badge-pg", textColor: "text-white" },
-  { code: "SR", name: "Sore", icon: Sunset, premiumClass: "cal-premium-sr", badgeClass: "cal-badge-sr", textColor: "text-white" },
-  { code: "SI", name: "Siang", icon: CloudSun, premiumClass: "cal-premium-si", badgeClass: "cal-badge-si", textColor: "text-[#1a2e05]" },
-  { code: "ML", name: "Malam", icon: Moon, premiumClass: "cal-premium-ml", badgeClass: "cal-badge-ml", textColor: "text-white" },
+  { code: "PG", name: "Pagi", icon: Sun, badgeClass: "cal-badge-pg" },
+  { code: "SR", name: "Sore", icon: Sunset, badgeClass: "cal-badge-sr" },
+  { code: "SI", name: "Siang", icon: CloudSun, badgeClass: "cal-badge-si" },
+  { code: "ML", name: "Malam", icon: Moon, badgeClass: "cal-badge-ml" },
 ];
 
 const SHIFT_MAP = Object.fromEntries(SHIFTS.map(s => [s.code, s]));
@@ -31,10 +45,9 @@ function getDaysInMonth(year, month) {
   return days;
 }
 
-	export default function EmployeeSchedule() {
-	const { user } = useAuth();
-	const { darkMode } = useTheme();
-	const navigate = useNavigate();
+export default function EmployeeSchedule() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
   const [schedules, setSchedules] = useState({});
@@ -44,7 +57,6 @@ function getDaysInMonth(year, month) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [pickerYear, setPickerYear] = useState(new Date().getFullYear());
-  const scrollRef = useRef(null);
   const touchStartY = useRef(0);
   const isPulling = useRef(false);
 
@@ -109,7 +121,7 @@ function getDaysInMonth(year, month) {
   const now = new Date();
   const isCurrentMonth = year === now.getFullYear() && month === now.getMonth();
 
-  // Pull-to-refresh
+  // Pull-to-refresh (page scroll)
   const handleRefresh = useCallback(async () => {
     if (!user?.id) return;
     setIsRefreshing(true);
@@ -139,7 +151,7 @@ function getDaysInMonth(year, month) {
   }, [user?.id, year, month, lastDay]);
 
   const handleTouchStart = (e) => {
-    if (scrollRef.current && scrollRef.current.scrollTop === 0 && !isRefreshing) {
+    if (window.scrollY <= 0 && !isRefreshing) {
       touchStartY.current = e.touches[0].clientY;
       isPulling.current = true;
     }
@@ -164,92 +176,100 @@ function getDaysInMonth(year, month) {
     isPulling.current = false;
   };
 
+  const initials = user?.full_name?.charAt(0)?.toUpperCase() || "R";
+
   return (
-			    <div className="h-screen overflow-hidden bg-transparent">
-			      {/* GRADIENT HERO CARD HEADER — consistent with all menus */}
-					      <div className="fixed top-0 left-0 right-0 z-50 h-[13vh] flex flex-col justify-center px-6 pb-3 rounded-b-[40px] shadow-2xl"
-					        style={{ background: "linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)" }}>
-			        <button onClick={() => navigate(-1)}
-			          className="absolute top-3 left-5 w-8 h-8 flex items-center justify-center rounded-full cursor-pointer hover:opacity-80 transition-opacity"
-			          style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }}>
-			          <ChevronLeft size={18} />
-			        </button>
-			        <div className="pl-11">
-			          <h2 className="text-lg font-bold tracking-tight leading-tight" style={{ color: "#FFFFFF", fontFamily: "'Urbanist', sans-serif" }}>Jadwal Shift Saya</h2>
-			          <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.6)" }}>Kalender jadwal kerja bulanan</p>
-			        </div>
-			      </div>
+    <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24"
+      style={{ background: T.bg, color: T.text }}
+      onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
 
-				      {/* Persistent Premium Bottom Sheet */}
-				      <div className="fixed bottom-0 left-0 w-full z-20 h-[82vh] bg-white dark:bg-onyx border-t border-slate-200 dark:border-white/10 rounded-t-[32px] shadow-[0_-20px_40px_-10px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden transition-colors duration-500">
-        <div className="w-12 h-1.5 bg-slate-300 dark:bg-white/20 rounded-full mx-auto my-4 shrink-0" />
-        
-	        <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 pb-24 scrollbar-thin"
-	          onTouchStart={handleTouchStart}
-	          onTouchMove={handleTouchMove}
-	          onTouchEnd={handleTouchEnd}
-	        >
-	          {/* Pull to refresh indicator */}
-	          <div className="flex items-center justify-center overflow-hidden transition-all duration-300"
-	            style={{
-	              height: pullDistance > 0 ? `${pullDistance}px` : '0px',
-	              opacity: Math.min(pullDistance / 55, 1)
-	            }}
-	          >
-	            {isRefreshing ? (
-	              <Loader2 size={20} className="animate-spin text-electric-violet" />
-	            ) : (
-	              <ChevronDown size={20} className={`text-electric-violet transition-transform duration-300 ${pullDistance >= 55 ? 'rotate-180' : ''}`} />
-	            )}
-	          </div>
-		          <div className="max-w-md mx-auto space-y-4">
-	
-		            {/* NAV + STATS */}
-	            <div className="flex flex-col sm:flex-row gap-3">
-	              <button onClick={openMonthPicker}
-	                className="flex items-center gap-2 bg-slate-100 dark:bg-onyx border border-slate-200 dark:border-white/[0.06] rounded-2xl px-3.5 py-2 cursor-pointer hover:bg-slate-200 dark:hover:bg-white/[0.03] transition-all active:scale-[0.97]">
-	                <Calendar size={15} className="text-slate-500 dark:text-slate-mist shrink-0" />
-	                <span className="text-sm font-semibold text-slate-800 dark:text-pure-white select-none min-w-[100px] text-left">{MONTHS[month]} {year}</span>
-	                <ChevronDown size={14} className="text-slate-400 dark:text-slate-mist shrink-0" />
-	              </button>
-              {!isCurrentMonth && (
-                <button onClick={goToday}
-                  className="px-3 py-1.5 rounded-full border border-slate-200 dark:border-transparent bg-transparent dark:bg-white/5 text-slate-600 dark:text-pure-white text-xs font-medium transition-all active:scale-95">
-                  Hari Ini
-                </button>
-              )}
-              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-onyx border border-slate-200 dark:border-white/[0.06] text-[11px] text-slate-500 dark:text-slate-mist ml-auto">
-                <span className="flex items-center gap-1"><Calendar size={12} /> {stats.total} hari</span>
+      {/* ── HEADER — simple elegant (sama dengan Riwayat) ── */}
+      <div className="pt-14 px-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <button onClick={() => navigate(-1)} aria-label="Kembali"
+              className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:shadow-sm active:scale-90"
+              style={{ color: T.text }}>
+              <ChevronLeft size={20} />
+            </button>
+            <span className="text-[17px] font-bold tracking-tight" style={{ color: T.text }}>Jadwal Shift</span>
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover border" style={{ borderColor: 'rgba(191,0,255,0.15)' }} />
+            ) : (
+              <div className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold"
+                style={{ background: T.iconBg, color: '#BF00FF', border: '1px solid rgba(191,0,255,0.15)' }}>
+                {initials}
               </div>
-            </div>
-
-
-            {/* LEGEND */}
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-[8px] font-semibold text-slate-500 dark:text-slate-mist uppercase tracking-wider mr-0.5">Shift</span>
-              {SHIFTS.map(s => {
-                const Icon = s.icon;
-                return (
-                  <span key={s.code} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold ${s.badgeClass}`}>
-                    <Icon size={10} /> {s.name}
-                  </span>
-                );
-              })}
-            </div>
-
-            {/* CALENDAR */}
-      {loading ? (
-        <div className="flex items-center justify-center min-h-[40vh]">
-          <div className="flex flex-col items-center gap-3">
-            <Loader2 size={28} className="animate-spin text-periwinkle-glow" />
-            <p className="text-sm text-slate-mist">Memuat jadwal...</p>
+            )}
+            <span className="text-[9px] font-medium leading-none max-w-[72px] truncate text-center" style={{ color: T.sub }}>
+              {user?.position || user?.role || "Pegawai"}
+            </span>
           </div>
         </div>
-      ) : (
-        <div className="design-card p-3 md:p-5 overflow-x-auto">
+      </div>
+
+      <div className="max-w-md mx-auto px-4 mt-6 space-y-4">
+        {/* Pull to refresh indicator */}
+        <div className="flex items-center justify-center overflow-hidden transition-all duration-300"
+          style={{ height: pullDistance > 0 ? `${pullDistance}px` : '0px', opacity: Math.min(pullDistance / 55, 1) }}>
+          {isRefreshing ? (
+            <Loader2 size={20} className="animate-spin" style={{ color: '#BF00FF' }} />
+          ) : (
+            <ChevronDown size={20} className="transition-transform duration-300" style={{ color: '#BF00FF', transform: pullDistance >= 55 ? 'rotate(180deg)' : 'none' }} />
+          )}
+        </div>
+
+        {/* NAV + STATS */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button onClick={openMonthPicker}
+            className="flex items-center gap-2 bg-white border rounded-2xl px-3.5 py-2 cursor-pointer transition-all active:scale-[0.97]"
+            style={{ background: T.surface, borderColor: T.border, boxShadow: T.shadow }}>
+            <Calendar size={15} className="shrink-0" style={{ color: T.textSec }} />
+            <span className="text-sm font-semibold select-none min-w-[100px] text-left" style={{ color: T.text }}>{MONTHS[month]} {year}</span>
+            <ChevronDown size={14} className="shrink-0" style={{ color: T.textMuted }} />
+          </button>
+          {!isCurrentMonth && (
+            <button onClick={goToday}
+              className="px-3 py-1.5 rounded-full border text-xs font-medium transition-all active:scale-95"
+              style={{ borderColor: T.border, background: T.surface, color: T.textSec, boxShadow: T.shadow }}>
+              Hari Ini
+            </button>
+          )}
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white border text-[11px] ml-auto"
+            style={{ background: T.surface, borderColor: T.border, color: T.textSec, boxShadow: T.shadow }}>
+            <span className="flex items-center gap-1"><Calendar size={12} /> {stats.total} hari</span>
+          </div>
+        </div>
+
+        {/* LEGEND */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-[8px] font-semibold uppercase tracking-wider mr-0.5" style={{ color: T.textSec }}>Shift</span>
+          {SHIFTS.map(s => {
+            const Icon = s.icon;
+            return (
+              <span key={s.code} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold ${s.badgeClass}`}>
+                <Icon size={10} /> {s.name}
+              </span>
+            );
+          })}
+        </div>
+
+        {/* CALENDAR */}
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[40vh]">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-8 h-8 border-2 border-[#BF00FF] border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm" style={{ color: T.textMuted }}>Memuat jadwal...</p>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-3xl p-3 md:p-5 overflow-x-auto"
+            style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
             <div className="grid grid-cols-7 gap-1.5 mb-1.5">
               {DAY_SHORT.map(d => (
-                <div key={d} className="text-center text-[9px] font-bold text-slate-mist dark:text-slate-mist uppercase tracking-widest py-1">
+                <div key={d} className="text-center text-[9px] font-bold uppercase tracking-widest py-1" style={{ color: T.textMuted }}>
                   {d}
                 </div>
               ))}
@@ -262,98 +282,88 @@ function getDaysInMonth(year, month) {
                 const isToday = day && year === now.getFullYear() && month === now.getMonth() && day === now.getDate();
                 const dayOfWeek = day ? (new Date(year, month, day).getDay() + 6) % 7 : -1;
                 const isWeekend = dayOfWeek >= 5;
+                const ShiftIcon = shiftInfo ? shiftInfo.icon : null;
 
                 return (
                   <div key={i}
                     className={`relative aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-200 cursor-default select-none
                       ${!day ? "invisible" : ""}
-                      ${isToday
-                        ? ""
-                        : shiftInfo 
-                          ? shiftInfo.premiumClass
-                          : isWeekend
-                            ? "bg-slate-100 dark:bg-white/[0.02]"
-                            : "bg-slate-50 dark:bg-white/[0.03]"
-                      }
-                      ${isToday ? "ring-2 ring-violet-500 ring-offset-1 ring-offset-white dark:ring-offset-onyx shadow-[0_0_14px_rgba(139,92,246,0.35)]" : ""}
+                      ${isToday ? "bg-white ring-2 ring-[#BF00FF] ring-offset-1 ring-offset-white shadow-[0_0_14px_rgba(191,0,255,0.25)]"
+                        : shiftInfo ? shiftInfo.badgeClass
+                        : isWeekend ? "bg-slate-100" : "bg-slate-50"}
                     `}>
                     <span className={`text-[10px] font-bold leading-none ${
-                      isToday
-                        ? "text-violet-500"
-                        : shiftInfo 
-                          ? ""
-                          : isWeekend 
-                            ? "text-slate-400 dark:text-slate-mist" 
-                            : "text-slate-600 dark:text-slate-mist"
+                      isToday ? "text-[#BF00FF]"
+                        : shiftInfo ? "" : isWeekend ? "text-slate-400" : "text-slate-600"
                     }`}>
                       {day}
                     </span>
-                    {shiftInfo && (
-                      <shiftInfo.icon size={9} className={`mt-0.5 ${isToday ? "text-violet-500" : ""}`} />
+                    {ShiftIcon && (
+                      <ShiftIcon size={9} className={`mt-0.5 ${isToday ? "text-[#BF00FF]" : ""}`} />
                     )}
                     {!shiftInfo && isWeekend && (
-                      <span className="text-[5px] text-slate-mist mt-0.5 leading-none">Libur</span>
+                      <span className="text-[5px] text-slate-400 mt-0.5 leading-none">Libur</span>
                     )}
                   </div>
                 );
               })}
             </div>
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* TODAY SCHEDULE INFO */}
-      {(() => {
-        const now = new Date();
-        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-        const todaySched = schedules[todayStr];
-        const shiftInfo = todaySched ? SHIFT_MAP[todaySched.shift_code] : null;
-        if (!todaySched || !shiftInfo) return null;
-        return (
-          <div className="my-3 rounded-xl p-3 text-center" style={{ background: darkMode ? 'rgba(139,92,246,0.08)' : 'rgba(139,92,246,0.06)', border: darkMode ? '1px solid rgba(139,92,246,0.15)' : '1px solid rgba(139,92,246,0.2)' }}>
-            <span className="text-[10px] font-medium">
-              <span className={darkMode ? 'text-white/50' : 'text-gray-600'}>Jadwal hari ini: </span>
-              <span className={darkMode ? 'text-white' : 'text-gray-900'}>
-                {now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                {' '}<span className="text-violet-500">({shiftInfo.name})</span>
+        {/* TODAY SCHEDULE INFO */}
+        {(() => {
+          const nowD = new Date();
+          const todayStr = `${nowD.getFullYear()}-${String(nowD.getMonth() + 1).padStart(2, "0")}-${String(nowD.getDate()).padStart(2, "0")}`;
+          const todaySched = schedules[todayStr];
+          const shiftInfo = todaySched ? SHIFT_MAP[todaySched.shift_code] : null;
+          if (!todaySched || !shiftInfo) return null;
+          return (
+            <div className="rounded-xl p-3 text-center"
+              style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.2)' }}>
+              <span className="text-[10px] font-medium">
+                <span style={{ color: T.textSec }}>Jadwal hari ini: </span>
+                <span style={{ color: T.text }}>
+                  {nowD.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                  {' '}<span style={{ color: '#BF00FF' }}>({shiftInfo.name})</span>
+                </span>
               </span>
-            </span>
+            </div>
+          );
+        })()}
+
+        {/* SUMMARY CARDS */}
+        {!loading && stats.total > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {SHIFTS.map(s => {
+              const Icon = s.icon;
+              const count = stats[s.code] || 0;
+              if (count === 0) return null;
+              return (
+                <div key={s.code} className={`${s.badgeClass} rounded-xl p-3 flex flex-col items-center text-center gap-2`}>
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-black/10">
+                    <Icon size={16} />
+                  </div>
+                  <div>
+                    <p className="text-xl font-extrabold leading-none opacity-90">{count}</p>
+                    <p className="text-[10px] font-medium mt-0.5 opacity-70">hari kerja</p>
+                  </div>
+                  <p className="text-[9px] font-bold uppercase tracking-wider opacity-80">Shift {s.name}</p>
+                </div>
+              );
+            })}
           </div>
-        );
-      })()}
+        )}
 
-      {/* SUMMARY CARDS */}
-		      {!loading && stats.total > 0 && (
-		        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-		          {SHIFTS.map(s => {
-		            const Icon = s.icon;
-		            const count = stats[s.code] || 0;
-		            if (count === 0) return null;
-		            return (
-		              <div key={s.code} className={`${s.badgeClass} rounded-xl p-3 flex flex-col items-center text-center gap-2`}>
-		                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-black/10">
-		                  <Icon size={16} />
-		                </div>
-		                <div>
-		                  <p className="text-xl font-extrabold leading-none opacity-90">{count}</p>
-		                  <p className="text-[10px] font-medium mt-0.5 opacity-70">hari kerja</p>
-		                </div>
-		                <p className="text-[9px] font-bold uppercase tracking-wider opacity-80">Shift {s.name}</p>
-		              </div>
-		            );
-		          })}
-		        </div>
-		      )}
-
-      {/* FOOTER INFO */}
-      <div className="flex items-center gap-2 p-3.5 rounded-xl bg-gradient-to-r from-sky-500/5 to-violet-500/5 border border-sky-500/10 text-[11px] text-slate-mist">
-        <div className="w-6 h-6 rounded-lg bg-sky-500/10 flex items-center justify-center shrink-0">
-          <Info size={13} className="text-sky-400" />
+        {/* FOOTER INFO */}
+        <div className="flex items-center gap-2 p-3.5 rounded-xl bg-white border text-[11px]"
+          style={{ background: T.surface, borderColor: T.border, color: T.textSec, boxShadow: T.shadow }}>
+          <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
+            <Info size={13} style={{ color: '#BF00FF' }} />
+          </div>
+          <p>Jadwal ini ditetapkan oleh admin. Hubungi admin jika ada perubahan shift.</p>
         </div>
-        <p>Jadwal ini ditetapkan oleh admin. Hubungi admin jika ada perubahan shift.</p>
       </div>
-          </div>
-	      </div>
-	    </div>
 
       {/* MONTH PICKER BOTTOM SHEET */}
       <BottomSheet open={showMonthPicker} onClose={() => setShowMonthPicker(false)}
@@ -362,12 +372,12 @@ function getDaysInMonth(year, month) {
           {/* Year nav */}
           <div className="flex items-center justify-center gap-6 py-2">
             <button onClick={() => setPickerYear(p => p - 1)}
-              className="p-2 rounded-xl hover:bg-white/10 text-slate-mist hover:text-pure-white transition-all">
+              className="p-2 rounded-xl hover:bg-slate-100 transition-all" style={{ color: T.textSec }}>
               <ChevronLeft size={18} />
             </button>
-            <span className="text-lg font-bold text-pure-white w-20 text-center select-none">{pickerYear}</span>
+            <span className="text-lg font-bold w-20 text-center select-none" style={{ color: T.text }}>{pickerYear}</span>
             <button onClick={() => setPickerYear(p => p + 1)}
-              className="p-2 rounded-xl hover:bg-white/10 text-slate-mist hover:text-pure-white transition-all">
+              className="p-2 rounded-xl hover:bg-slate-100 transition-all" style={{ color: T.textSec }}>
               <ChevronRight size={18} />
             </button>
           </div>
@@ -379,11 +389,9 @@ function getDaysInMonth(year, month) {
               return (
                 <button key={i} onClick={() => selectMonth(i)}
                   className={`p-3 rounded-2xl text-sm font-semibold transition-all active:scale-95
-                    ${isActive
-                      ? "bg-electric-violet text-pure-white shadow-lg shadow-electric-violet/30"
-                      : "bg-onyx border border-white/[0.06] text-slate-mist hover:bg-white/[0.06] hover:text-pure-white"
-                    }
-                  `}>
+                    ${isActive ? "bg-[#BF00FF] text-white shadow-lg"
+                      : "bg-white border text-slate-600 hover:bg-slate-50"}`}
+                  style={isActive ? { boxShadow: '0 8px 20px rgba(191,0,255,0.3)' } : { borderColor: T.border, background: T.surface }}>
                   {name.substring(0, 3)}
                 </button>
               );
@@ -391,6 +399,6 @@ function getDaysInMonth(year, month) {
           </div>
         </div>
       </BottomSheet>
-	  </div>
+    </div>
   );
 }

@@ -1,13 +1,24 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useTheme } from "../../context/ThemeContext";
 import { supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
 
+// Light-mode tokens — per DESIGN.md
+const T = {
+  bg: '#F4F2FB',
+  surface: '#FFFFFF',
+  border: 'rgba(31,41,55,0.08)',
+  text: '#0F172A',
+  textSec: '#475569',
+  textMuted: '#94A3B8',
+  sub: '#6B7280',
+  shadow: '0 4px 16px rgba(15,23,42,0.06)',
+  iconBg: '#F5F3FF',
+};
+
 export default function EmployeeEditProfile() {
   const { user, refreshUser } = useAuth();
-  const { darkMode } = useTheme();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -23,7 +34,7 @@ export default function EmployeeEditProfile() {
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     // Kompres dulu jika lebih dari 500KB
     if (file.size > 500 * 1024) {
       const reader = new FileReader();
@@ -122,30 +133,37 @@ export default function EmployeeEditProfile() {
   };
 
   const goBack = () => navigate("/employee/profile");
+  const initials = user?.full_name?.charAt(0)?.toUpperCase() || "P";
 
   return (
-    <div className="min-h-screen w-full bg-transparent text-white font-sans absolute top-0 left-0 pb-24">
-      {/* Header */}
-      <div
-        className="w-full pt-14 pb-8 px-6 shadow-2xl border-b border-white/5 rounded-b-[40px]"
-        style={{ background: "linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)" }}
-      >
-        <button
-          onClick={goBack}
-          className="flex items-center gap-2 text-[11px] font-semibold mb-6"
-          style={{ color: "rgba(255,255,255,0.6)" }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-          Kembali
-        </button>
-        <h1 className="text-lg font-bold text-white" style={{ fontFamily: "'Urbanist', sans-serif" }}>
-          Edit Profil
-        </h1>
-        <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>
-          Perbarui data diri Anda
-        </p>
+    <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg, color: T.text }}>
+      {/* ── HEADER — simple elegant (sama dengan Riwayat) ── */}
+      <div className="pt-14 px-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <button onClick={goBack} aria-label="Kembali"
+              className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:shadow-sm active:scale-90"
+              style={{ color: T.text }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+            <span className="text-[17px] font-bold tracking-tight" style={{ color: T.text }}>Edit Profil</span>
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover border" style={{ borderColor: 'rgba(191,0,255,0.15)' }} />
+            ) : (
+              <div className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold"
+                style={{ background: T.iconBg, color: '#BF00FF', border: '1px solid rgba(191,0,255,0.15)' }}>
+                {initials}
+              </div>
+            )}
+            <span className="text-[9px] font-medium leading-none max-w-[72px] truncate text-center" style={{ color: T.sub }}>
+              {user?.position || user?.role || "Pegawai"}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Form */}
@@ -154,26 +172,23 @@ export default function EmployeeEditProfile() {
         <div className="text-center mb-8">
           <div
             className="relative w-24 h-24 mx-auto rounded-full p-[3px]"
-            style={{
-              background: "linear-gradient(135deg, #BF00FF, #9900CC, #7066ed)",
-              boxShadow: "0 0 24px rgba(191,0,255,0.2)",
-            }}
+            style={{ background: "linear-gradient(135deg, #BF00FF, #9900CC, #7066ed)" }}
           >
             <div
               className="w-full h-full rounded-full flex items-center justify-center text-3xl font-extrabold overflow-hidden"
-              style={{ background: preview ? 'transparent' : '#161320', fontFamily: "'Urbanist', sans-serif" }}
+              style={{ background: preview ? 'transparent' : T.iconBg }}
             >
               {preview ? (
                 <img src={preview} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                user?.full_name?.charAt(0)?.toUpperCase() || "?"
+                <span style={{ color: '#BF00FF' }}>{initials}</span>
               )}
             </div>
           </div>
           <div className="mt-3">
-            <label htmlFor="avatar-upload" className="text-[11px] font-semibold cursor-pointer px-4 py-1.5 rounded-full"
-              style={{ background: "rgba(191,0,255,0.12)", color: "#7066ed", border: "1px solid rgba(191,0,255,0.2)" }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="inline mr-1">
+            <label htmlFor="avatar-upload" className="text-[11px] font-semibold cursor-pointer px-4 py-1.5 rounded-full inline-flex items-center gap-1.5"
+              style={{ background: T.iconBg, color: '#BF00FF', border: "1px solid rgba(191,0,255,0.2)" }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                 <circle cx="12" cy="13" r="4" />
               </svg>
@@ -186,7 +201,7 @@ export default function EmployeeEditProfile() {
               onChange={handleAvatarChange}
               className="hidden"
             />
-            <p className={`text-[9px] mt-1.5 ${darkMode ? 'text-white/20' : 'text-gray-500'}`}>
+            <p className="text-[9px] mt-1.5" style={{ color: T.sub }}>
               Upload foto dari galeri atau kamera
             </p>
           </div>
@@ -195,7 +210,7 @@ export default function EmployeeEditProfile() {
         <form onSubmit={handleSave} className="space-y-4">
           {/* Nama Lengkap */}
           <div>
-            <label className={darkMode ? 'block text-[10px] font-semibold uppercase tracking-[0.5px] text-white/40 mb-2' : 'block text-[10px] font-semibold uppercase tracking-[0.5px] text-gray-800 mb-2'}>
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.5px] mb-2" style={{ color: T.textSec }}>
               Nama Lengkap
             </label>
             <input
@@ -204,19 +219,19 @@ export default function EmployeeEditProfile() {
               value={form.full_name}
               onChange={handleChange}
               placeholder="Nama lengkap Anda"
-              className={`w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none transition-all duration-200 focus:ring-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}
+              className="w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none transition-all duration-200 focus:ring-2 focus:ring-[#BF00FF]/30"
               style={{
-                background: darkMode ? 'rgba(30,30,50,0.6)' : 'rgba(255,255,255,0.05)',
-                border: darkMode ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.05)',
-                backdropFilter: darkMode ? 'blur(20px)' : undefined,
-                boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.4)' : undefined,
+                background: T.surface,
+                border: `1px solid ${T.border}`,
+                color: T.text,
+                boxShadow: T.shadow,
               }}
             />
           </div>
 
           {/* Email (readonly) */}
           <div>
-            <label className={darkMode ? 'block text-[10px] font-semibold uppercase tracking-[0.5px] text-white/40 mb-2' : 'block text-[10px] font-semibold uppercase tracking-[0.5px] text-gray-800 mb-2'}>
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.5px] mb-2" style={{ color: T.textSec }}>
               Email
             </label>
             <input
@@ -225,31 +240,33 @@ export default function EmployeeEditProfile() {
               value={form.email}
               onChange={handleChange}
               placeholder="Email"
-              className={`w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none ${darkMode ? 'text-white/40' : 'text-gray-500'}`}
+              className="w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none"
               style={{
-                background: darkMode ? 'rgba(30,30,50,0.3)' : 'rgba(255,255,255,0.05)',
-                border: darkMode ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)',
+                background: T.rowBg,
+                border: `1px solid ${T.border}`,
+                color: T.sub,
                 cursor: "not-allowed",
               }}
               disabled
             />
-            <p className={`text-[9px] mt-1.5 ${darkMode ? 'text-white/20' : 'text-gray-500'}`}>
+            <p className="text-[9px] mt-1.5" style={{ color: T.sub }}>
               Email tidak dapat diubah. Hubungi admin untuk perubahan.
             </p>
           </div>
 
           {/* Username (readonly) */}
           <div>
-            <label className={darkMode ? 'block text-[10px] font-semibold uppercase tracking-[0.5px] text-white/40 mb-2' : 'block text-[10px] font-semibold uppercase tracking-[0.5px] text-gray-800 mb-2'}>
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.5px] mb-2" style={{ color: T.textSec }}>
               Username
             </label>
             <input
               type="text"
               value={user?.username || "-"}
-              className={`w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none ${darkMode ? 'text-white/40' : 'text-gray-500'}`}
+              className="w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none"
               style={{
-                background: darkMode ? 'rgba(30,30,50,0.3)' : 'rgba(255,255,255,0.05)',
-                border: darkMode ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)',
+                background: T.rowBg,
+                border: `1px solid ${T.border}`,
+                color: T.sub,
                 cursor: "not-allowed",
               }}
               disabled
@@ -271,7 +288,7 @@ export default function EmployeeEditProfile() {
               {saving ? (
                 <span className="flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Menyimpan...
+                  {uploading ? "Mengunggah..." : "Menyimpan..."}
                 </span>
               ) : (
                 "Simpan Perubahan"

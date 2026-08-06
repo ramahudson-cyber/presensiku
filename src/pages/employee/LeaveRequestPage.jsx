@@ -1,22 +1,38 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
-  LEAVE_TYPES,
   createLeaveRequest,
   getMyLeaveRequests,
   cancelLeaveRequest,
   countLeaveDays,
 } from "../../services/leaveService";
 
+// Light-mode tokens — per DESIGN.md
+const T = {
+  bg: '#F4F2FB',
+  surface: '#FFFFFF',
+  border: 'rgba(31,41,55,0.08)',
+  div: '#F1F5F9',
+  text: '#0F172A',
+  textSec: '#475569',
+  textMuted: '#94A3B8',
+  sub: '#6B7280',
+  shadow: '0 4px 16px rgba(15,23,42,0.06)',
+  rowBg: 'rgba(15,23,42,0.02)',
+  rowShadow: '0 1px 3px rgba(0,0,0,0.06)',
+  iconBg: '#F5F3FF',
+};
+
 const DAY_NAMES = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
 const MONTHS = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
 
-// ─── Premium badge config ───
+// ─── Status badge config (DESIGN.md colors) ───
 const STATUS = {
-  pending:   { label: "Menunggu", color: "#a5b4fc", bg: "rgba(165,180,252,0.10)", border: "rgba(165,180,252,0.15)" },
-  approved:  { label: "Disetujui", color: "#2dd4bf", bg: "rgba(45,212,191,0.10)", border: "rgba(45,212,191,0.15)" },
-  rejected:  { label: "Ditolak", color: "#fda4af", bg: "rgba(253,164,175,0.10)", border: "rgba(253,164,175,0.15)" },
+  pending:   { label: "Menunggu", color: "#F59E0B", bg: "rgba(245,158,11,0.10)", border: "rgba(245,158,11,0.25)" },
+  approved:  { label: "Disetujui", color: "#10B981", bg: "rgba(16,185,129,0.10)", border: "rgba(16,185,129,0.25)" },
+  rejected:  { label: "Ditolak", color: "#EF4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.25)" },
 };
 
 function todayStr() {
@@ -35,7 +51,7 @@ function PillTab({ active, label, icon, onClick }) {
       onClick={onClick}
       style={{
         position: "relative", zIndex: 1, flex: 1, padding: "11px 18px", border: "none",
-        background: "transparent", color: active ? "#fff" : "rgba(255,255,255,0.5)",
+        background: "transparent", color: active ? "#fff" : T.textSec,
         fontSize: 13, fontWeight: 600, cursor: "pointer", borderRadius: 14,
         display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
         textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "inherit",
@@ -50,6 +66,7 @@ function PillTab({ active, label, icon, onClick }) {
 
 export default function LeaveRequestPage() {
   const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
 
   // ─── HOOKS (before early return — React #310) ───
   const [formType, setFormType] = useState("izin");
@@ -149,261 +166,218 @@ export default function LeaveRequestPage() {
 
   // ─── Guard (after hooks) ───
   if (authLoading) {
-    return <div style={{ padding: "80px 0", textAlign: "center", color: "#9ba1ae" }}>Memuat...</div>;
+    return <div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", color: T.textMuted, background: T.bg }}>Memuat...</div>;
   }
   if (!user) {
-    return <div style={{ padding: "80px 0", textAlign: "center", color: "#9ba1ae" }}>Silakan login terlebih dahulu.</div>;
+    return <div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", color: T.textMuted, background: T.bg }}>Silakan login terlebih dahulu.</div>;
   }
 
-  // ─── Ambient background ───
-  const bgStyle = {
-    position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
-    background: "radial-gradient(circle at 50% -20%, #1a0a35 0%, #050505 70%)",
+  const initials = user?.full_name?.charAt(0)?.toUpperCase() || "P";
+
+  const inputStyle = {
+    width: "100%", background: T.surface,
+    border: `1px solid ${T.border}`, borderRadius: 14,
+    padding: "14px 14px", color: T.text, fontSize: 14, outline: "none",
+    fontFamily: "inherit", boxShadow: T.shadow,
   };
-  const gridStyle = {
-    position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
-    background: "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-    backgroundSize: "64px 64px",
-    maskImage: "radial-gradient(circle at 30% 30%, rgba(0,0,0,0.5), transparent 75%)",
-    WebkitMaskImage: "radial-gradient(circle at 30% 30%, rgba(0,0,0,0.5), transparent 75%)",
-  };
-  const glow1 = {
-    position: "fixed", top: "-200px", left: "-200px", width: 600, height: 600,
-    background: "radial-gradient(circle, rgba(191,0,255,0.12), transparent 60%)",
-    borderRadius: "50%", filter: "blur(60px)", zIndex: 0, pointerEvents: "none",
-  };
-  const glow2 = {
-    position: "fixed", bottom: "-200px", right: "-200px", width: 500, height: 500,
-    background: "radial-gradient(circle, rgba(153,0,204,0.10), transparent 60%)",
-    borderRadius: "50%", filter: "blur(60px)", zIndex: 0, pointerEvents: "none",
-  };
-  const glow3 = {
-    position: "fixed", top: "40%", right: "-100px", width: 400, height: 400,
-    background: "radial-gradient(circle, rgba(112,102,237,0.08), transparent 60%)",
-    borderRadius: "50%", filter: "blur(50px)", zIndex: 0, pointerEvents: "none",
-  };
+
+  const statCards = [
+    { label: "Disetujui", value: approvedCount, color: "#10B981",
+      icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg> },
+    { label: "Pending", value: pendingCount, color: "#F59E0B",
+      icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="3"><circle cx="12" cy="12" r="3"/><path d="M12 5v2M12 17v2M5 12h2M17 12h2"/></svg> },
+    { label: "Total Hari", value: totalDays, color: "#BF00FF",
+      icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" strokeWidth="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> },
+  ];
 
   return (
-    <div className="min-h-screen w-full bg-transparent text-white font-sans absolute top-0 left-0 right-0 pb-24">
-      <div style={bgStyle} />
-      <div style={gridStyle} />
-      <div style={glow1} />
-      <div style={glow2} />
-      <div style={glow3} />
-
-      {/* ─── HERO HEADER ─── */}
-      <div className="w-full pt-12 pb-6 px-6 shadow-2xl border-b border-white/5 rounded-b-[40px]"
-        style={{ background: "linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%)", zIndex: 50, position: "relative" }}>
-        <h1 className="text-lg font-bold" style={{ fontFamily: "'Urbanist', sans-serif", color: "#FFFFFF" }}>Izin &amp; Sakit</h1>
-        <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>Ajukan permohonan atau lihat riwayat</p>
+    <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg, color: T.text }}>
+      {/* ── HEADER — simple elegant (sama dengan Riwayat) ── */}
+      <div className="pt-14 px-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <button onClick={() => navigate(-1)} aria-label="Kembali"
+              className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:shadow-sm active:scale-90"
+              style={{ color: T.text }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+            <span className="text-[17px] font-bold tracking-tight" style={{ color: T.text }}>Izin &amp; Sakit</span>
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover border" style={{ borderColor: 'rgba(191,0,255,0.15)' }} />
+            ) : (
+              <div className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold"
+                style={{ background: T.iconBg, color: '#BF00FF', border: '1px solid rgba(191,0,255,0.15)' }}>
+                {initials}
+              </div>
+            )}
+            <span className="text-[9px] font-medium leading-none max-w-[72px] truncate text-center" style={{ color: T.sub }}>
+              {user?.position || user?.role || "Pegawai"}
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="w-full px-3 mt-5">
+      <div className="max-w-md mx-auto px-4 mt-6 space-y-4">
 
         {/* ─── STAT CARDS ROW ─── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 14 }}>
-          {[
-            { label: "Disetujui", value: approvedCount, statColor: "rgba(173,255,47,0.3)", valueColor: "#adff2f",
-              icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#adff2f" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg> },
-            { label: "Pending", value: pendingCount, statColor: "rgba(165,180,252,0.3)", valueColor: "#a5b4fc",
-              icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" strokeWidth="3"><circle cx="12" cy="12" r="3"/><path d="M12 5v2M12 17v2M5 12h2M17 12h2"/></svg> },
-            { label: "Total Hari", value: totalDays, statColor: "rgba(153,0,204,0.3)", valueColor: "#c084fc",
-              icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c084fc" strokeWidth="2.5"><path d="M3 12h18M12 3v18"/></svg> },
-          ].map((st) => (
-            <div key={st.label} style={{
-              position: "relative", padding: 10,
-              background: "linear-gradient(160deg, rgba(30,25,45,0.6), rgba(15,10,25,0.3))",
-              backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: 18, overflow: "hidden",
-            }}>
-              <div style={{
-                position: "absolute", top: -25, right: -25, width: 70, height: 70,
-                background: st.statColor, borderRadius: "50%", filter: "blur(30px)", opacity: 0.5,
-              }} />
-              <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 4, position: "relative", zIndex: 1 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+          {statCards.map((st) => (
+            <div key={st.label} className="rounded-2xl p-3"
+              style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
                 <span style={{
-                  width: 18, height: 18, borderRadius: 6,
-                  background: st.statColor, display: "flex", alignItems: "center", justifyContent: "center",
+                  width: 18, height: 18, borderRadius: 6, flexShrink: 0,
+                  background: T.iconBg, display: "flex", alignItems: "center", justifyContent: "center",
                 }}>{st.icon}</span>
-                <span style={{ fontSize: 9, fontWeight: 700, color: st.valueColor, textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>
+                <span style={{ fontSize: 9, fontWeight: 700, color: T.textSec, textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>
                   {st.label}
                 </span>
               </div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 5, position: "relative", zIndex: 1 }}>
-                <span style={{ fontSize: 22, fontWeight: 800, color: "#fff", lineHeight: 1.1, fontVariantNumeric: "tabular-nums" }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
+                <span style={{ fontSize: 22, fontWeight: 800, color: T.text, lineHeight: 1.1, fontVariantNumeric: "tabular-nums" }}>
                   {st.value}
                 </span>
-                <span style={{ fontSize: 10, color: "#9ba1ae" }}>total</span>
+                <span style={{ fontSize: 10, color: T.sub }}>total</span>
               </div>
             </div>
           ))}
         </div>
 
-        {/* ─── HERO FORM CARD ─── */}
-        <div style={{
-          position: "relative", marginTop: 14,
-          background: "linear-gradient(160deg, #BF40FF 0%, #7020CC 25%, #2B0066 55%, #000000 100%)",
-          borderRadius: 30, overflow: "hidden",
-          boxShadow: "0 16px 60px rgba(0,0,0,0.5), 0 0 40px rgba(191,0,255,0.08)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          padding: "28px 22px 22px 22px",
-        }}>
-          <div style={{ position: "absolute", top: -80, right: -80, width: 200, height: 200,
-            background: "radial-gradient(circle, rgba(255,255,255,0.06), transparent 65%)", borderRadius: "50%" }} />
+        {/* ─── FORM CARD ─── */}
+        <div className="rounded-3xl p-6"
+          style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, paddingBottom: 14, borderBottom: `1px solid ${T.div}` }}>
+            <div style={{ width: 3, height: 18, borderRadius: 2, background: "linear-gradient(180deg, #BF00FF, #9900CC)" }} />
+            <span style={{ fontSize: 15, fontWeight: 700, color: T.text }}>Ajukan Permohonan Izin/Sakit</span>
+          </div>
 
-          <div style={{ position: "relative", zIndex: 2 }}>
-            <div style={{
-              display: "flex", alignItems: "center", gap: 14, marginBottom: 18,
-              paddingBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.08)",
-            }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>Ajukan Permohonan Izin/Sakit</span>
-            </div>
-
-            <form onSubmit={handleSubmit}>
-              {/* PILL TAB Izin/Sakit */}
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
-                  Jenis Permohonan
-                </div>
-                <div style={{
-                  position: "relative", display: "inline-flex", background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.06)", borderRadius: 18, padding: 4, width: "100%",
-                }}>
-                  <span style={{
-                    position: "absolute", top: 5, left: 5,
-                    width: "calc(50% - 5px)", height: "calc(100% - 10px)",
-                    background: "linear-gradient(135deg, #BF00FF, #9900CC)",
-                    borderRadius: 14,
-                    left: formType === "izin" ? 5 : "calc(50% - 0px)",
-                    transition: "left .35s cubic-bezier(0.65,0,0.35,1)",
-                    boxShadow: "0 4px 20px rgba(191,0,255,0.4), inset 0 1px 0 rgba(255,255,255,0.2)",
-                    zIndex: 0,
-                  }} />
-                  <PillTab
-                    active={formType === "izin"}
-                    label="Izin"
-                    icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>}
-                    onClick={() => setFormType("izin")}
-                  />
-                  <PillTab
-                    active={formType === "sakit"}
-                    label="Sakit"
-                    icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M8 6h8M12 2v4M6 12h12M4 18h16"/></svg>}
-                    onClick={() => setFormType("sakit")}
-                  />
-                </div>
+          <form onSubmit={handleSubmit}>
+            {/* PILL TAB Izin/Sakit */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: T.textSec, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+                Jenis Permohonan
               </div>
-
-              {/* DATE INPUTS */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
-                    Tanggal Mulai
-                  </div>
-                  <input
-                    type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-                    min={today}
-                    style={{
-                      width: "100%", background: "rgba(255,255,255,0.04)",
-                      border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14,
-                      padding: "14px 14px", color: "#fff", fontSize: 14, outline: "none",
-                      colorScheme: "dark", fontFamily: "inherit",
-                    }}
-                  />
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
-                    Tanggal Selesai
-                  </div>
-                  <input
-                    type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
-                    min={startDate || today}
-                    style={{
-                      width: "100%", background: "rgba(255,255,255,0.04)",
-                      border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14,
-                      padding: "14px 14px", color: "#fff", fontSize: 14, outline: "none",
-                      colorScheme: "dark", fontFamily: "inherit",
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* DAY COUNT PILL */}
-              {dayCount > 0 && (
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                  <span style={{
-                    display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px",
-                    background: "rgba(191,0,255,0.08)", border: "1px solid rgba(191,0,255,0.2)",
-                    borderRadius: 9999, fontSize: 12, fontWeight: 600, color: "#c084fc",
-                  }}>
-                    <span style={{ fontSize: 13, fontWeight: 800 }}>{dayCount}</span> hari
-                  </span>
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>Jumlah hari kalender</span>
-                </div>
-              )}
-
-              {/* REASON */}
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
-                  Alasan Permohonan
-                </div>
-                <textarea
-                  value={reason} onChange={(e) => setReason(e.target.value)}
-                  rows="3" placeholder="Jelaskan alasan permohonan Anda..."
-                  style={{
-                    width: "100%", background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14,
-                    padding: "14px 14px", color: "#fff", fontSize: 14, outline: "none",
-                    resize: "vertical", fontFamily: "inherit",
-                  }}
+              <div style={{
+                position: "relative", display: "inline-flex", background: T.rowBg,
+                border: `1px solid ${T.border}`, borderRadius: 18, padding: 4, width: "100%",
+              }}>
+                <span style={{
+                  position: "absolute", top: 5, left: 5,
+                  width: "calc(50% - 5px)", height: "calc(100% - 10px)",
+                  background: "linear-gradient(135deg, #BF00FF, #9900CC)",
+                  borderRadius: 14,
+                  left: formType === "izin" ? 5 : "calc(50% - 0px)",
+                  transition: "left .35s cubic-bezier(0.65,0,0.35,1)",
+                  boxShadow: "0 4px 20px rgba(191,0,255,0.3)",
+                  zIndex: 0,
+                }} />
+                <PillTab
+                  active={formType === "izin"}
+                  label="Izin"
+                  icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>}
+                  onClick={() => setFormType("izin")}
+                />
+                <PillTab
+                  active={formType === "sakit"}
+                  label="Sakit"
+                  icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M8 6h8M12 2v4M6 12h12M4 18h16"/></svg>}
+                  onClick={() => setFormType("sakit")}
                 />
               </div>
+            </div>
 
-              {/* SUBMIT BUTTON */}
-              <button
-                type="submit" disabled={loading}
-                style={{
-                  position: "relative", width: "100%", padding: "16px 24px", border: "none",
-                  borderRadius: 16,
-                  background: "linear-gradient(135deg, #BF00FF 0%, #9900CC 50%, #7020CC 100%)",
-                  color: "#fff", fontSize: 15, fontWeight: 700, cursor: loading ? "wait" : "pointer",
-                  overflow: "hidden", transition: "all .2s",
-                  boxShadow: "0 8px 24px rgba(191,0,255,0.35), inset 0 1px 0 rgba(255,255,255,0.2)",
-                  fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                  opacity: loading ? 0.6 : 1,
-                }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4z"/>
-                </svg>
-                {loading ? "Mengirim..." : "Kirim Permohonan"}
-              </button>
-            </form>
-          </div>
+            {/* DATE INPUTS */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: T.textSec, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+                  Tanggal Mulai
+                </div>
+                <input
+                  type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
+                  min={today}
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: T.textSec, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+                  Tanggal Selesai
+                </div>
+                <input
+                  type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
+                  min={startDate || today}
+                  style={inputStyle}
+                />
+              </div>
+            </div>
+
+            {/* DAY COUNT PILL */}
+            {dayCount > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px",
+                  background: T.iconBg, border: "1px solid rgba(191,0,255,0.2)",
+                  borderRadius: 9999, fontSize: 12, fontWeight: 600, color: '#BF00FF',
+                }}>
+                  <span style={{ fontSize: 13, fontWeight: 800 }}>{dayCount}</span> hari
+                </span>
+                <span style={{ fontSize: 11, color: T.sub }}>Jumlah hari kalender</span>
+              </div>
+            )}
+
+            {/* REASON */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: T.textSec, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+                Alasan Permohonan
+              </div>
+              <textarea
+                value={reason} onChange={(e) => setReason(e.target.value)}
+                rows="3" placeholder="Jelaskan alasan permohonan Anda..."
+                style={{ ...inputStyle, resize: "vertical" }}
+              />
+            </div>
+
+            {/* SUBMIT BUTTON */}
+            <button
+              type="submit" disabled={loading}
+              style={{
+                position: "relative", width: "100%", padding: "16px 24px", border: "none",
+                borderRadius: 16,
+                background: "linear-gradient(135deg, #BF00FF 0%, #9900CC 50%, #7020CC 100%)",
+                color: "#fff", fontSize: 15, fontWeight: 700, cursor: loading ? "wait" : "pointer",
+                transition: "all .2s",
+                boxShadow: "0 8px 24px rgba(191,0,255,0.3)",
+                fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                opacity: loading ? 0.6 : 1,
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4z"/>
+              </svg>
+              {loading ? "Mengirim..." : "Kirim Permohonan"}
+            </button>
+          </form>
         </div>
 
         {/* ─── HISTORY CARD ─── */}
-        <div style={{
-          position: "relative", marginTop: 14,
-          background: "linear-gradient(140deg, rgba(255,255,255,0.07), rgba(255,255,255,0.015) 60%, rgba(153,0,204,0.02) 100%)",
-          backdropFilter: "blur(24px)",
-          borderRadius: 28, overflow: "hidden",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
-          padding: 20,
-        }}>
+        <div className="rounded-3xl p-5"
+          style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ width: 3, height: 18, borderRadius: 2, background: "linear-gradient(180deg, #BF00FF, #9900CC)" }} />
-              <h2 style={{ fontSize: 14, fontWeight: 700, color: "#fff", margin: 0, lineHeight: 1.2, letterSpacing: "-0.01em" }}>Riwayat Permohonan</h2>
+              <span style={{ width: 3, height: 18, borderRadius: 2, background: "linear-gradient(180deg, #BF00FF, #3B82F6)" }} />
+              <h2 style={{ fontSize: 14, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.2, letterSpacing: "-0.01em" }}>Riwayat Permohonan</h2>
             </div>
-            <div style={{ display: "inline-flex", gap: 2, background: "rgba(255,255,255,0.04)", borderRadius: 9, padding: 2, border: "1px solid rgba(255,255,255,0.05)" }}>
+            <div style={{ display: "inline-flex", gap: 2, background: T.rowBg, borderRadius: 9, padding: 2, border: `1px solid ${T.border}` }}>
               <button
                 onClick={() => setFilterTab("semua")}
                 style={{
                   padding: "6px 12px", borderRadius: 7, border: "none", cursor: "pointer",
                   fontSize: 10, fontWeight: 600, fontFamily: "inherit",
-                  background: filterTab === "semua" ? "rgba(191,0,255,0.18)" : "transparent",
-                  color: filterTab === "semua" ? "#fff" : "rgba(155,161,174,0.7)",
+                  background: filterTab === "semua" ? '#BF00FF' : "transparent",
+                  color: filterTab === "semua" ? "#fff" : T.sub,
                 }}
               >Semua</button>
               <button
@@ -411,28 +385,31 @@ export default function LeaveRequestPage() {
                 style={{
                   padding: "6px 12px", borderRadius: 7, border: "none", cursor: "pointer",
                   fontSize: 10, fontWeight: 600, fontFamily: "inherit",
-                  background: filterTab === "pending" ? "rgba(191,0,255,0.18)" : "transparent",
-                  color: filterTab === "pending" ? "#fff" : "rgba(155,161,174,0.7)",
+                  background: filterTab === "pending" ? '#BF00FF' : "transparent",
+                  color: filterTab === "pending" ? "#fff" : T.sub,
                 }}
               >Pending</button>
             </div>
           </div>
-          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.32)", margin: "0 0 6px 0" }}>
+          <p style={{ fontSize: 10, color: T.sub, margin: "0 0 6px 0" }}>
             {filteredRequests.length} permohonan
           </p>
 
           {fetchError ? (
-            <div style={{ textAlign: "center", padding: "20px 0", color: "#fda4af", fontSize: 13 }}>{fetchError}</div>
+            <div style={{ textAlign: "center", padding: "20px 0", color: "#DC2626", fontSize: 13 }}>{fetchError}</div>
           ) : fetching ? (
-            <div style={{ textAlign: "center", padding: "20px 0", color: "#9ba1ae", fontSize: 13 }}>Memuat...</div>
+            <div style={{ textAlign: "center", padding: "20px 0" }}>
+              <div className="mx-auto w-7 h-7 border-2 border-[#BF00FF] border-t-transparent rounded-full animate-spin" />
+              <div style={{ fontSize: 13, color: T.textMuted, marginTop: 10 }}>Memuat...</div>
+            </div>
           ) : filteredRequests.length === 0 ? (
             <div style={{ textAlign: "center", padding: "24px 0" }}>
-              <div style={{ fontSize: 28, opacity: 0.3, marginBottom: 6 }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ba1ae" strokeWidth="1.5">
+              <div style={{ marginBottom: 6 }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="1.5" className="mx-auto">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                 </svg>
               </div>
-              <div style={{ fontSize: 12, color: "#9ba1ae" }}>
+              <div style={{ fontSize: 12, color: T.textMuted }}>
                 {filterTab === "pending" ? "Tidak ada permohonan pending." : "Belum ada permohonan."}
               </div>
             </div>
@@ -444,28 +421,27 @@ export default function LeaveRequestPage() {
                 return (
                   <div key={r.id} style={{
                     display: "flex", alignItems: "center", padding: "14px 8px",
-                    borderBottom: "1px solid rgba(255,255,255,0.04)",
+                    borderBottom: `1px solid ${T.div}`,
                   }}>
                     {/* ICON */}
                     <div style={{
-                      width: 44, height: 44, borderRadius: 16,
+                      width: 44, height: 44, borderRadius: 16, flexShrink: 0,
                       background: s.bg, border: "1px solid " + s.border,
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      flexShrink: 0,
                     }}>
                       {r.status === "approved" && (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" strokeWidth="2.5">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5">
                           <path d="M20 6L9 17l-5-5"/>
                         </svg>
                       )}
                       {r.status === "pending" && (
                         <span style={{
                           display: "block", width: 8, height: 8, borderRadius: "50%",
-                          background: s.color, boxShadow: "0 0 8px " + s.color,
+                          background: s.color,
                         }} />
                       )}
                       {r.status === "rejected" && (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fda4af" strokeWidth="2.5">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5">
                           <circle cx="12" cy="12" r="10"/>
                           <line x1="15" y1="9" x2="9" y2="15"/>
                           <line x1="9" y1="9" x2="15" y2="15"/>
@@ -476,7 +452,7 @@ export default function LeaveRequestPage() {
                     {/* CONTENT */}
                     <div style={{ flex: 1, minWidth: 0, padding: "0 12px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", textTransform: "capitalize" }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: T.text, textTransform: "capitalize" }}>
                           {r.leave_type}
                         </span>
                         <span style={{
@@ -490,13 +466,13 @@ export default function LeaveRequestPage() {
                         </span>
                       </div>
                       <p style={{
-                        fontSize: 11, color: "rgba(255,255,255,0.55)", marginBottom: 2,
+                        fontSize: 11, color: T.textSec, marginBottom: 2,
                         lineHeight: 1.4,
                         display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
                       }}>
                         {r.reason}
                       </p>
-                      <p style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", margin: 0 }}>
+                      <p style={{ fontSize: 10, color: T.sub, margin: 0 }}>
                         {fmtDay(r.start_date)} — {fmtDay(r.end_date)} · {days} hari
                       </p>
                     </div>
@@ -506,11 +482,11 @@ export default function LeaveRequestPage() {
                       <button
                         onClick={() => handleCancel(r.id)}
                         style={{
-                          width: 36, height: 36, borderRadius: 12,
-                          border: "1px solid rgba(253,164,175,0.15)",
-                          background: "rgba(251,114,133,0.06)", color: "#fda4af",
+                          width: 36, height: 36, borderRadius: 12, flexShrink: 0,
+                          border: "1px solid rgba(239,68,68,0.2)",
+                          background: "rgba(239,68,68,0.06)", color: "#EF4444",
                           display: "flex", alignItems: "center", justifyContent: "center",
-                          cursor: "pointer", flexShrink: 0,
+                          cursor: "pointer",
                         }}
                       >
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -535,40 +511,33 @@ export default function LeaveRequestPage() {
           {/* Backdrop */}
           <div className="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-sm" onClick={() => setShowSuccessPopup(false)} />
 
-          {/* Popup Card — Purple Magenta, same style as attendance result sheet */}
+          {/* Popup Card */}
           <div
             style={{
               maxHeight: "93vh", width: "100%", maxWidth: 400,
               borderRadius: "28px 28px 0 0",
-              background: "linear-gradient(165deg, #8B00CC 0%, #7B00E0 20%, #4A0099 55%, #05020b 100%)",
-              border: "1px solid rgba(255,0,153,0.4)",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(191,0,255,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
+              background: T.surface,
+              border: `1px solid ${T.border}`,
+              boxShadow: "0 20px 60px rgba(15,23,42,0.25)",
               position: "relative", overflow: "hidden", zIndex: 9999,
             }}
             className="md:rounded-3xl mx-auto flex flex-col animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Gradient overlay */}
-            <div style={{
-              position: "absolute", inset: 0,
-              background: "radial-gradient(circle at 50% 5%, rgba(255,0,153,0.35), transparent 50%), radial-gradient(circle at 50% 95%, rgba(112,102,237,0.25), transparent 50%)",
-              pointerEvents: "none", zIndex: 1,
-            }} />
-
             {/* Content */}
             <div style={{ position: "relative", zIndex: 2, padding: "10px 22px 0px", display: "flex", flexDirection: "column", alignItems: "center", overflowY: "auto", flex: "1 1 auto", minHeight: 0, paddingBottom: "calc(120px + env(safe-area-inset-bottom, 0px))" }}>
               {/* Handle */}
               <div style={{ display: "flex", justifyContent: "center", paddingBottom: 10 }}>
-                <div style={{ width: 40, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.15)" }} />
+                <div style={{ width: 40, height: 4, borderRadius: 2, background: T.div }} />
               </div>
 
-              {/* 3D Badge — purple gradient like attendance */}
+              {/* 3D Badge — violet gradient */}
               <div style={{
                 width: 76, height: 76, borderRadius: 18,
-                background: "linear-gradient(145deg, #FF0099 0%, #BF00FF 50%, #7B00E0 100%)",
+                background: "linear-gradient(145deg, #BF00FF 0%, #7B00E0 100%)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 marginBottom: 16, position: "relative",
-                boxShadow: "0 10px 24px rgba(191,0,255,0.4), 0 4px 8px rgba(0,0,0,0.3), inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 3px 6px rgba(255,255,255,0.2)",
+                boxShadow: "0 10px 24px rgba(191,0,255,0.35)",
               }}>
                 <div style={{ position: "absolute", inset: -4, borderRadius: 22, background: "linear-gradient(145deg, #FF0099 0%, #BF00FF 50%, #7B00E0 100%)", zIndex: -1, opacity: 0.35, filter: "blur(6px)" }} />
                 <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -578,55 +547,55 @@ export default function LeaveRequestPage() {
               </div>
 
               {/* Title */}
-              <h2 style={{ fontSize: 20, fontWeight: 800, color: "white", textAlign: "center", marginBottom: 4, fontFamily: "'Urbanist', sans-serif" }}>
-                Permohonan Terkirim!
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: T.text, textAlign: "center", marginBottom: 4 }}>
+                Permohonan Terkirim
               </h2>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", textAlign: "center", marginBottom: 16 }}>
+              <p style={{ fontSize: 12, color: T.textSec, textAlign: "center", marginBottom: 16 }}>
                 {popupData.type === "sakit" ? "Permohonan sakit sedang diproses admin" : "Permohonan izin sedang diproses admin"}
               </p>
 
               {/* Status badge */}
               <span style={{
-                fontSize: 10, fontWeight: 700, color: "#FBBF24",
-                background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.25)",
+                fontSize: 10, fontWeight: 700, color: "#F59E0B",
+                background: "rgba(245,158,11,0.10)", border: "1px solid rgba(245,158,11,0.3)",
                 borderRadius: 20, padding: "3px 12px", marginBottom: 16,
                 display: "inline-flex", alignItems: "center", gap: 6, letterSpacing: "0.04em", textTransform: "uppercase",
               }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#FBBF24" }} />
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#F59E0B" }} />
                 Menunggu Persetujuan
               </span>
 
               {/* Summary */}
               <div style={{
-                background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)",
+                background: T.rowBg, border: `1px solid ${T.border}`,
                 borderRadius: 16, padding: "12px 14px", marginBottom: 12, width: "100%",
               }}>
                 {/* Type + Duration row */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "#fff", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: T.text, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                     {popupData.type === "sakit" ? "SAKIT" : "IZIN"}
                   </span>
                   <span style={{
                     display: "inline-flex", alignItems: "center", gap: 5,
                     padding: "3px 10px", borderRadius: 9999,
-                    fontSize: 11, fontWeight: 700, color: "#c084fc",
-                    background: "rgba(192,132,252,0.1)", border: "1px solid rgba(192,132,252,0.25)",
+                    fontSize: 11, fontWeight: 700, color: '#BF00FF',
+                    background: T.iconBg, border: "1px solid rgba(191,0,255,0.2)",
                   }}>
-                    📅 {popupData.days} hari
+                    {popupData.days} hari
                   </span>
                 </div>
 
                 {/* Mulai / Berakhir grid */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 12px" }}>
-                  <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "10px 12px" }}>
-                    <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Mulai</div>
-                    <div style={{ color: "#FFFFFF", fontSize: 12, fontWeight: 700, lineHeight: 1.35 }}>
+                  <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "10px 12px" }}>
+                    <div style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Mulai</div>
+                    <div style={{ color: T.text, fontSize: 12, fontWeight: 700, lineHeight: 1.35 }}>
                       {fmtDay(popupData.start)}
                     </div>
                   </div>
-                  <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "10px 12px" }}>
-                    <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Berakhir</div>
-                    <div style={{ color: "#FFFFFF", fontSize: 12, fontWeight: 700, lineHeight: 1.35 }}>
+                  <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "10px 12px" }}>
+                    <div style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Berakhir</div>
+                    <div style={{ color: T.text, fontSize: 12, fontWeight: 700, lineHeight: 1.35 }}>
                       {fmtDay(popupData.end)}
                     </div>
                   </div>
@@ -635,12 +604,12 @@ export default function LeaveRequestPage() {
 
               {/* Alasan */}
               <div style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.06)",
+                background: T.surface,
+                border: `1px solid ${T.border}`,
                 borderRadius: 14, padding: "10px 12px", marginBottom: 16, width: "100%",
               }}>
-                <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Alasan</div>
-                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", margin: 0, lineHeight: 1.5 }}>
+                <div style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Alasan</div>
+                <p style={{ fontSize: 12, color: T.textSec, margin: 0, lineHeight: 1.5 }}>
                   {popupData.reason}
                 </p>
               </div>
@@ -654,7 +623,7 @@ export default function LeaveRequestPage() {
                   border: "none", borderRadius: 16, color: "white",
                   fontSize: 14, fontWeight: 700, cursor: "pointer", letterSpacing: 0.3,
                   fontFamily: "inherit",
-                  boxShadow: "0 8px 24px rgba(191,0,255,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
+                  boxShadow: "0 8px 24px rgba(191,0,255,0.3)",
                 }}
                 className="active:scale-[0.98]"
               >
