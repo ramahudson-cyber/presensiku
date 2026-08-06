@@ -1,410 +1,226 @@
-# FlutterFlow — Style Reference
-> violet control room at midnight
+# Hadir.Kuy — Style Reference (Light Mode)
+> clean, premium, violet-accented — no glassmorphism, no gradients on cards, no dark mode
 
-**Theme:** dark
+**Theme:** light — The app uses a solid white card surface system on a soft violet-tinted page background. Every card is `#FFFFFF` with a 24px (3xl) radius and a soft hairline border. No glassmorphism, no backdrop-blur on cards, no radial gradient orbs. Depth comes from subtle shadows (`0 4px 16px rgba(15,23,42,0.06)`) — never colored glows. Brand violet `#BF00FF` is the single chromatic accent, used for CTAs, icons, donut chart gradients, and divider bars. Typography remains clean: Inter/system sans, weight 400 for body, 600–800 for headlines.
 
-FlutterFlow's design system is a midnight workspace for app builders: near-black canvas (#060311) with deep violet energy radiating from gradient orbs and glowing CTAs. Urbanist, an understated geometric sans, carries the brand voice with generous letter-spacing that makes even 100px headlines feel architectural rather than shouty. The interface follows a clear three-tier surface stack — Obsidian canvas, Onyx cards, and Electric Violet accents — creating a developer-tool density that still feels premium and approachable. Every interactive element whispers confidence: pill-shaped buttons, 24px card radii, hairline violet borders, and minimal elevation replaced by subtle glows and gradient washes.
+## 🚨 CRITICAL RULE — REAL DATA ONLY
+- **ALL pages MUST fetch data from Supabase** — NO hardcoded dummy data, NO placeholder text for real content
+- Use existing services: `supabase.from("...").select(...)`, `getAttendanceHistory(user.id)`, `getServerTime()`, etc.
+- Loading states: spinner with "Memuat..." text (in Indonesian)
+- Error states: red icon + descriptive message + "Coba Lagi" retry button (in Indonesian)
+- Empty states: descriptive Indonesian text ("Belum ada riwayat absensi.", "Tidak ada pengumuman.")
+- The `fetchData` function pattern from `EmployeeDashboard.jsx` is the reference — parallel Supabase queries with `withTimeout` (20s)
 
 ## Tokens — Colors
 
-| Name | Value | Token | Role |
-|------|-------|-------|------|
-| Electric Violet | `#5800fd` | `--color-electric-violet` | Primary CTA and brand accent — filled buttons, active states, icon containers, and high-emphasis interactive elements throughout the app |
-| Deep Indigo | `#2415c6` | `--color-deep-indigo` | Saturated brand depth — testimonial card backgrounds, gradient mid-stops, and decorative fills that reinforce violet identity without competing with Electric Violet for attention |
-| Periwinkle Glow | `#7066ed` | `--color-periwinkle-glow` | Soft brand highlight — icon tints, secondary accents, and gradient highlights that lighten the violet palette for hover states and decorative ornament |
-| Halo Violet | `radial-gradient(circle farthest-side at 0px -30%, rgb(75, 57, 239), rgba(6, 3, 17, 0) 84%)` | `--color-halo-violet` | Radial gradient seed — the orb color that radiates from the hero top-left corner and bleeds into card backgrounds, creating atmosphere without flat fill |
-| Obsidian | `#060311` | `--color-obsidian` | Page canvas — the deep near-black backdrop for the entire site. Carries a subtle violet undertone that keeps the darkness warm and on-brand rather than cold |
-| Onyx | `#161320` | `--color-onyx` | Card surfaces and hairline borders — one step lighter than the canvas, creates soft layering without shadows. Used for widget tree panels, input fields, and elevated containers |
-| Slate Mist | `#9ba1ae` | `--color-slate-mist` | Muted body and helper text — descriptions, metadata, secondary nav items. Sits clearly below white in hierarchy while maintaining AAA contrast on the dark canvas |
-| Pure White | `#ffffff` | `--color-pure-white` | Light supporting surface for subtle backgrounds and section separation. Do not promote it to the primary CTA color |
-| True Black | `#000000` | `--color-true-black` | Icon detail in light/banner contexts and SVG illustration fills where maximum contrast is required against white backgrounds |
-| Green Yellow | `#adff2f` | `--color-green-yellow` | Attendance status accent — check-in icons, "Hadir"/"Terlambat" labels, success indicators, and badge highlights. Replaces emerald/amber in attendance flows |
-
+| Name | Value | Role |
+|------|-------|------|
+| **Violet Brand** | `#BF00FF` | Primary CTA, brand accent — filled buttons, icon strokes, donut gradient start, status badges, active states, section accent bars |
+| **Hero Violet** | `#C44DFF` | Hero gradient top — starts here, ends at deep indigo |
+| **Deep Indigo** | `#8A00CC` / `#4A0099` | Hero gradient mid-to-bottom — creates depth in the hero only |
+| **Donut End** | `#7066ed` | Donut chart gradient end, paired with violet brand |
+| **Secondary Blue** | `#3B82F6` | Divider bar gradient bottom, status colors (e.g., "Belum") |
+| **Page Background** | `#F4F2FB` | Page canvas — the soft violet-tinted backdrop for the entire page. Sits slightly above pure white |
+| **Surface White** | `#FFFFFF` | Card surfaces — stats card, history card, announcements card, inputs, elevated containers |
+| **Surface Hover/Row** | `rgba(15,23,42,0.02)` | Table rows, announcement items, stat rows — subtle contrast within white cards |
+| **Surface Icon BG** | `#F5F3FF` | Icon container backgrounds (e.g., stat card icon boxes) — very subtle violet tint |
+| **Border** | `rgba(31,41,55,0.08)` | Card borders — soft hairline on white surfaces |
+| **Divider** | `#F1F5F9` | Horizontal dividers inside cards (e.g., between donut and stat rows) |
+| **Text Primary** | `#0F172A` | Headings, bold labels, primary content — weight 600–800 |
+| **Text Secondary** | `#475569` | Body text, table cells (e.g., time values), descriptions |
+| **Text Muted** | `#94A3B8` | Eyebrow labels, table headers, helper text, empty state text |
+| **Text Sub** | `#6B7280` | Metadata, footer text, table sub-labels, date ranges |
+| **Donut Track** | `rgba(0,0,0,0.06)` | Background ring of donut chart — faint gray on white |
+| **Status Late** | `#F59E0B` (amber) | "Terlambat" text, late row left-border accent |
+| **Status On-Time** | `#10B981` (emerald) | "Tepat Waktu" text |
+| **Status Alpha** | `#EF4444` (red) | "Alpha" text, error icons, alpha row left-border |
+| **Status Blue** | `#3B82F6` (blue) | "Belum" text, belum row left-border |
+| **Stat Hadir** | `#ADFF2F` | Hadir stat row gradient accent |
+| **Stat Izin** | `#fbbf24` | Izin stat row gradient accent |
+| **Stat Sakit** | `#fb923c` | Sakit stat row gradient accent |
+| **Stat Alpha** | `#f87171` | Alpha stat row gradient accent |
+| **Green-Yellow** | `#fbbf24` → `#85c600` | PULANG (clock-out) status card gradient |
+| **Button White** | `#FFFFFF` | Hero CTA button (Absen) — on violet hero |
+| **Button White Text** | `#8A00CC` | Text on white CTA button |
 
 ## Tokens — Typography
 
-### Urbanist — Primary brand typeface — headlines at 72–120px with wide tracking (0.038em–0.045em) create an architectural, restrained authority. Body and UI at 14–24px in weight 400. The geometric humanist forms are distinctive against the typical Inter/sans default of devtools. · `--font-urbanist`
-- **Substitute:** Inter, Manrope, or DM Sans
-- **Weights:** 400, 500, 600
-- **Sizes:** 14px, 16px, 18px, 20px, 24px, 32px, 72px, 100px, 120px
-- **Line height:** 1.00–1.60
-- **Letter spacing:** 0.6em at 120px (display tracking), 0.045em at 72px, 0.038em at 32–20px, 0.030em at 24px, 0.045em at 16px, 0.030em at 14px
-- **Role:** Primary brand typeface — headlines at 72–120px with wide tracking (0.038em–0.045em) create an architectural, restrained authority. Body and UI at 14–24px in weight 400. The geometric humanist forms are distinctive against the typical Inter/sans default of devtools.
-
-### Inter — Secondary UI typeface — eyebrows, labels, nav items, and micro-copy where Inter's tighter rhythm supports dense interface text. Weight 300 brings an anti-convention lightness to small caps tracking. · `--font-inter`
-- **Substitute:** system-ui or SF Pro
-- **Weights:** 300, 400, 700
-- **Sizes:** 13px, 14px, 16px, 18px, 20px, 24px
-- **Line height:** 1.50–1.60
-- **Letter spacing:** 0.270em at 24px (all-caps eyebrow tracking), 0.090em at 18px, 0.057em at 16px, 0.050em at 13–14px
-- **Role:** Secondary UI typeface — eyebrows, labels, nav items, and micro-copy where Inter's tighter rhythm supports dense interface text. Weight 300 brings an anti-convention lightness to small caps tracking.
-
-### Type Scale
-
-| Role | Size | Line Height | Letter Spacing | Token |
-|------|------|-------------|----------------|-------|
-| caption | 13px | 1.5 | 0.65px | `--text-caption` |
-| body | 16px | 1.6 | 0.72px | `--text-body` |
-| subheading | 18px | 1.6 | 0.68px | `--text-subheading` |
-| heading-sm | 20px | 1.5 | 0.76px | `--text-heading-sm` |
-| heading | 32px | 1.3 | 1.22px | `--text-heading` |
-| heading-lg | 72px | 1.2 | 3.24px | `--text-heading-lg` |
-| display | 100px | 1 | 4.5px | `--text-display` |
+- **Font family:** Inter, system-ui, sans-serif (no Urbanist — use system geometric sans)
+- **Weights:** 400 (body), 500 (subtle), 600 (heading/label), 700 (bold), 800 (headline/extrabold)
+- **Sizes:** 7px, 8px, 9px, 10px, 11px, 13px, 14px, 16px, 20px, 22px, 28px, 32px
+- **Letter spacing:** `tracking-[0.2em]` for uppercase eyebrows/labels, `tracking-tight` for headlines, normal for body
 
 ## Tokens — Spacing & Shapes
 
 **Base unit:** 8px
-
-**Density:** spacious
-
-### Spacing Scale
-
-| Name | Value | Token |
-|------|-------|-------|
-| 8 | 8px | `--spacing-8` |
-| 16 | 16px | `--spacing-16` |
-| 24 | 24px | `--spacing-24` |
-| 32 | 32px | `--spacing-32` |
-| 40 | 40px | `--spacing-40` |
-| 48 | 48px | `--spacing-48` |
-| 56 | 56px | `--spacing-56` |
-| 64 | 64px | `--spacing-64` |
-| 80 | 80px | `--spacing-80` |
-| 96 | 96px | `--spacing-96` |
-| 112 | 112px | `--spacing-112` |
+**Density:** spacious but compact for mobile
 
 ### Border Radius
-
 | Element | Value |
 |---------|-------|
-| cards | 24px |
-| inputs | 16px |
-| buttons | 9999px |
-| nav-pill | 9999px |
-| buttons-square | 12px |
+| cards | 3xl = `24px` (use `rounded-3xl`) |
+| inner items / rows | `12px`–`14px` (`rounded-xl`) |
+| buttons (hero CTA) | `16px` (`rounded-2xl`) |
+| pills / badges | `9999px` (`rounded-full`) |
+| hero bottom corners | `32px` (`rounded-b-[32px]`) |
+| avatar | `16px` (`rounded-2xl`) |
 
 ### Shadows
-
-| Name | Value | Token |
+| Name | Value | Usage |
 |------|-------|-------|
-| lg | `rgba(0, 0, 0, 0.2) 0px 4px 24px 20px` | `--shadow-lg` |
-
-### Layout
-
-- **Page max-width:** 1200px
-- **Section gap:** 80px
-- **Card padding:** 40px
-- **Element gap:** 24px
-
-## Components
-
-### Ghost Navigation Button
-**Role:** Outlined CTA in top nav for low-emphasis primary action
-
-Pure white fill (#ffffff), Obsidian text (#060311), Urbanist 16px weight 500, 9999px radius (pill), 12px vertical / 24px horizontal padding, 1px transparent border. Used for 'Start for Free' in the nav bar — invites action without competing with the hero CTA.
-
-### Filled Hero CTA
-**Role:** High-emphasis primary action on dark hero
-
-Electric Violet fill (#5800fd), white text, Urbanist 18px weight 500, 9999px radius, 16px vertical / 32px horizontal padding. The primary CTA color — used for all filled buttons, active states, and high-emphasis actions across the app.
-
-### Testimonial Card
-**Role:** Customer quote card in social proof grid
-
-Deep Indigo fill (#2415c6) or Periwinkle-to-Indigo gradient, 24px radius, 40px padding all sides. White company name (Urbanist 18px weight 600), Slate Mist body text, white author name + role at bottom. Cards arranged in 3-column grid on dark canvas.
-
-### Widget Tree Panel
-**Role:** Left sidebar in product UI showing component hierarchy
-
-Onyx fill (#161320), 0px radius (flush to panel), 24px internal padding. Row items are 40px tall with Icon + Label layout. Active/hover row uses a teal-green or violet highlight fill at low opacity. Vertical scroll with 8px row gap.
-
-### Search Input
-**Role:** Widget search field inside product tree
-
-Transparent or Onyx fill (#161320), 1px Onyx border, 16px radius, 11px vertical / 16px horizontal padding. Slate Mist placeholder text (14px), search icon at left, no visible focus ring — relies on container context.
-
-### Trust Logo Strip
-**Role:** Horizontal row of customer/partner logos
-
-Section header eyebrow 'TRUSTED BY DEVELOPERS AT' in Urbanist 24px, 0.27em tracking, white at 60% opacity. Logos rendered in white or grayscale, 80–120px wide, 40px row gap between items, 80px section padding above and below.
-
-### Top Promo Banner
-**Role:** Slim announcement bar above the nav
-
-Pure white fill (#ffffff), Obsidian text (#060311) and link text, Urbanist 14px weight 500, 0.045em tracking. Inline layout with logo + text + 'Try Now!' link. 11px vertical padding. Separates the marketing layer from the app nav.
-
-### Primary Navigation Bar
-**Role:** Top-level site navigation
-
-Obsidian fill (#060311) with subtle transparency, transparent background, 9999px logo lockup, nav links in Urbanist 16px weight 500 white, dropdown items with Periwinkle (#7066ed) chevron. Sticky to top, 56px height, 32px horizontal padding.
-
-### Hero Section Block
-**Role:** First-screen marketing surface
-
-Obsidian canvas with radial Halo Violet gradient bleeding from top-left corner. Centered text stack: Urbanist 100px weight 500 white headline with 4.5px tracking, 18px Slate Mist subtext, 40px vertical gap between elements, 80px top padding to clear the nav.
-
-### Product Showcase Frame
-**Role:** Large product UI screenshot below hero
-
-Screenshot of the FlutterFlow builder with rounded container treatment, 24px radius, 20px black drop shadow. Optional 1px Onyx border. Floats over the dark canvas to demonstrate the product in context.
-
-### Eyebrow Label
-**Role:** All-caps section heading above content blocks
-
-Inter 24px weight 300, 0.27em letter-spacing, white at 70% opacity. Sits 16–24px above the headline it introduces. Spaced-out and whisper-light to create anticipation without competing with the primary headline.
-
-### Footer Link Group
-**Role:** Categorized link lists in site footer
-
-White column headers (Urbanist 16px weight 600), Slate Mist link items (14px weight 400) with 16px vertical gap, 32px padding. No dividers between groups — whitespace and alignment do the work.
-
-## Do's and Don'ts
-
-### Do
-- Use Urbanist at 72–100px weight 500 for hero headlines with 3–4.5px letter-spacing — the wide tracking is the brand's signature restraint
-- Set all CTAs to 9999px pill radius, never square buttons — the pill shape carries the friendly developer-tool personality
-- Apply the radial Halo Violet gradient from the top-left of hero sections to create atmospheric depth without flat color fills
-- Use the three-tier surface stack (Obsidian #060311 → Onyx #161320 → gradient wash) for layering — never add drop shadows for elevation
-- Use Electric Violet #5800fd as the primary CTA color — filled buttons, icon containers, and high-emphasis actions. Pair with Pure White text or black icons depending on context.
-- Set all cards to 24px radius with 40px padding — the generous interior space is part of the spacious devtools feel
-- Use Inter 24px weight 300 with 0.27em tracking for all-caps eyebrow labels above section headlines
-
-### Don't
-- Don't introduce new colors outside the violet + green-yellow spectrum — the brand is dark with Electric Violet as primary accent and Green Yellow for attendance status
-- Don't use letter-spacing tighter than 0.03em on headlines — the wide tracking is intentional, not a mistake
-- Don't add multi-layered drop shadows — the system uses one shadow token and prefers gradient glows for depth
-- Don't use square or 8px-radius buttons — pill shapes (9999px) are the only button geometry
-- Don't place white text directly on Electric Violet without checking contrast — use the 7:1 minimum rule
-- Don't break the dark theme with white content cards — keep cards as Onyx #161320 with violet gradient highlights
-- Don't use font weights above 600 for Urbanist — the typeface loses its geometric balance at bold weights
+| **card** | `0 4px 16px rgba(15,23,42,0.06)` | Default card elevation (stats, history, announcements) |
+| **card-lg** | `0 8px 24px rgba(15,23,42,0.08)` | Hero section |
+| **row** | `0 1px 3px rgba(0,0,0,0.06)` | Table rows, announcement items |
+| **status-masuk** | `0 6px 20px rgba(191,0,255,0.25)` | MASUK status card (colored shadow) |
+| **status-pulang** | `0 6px 20px rgba(133,198,0,0.20)` | PULANG status card (colored shadow) |
+| **button-hover** | `shadow-xl` | CTA hover state |
 
 ## Surfaces
 
 | Level | Name | Value | Purpose |
 |-------|------|-------|---------|
-| 0 | Obsidian Canvas | `#060311` | Base page background — everything floats on this near-black with violet undertone |
-| 1 | Onyx Card | `#161320` | Card surfaces, input fields, and widget tree panels |
-| 2 | Halo Gradient | `#4b39ef` | Atmospheric gradient wash on hero, testimonial cards, and feature sections |
-| 3 | Pure White | `#ffffff` | Inverted surfaces — top banner, ghost buttons, and logo lockup on dark backgrounds |
+| 0 | Page BG | `#F4F2FB` | Base page background — everything floats on this soft violet-tinted canvas |
+| 1 | White Card | `#FFFFFF` | Card surfaces — stats, history, announcements, inputs. Border `rgba(31,41,55,0.08)` |
+| 2 | Inner Row | `rgba(15,23,42,0.02)` | Table rows, announcement items inside white cards |
+| 3 | Hero Gradient | `linear-gradient(160deg, #C44DFF 0%, #BF00FF 30%, #8A00CC 60%, #4A0099 100%)` | Hero section ONLY — full-bleed top, rounded-bottom 32px |
+| 4 | Status Cards | `linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)` (MASUK) / `linear-gradient(135deg, #fbbf24 0%, #85c600 100%)` (PULANG) | MASUK & PULANG status cards — colorful, no border |
 
-## Elevation
+## Components
 
-- **Hero product screenshot card:** `rgba(0, 0, 0, 0.2) 0px 4px 24px 20px`
+### Hero Section
+**Role:** Top of employee dashboard — identity + time + shift + CTA
 
-## Imagery
+Full-bleed top section with `linear-gradient(160deg, #C44DFF 0%, #BF00FF 30%, #8A00CC 60%, #4A0099 100%)`. Bottom corners rounded 32px. Max-width 380px centered. Padding 32px top (pt-12), 32px sides (p-8).
 
-The visual language is dominated by product UI screenshots — the FlutterFlow builder interface is the hero image, shown floating with a soft shadow and rounded corners. No lifestyle photography appears; the product IS the hero. Decorative visuals are limited to the radial violet gradient orb that bleeds from the top-left of dark sections, creating atmospheric depth. Customer logos in the trust strip are rendered in pure white or grayscale, never in original brand colors, to maintain visual coherence on the dark canvas. Iconography throughout the product UI is monochromatic white or Slate Mist, using thin 1.5–2px stroke weights with rounded line caps. Illustration is absent — the brand relies on real product screenshots and gradient washes rather than drawn graphics.
+**Content (two rows):**
+- **Row 1:** Avatar (56px, `rounded-2xl`, `border border-white/30`, `shadow-md` if image; if no image use `bg-white/15` with letter initial) + greeting label (uppercase 11px, tracking 0.2em, `text-white` at 80%) + name (24px font-bold white) + role (12px, white at 75%)
+- **Row 2:** Time (36px font-bold white, `toLocaleTimeString`) + date line (12px, white at 70%) + SHIFT pill (`bg-white/20 backdrop-blur-sm`, 10px font-semibold white, `border 1px solid rgba(255,255,255,0.25)`, `rounded-full`, "SHIFT: PAGI") — stacked on left; **Absen CTA** on right (`bg-white`, text `#8A00CC`, `rounded-2xl`, px-8 py-3, font-bold, shadow-lg, hover shadow-xl) with `ArrowRight` 16px icon
 
-## Layout
+### Section Title
+**Role:** Label above card sections
 
-The site uses a max-width 1200px centered container for content blocks, but hero and product showcase sections are full-bleed. The hero is a centered text stack (headline → subtext → CTA) over a dark canvas with a radial violet gradient bleeding from the top-left. Below the hero, a product screenshot floats at full container width. The page rhythm alternates between dark bands (hero, testimonials) and the product showcase. The trust logo strip is a single horizontal row of 4–5 logos with generous breathing room. Testimonial cards are arranged in a 3-column grid with 24px gaps, wrapping to 2 or 1 column responsively. Section padding is consistently 80px top and bottom, creating spacious vertical rhythm. Navigation is a sticky top bar with logo left, center nav, and CTA right, sitting above a slim white promo banner.
+16px rounded-full bg-purple-50 (`#F5F3FF`) icon container (32px) with violet SVG icon stroke (`#BF00FF`, 2px stroke), alongside heading (18px font-extrabold `tracking-tight`, `#0F172A`) and subtext (10px, `#94A3B8`). Padding left 16px, margin-bottom 16px.
 
-## Agent Prompt Guide
+### MASUK Status Card
+**Role:** Check-in time card
 
-primary action: #5800fd (Electric Violet)
-**Quick Color Reference**
-- Page background: #060311 (Obsidian)
-- Card surface: #161320 (Onyx)
-- Primary text: #ffffff (Pure White)
-- Muted text: #9ba1ae (Slate Mist)
-- Brand accent: #5800fd (Electric Violet)
-- Primary action / CTA: #5800fd (Electric Violet)
-- Gradient orb: #4b39ef → transparent
-- Attendance status: #adff2f (Green Yellow)
+`linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)` background, 24px radius, shadow `0 6px 20px rgba(191,0,255,0.25)`. White text. "MASUK" label (9px uppercase tracking 0.2em, opacity 75%, Sun icon 13px). Large time (28px font-extrabold) or "Belum Absen" (16px font-bold) with "--:--" placeholder (20px, opacity 50%). Status badge: `bg-white/20 backdrop-blur-sm` rounded-full with emerald (on-time) or amber (late) dot.
 
-**Example Component Prompts**
+### PULANG Status Card
+**Role:** Clock-out time card
 
-Use #5800fd (Electric Violet) as the filled CTA button color with white text — the pill-shaped buttons use this violet for all primary actions: "Absen Sekarang", "Absen Pulang", save/submit buttons. Solid violet backgrounds with black icons for check-out result sheet. Do not introduce other CTA colors.
+`linear-gradient(135deg, #fbbf24 0%, #85c600 100%)` background, 24px radius, shadow `0 6px 20px rgba(133,198,0,0.20)`. Black text. "PULANG" label (9px uppercase tracking 0.2em, opacity 65%, Sunset icon 13px). Same structure as MASUK. "Selesai" badge: `bg-black/10`, emerald-500 dot.
 
-2. **Build a testimonial card**: Background #2415c6 with gradient to #4b39ef at top-right, 24px radius, 40px padding. Company name in Urbanist 18px weight 600, white, top of card. Quote body in Urbanist 16px weight 400, white at 85% opacity, 24px gap below company name. Author name in Urbanist 14px weight 600, white; role in Urbanist 14px weight 400, #9ba1ae — both bottom of card with 40px gap above.
+### Stats Card (Donut + Ringkasan)
+**Role:** Monthly attendance summary with donut chart + stat rows
 
-3. **Build a ghost navigation button**: Transparent background, 1px white border, white text, Urbanist 16px weight 500, 9999px radius, 12px/24px padding. Hover state: background #ffffff, text #060311.
+White card (`#FFFFFF`), 24px radius, border `rgba(31,41,55,0.08)`, shadow `0 4px 16px rgba(15,23,42,0.06)`. Padding 20px.
 
-4. **Build a widget tree row**: Background #161320, 40px height, 16px horizontal padding, icon at left (16px, white at 60% opacity), label in Urbanist 14px weight 400, white. Active state: background #5800fd at 15% opacity, white text at 100%.
-DE
+**Header:** vertical gradient bar (1x16px, `linear-gradient(180deg, #BF00FF, #3B82F6)`) + "Ringkasan Kehadiran" (12px font-bold, `#0F172A`) on left; month label (10px, `#6B7280`) on right.
 
-Gradients are the primary atmospheric tool — used in place of shadows, background colors, and decorative graphics. Three gradient recipes:
+**Donut chart:** 100x100 SVG, track `rgba(0,0,0,0.06)`, stroke 8, gradient `#BF00FF`→`#7066ed`, rounded linecap. Center: percentage (22px font-extrabold, `#111827`, Urbanist font if available) + "HADIR" label (7px uppercase, `#475563`). Beside donut: "Kehadiran Bulan Ini" (11px font-semibold, `#0F172A`), "{hadir} hari hadir dari {jadwalCount} hari kerja" (9px, `#6B7280`). Legend: violet gradient dot (Hadir) + gray dot (Alpha).
 
-1. **Hero Halo** (most prominent, freq 24): radial-gradient(circle farthest-side at 0px -30%, rgb(75,57,239), rgba(6,3,17,0) 84%) — bleeds from top-left, creates the violet glow that defines the hero.
+**Stat rows:** divider (`#F1F5F9`, 1px) then 4 rows: Hadir / Izin / Sakit / Alpha. Each row: icon container (36x36, `#F5F3FF` bg, violet SVG icon), label (14px font-semibold, `#0F172A`), description (9px, `#6B7280`), value (20px font-medium tabular, `#0F172A`), subtext (9px, `#6B7280`). Active rows: `linear-gradient(90deg, {color}12, transparent)` background, no left-border, opacity 1. Inactive rows: left-border `2px solid {color}33`, opacity 0.5. Shadow `0 1px 3px rgba(0,0,0,0.06)`.
 
-2. **Card Wash** (freq 2): linear-gradient(rgb(75,57,239), rgb(75,57,239) 50%, rgb(43,33,137)) — used on testimonial and feature cards for a subtle violet depth.
+**Footer:** top-border `#F1F5F9`, "Periode: 1 — {days} {month year}" (9px, `#6B7280`) left, "{hadir} dari {jadwalCount} hari kerja" (9px tabular) right.
 
-3. **Surface Lift** (freq 1): linear-gradient(rgb(22,19,32), rgb(6,3,17)) — barely-perceptible gradient that lifts Onyx surfaces from the canvas without adding a new color.
+### History Card
+**Role:** Recent 7-day attendance history table
 
-Rule: always start gradients from the top-left or top edge; never from the center or bottom — this creates the impression of a light source above the page.
+White card (same base as stats). Header: gradient bar + "Riwayat Absensi" (14px font-bold, `#0F172A`) left; "Lihat Semua" + History icon (10px font-semibold, `#BF00FF`, Link) right.
 
-## Type Tracking Philosophy
+**Table:** grid-cols `[1fr_44px_44px_70px]` gap 12px. Header labels: TANGGAL / MASUK / PULANG / STATUS (9px uppercase tracking 0.15em font-bold, `#94A3B8`). Each row: 12px vertical padding, `rgba(15,23,42,0.02)` bg, 14px radius. Left-border: amber (late), red (alpha), blue (belum), transparent (on-time). Date label (11px font-bold, `#0F172A`), day (9px uppercase tracking wider, `#94A3B8`). Time cells (11px font-semibold tabular, `#475569`). Status text (10px font-bold): #10B981 (on-time), #F59E0B (late), #EF4444 (alpha), #3B82F6 (belum). Late: extra line showing minutes (9px, `#94A3B8`).
 
-Letter-spacing scales with size — small text (13–14px) uses 0.05em (0.65–0.7px), body (16–18px) uses 0.03–0.045em (0.48–0.81px), and display (72–120px) uses 0.038–0.6em (2.7–72px). The 0.6em value at 120px is reserved for logo-style lockups only — not body display headlines. This tracking gradient is what makes Urbanist feel architectural rather than dense: the wider the size, the wider the tracking, creating a visual expansion that mirrors the physical size of the letters.
+Empty state: "Belum ada riwayat absensi." (12px, `#94A3B8`, centered, py-6).
 
-## Similar Brands
+### Announcements Card
+**Role:** Active announcements display
 
-- **Figma** — Same dark canvas with selective chromatic accent, pill-shaped buttons, and floating product UI as the hero — though Figma uses red/orange accents where FlutterFlow uses violet
-- **Webflow** — Identical developer-tool dark aesthetic with full-bleed product screenshots below a centered headline hero, and generous section padding
-- **Framer** — Same midnight-canvas approach with a single bright accent color (Framer uses blue) and large display headlines with wide tracking
-- **Bubble** — Same no-code tool category with dark hero, centered text stack, and product showcase pattern — though Bubble's palette is more neutral and less violet-driven
-- **Vercel** — Same monochromatic dark canvas with high-contrast white type and a single bold chromatic moment (Vercel black/white, FlutterFlow violet) for key actions
+White card (same base). Header: gradient bar + "Pengumuman" (12px font-bold, `#0F172A`) left; Megaphone icon (16px, `#94A3B8`) right. Each item: 12px radius, `rgba(15,23,42,0.02)` bg, shadow `0 1px 3px rgba(0,0,0,0.06)`, 16px horizontal padding, 12px vertical padding, 12px gap. Title (12px font-semibold, `#0F172A`), content (10px, `#475569`).
 
-## Quick Start
+Empty state: "Tidak ada pengumuman." (12px, `#94A3B8`, centered, py-6).
 
-### CSS Custom Properties
+### Loading State
+**Role:** Initial data fetch overlay
 
-```css
-:root {
-  /* Colors */
-  --color-electric-violet: #5800fd;
-  --color-deep-indigo: #2415c6;
-  --color-periwinkle-glow: #7066ed;
-  --color-halo-violet: #4b39ef;
-  --gradient-halo-violet: radial-gradient(circle farthest-side at 0px -30%, rgb(75, 57, 239), rgba(6, 3, 17, 0) 84%);
-  --color-obsidian: #060311;
-  --color-onyx: #161320;
-  --color-slate-mist: #9ba1ae;
-  --color-pure-white: #ffffff;
-  --color-true-black: #000000;
-  --color-green-yellow: #adff2f;
+`fixed inset-0` on `#F4F2FB` bg. Spinner: 40px circle, 4px border, `#BF00FF` border, transparent top (animate-spin). Text: "MEMUAT..." (12px, tracking-widest uppercase, `#94A3B8`).
 
-  /* Typography — Font Families */
-  --font-urbanist: 'Urbanist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+### Error State
+**Role:** Failed data fetch
 
-  /* Typography — Scale */
-  --text-caption: 13px;
-  --leading-caption: 1.5;
-  --tracking-caption: 0.65px;
-  --text-body: 16px;
-  --leading-body: 1.6;
-  --tracking-body: 0.72px;
-  --text-subheading: 18px;
-  --leading-subheading: 1.6;
-  --tracking-subheading: 0.68px;
-  --text-heading-sm: 20px;
-  --leading-heading-sm: 1.5;
-  --tracking-heading-sm: 0.76px;
-  --text-heading: 32px;
-  --leading-heading: 1.3;
-  --tracking-heading: 1.22px;
-  --text-heading-lg: 72px;
-  --leading-heading-lg: 1.2;
-  --tracking-heading-lg: 3.24px;
-  --text-display: 100px;
-  --leading-display: 1;
-  --tracking-display: 4.5px;
+56x56 `rounded-full` container, `bg-red-50` (`#FEF2F2`), red warning SVG icon (24px, `#EF4444`). Message (12px font-medium, `#DC2626`, max-width 200px, centered). "Coba Lagi" button: `bg-[#BF00FF]` hover `bg-[#a000e6]`, white text, 12px font-semibold, `rounded-full`, px-6 py-2, `shadow-md`.
 
-  /* Typography — Weights */
-  --font-weight-light: 300;
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-
-  /* Spacing */
-  --spacing-unit: 8px;
-  --spacing-8: 8px;
-  --spacing-16: 16px;
-  --spacing-24: 24px;
-  --spacing-32: 32px;
-  --spacing-40: 40px;
-  --spacing-48: 48px;
-  --spacing-56: 56px;
-  --spacing-64: 64px;
-  --spacing-80: 80px;
-  --spacing-96: 96px;
-  --spacing-112: 112px;
-
-  /* Layout */
-  --page-max-width: 1200px;
-  --section-gap: 80px;
-  --card-padding: 40px;
-  --element-gap: 24px;
-
-  /* Border Radius */
-  --radius-xl: 12px;
-  --radius-2xl: 16px;
-  --radius-3xl: 24px;
-  --radius-full: 1440px;
-
-  /* Named Radii */
-  --radius-cards: 24px;
-  --radius-inputs: 16px;
-  --radius-buttons: 9999px;
-  --radius-nav-pill: 9999px;
-  --radius-buttons-square: 12px;
-
-  /* Shadows */
-  --shadow-lg: rgba(0, 0, 0, 0.2) 0px 4px 24px 20px;
-
-  /* Surfaces */
-  --surface-obsidian-canvas: #060311;
-  --surface-onyx-card: #161320;
-  --surface-halo-gradient: #4b39ef;
-  --surface-pure-white: #ffffff;
-}
+### Donut Chart Gradient (SVG defs)
+```svg
+<linearGradient id="dgd" x1="0%" y1="0%" x2="100%" y2="100%">
+  <stop offset="0%" stopColor="#BF00FF"/>
+  <stop offset="100%" stopColor="#7066ed"/>
+</linearGradient>
 ```
 
-### Tailwind v4
+### Color Tokens (light mode object pattern)
+Use this object pattern in components for consistent colors:
+```js
+const T = {
+  bg: '#F4F2FB',
+  surface: '#FFFFFF',
+  border: 'rgba(31,41,55,0.08)',
+  div: '#F1F5F9',
+  text: '#0F172A',
+  textSec: '#475569',
+  textMuted: '#94A3B8',
+  sub: '#6B7280',
+  shadow: '0 4px 16px rgba(15,23,42,0.06)',
+  shadowLg: '0 8px 24px rgba(15,23,42,0.08)',
+  rowBg: 'rgba(15,23,42,0.02)',
+  iconBg: '#F5F3FF',
+  donutTrack: 'rgba(0,0,0,0.06)',
+  donutText: '#111827',
+  donutSub: '#475563',
+};
+```
 
-```css
-@theme {
-  /* Colors */
-  --color-electric-violet: #5800fd;
-  --color-deep-indigo: #2415c6;
-  --color-periwinkle-glow: #7066ed;
-  --color-halo-violet: #4b39ef;
-  --color-obsidian: #060311;
-  --color-onyx: #161320;
-  --color-slate-mist: #9ba1ae;
-  --color-pure-white: #ffffff;
-  --color-true-black: #000000;
-  --color-green-yellow: #adff2f;
+## Do's and Don'ts
 
-  /* Typography */
-  --font-urbanist: 'Urbanist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+### Do
+- **Always fetch real data from Supabase** — never hardcode dummy data, never use placeholder text for real content
+- Use `#F4F2FB` as page background, `#FFFFFF` for all card surfaces
+- Use `#BF00FF` as the single brand accent — CTAs, icons, gradient bars, donut chart
+- All cards: 24px (`rounded-3xl`) radius, 1px border `rgba(31,41,55,0.08)`, shadow `0 4px 16px rgba(15,23,42,0.06)`
+- Hero: full-bleed violet gradient, rounded-bottom 32px, max-width 380px centered
+- Status cards (MASUK/PULANG): colorful gradients, no border, colored shadows
+- Use the `T` color token object for consistent light mode colors across components
+- All UI text in **Bahasa Indonesia**
+- Status color coding: emerald (Tepat Waktu), amber (Terlambat), red (Alpha), blue (Belum)
+- Active stat rows: color-tinted gradient bg + no left border. Inactive: left color border + 0.5 opacity
 
-  /* Typography — Scale */
-  --text-caption: 13px;
-  --leading-caption: 1.5;
-  --tracking-caption: 0.65px;
-  --text-body: 16px;
-  --leading-body: 1.6;
-  --tracking-body: 0.72px;
-  --text-subheading: 18px;
-  --leading-subheading: 1.6;
-  --tracking-subheading: 0.68px;
-  --text-heading-sm: 20px;
-  --leading-heading-sm: 1.5;
-  --tracking-heading-sm: 0.76px;
-  --text-heading: 32px;
-  --leading-heading: 1.3;
-  --tracking-heading: 1.22px;
-  --text-heading-lg: 72px;
-  --leading-heading-lg: 1.2;
-  --tracking-heading-lg: 3.24px;
-  --text-display: 100px;
-  --leading-display: 1;
-  --tracking-display: 4.5px;
+### Don't
+- **Don't use `darkMode` / `useTheme` in any new component** — the app is light mode only now
+- Don't use `rgba(255,255,255,...)` borders, glassmorphism, or backdrop-blur on cards — those were dark mode patterns
+- Don't use radial gradient orbs or glow effects
+- Don't use white text on light surfaces — use `#0F172A` / `#475569`
+- Don't use `rgba(0,0,0,0.4)` shadows — use `rgba(15,23,42,0.06)` for cards
+- Don't introduce new colors outside the defined palette — stick to violet + status colors + neutral grays
+- Don't use font weights above 800 — keep type balanced
 
-  /* Spacing */
-  --spacing-8: 8px;
-  --spacing-16: 16px;
-  --spacing-24: 24px;
-  --spacing-32: 32px;
-  --spacing-40: 40px;
-  --spacing-48: 48px;
-  --spacing-56: 56px;
-  --spacing-64: 64px;
-  --spacing-80: 80px;
-  --spacing-96: 96px;
-  --spacing-112: 112px;
+## Quick Reference
 
-  /* Border Radius */
-  --radius-xl: 12px;
-  --radius-2xl: 16px;
-  --radius-3xl: 24px;
-  --radius-full: 1440px;
-
-  /* Shadows */
-  --shadow-lg: rgba(0, 0, 0, 0.2) 0px 4px 24px 20px;
-}
+```
+Page BG:        #F4F2FB
+Card surface:   #FFFFFF
+Card border:    rgba(31,41,55,0.08)
+Card shadow:    0 4px 16px rgba(15,23,42,0.06)
+Text primary:   #0F172A
+Text secondary: #475569
+Text muted:     #94A3B8
+Brand violet:   #BF00FF
+Hero gradient:  #C44DFF → #BF00FF → #8A00CC → #4A0099
+Donut gradient: #BF00FF → #7066ed
+MASUK gradient: #BF00FF → #8A00CC
+PULANG gradient:#fbbf24 → #85c600
+Status on-time: #10B981
+Status late:    #F59E0B
+Status alpha:   #EF4444
+Status belum:   #3B82F6
+Button text:    #8A00CC (on white)
 ```
