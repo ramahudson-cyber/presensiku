@@ -1352,15 +1352,15 @@ function RejectReasonModal({ request, onClose, onConfirm, processing }) {
   return (
     <BottomSheet open={!!request} onClose={onClose}
       title="Tolak Request Device" subtitle={request?.user_name}>
-      <p className="text-sm text-pure-white/70 mb-4">
-        Tolak request dari <strong className="text-pure-white">{request?.user_name}</strong>?
+      <p className="text-sm text-gray-600 mb-4">
+        Tolak request dari <strong className="text-gray-900">{request?.user_name}</strong>?
       </p>
 
       <div className="space-y-2 mb-4">
         {reasons.map((r) => (
           <label
             key={r}
-            className="flex items-center gap-2 cursor-pointer p-2.5 rounded-3xl hover:bg-white/[0.03] transition-all"
+            className="flex items-center gap-2 cursor-pointer p-2.5 rounded-3xl hover:bg-gray-50 transition-all"
           >
             <input
               type="radio"
@@ -1370,7 +1370,7 @@ function RejectReasonModal({ request, onClose, onConfirm, processing }) {
               onChange={(e) => setReason(e.target.value)}
               className="w-4 h-4 accent-rose-500"
             />
-            <span className="text-sm text-pure-white/90">{r}</span>
+            <span className="text-sm text-gray-800">{r}</span>
           </label>
         ))}
       </div>
@@ -1385,11 +1385,11 @@ function RejectReasonModal({ request, onClose, onConfirm, processing }) {
 
       <div className="flex gap-3">
         <button onClick={onClose}
-          className="flex-1 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:bg-white/[0.03] transition-all">
+          className="flex-1 py-2.5 border border-gray-300 text-gray-600 rounded-full text-sm font-medium hover:bg-gray-50 transition-all">
           Batal
         </button>
         <button onClick={() => onConfirm(reason)} disabled={processing}
-          className="flex-1 py-2.5 border-gradient bg-transparent text-pure-white rounded-full text-sm font-medium hover:shadow-lg hover:shadow-rose-900/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+          className="flex-1 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2">
           {processing ? <RefreshCw size={14} className="animate-spin" /> : <XCircle size={14} />}
           Tolak Request
         </button>

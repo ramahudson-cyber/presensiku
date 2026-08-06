@@ -483,19 +483,19 @@ function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-      <div className="bg-onyx border border-white/[0.06] rounded-3xl w-full max-w-lg shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="p-5 border-b border-white/[0.06] flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+      <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-lg shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-electric-violet to-deep-indigo flex items-center justify-center shadow-lg">
-              <Layers size={17} className="text-pure-white" />
+            <div className="w-9 h-9 rounded-2xl bg-[#BF00FF]/10 flex items-center justify-center shadow-sm">
+              <Layers size={17} className="text-[#BF00FF]" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-pure-white">Isi Cepat Jadwal</h3>
-              <p className="text-[10px] text-slate-mist">Atur shift untuk banyak pegawai sekaligus</p>
+              <h3 className="text-sm font-bold text-gray-900">Isi Cepat Jadwal</h3>
+              <p className="text-[10px] text-gray-400">Atur shift untuk banyak pegawai sekaligus</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-full bg-onyx text-slate-mist hover:bg-white/[0.03] hover:text-pure-white transition-all">
+          <button onClick={onClose} className="p-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-all">
             <X size={16} />
           </button>
         </div>
@@ -504,13 +504,13 @@ function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) 
 
           {/* Shift */}
           <div>
-            <label className="text-[9px] font-bold text-slate-mist uppercase tracking-widest mb-2 block">Shift</label>
+            <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Shift</label>
             <div className="grid grid-cols-2 gap-2">
               {SHIFTS.map(s => {
                 const Icon = s.icon;
                 return (
                   <button key={s.code} onClick={() => setShiftCode(s.code)}
-                    className={`flex items-center gap-2.5 px-3.5 py-3 rounded-2xl text-xs font-medium transition-all ${shiftCode === s.code ? "bg-electric-violet/30 border border-violet-500/50 text-pure-white shadow-lg" : "bg-onyx border border-white/[0.06] text-slate-mist hover:bg-white/[0.03]"}`}>
+                    className={`flex items-center gap-2.5 px-3.5 py-3 rounded-2xl text-xs font-medium transition-all ${shiftCode === s.code ? "bg-[#BF00FF]/10 border border-[#BF00FF]/40 text-gray-900 shadow-sm" : "bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100"}`}>
                     <Icon size={16} className={s.color} /> {s.name}
                   </button>
                 );
@@ -520,34 +520,34 @@ function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) 
 
           {/* Date Range */}
           <div>
-            <label className="text-[9px] font-bold text-slate-mist uppercase tracking-widest mb-2 block">Rentang Tanggal</label>
-            <div className="bg-onyx border border-white/[0.06] rounded-2xl p-3">
+            <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Rentang Tanggal</label>
+            <div className="bg-gray-50 border border-gray-200 rounded-2xl p-3">
               <div className="flex items-center justify-center gap-3">
                 <div className="text-center">
-                  <span className="text-[10px] text-slate-mist block mb-1">Dari</span>
+                  <span className="text-[10px] text-gray-500 block mb-1">Dari</span>
                   <input type="number" min={1} max={lastDay} value={range.start}
                     onChange={e => setRange(p => ({ ...p, start: Math.max(1, Math.min(lastDay, Number(e.target.value)))}))}
-                    className="w-16 px-2 py-1.5 text-sm rounded-2xl bg-onyx border border-white/[0.06] text-pure-white text-center font-mono focus:outline-none focus:ring-2 focus:ring-violet-500/50" />
+                    className="w-16 px-2 py-1.5 text-sm rounded-2xl bg-white border border-gray-200 text-gray-900 text-center font-mono focus:outline-none focus:ring-2 focus:ring-[#BF00FF]/50" />
                 </div>
-                <span className="text-slate-mist mt-5">—</span>
+                <span className="text-gray-400 mt-5">—</span>
                 <div className="text-center">
-                  <span className="text-[10px] text-slate-mist block mb-1">Sampai</span>
+                  <span className="text-[10px] text-gray-500 block mb-1">Sampai</span>
                   <input type="number" min={1} max={lastDay} value={range.end}
                     onChange={e => setRange(p => ({ ...p, end: Math.max(1, Math.min(lastDay, Number(e.target.value)))}))}
-                    className="w-16 px-2 py-1.5 text-sm rounded-2xl bg-onyx border border-white/[0.06] text-pure-white text-center font-mono focus:outline-none focus:ring-2 focus:ring-violet-500/50" />
+                    className="w-16 px-2 py-1.5 text-sm rounded-2xl bg-white border border-gray-200 text-gray-900 text-center font-mono focus:outline-none focus:ring-2 focus:ring-[#BF00FF]/50" />
                 </div>
-                <span className="text-[10px] text-slate-mist mt-5 whitespace-nowrap">{MONTHS[month]} {year}</span>
+                <span className="text-[10px] text-gray-400 mt-5 whitespace-nowrap">{MONTHS[month]} {year}</span>
               </div>
             </div>
           </div>
 
           {/* Days */}
           <div>
-            <label className="text-[9px] font-bold text-slate-mist uppercase tracking-widest mb-2 block">Hari</label>
+            <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Hari</label>
             <div className="flex flex-wrap gap-1.5">
               {DAY_SHORT.map((d, i) => (
                 <button key={i} onClick={() => setDays(p => p.includes(i) ? p.filter(x => x !== i) : [...p, i])}
-                  className={`px-3.5 py-2 rounded-full text-[10px] font-bold transition-all ${days.includes(i) ? "bg-electric-violet/30 border border-violet-500/50 text-pure-white shadow-sm" : "bg-onyx border border-white/[0.06] text-slate-mist hover:bg-white/[0.03]"}`}>
+                  className={`px-3.5 py-2 rounded-full text-[10px] font-bold transition-all ${days.includes(i) ? "bg-[#BF00FF]/10 border border-[#BF00FF]/40 text-[#BF00FF] shadow-sm" : "bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100"}`}>
                   {d}
                 </button>
               ))}
@@ -557,17 +557,17 @@ function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) 
           {/* Employees */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-[9px] font-bold text-slate-mist uppercase tracking-widest">Pegawai ({selectedIds.length})</label>
+              <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Pegawai ({selectedIds.length})</label>
               <button onClick={() => { if (selectAll) { setSelectedIds([]); setSelectAll(false); } else { setSelectedIds(employees.map(e => e.id)); setSelectAll(true); } }}
-                className="text-[10px] font-semibold text-periwinkle-glow hover:text-violet-300 transition-all">{selectAll ? "Hapus semua" : "Pilih semua"}</button>
+                className="text-[10px] font-semibold text-[#BF00FF] hover:text-[#a000e6] transition-all">{selectAll ? "Hapus semua" : "Pilih semua"}</button>
             </div>
-            <div className="max-h-40 overflow-y-auto space-y-0.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] p-1">
+            <div className="max-h-40 overflow-y-auto space-y-0.5 rounded-2xl bg-gray-50 border border-gray-200 p-1">
               {employees.map(emp => (
-                <label key={emp.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer text-xs transition-all ${selectedIds.includes(emp.id) ? "bg-violet-600/15 border border-violet-500/25" : "hover:bg-white/[0.04]"}`}>
+                <label key={emp.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer text-xs transition-all ${selectedIds.includes(emp.id) ? "bg-[#BF00FF]/10 border border-[#BF00FF]/30" : "hover:bg-gray-100"}`}>
                   <input type="checkbox" checked={selectedIds.includes(emp.id)} onChange={() => toggle(emp.id)}
-                    className="accent-violet-500 w-3.5 h-3.5" />
-                  <span className="text-slate-mist flex-1 font-medium">{emp.full_name}</span>
-                  <span className="text-[9px] text-slate-mist">{emp.role}</span>
+                    className="accent-[#BF00FF] w-3.5 h-3.5" />
+                  <span className="text-gray-700 flex-1 font-medium">{emp.full_name}</span>
+                  <span className="text-[9px] text-gray-500">{emp.role}</span>
                 </label>
               ))}
             </div>
@@ -575,7 +575,7 @@ function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) 
 
           {/* Apply */}
           <button onClick={apply} disabled={saving}
-            className="w-full flex items-center justify-center gap-2 py-3 border-gradient bg-transparent text-pure-white rounded-full text-sm font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg">
+            className="w-full flex items-center justify-center gap-2 py-3 bg-[#BF00FF] hover:bg-[#a000e0] text-white rounded-full text-sm font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg">
             {saving ? <><Loader2 size={16} className="animate-spin" /> Menyimpan...</> : <><CheckCircle2 size={17} /> Terapkan Jadwal</>}
           </button>
         </div>
