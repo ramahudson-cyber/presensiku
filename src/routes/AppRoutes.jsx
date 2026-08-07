@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "../pages/auth/LoginPage";
+import WelcomePage from "../pages/auth/WelcomePage";
 import SignInPage from "../pages/auth/SignInPage";
 import ChangePasswordPage from "../pages/auth/ChangePasswordPage";
 import DashboardPage from "../pages/admin/DashboardPage";
@@ -39,7 +39,7 @@ function AppRoutes() {
   return (
     <Routes>
       {/* PUBLIC */}
-      <Route path="/" element={<LoginPage />} />
+      <Route path="/" element={<WelcomePage />} />
       <Route path="/login" element={<SignInPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route path="/block" element={<BlockPage />} />
