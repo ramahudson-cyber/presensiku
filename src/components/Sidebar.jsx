@@ -5,7 +5,7 @@ import { getCurrentVersion } from "../services/updateService";
 import {
   LayoutDashboard, Users, CalendarCheck, CalendarDays,
   FileText, Megaphone, Settings, LogOut,
-  History, X, MapPin, ClipboardList
+  History, X, ClipboardList
 } from "lucide-react";
 
 export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
@@ -48,17 +48,39 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         {/* Logo */}
-        <div className="p-5 flex items-center justify-between border-b border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-xl flex items-center justify-center shadow-lg shrink-0">
-              <MapPin size={18} className="text-white" fill="white" fillOpacity="0.3"/>
+        <div className="border-b border-white/10 flex items-center gap-2 sidebar-brand">
+          <div className="flex items-center gap-3 flex-1 min-w-0 px-5 py-3.5">
+            <div className="w-10 h-10 s-logo-pin flex items-center justify-center shrink-0 overflow-hidden" aria-hidden="true">
+              <svg viewBox="0 0 120 120" fill="none">
+                {/* Ripple sonar — memancar dari pusat pin, loop halus */}
+                <ellipse className="sp-ripple" cx="60" cy="66" rx="38" ry="26" style={{ "--sp-delay": "0.6s" }} />
+                <ellipse className="sp-ripple" cx="60" cy="66" rx="38" ry="26" style={{ "--sp-delay": "2.1s" }} />
+
+                {/* Body pin */}
+                <path
+                  className="sp-draw sp-pin"
+                  d="M60 10 C38 10 22 26 22 46 C22 66 43 92 60 106 C77 92 98 66 98 46 C98 26 82 10 60 10 Z"
+                  pathLength="100"
+                  stroke="#fff"
+                />
+
+                {/* Ring dalam */}
+                <circle className="sp-draw sp-inner" cx="60" cy="46" r="26" pathLength="100" />
+
+                {/* Celah inti (pop + pulse) */}
+                <g>
+                  <circle className="sp-core sp-core-outer" cx="60" cy="46" r="17" />
+                  <circle className="sp-core sp-core-mid" cx="60" cy="46" r="11" />
+                  <circle className="sp-core sp-core-dot" cx="60" cy="46" r="5" />
+                </g>
+              </svg>
             </div>
-            <div>
-              <h1 className="text-lg font-bold tracking-wide text-pure-white">Presensiku</h1>
-              <p className="text-[10px] text-slate-mist">Absen anti ribet, kerja makin greget!</p>
+            <div className="min-w-0">
+              <h1 className="sidebar-brand-title text-[15px] font-bold tracking-widest truncate">Presensiku</h1>
+              <p className="sidebar-brand-sub text-[10px] truncate">Absen anti ribet, kerja makin greget!</p>
             </div>
           </div>
-              <button onClick={() => setMenuOpen(false)} className="xl:hidden border-gradient bg-transparent text-pure-white rounded-lg transition">
+          <button onClick={() => setMenuOpen(false)} className="xl:hidden border-gradient bg-transparent text-pure-white rounded-lg transition shrink-0 mr-4">
             <X size={18} />
           </button>
         </div>
