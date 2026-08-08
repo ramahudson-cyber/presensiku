@@ -739,6 +739,8 @@ html:not(.dark) .ring-white.dark\:ring-\[\#0f0524\] { --tw-ring-color: #ffffff; 
 
 /* Text tokens */
 .admin-light .text-pure-white { color: #0f172a !important; }
+/* Tombol solid ungu di admin light: text tetap putih agar kontras */
+.admin-light .bg-electric-violet.text-pure-white { color: #ffffff !important; }
 .admin-light .text-pure-white\/70,
 .admin-light .text-pure-white\/80 { color: #1e293b !important; }
 .admin-light .text-pure-white\/60 { color: #334155 !important; }
