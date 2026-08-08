@@ -2,29 +2,25 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { useTheme } from "../../context/ThemeContext";
 import { signOut } from "../../services/authService";
-import { getCurrentVersion } from "../../services/updateService";
 import {
   Users, UserCheck, UserMinus, UserX,
   TrendingUp, Calendar, Bell, RefreshCw, BellOff, Inbox,
   Sun, Moon, LogOut, Sunset, CloudSun,
 } from "lucide-react";
 
-
-
-function StatCard({ title, value, subtitle, icon: Icon, accent = "from-electric-violet to-deep-indigo", loading }) {
+function StatCard({ title, value, subtitle, icon: Icon, accent = "from-[#BF00FF] to-[#8A00CC]", loading }) {
   return (
-    <div className="p-4 sm:p-5 md:p-6 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-lg hover:scale-[1.02] hover:shadow-xl transition-all duration-300 animate-fade-in">
+    <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_4px_16px_rgba(15,23,42,0.06)] hover:scale-[1.02] hover:border-[#BF00FF]/30 transition-all duration-300">
       <div className="flex items-start justify-between gap-2 md:gap-3">
         <div className="min-w-0">
-          <p className="text-[10px] sm:text-xs text-white/45 uppercase tracking-wider truncate">{title}</p>
+          <p className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider truncate">{title}</p>
           {loading ? (
-            <div className="h-8 sm:h-10 w-16 sm:w-20 bg-white/[0.06] animate-pulse rounded-lg mt-1 sm:mt-2" />
+            <div className="h-8 sm:h-10 w-16 sm:w-20 bg-slate-100 animate-pulse rounded-lg mt-1 sm:mt-2" />
           ) : (
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mt-0.5 sm:mt-2 tabular-nums">{value}</h3>
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mt-0.5 sm:mt-2 tabular-nums">{value}</h3>
           )}
-          <p className="text-[10px] sm:text-xs text-white/30 mt-0.5 sm:mt-2 truncate">{subtitle}</p>
+          <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 sm:mt-2 truncate">{subtitle}</p>
         </div>
         <div className={`p-2 sm:p-3 rounded-2xl bg-gradient-to-br ${accent} text-white shadow-lg shrink-0`}>
           <Icon size={16} className="sm:w-5 sm:h-5" />
@@ -36,14 +32,14 @@ function StatCard({ title, value, subtitle, icon: Icon, accent = "from-electric-
 
 function AttendanceBadge({ status }) {
   const palette = {
-    hadir:  { bg: "rgba(16,185,129,0.15)", text: "#6ee7b7", border: "rgba(16,185,129,0.3)" },
-    izin:   { bg: "rgba(251,191,36,0.15)", text: "#fbbf24", border: "rgba(251,191,36,0.3)" },
-    sakit:  { bg: "rgba(251,114,133,0.15)", text: "#fb7185", border: "rgba(251,114,133,0.3)" },
-    cuti:   { bg: "rgba(14,165,233,0.15)", text: "#38bdf8", border: "rgba(14,165,233,0.3)" },
-    alpha:  { bg: "rgba(244,63,94,0.15)", text: "#fca5a5", border: "rgba(244,63,94,0.3)" },
-    terlambat: { bg: "rgba(251,146,60,0.15)", text: "#fb923c", border: "rgba(251,146,60,0.3)" },
+    hadir:  { bg: "rgba(16,185,129,0.12)", text: "#059669", border: "rgba(16,185,129,0.25)" },
+    izin:   { bg: "rgba(251,191,36,0.12)", text: "#b45309", border: "rgba(251,191,36,0.3)" },
+    sakit:  { bg: "rgba(251,113,133,0.12)", text: "#e11d48", border: "rgba(251,113,133,0.25)" },
+    cuti:   { bg: "rgba(14,165,233,0.12)", text: "#0284c7", border: "rgba(14,165,233,0.25)" },
+    alpha:  { bg: "rgba(244,63,94,0.12)", text: "#e11d48", border: "rgba(244,63,94,0.25)" },
+    terlambat: { bg: "rgba(251,146,60,0.12)", text: "#ea580c", border: "rgba(251,146,60,0.3)" },
   };
-  const c = palette[status] || { bg: "rgba(255,255,255,0.06)", text: "rgba(255,255,255,0.5)", border: "rgba(255,255,255,0.1)" };
+  const c = palette[status] || { bg: "rgba(15,23,42,0.06)", text: "#64748b", border: "rgba(15,23,42,0.1)" };
   return (
     <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
       style={{ backgroundColor: c.bg, color: c.text, border: `1px solid ${c.border}` }}>
@@ -56,10 +52,10 @@ const DAYS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 const DAYS_FULL = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
 const SHIFT_META = {
-  PG: { icon: Sun, color: "text-green-yellow", bg: "bg-green-yellow/15", border: "border-green-yellow/25", badge: "bg-green-yellow/20" },
-  SR: { icon: Sunset, color: "text-green-yellow", bg: "bg-green-yellow/15", border: "border-green-yellow/25", badge: "bg-green-yellow/20" },
-  SI: { icon: CloudSun, color: "text-sky-400", bg: "bg-sky-500/15", border: "border-sky-500/25", badge: "bg-sky-500/20" },
-  ML: { icon: Moon, color: "text-violet-400", bg: "bg-violet-500/15", border: "border-violet-500/25", badge: "bg-violet-500/20" },
+  PG: { icon: Sun, color: "text-[#65a30d]", bg: "bg-green-yellow/15", border: "border-green-yellow/25", badge: "bg-green-yellow/20" },
+  SR: { icon: Sunset, color: "text-[#65a30d]", bg: "bg-green-yellow/15", border: "border-green-yellow/25", badge: "bg-green-yellow/20" },
+  SI: { icon: CloudSun, color: "text-sky-600", bg: "bg-sky-500/15", border: "border-sky-500/25", badge: "bg-sky-500/20" },
+  ML: { icon: Moon, color: "text-violet-600", bg: "bg-violet-500/15", border: "border-violet-500/25", badge: "bg-violet-500/20" },
 };
 
 const getWitaDateString = (date = new Date()) => {
@@ -69,7 +65,6 @@ const getWitaDateString = (date = new Date()) => {
 
 export default function KepalaUnitDashboard() {
   const { user } = useAuth();
-  const { darkMode } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalPegawai: 0, hadirHariIni: 0, izinSakit: 0, cuti: 0 });
@@ -226,10 +221,9 @@ export default function KepalaUnitDashboard() {
   const userInitial = user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "S";
 
   return (
-      <div className="flex flex-col flex-1 -mx-3 sm:-mx-4 md:-mx-5 lg:-mx-6 xl:-mx-8 -mt-3 sm:-mt-4 md:-mt-5 lg:-mt-6 xl:-mt-8">
-
-      {/* ===== HERO SECTION — Purple Gradient ===== */}
-      <div className="bg-gradient-to-br from-[#BF00FF] via-[#9900CC] via-[#660099] to-[#33004D] px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-4">
+    <div className="flex-1">
+      {/* ===== HERO — violet gradient, DESIGN.md ===== */}
+      <div className="hero-card-bg bg-gradient-to-r from-[#C44DFF] via-[#BF00FF] to-[#8A00CC] px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-5 rounded-b-[32px]">
         {/* Top Row: Clock + Date + Shift Badge | Action Icons */}
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -243,9 +237,9 @@ export default function KepalaUnitDashboard() {
 
             {/* Shift Badge — Kosong */}
             {!myScheduleLoading && !mySchedule && (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 mt-2 rounded-full bg-white/[0.06] border border-white/[0.06]">
-                <Calendar size={10} className="text-white/30" />
-                <span className="text-[10px] text-white/40">Tidak ada jadwal</span>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 mt-2 rounded-full bg-white/[0.06] border border-white/15">
+                <Calendar size={10} className="text-white/40" />
+                <span className="text-[10px] text-white/60">Tidak ada jadwal</span>
               </div>
             )}
 
@@ -258,8 +252,8 @@ export default function KepalaUnitDashboard() {
                   <Icon size={12} className={meta.color} />
                   <span className={`text-[10px] font-semibold ${meta.color}`}>{mySchedule.name}</span>
                   <span className={`text-[10px] font-bold ${meta.color} ${meta.badge} px-1 rounded`}>{mySchedule.code}</span>
-                  <span className="text-[10px] text-white/40 mx-0.5">|</span>
-                  <span className="text-[10px] text-white/70 tabular-nums">{mySchedule.start_time?.slice(0,5)} – {mySchedule.end_time?.slice(0,5)}</span>
+                  <span className="text-[10px] text-white/50 mx-0.5">|</span>
+                  <span className="text-[10px] text-white/80 tabular-nums">{mySchedule.start_time?.slice(0,5)} – {mySchedule.end_time?.slice(0,5)}</span>
                   {mySchedule.latest_check_in && (
                     <span className={`text-[10px] ${meta.color}/70 tabular-nums`}>⌛{mySchedule.latest_check_in?.slice(0,5)}</span>
                   )}
@@ -271,42 +265,42 @@ export default function KepalaUnitDashboard() {
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => navigate("/admin/announcements")}
-              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors"
+              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25 transition-colors"
             >
-              <Bell size={17} className="text-white/70" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-[#9900CC]"></span>
+              <Bell size={17} className="text-white/80" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-white rounded-full ring-2 ring-[#8A00CC]"></span>
             </button>
             <button
               onClick={handleLogout}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] hover:bg-rose-500/20 transition-colors"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25 transition-colors"
             >
-              <LogOut size={17} className="text-white/70" />
+              <LogOut size={17} className="text-white/80" />
             </button>
           </div>
         </div>
 
         {/* Profile Section */}
         <div className="text-center">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-purple-300 via-purple-400 to-indigo-500 mx-auto border-[3px] border-white/20 shadow-xl flex items-center justify-center">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-white/40 to-white/10 border-2 border-white/40 shadow-xl flex items-center justify-center">
             <span className="text-3xl sm:text-4xl font-bold text-white">{userInitial}</span>
           </div>
           <div className="text-white/60 text-xs sm:text-sm font-medium mt-2 sm:mt-3">Selamat datang,</div>
-          <div className="text-white text-lg sm:text-xl font-bold mt-0.5">{user?.full_name || "Super Admin"}</div>
-          <div className="text-white/40 text-[11px] sm:text-xs mt-0.5 flex items-center justify-center gap-1.5">
-            <span className="px-2 py-0.5 rounded-full bg-white/[0.08] text-white/60 text-[10px] font-medium">{user?.role || "super_admin"}</span>
-            <span className="text-white/30">•</span>
-            <span>{user?.email || "admin@puskesmas"}</span>
+          <div className="text-white text-lg sm:text-xl font-bold mt-0.5">{user?.full_name || "Kepala Unit"}</div>
+          <div className="text-white/50 text-[11px] sm:text-xs mt-0.5 flex items-center justify-center gap-1.5">
+            <span className="px-2 py-0.5 rounded-full bg-white/20 text-white/90 text-[10px] font-medium">{user?.role || "kepala_unit"}</span>
+            <span className="text-white/40">•</span>
+            <span>{user?.email || "kepala@puskesmas"}</span>
           </div>
         </div>
       </div>
 
-      {/* ===== CONTENT SECTION — Dark Gradient ===== */}
-      <div className="bg-onyx px-4 sm:px-6 lg:px-8 -mt-5 pt-6 pb-24 rounded-t-[28px] relative z-10 flex-1">
+      {/* ===== CONTENT — light canvas ===== */}
+      <div className="px-4 sm:px-6 lg:px-8 py-6 flex-1">
         {/* Refresh */}
         <div className="flex justify-end mb-3">
           <button
             onClick={fetchDashboardData}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white/[0.06] backdrop-blur border border-white/[0.08] text-white/70 rounded-full text-xs hover:bg-white/[0.1] transition-all duration-200"
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200/80 text-slate-600 rounded-full text-xs shadow-sm hover:bg-slate-50 transition-all duration-200"
           >
             <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
             Refresh
@@ -316,17 +310,17 @@ export default function KepalaUnitDashboard() {
         {/* Stat Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 lg:gap-5">
           <StatCard title="Total Pegawai" value={stats.totalPegawai} subtitle="Seluruh status kepegawaian" icon={Users} loading={loading} />
-          <StatCard title="Hadir Hari Ini" value={stats.hadirHariIni} subtitle="Sudah check-in" icon={UserCheck} accent="from-emerald-500 to-teal-700" loading={loading} />
-          <StatCard title="Izin / Sakit" value={stats.izinSakit} subtitle="Hari ini" icon={UserMinus} accent="from-green-yellow to-electric-violet" loading={loading} />
-          <StatCard title="Cuti" value={stats.cuti} subtitle="Hari ini" icon={UserX} accent="from-sky-500 to-blue-700" loading={loading} />
+          <StatCard title="Hadir Hari Ini" value={stats.hadirHariIni} subtitle="Sudah check-in" icon={UserCheck} accent="from-emerald-500 to-teal-600" loading={loading} />
+          <StatCard title="Izin / Sakit" value={stats.izinSakit} subtitle="Hari ini" icon={UserMinus} accent="from-amber-500 to-orange-600" loading={loading} />
+          <StatCard title="Cuti" value={stats.cuti} subtitle="Hari ini" icon={UserX} accent="from-sky-500 to-blue-600" loading={loading} />
         </div>
 
         {/* Grafik + Pengumuman */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5 mt-3 sm:mt-4 md:mt-6">
-          <div className="p-4 sm:p-5 md:p-6 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-2xl lg:col-span-2">
+          <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_4px_16px_rgba(15,23,42,0.06)] lg:col-span-2">
             <div className="flex items-center justify-between mb-3 md:mb-6">
-              <h2 className="text-sm sm:text-base md:text-lg font-bold text-white">Grafik Presensi 7 Hari</h2>
-              <div className="flex items-center gap-2 text-xs text-white/45">
+              <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Grafik Presensi 7 Hari</h2>
+              <div className="flex items-center gap-2 text-xs text-slate-500">
                 <TrendingUp size={14} /> Kehadiran harian
               </div>
             </div>
@@ -337,16 +331,16 @@ export default function KepalaUnitDashboard() {
                 const isToday = i === 6;
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1 sm:gap-1.5 group">
-                    <span className="text-[10px] sm:text-xs text-white/80 font-semibold tabular-nums">{val}</span>
+                    <span className="text-[10px] sm:text-xs text-slate-700 font-semibold tabular-nums">{val}</span>
                     <div
                       className={`w-full rounded-t-lg md:rounded-t-xl transition-all duration-300 group-hover:scale-105 ${
                         isToday
                           ? "bg-gradient-to-t from-electric-violet to-periwinkle-glow shadow-lg"
-                          : "bg-gradient-to-t from-violet-700/60 to-purple-500/40 group-hover:from-violet-600 group-hover:to-purple-400"
+                          : "bg-gradient-to-t from-violet-300 to-purple-200 group-hover:from-violet-400 group-hover:to-purple-300"
                       }`}
                       style={{ height: `${(val / maxWeekly) * 100}%`, minHeight: val > 0 ? "6px" : "0" }}
                     />
-                    <span className={`text-[10px] sm:text-xs ${isToday ? "font-bold text-white" : "text-white/45"}`}>
+                    <span className={`text-[10px] sm:text-xs ${isToday ? "font-bold text-electric-violet" : "text-slate-400"}`}>
                       {DAYS[d.getDay()]}
                     </span>
                   </div>
@@ -355,31 +349,31 @@ export default function KepalaUnitDashboard() {
             </div>
           </div>
 
-          <div className="p-4 sm:p-5 md:p-6 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-2xl">
+          <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_4px_16px_rgba(15,23,42,0.06)]">
             <div className="flex items-center justify-between mb-3 md:mb-4">
-              <h2 className="text-sm sm:text-base md:text-lg font-bold text-white">Pengumuman</h2>
-              <div className="p-1.5 rounded-lg bg-electric-violet/15">
-                <Bell size={16} className="text-white" />
+              <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Pengumuman</h2>
+              <div className="p-1.5 rounded-lg bg-[#F5F3FF]">
+                <Bell size={16} className="text-[#BF00FF]" />
               </div>
             </div>
             {loading ? (
               <div className="space-y-3">
-                {[1, 2, 3].map((i) => <div key={i} className="h-16 bg-white/[0.06] animate-pulse rounded-2xl" />)}
+                {[1, 2, 3].map((i) => <div key={i} className="h-16 bg-slate-100 animate-pulse rounded-2xl" />)}
               </div>
             ) : announcements.length === 0 ? (
               <div className="text-center py-6 sm:py-8 flex flex-col items-center gap-1.5 sm:gap-2">
-                <div className="p-2 sm:p-3 rounded-2xl bg-white/[0.04]">
-                  <BellOff size={18} className="sm:w-6 sm:h-6 text-white/40" />
+                <div className="p-2 sm:p-3 rounded-2xl bg-slate-50">
+                  <BellOff size={18} className="sm:w-6 sm:h-6 text-slate-400" />
                 </div>
-                <p className="text-white/40 text-xs sm:text-sm">Belum ada pengumuman</p>
+                <p className="text-slate-400 text-xs sm:text-sm">Belum ada pengumuman</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {announcements.map((a) => (
-                  <div key={a.id} className="p-3 bg-white/[0.04] backdrop-blur border border-white/[0.06] rounded-2xl hover:scale-[1.02] transition-all">
-                    <p className="text-sm font-semibold text-white line-clamp-1">{a.title}</p>
-                    <p className="text-xs text-white/60 mt-1 line-clamp-2">{a.content}</p>
-                    <p className="text-xs text-periwinkle-glow mt-1.5 font-medium">
+                  <div key={a.id} className="p-3 bg-slate-50/80 border border-slate-100 rounded-2xl hover:scale-[1.02] transition-all">
+                    <p className="text-sm font-semibold text-slate-900 line-clamp-1">{a.title}</p>
+                    <p className="text-xs text-slate-600 mt-1 line-clamp-2">{a.content}</p>
+                    <p className="text-xs text-[#7032c4] mt-1.5 font-medium">
                       {new Date(a.created_at).toLocaleDateString("id-ID")}
                     </p>
                   </div>
@@ -390,53 +384,53 @@ export default function KepalaUnitDashboard() {
         </div>
 
         {/* Tabel Absensi Terkini */}
-        <div className="p-4 sm:p-5 md:p-6 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-2xl mt-3 sm:mt-4 md:mt-6">
+        <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_4px_16px_rgba(15,23,42,0.06)] mt-3 sm:mt-4 md:mt-6">
           <div className="flex items-center justify-between mb-3 md:mb-4">
-            <h2 className="text-sm sm:text-base md:text-lg font-bold text-white">Absensi Terkini Hari Ini</h2>
-            <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-white/45">
+            <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Absensi Terkini Hari Ini</h2>
+            <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-slate-500">
               <Calendar size={12} className="sm:w-[14px] sm:h-[14px]" /> {lastUpdated && `Update: ${lastUpdated}`}
             </div>
           </div>
 
           {loading ? (
             <div className="space-y-3">
-              {[1, 2, 3, 4].map((i) => <div key={i} className="h-12 bg-white/[0.06] animate-pulse rounded-2xl" />)}
+              {[1, 2, 3, 4].map((i) => <div key={i} className="h-12 bg-slate-100 animate-pulse rounded-2xl" />)}
             </div>
           ) : recentAttendance.length === 0 ? (
             <div className="text-center py-8 sm:py-12 flex flex-col items-center gap-2 sm:gap-3">
-              <div className="p-3 sm:p-4 bg-white/[0.04] rounded-2xl">
-                <Inbox size={24} className="sm:w-8 sm:h-8 text-white/40" />
+              <div className="p-3 sm:p-4 bg-slate-50 rounded-2xl">
+                <Inbox size={24} className="sm:w-8 sm:h-8 text-slate-400" />
               </div>
               <div>
-                <p className="text-white/60 font-medium text-sm sm:text-base">Belum ada absensi hari ini</p>
-                <p className="text-white/40 text-[11px] sm:text-xs mt-0.5 sm:mt-1">Data akan muncul setelah pegawai melakukan check-in</p>
+                <p className="text-slate-500 font-medium text-sm sm:text-base">Belum ada absensi hari ini</p>
+                <p className="text-slate-400 text-[11px] sm:text-xs mt-0.5 sm:mt-1">Data akan muncul setelah pegawai melakukan check-in</p>
               </div>
             </div>
           ) : (
-            <div className="-mx-3 md:-mx-3">
+            <div className="overflow-x-auto">
               <table className="w-full text-xs sm:text-sm">
                 <thead>
-                  <tr className="border-b border-white/[0.06]">
-                    <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">Nama</th>
-                    <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">Masuk</th>
-                    <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">Pulang</th>
-                    <th className="text-left py-2.5 px-3 font-semibold text-white/40 text-[10px] sm:text-xs uppercase tracking-wider">Status</th>
+                  <tr className="border-b border-slate-200">
+                    <th className="text-left py-2.5 px-3 font-semibold text-slate-500 text-[10px] sm:text-xs uppercase tracking-wider">Nama</th>
+                    <th className="text-left py-2.5 px-3 font-semibold text-slate-500 text-[10px] sm:text-xs uppercase tracking-wider">Masuk</th>
+                    <th className="text-left py-2.5 px-3 font-semibold text-slate-500 text-[10px] sm:text-xs uppercase tracking-wider">Pulang</th>
+                    <th className="text-left py-2.5 px-3 font-semibold text-slate-500 text-[10px] sm:text-xs uppercase tracking-wider">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/[0.04]">
+                <tbody className="divide-y divide-slate-100">
                   {recentAttendance.map((a) => (
-                    <tr key={a.id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={a.id} className="hover:bg-slate-50 transition-colors">
                       <td className="py-2.5 px-3">
                         <div>
-                          <p className="font-medium text-white text-xs sm:text-sm">{a.profiles?.full_name || "-"}</p>
+                          <p className="font-medium text-slate-900 text-xs sm:text-sm">{a.profiles?.full_name || "-"}</p>
                         </div>
                       </td>
-                      <td className="py-2.5 px-3 text-emerald-300 font-mono tabular-nums text-[11px] sm:text-sm">{fmtTime(a.clock_in_time)}</td>
+                      <td className="py-2.5 px-3 text-emerald-600 font-mono tabular-nums text-[11px] sm:text-sm">{fmtTime(a.clock_in_time)}</td>
                       <td className="py-2.5 px-3">
                         {a.clock_out_time ? (
-                          <span className="text-rose-300 font-mono tabular-nums text-[11px] sm:text-sm">{fmtTime(a.clock_out_time)}</span>
+                          <span className="text-rose-600 font-mono tabular-nums text-[11px] sm:text-sm">{fmtTime(a.clock_out_time)}</span>
                         ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/[0.06] text-white/30">Belum</span>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-500">Belum</span>
                         )}
                       </td>
                       <td className="py-2.5 px-3"><AttendanceBadge status={a.attendance_status} /></td>
@@ -449,7 +443,7 @@ export default function KepalaUnitDashboard() {
         </div>
 
         {/* Versi Aplikasi */}
-        <footer className="text-center text-[10px] text-white/[0.15] pb-2 select-none mt-6">
+        <footer className="text-center text-[10px] text-slate-400 pb-2 select-none mt-6">
           v-debug-ku
         </footer>
       </div>

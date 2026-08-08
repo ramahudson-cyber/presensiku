@@ -2,42 +2,15 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { useTheme } from "../../context/ThemeContext";
 import { signOut } from "../../services/authService";
 import { getCurrentVersion } from "../../services/updateService";
 import { PremiumStatCard } from "./PremiumStatCard";
 import {
-  TrendingUp, Calendar, Bell, RefreshCw, BellOff, Inbox,
-  Sun, Moon, LogOut, Sunset, CloudSun,
+  TrendingUp, Bell, RefreshCw, BellOff, LogOut,
 } from "lucide-react";
-
-function AttendanceBadge({ status }) {
-  const palette = {
-    hadir:  { bg: "rgba(16,185,129,0.15)", text: "#6ee7b7", border: "rgba(16,185,129,0.3)" },
-    izin:   { bg: "rgba(251,191,36,0.15)", text: "#fbbf24", border: "rgba(251,191,36,0.3)" },
-    sakit:  { bg: "rgba(251,114,133,0.15)", text: "#fb7185", border: "rgba(251,114,133,0.3)" },
-    cuti:   { bg: "rgba(14,165,233,0.15)", text: "#38bdf8", border: "rgba(14,165,233,0.3)" },
-    alpha:  { bg: "rgba(244,63,94,0.15)", text: "#fca5a5", border: "rgba(244,63,94,0.3)" },
-    terlambat: { bg: "rgba(251,146,60,0.15)", text: "#fb923c", border: "rgba(251,146,60,0.3)" },
-  };
-  const c = palette[status] || { bg: "rgba(255,255,255,0.06)", text: "rgba(255,255,255,0.5)", border: "rgba(255,255,255,0.1)" };
-  return (
-    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
-      style={{ backgroundColor: c.bg, color: c.text, border: `1px solid ${c.border}` }}>
-      {status?.toUpperCase() || "-"}
-    </span>
-  );
-}
 
 const DAYS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 const DAYS_FULL = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-
-const SHIFT_META = {
-  PG: { icon: Sun, color: "text-green-yellow", bg: "bg-green-yellow/15", border: "border-green-yellow/25", badge: "bg-green-yellow/20" },
-  SR: { icon: Sunset, color: "text-green-yellow", bg: "bg-green-yellow/15", border: "border-green-yellow/25", badge: "bg-green-yellow/20" },
-  SI: { icon: CloudSun, color: "text-sky-400", bg: "bg-sky-500/15", border: "border-sky-500/25", badge: "bg-sky-500/20" },
-  ML: { icon: Moon, color: "text-violet-400", bg: "bg-violet-500/15", border: "border-violet-500/25", badge: "bg-violet-500/20" },
-};
 
 const getWitaDateString = (date = new Date()) => {
   const witaMs = date.getTime() + (8 * 60 * 60 * 1000);
@@ -46,16 +19,12 @@ const getWitaDateString = (date = new Date()) => {
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { darkMode } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalPegawai: 0, hadirHariIni: 0, izinSakit: 0, cuti: 0 });
   const [userGroups, setUserGroups] = useState({ all: [], present: [], absent: [], on_leave: [] });
   const [weeklyData, setWeeklyData] = useState([0, 0, 0, 0, 0, 0, 0]);
   const [announcements, setAnnouncements] = useState([]);
-  const [lastUpdated, setLastUpdated] = useState(null);
-  const [mySchedule, setMySchedule] = useState(null);
-  const [myScheduleLoading, setMyScheduleLoading] = useState(true);
   const [serverNow, setServerNow] = useState(new Date());
 
   useEffect(() => {
@@ -114,22 +83,6 @@ export default function DashboardPage() {
       weekAttendance?.forEach(a => { if (weeklyMap[a.date] !== undefined) weeklyMap[a.date]++; });
       const weekly = weekDates.map(d => weeklyMap[d]);
 
-      setMyScheduleLoading(true);
-      try {
-        const witaDay = new Date(serverDate.getTime() + (8 * 60 * 60 * 1000)).getUTCDay();
-        const pgDayOfWeek = witaDay === 0 ? 6 : witaDay - 1;
-        const { data: sched } = await supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle();
-        if (sched) {
-          const [{ data: shiftInfo }, { data: scheduleDetail }] = await Promise.all([
-            supabase.from("shifts").select("name").eq("code", sched.shift_code).single(),
-            supabase.from("shift_schedules").select("start_time, end_time, latest_check_in, is_working_day").eq("shift_code", sched.shift_code).eq("day_of_week", pgDayOfWeek).single(),
-          ]);
-          setMySchedule({ code: sched.shift_code, name: shiftInfo?.name || sched.shift_code, ...scheduleDetail });
-        } else {
-          setMySchedule(null);
-        }
-      } catch { setMySchedule(null); } finally { setMyScheduleLoading(false); }
-
       setStats({
         totalPegawai: allProfiles.length,
         hadirHariIni: hadir,
@@ -138,7 +91,6 @@ export default function DashboardPage() {
       });
       setWeeklyData(weekly);
       setAnnouncements(announceData);
-      setLastUpdated(new Date().toLocaleTimeString("id-ID"));
     } catch (err) { console.error("Dashboard error:", err); } finally { setLoading(false); }
   };
 
@@ -155,40 +107,42 @@ export default function DashboardPage() {
 
   return (
     <div className="flex-1">
-      {/* Hero Section */}
-      <div className="px-4 pt-3 pb-4 sm:px-6 lg:px-8">
+      {/* Hero Section — violet gradient, DESIGN.md hero */}
+      <div className="hero-card-bg bg-gradient-to-r from-[#C44DFF] via-[#BF00FF] to-[#8A00CC] px-4 pt-3 pb-4 sm:px-6 lg:px-8 rounded-b-[32px]">
         {/* Top row: Time and actions */}
         <div className="flex items-center justify-between">
           <div>
             <div className="text-3xl font-bold tracking-tight text-white">{witaTime()}</div>
-            <div className="text-xs font-medium text-white/50">{witaDate()}</div>
+            <div className="text-xs font-medium text-white/60">{witaDate()}</div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => navigate("/admin/announcements")} className="relative w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-white/[0.12] transition-colors"><Bell size={17} className="text-white/70" /><span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-[#0A0018]"></span></button>
-            <button onClick={handleLogout} className="w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center hover:bg-rose-500/20 transition-colors"><LogOut size={17} className="text-white/70" /></button>
+            <button onClick={() => navigate("/admin/announcements")} className="relative w-9 h-9 rounded-full bg-white/[0.15] flex items-center justify-center hover:bg-white/25 transition-colors"><Bell size={17} className="text-white/80" /><span className="absolute top-1.5 right-1.5 w-2 h-2 bg-white rounded-full ring-2 ring-[#8A00CC]"></span></button>
+            <button onClick={handleLogout} className="w-9 h-9 rounded-full bg-white/[0.15] flex items-center justify-center hover:bg-white/25 transition-colors"><LogOut size={17} className="text-white/80" /></button>
           </div>
         </div>
 
         {/* Bottom row: Profile */}
         <div className="flex items-center gap-4 mt-5">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-300 via-purple-400 to-indigo-500 border-2 border-white/20 shadow-xl flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-white/40 to-white/10 border-2 border-white/40 shadow-xl flex items-center justify-center backdrop-blur-sm">
             <span className="text-2xl font-bold text-white">{userInitial}</span>
           </div>
           <div>
-            <div className="text-sm font-medium text-white/60">Selamat datang,</div>
-            <div className="text-xl font-bold text-white">{user?.full_name || "Super Admin"}</div>
-            <div className="text-xs text-white/40 mt-1 flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-md bg-white/[0.08] text-white/60 text-[10px] font-medium">{user?.role || "super_admin"}</span>
+            <div className="text-sm font-medium text-white/70">Selamat datang,</div>
+            <div className="text-xl font-bold text-white tracking-tight">{user?.full_name || "Super Admin"}</div>
+            <div className="text-xs text-white/60 mt-1 flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded-md bg-white/20 text-white/90 text-[10px] font-semibold uppercase tracking-wide">{user?.role || "super_admin"}</span>
               <span>{user?.email || "admin@puskesmas"}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Content Section */}
-      <div className="px-4 sm:px-6 lg:px-8 py-6 rounded-t-[28px] flex-1">
+      {/* Content Section — light canvas */}
+      <div className="px-4 sm:px-6 lg:px-8 py-6 flex-1">
         <div className="flex justify-end mb-4">
-          <button onClick={fetchDashboardData} className="flex items-center gap-1.5 px-3 py-2 bg-white/[0.06] backdrop-blur border border-white/[0.08] text-white/70 rounded-full text-xs hover:bg-white/[0.1] transition-all duration-200"><RefreshCw size={13} className={loading ? "animate-spin" : ""} />Refresh</button>
+          <button onClick={fetchDashboardData} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200/80 text-slate-600 rounded-full text-xs shadow-sm hover:bg-slate-50 transition-all duration-200">
+            <RefreshCw size={13} className={loading ? "animate-spin" : ""} />Refresh
+          </button>
         </div>
 
         {/* Premium Stat Cards */}
@@ -201,30 +155,30 @@ export default function DashboardPage() {
 
         {/* Grafik + Pengumuman */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5 mt-3 sm:mt-4 md:mt-6">
-          <div className="p-4 sm:p-5 md:p-6 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-2xl lg:col-span-2">
-            <div className="flex items-center justify-between mb-3 md:mb-6"><h2 className="text-sm sm:text-base md:text-lg font-bold text-white">Grafik Presensi 7 Hari</h2><div className="flex items-center gap-2 text-xs text-white/45"><TrendingUp size={14} /> Kehadiran harian</div></div>
+          <div className="design-card p-4 sm:p-5 md:p-6 lg:col-span-2">
+            <div className="flex items-center justify-between mb-3 md:mb-6"><h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Grafik Presensi 7 Hari</h2><div className="flex items-center gap-2 text-xs text-slate-500"><TrendingUp size={14} /> Kehadiran harian</div></div>
             <div className="flex items-end gap-[3px] sm:gap-1 md:gap-2 h-32 sm:h-40 md:h-48">
               {weeklyData.map((val, i) => {
                 const d = new Date(serverNow); d.setDate(d.getDate() - (6 - i));
                 const isToday = i === 6;
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1 sm:gap-1.5 group">
-                    <span className="text-[10px] sm:text-xs text-white/80 font-semibold tabular-nums">{val}</span>
-                    <div className={`w-full rounded-t-lg md:rounded-t-xl transition-all duration-300 group-hover:scale-105 ${isToday ? "bg-gradient-to-t from-electric-violet to-periwinkle-glow shadow-lg" : "bg-gradient-to-t from-violet-700/60 to-purple-500/40 group-hover:from-violet-600 group-hover:to-purple-400"}`} style={{ height: `${(val / maxWeekly) * 100}%`, minHeight: val > 0 ? "6px" : "0" }} />
-                    <span className={`text-[10px] sm:text-xs ${isToday ? "font-bold text-white" : "text-white/45"}`}>{DAYS[d.getDay()]}</span>
+                    <span className="text-[10px] sm:text-xs text-slate-700 font-semibold tabular-nums">{val}</span>
+                    <div className={`w-full rounded-t-lg md:rounded-t-xl transition-all duration-300 group-hover:scale-105 ${isToday ? "bg-gradient-to-t from-electric-violet to-periwinkle-glow shadow-lg" : "bg-gradient-to-t from-violet-300 to-purple-200 group-hover:from-violet-400 group-hover:to-purple-300"}`} style={{ height: `${(val / maxWeekly) * 100}%`, minHeight: val > 0 ? "6px" : "0" }} />
+                    <span className={`text-[10px] sm:text-xs ${isToday ? "font-bold text-electric-violet" : "text-slate-400"}`}>{DAYS[d.getDay()]}</span>
                   </div>
                 );
               })}
             </div>
           </div>
-          <div className="p-4 sm:p-5 md:p-6 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-2xl">
-            <div className="flex items-center justify-between mb-3 md:mb-4"><h2 className="text-sm sm:text-base md:text-lg font-bold text-white">Pengumuman</h2><div className="p-1.5 rounded-lg bg-electric-violet/15"><Bell size={16} className="text-white" /></div></div>
-            {loading ? <div className="space-y-3">{[1, 2, 3].map((i) => <div key={i} className="h-16 bg-white/[0.06] animate-pulse rounded-2xl" />)}</div>
-            : announcements.length === 0 ? <div className="text-center py-6 sm:py-8 flex flex-col items-center gap-1.5 sm:gap-2"><div className="p-2 sm:p-3 rounded-2xl bg-white/[0.04]"><BellOff size={18} className="sm:w-6 sm:h-6 text-white/40" /></div><p className="text-white/40 text-xs sm:text-sm">Belum ada pengumuman</p></div>
-            : <div className="space-y-3">{announcements.map((a) => <div key={a.id} className="p-3 bg-white/[0.04] backdrop-blur border border-white/[0.06] rounded-2xl hover:scale-[1.02] transition-all"><p className="text-sm font-semibold text-white line-clamp-1">{a.title}</p><p className="text-xs text-white/60 mt-1 line-clamp-2">{a.content}</p><p className="text-xs text-periwinkle-glow mt-1.5 font-medium">{new Date(a.created_at).toLocaleDateString("id-ID")}</p></div>)}</div>}
+          <div className="design-card p-4 sm:p-5 md:p-6">
+            <div className="flex items-center justify-between mb-3 md:mb-4"><h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Pengumuman</h2><div className="p-1.5 rounded-lg bg-[#F5F3FF]"><Bell size={16} className="text-[#BF00FF]" /></div></div>
+            {loading ? <div className="space-y-3">{[1, 2, 3].map((i) => <div key={i} className="h-16 bg-slate-100 animate-pulse rounded-2xl" />)}</div>
+            : announcements.length === 0 ? <div className="text-center py-6 sm:py-8 flex flex-col items-center gap-1.5 sm:gap-2"><div className="p-2 sm:p-3 rounded-2xl bg-slate-50"><BellOff size={18} className="sm:w-6 sm:h-6 text-slate-400" /></div><p className="text-slate-400 text-xs sm:text-sm">Belum ada pengumuman</p></div>
+            : <div className="space-y-3">{announcements.map((a) => <div key={a.id} className="p-3 bg-slate-50/80 border border-slate-100 rounded-2xl hover:scale-[1.02] transition-all"><p className="text-sm font-semibold text-slate-900 line-clamp-1">{a.title}</p><p className="text-xs text-slate-600 mt-1 line-clamp-2">{a.content}</p><p className="text-xs text-[#7032c4] mt-1.5 font-medium">{new Date(a.created_at).toLocaleDateString("id-ID")}</p></div>)}</div>}
           </div>
         </div>
-        <footer className="text-center text-[10px] text-white/[0.15] pb-2 select-none mt-6">v{getCurrentVersion().version} &mdash; Presensiku</footer>
+        <footer className="text-center text-[10px] text-slate-400 pb-2 select-none mt-6">v{getCurrentVersion().version} &mdash; Presensiku</footer>
       </div>
     </div>
   );

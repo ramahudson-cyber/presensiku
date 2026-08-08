@@ -363,7 +363,7 @@ const EmployeesPage = () => {
                 </select>
               </div>
 
-              <div className="flex gap-3 pt-2 sticky bottom-0 bg-onyx/98 backdrop-blur-md z-10 -mx-5 md:-mx-6 px-5 md:px-6 pb-4 pt-3 shadow-[0_-8px_24px_rgba(0,0,0,0.4)]">
+              <div className="flex gap-3 pt-2 sticky bottom-0 bg-onyx/98 backdrop-blur-md z-10 -mx-5 md:-mx-6 px-5 md:px-6 pb-4 pt-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)]">
                 <button type="button" onClick={resetForm}
                   className="flex-1 py-2.5 border border-white/10 bg-white/5 text-white rounded-full text-sm font-medium hover:bg-white/[0.08] transition-all">
                   Batal

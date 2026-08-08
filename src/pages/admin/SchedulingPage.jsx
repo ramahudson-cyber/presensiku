@@ -215,7 +215,7 @@ export default function SchedulingPage() {
                   <button key={i} onClick={() => handleDayClick(day)} disabled={!day}
                     className={`group relative aspect-[4/3] rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 text-xs
                       ${!day ? "invisible" : "cursor-pointer active:scale-95"}
-                      ${isToday ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-obsidian" : ""}
+                      ${isToday ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-white" : ""}
                       ${!shiftInfo
                         ? "bg-white/[0.02] hover:bg-white/[0.06] hover:shadow-lg"
                         : `${shiftInfo.premiumClass} hover:brightness-110 hover:shadow-lg`

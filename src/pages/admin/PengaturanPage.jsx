@@ -650,7 +650,7 @@ function TabJamKerja() {
       })}
 
       {/* Sticky save button (mobile bottom) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-onyx/90 backdrop-blur-md border-t border-white/[0.06]">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-white/90 backdrop-blur-md border-t border-slate-200/70">
         <button
           onClick={handleSave} disabled={saving}
           className="w-full flex items-center justify-center gap-2.5 py-3 bg-electric-violet text-pure-white rounded-full text-sm font-semibold hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40"

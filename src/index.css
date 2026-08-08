@@ -682,6 +682,211 @@ html:not(.dark) .ring-white.dark\:ring-\[\#0f0524\] { --tw-ring-color: #ffffff; 
 }
 
 /* ===================================================================
+   ADMIN AREA — LIGHT ONLY (DESIGN.md tokens)
+   =================================================================== */
+/* Nebula shell visibility toggle (AdminLayout) */
+.hidden-only-admin { display: none; }
+.admin-light .hidden-only-admin { display: block; }
+.admin-light .hidden-only-employee { display: none; }
+
+/* Cards — solid white surface, no glass */
+.admin-light .design-card,
+.admin-light .design-card-hover,
+.admin-light .design-card-empty {
+  background: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(31, 41, 55, 0.08);
+  border-radius: var(--radius-cards);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  transition: all 0.2s;
+}
+.admin-light .design-card-hover:hover { background: #faf9ff; }
+.admin-light .design-input {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+.admin-light .design-input::placeholder { color: #94a3b8; }
+.admin-light .design-input:focus {
+  border-color: #b98eff;
+  box-shadow: 0 0 0 2px rgba(191, 0, 255, 0.15);
+}
+.admin-light .design-label { color: #475569; }
+.admin-light .design-btn-ghost {
+  border-color: #e2e8f0;
+  color: #334155;
+}
+.admin-light .design-btn-ghost:hover { background-color: #f1f5f9; }
+.admin-light .design-section-title { color: #0f172a; }
+.admin-light .design-section-sub { color: #475569; }
+.admin-light .design-table-header {
+  background-color: #f8fafc;
+  border-bottom: 1px solid #eef2f7;
+}
+.admin-light .design-table-header th { color: #64748b; }
+.admin-light .design-table-row { border-bottom: 1px solid #eef2f7; }
+.admin-light .design-table-row:hover { background-color: #f8fafc; }
+.admin-light .design-empty-icon { background-color: #f1f5f9; }
+.admin-light .design-empty-text { color: #475569; }
+.admin-light .design-empty-sub { color: #94a3b8; }
+.admin-light .design-modal {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+}
+.admin-light .design-modal-header { border-bottom: 1px solid #e2e8f0; }
+
+/* Text tokens */
+.admin-light .text-pure-white { color: #0f172a !important; }
+.admin-light .text-pure-white\/70,
+.admin-light .text-pure-white\/80 { color: #1e293b !important; }
+.admin-light .text-pure-white\/60 { color: #334155 !important; }
+.admin-light .text-pure-white\/40,
+.admin-light .text-pure-white\/50 { color: #64748b !important; }
+.admin-light .text-slate-mist { color: #64748b !important; }
+.admin-light .text-slate-mist\/40,
+.admin-light .text-slate-mist\/50 { color: #94a3b8 !important; }
+.admin-light .text-slate-mist\/60,
+.admin-light .text-slate-mist\/70 { color: #64748b !important; }
+.admin-light .text-emerald-300 { color: #059669 !important; }
+.admin-light .text-rose-300 { color: #e11d48 !important; }
+.admin-light .text-sky-300 { color: #0284c7 !important; }
+.admin-light .text-violet-300 { color: #7c3aed !important; }
+.admin-light .text-violet-400 { color: #8c00cc !important; }
+.admin-light .text-green-yellow { color: #65a30d !important; }
+.admin-light .text-periwinkle-glow { color: #5f4ff7 !important; }
+.admin-light .text-electric-violet { color: #bf00ff !important; }
+
+/* Surface containers */
+.admin-light .bg-white\/\[0\.02\],
+.admin-light .bg-white\/\[0\.03\],
+.admin-light .bg-white\/\[0\.04\],
+.admin-light .bg-white\/\[0\.05\] { background-color: #f8fafc !important; }
+.admin-light .bg-white\/\[0\.06\],
+.admin-light .bg-white\/\[0\.08\],
+.admin-light .bg-white\/\[0\.1\],
+.admin-light .bg-white\/\[0\.12\] { background-color: #ffffff !important; }
+.admin-light .bg-white\/5 { background-color: #f8fafc !important; }
+.admin-light .bg-white\/10 { background-color: #ffffff !important; }
+.admin-light .bg-onyx,
+.admin-light .bg-obsidian,
+.admin-light .bg-onyx\/98,
+.admin-light .bg-onyx\/95 { background-color: #ffffff !important; }
+.admin-light .bg-electric-violet\/15 { background-color: #f5f0ff !important; }
+.admin-light .bg-electric-violet\/\/10 { background-color: #faf5ff !important; }
+
+/* Borders & dividers */
+.admin-light .border-white\/\[0\.04\],
+.admin-light .border-white\/\[0\.06\],
+.admin-light .border-white\/\[0\.08\],
+.admin-light .border-white\/\[0\.1\],
+.admin-light .border-white\/\[0\.12\],
+.admin-light .border-white\/\[0\.15\],
+.admin-light .border-white\/\[0\.18\],
+.admin-light .border-white\/10 { border-color: #e2e8f0 !important; }
+.admin-light .divide-white\/\[0\.04\],
+.admin-light .divide-white\/\[0\.06\] { border-color: #eef2f7; }
+.admin-light .ring-white\/10,
+.admin-light .ring-white\/5 { --tw-ring-color: #e2e8f0; }
+.admin-light .border-black\/20 { border-color: #e2e8f0 !important; }
+
+/* Status tints — light-friendly */
+.admin-light .bg-emerald-500\/15 { background-color: #ecfdf5 !important; }
+.admin-light .bg-rose-500\/15 { background-color: #fef2f2 !important; }
+.admin-light .bg-sky-500\/15 { background-color: #f0f9ff !important; }
+.admin-light .bg-violet-500\/15 { background-color: #f5f3ff !important; }
+.admin-light .bg-green-yellow\/15 { background-color: #f7fee7 !important; }
+.admin-light .ring-emerald-500\/30 { --tw-ring-color: #a7f3d0; }
+.admin-light .ring-rose-500\/30 { --tw-ring-color: #fecaca; }
+.admin-light .ring-sky-500\/30 { --tw-ring-color: #bae6fd; }
+.admin-light .ring-violet-500\/30 { --tw-ring-color: #ddd6fe; }
+.admin-light .ring-green-yellow\/30 { --tw-ring-color: #d9f99d; }
+
+/* Inputs / select options */
+.admin-light select option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+.admin-light input[type="date"] { color-scheme: light; }
+.admin-light [color-scheme="dark"] { color-scheme: light; }
+
+/* Shadows */
+.admin-light .shadow-2xl,
+.admin-light .shadow-xl,
+.admin-light .shadow-lg { box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06) !important; }
+
+/* Hero-card white-text protection inside light admin */
+.admin-light .hero-card-bg,
+.admin-light .hero-card-bg .text-white,
+.admin-light .hero-card-bg .text-white\/50,
+.admin-light .hero-card-bg .text-white\/60,
+.admin-light .hero-card-bg .text-white\/70,
+.admin-light .hero-card-bg .text-white\/80,
+.admin-light .hero-card-bg .text-white\/40 { color: #ffffff !important; }
+.admin-light .hero-card-bg .text-pure-white { color: #ffffff !important; }
+
+/* Hero-card background chips stay translucent white (protect from light overrides) */
+.admin-light .hero-card-bg .bg-white\/\[0\.06\],
+.admin-light .hero-card-bg .bg-white\/\[0\.08\],
+.admin-light .hero-card-bg .bg-white\/\[0\.12\],
+.admin-light .hero-card-bg .bg-white\/15,
+.admin-light .hero-card-bg .bg-white\/20,
+.admin-light .hero-card-bg .bg-white\/25,
+.admin-light .hero-card-bg .bg-white\/40 { background-color: rgba(255,255,255,0.15) !important; }
+.admin-light .hero-card-bg .border-white\/15,
+.admin-light .hero-card-bg .border-white\/20,
+.admin-light .hero-card-bg .border-white\/25,
+.admin-light .hero-card-bg .border-white\/40 { border-color: rgba(255,255,255,0.25) !important; }
+.admin-light .hero-card-bg .hover\:bg-white\/25:hover,
+.admin-light .hero-card-bg .hover\:bg-white\/\[0\.12\]:hover,
+.admin-light .hero-card-bg .hover\:bg-white\/\[0\.25\]:hover { background-color: rgba(255,255,255,0.25) !important; }
+
+/* Hover states & 10%-tint chips */
+.admin-light .hover\:bg-white\/\[0\.02\]:hover,
+.admin-light .hover\:bg-white\/\[0\.03\]:hover,
+.admin-light .hover\:bg-white\/\[0\.06\]:hover,
+.admin-light .hover\:bg-white\/\[0\.08\]:hover,
+.admin-light .hover\:bg-white\/10:hover { background-color: #f8fafc !important; }
+.admin-light .bg-sky-500\/10 { background-color: #e0f2fe !important; }
+.admin-light .bg-rose-500\/10 { background-color: #ffe4e6 !important; }
+.admin-light .bg-red-500\/10 { background-color: #fef2f2 !important; }
+.admin-light .bg-emerald-500\/10 { background-color: #ecfdf5 !important; }
+.admin-light .bg-violet-500\/20,
+.admin-light .bg-violet-500\/15 { background-color: #f5f3ff !important; }
+.admin-light .hover\:bg-sky-500\/15:hover { background-color: #e0f2fe !important; }
+.admin-light .hover\:bg-rose-500\/15:hover { background-color: #ffe4e6 !important; }
+.admin-light .hover\:bg-red-500\/10:hover { background-color: #fef2f2 !important; }
+.admin-light .text-slate-200 { color: #475569 !important; }
+.admin-light .text-purple-300 { color: #9333ea !important; }
+.admin-light .bg-purple-500\/15 { background-color: #f5f3ff !important; }
+.admin-light .ring-purple-500\/30 { --tw-ring-color: #e9d5ff; }
+.admin-light .border-gradient.text-white { color: #7c16c4 !important; }
+
+/* Additional tint variants & 25%-hover tints */
+.admin-light .bg-sky-500\/10,
+.admin-light .bg-sky-500\/20 { background-color: #f0f9ff !important; }
+.admin-light .bg-cyan-500\/15 { background-color: #ecfeff !important; }
+.admin-light .bg-slate-500\/15 { background-color: #f1f5f9 !important; }
+.admin-light .bg-emerald-500\/25 { background-color: #d1fae5 !important; }
+.admin-light .bg-rose-500\/25 { background-color: #ffe4e6 !important; }
+.admin-light .bg-green-yellow\/25 { background-color: #ecfccb !important; }
+.admin-light .bg-sky-500\/25 { background-color: #e0f2fe !important; }
+.admin-light .hover\:bg-green-yellow\/25:hover { background-color: #ecfccb !important; }
+.admin-light .hover\:bg-sky-500\/25:hover { background-color: #e0f2fe !important; }
+.admin-light .hover\:bg-rose-500\/25:hover { background-color: #ffe4e6 !important; }
+.admin-light .border-sky-500\/20,
+.admin-light .border-sky-500\/25 { border-color: #bae6fd !important; }
+.admin-light .text-sky-200\/90 { color: #0369a1 !important; }
+.admin-light .text-sky-300\/70 { color: #0284c7 !important; }
+.admin-light .text-cyan-300 { color: #0891b2 !important; }
+.admin-light .ring-cyan-500\/30 { --tw-ring-color: #a5f3fc; }
+.admin-light .bg-black\/30 { background-color: #e2e8f0 !important; color: #475569; }
+.admin-light .bg-black\/40 { background-color: #f8fafc !important; }
+.admin-light .border-white\/5,
+.admin-light .border-white\/20 { border-color: #e2e8f0 !important; }
+
+/* ===================================================================
    PREMIUM CALENDAR — SOLID SHIFT CELLS
    =================================================================== */
 .cal-premium-pg { background: #1e40af !important; color: #ffffff !important; }
