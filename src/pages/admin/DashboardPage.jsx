@@ -107,34 +107,43 @@ export default function DashboardPage() {
 
   return (
     <div className="flex-1">
-      {/* Hero Section — violet gradient, DESIGN.md hero */}
-      <div className="hero-card-bg bg-gradient-to-r from-[#C44DFF] via-[#BF00FF] to-[#8A00CC] px-4 pt-3 pb-4 sm:px-6 lg:px-8 rounded-b-[32px]">
-        {/* Top row: Time and actions */}
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-3xl font-bold tracking-tight text-white">{witaTime()}</div>
-            <div className="text-xs font-medium text-white/60">{witaDate()}</div>
+      {/* Hero Section — violet gradient, one-row compact (Variant B) */}
+      <div className="hero-card-bg bg-gradient-to-r from-[#C44DFF] via-[#BF00FF] to-[#8A00CC] rounded-b-[32px] shadow-xl">
+        <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
+          {/* Time block */}
+          <div className="shrink-0">
+            <div className="text-xl sm:text-2xl font-bold text-white tabular-nums leading-none tracking-tight">{witaTime()}</div>
+            <div className="text-[10px] sm:text-[11px] text-white/70 font-medium mt-1 tabular-nums">{witaDate()}</div>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => navigate("/admin/announcements")} className="relative w-9 h-9 rounded-full bg-white/[0.15] flex items-center justify-center hover:bg-white/25 transition-colors"><Bell size={17} className="text-white/80" /><span className="absolute top-1.5 right-1.5 w-2 h-2 bg-white rounded-full ring-2 ring-[#8A00CC]"></span></button>
-            <button onClick={handleLogout} className="w-9 h-9 rounded-full bg-white/[0.15] flex items-center justify-center hover:bg-white/25 transition-colors"><LogOut size={17} className="text-white/80" /></button>
-          </div>
-        </div>
-
-        {/* Bottom row: Profile */}
-        <div className="flex items-center gap-4 mt-5">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-white/40 to-white/10 border-2 border-white/40 shadow-xl flex items-center justify-center backdrop-blur-sm">
-            <span className="text-2xl font-bold text-white">{userInitial}</span>
-          </div>
-          <div>
-            <div className="text-sm font-medium text-white/70">Selamat datang,</div>
-            <div className="text-xl font-bold text-white tracking-tight">{user?.full_name || "Super Admin"}</div>
-            <div className="text-xs text-white/60 mt-1 flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-md bg-white/20 text-white/90 text-[10px] font-semibold uppercase tracking-wide">{user?.role || "super_admin"}</span>
-              <span>{user?.email || "admin@puskesmas"}</span>
+          {/* Divider */}
+          <div className="w-px h-10 bg-white/25 shrink-0 hidden sm:block" aria-hidden="true" />
+          {/* Profile */}
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-white text-sm sm:text-base font-bold shadow-md shrink-0">
+              {userInitial}
+            </div>
+            <div className="min-w-0">
+              <div className="text-sm sm:text-[15px] font-bold text-white truncate tracking-tight">{user?.full_name || "Super Admin"}</div>
+              <div className="text-[10px] sm:text-[11px] text-white/70 truncate font-medium uppercase tracking-wider">
+                {user?.role || "super_admin"}<span className="hidden sm:inline"> &middot; {user?.email || "admin@puskesmas"}</span>
+              </div>
             </div>
           </div>
+          {/* Actions */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button onClick={() => navigate("/admin/announcements")} className="relative w-9 h-9 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25 active:scale-95 transition-all" aria-label="Pengumuman">
+              <Bell size={15} className="text-white" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-400 rounded-full ring-2 ring-[#8A00CC]" />
+            </button>
+            <button onClick={handleLogout} className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25 active:scale-95 transition-all" aria-label="Logout">
+              <LogOut size={15} className="text-white" />
+            </button>
+          </div>
         </div>
+        {/* Email line — mobile only (desktop shows inline next to role) */}
+        {user?.email && (
+          <div className="sm:hidden text-[11px] text-white/75 truncate px-4 pb-3 -mt-1 font-medium">{user.email}</div>
+        )}
       </div>
 
       {/* Content Section — light canvas */}
