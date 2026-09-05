@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Result — Glassmorphism</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    
+    .animate-slide-up {
+      animation: slideUp 0.3s ease-out;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Glassmorphism utilities */
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .glass-strong {
+      background: rgba(30, 30, 50, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    .glass-button {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+    }
+    .glass-button:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Gradient background */
+    .hero-gradient {
+      background: linear-gradient(160deg, #BF40FF 0%, #6600CC 35%, #2B0066 65%, #000000 100%);
+    }
+    .app-gradient {
+      background: radial-gradient(circle at 22% 18%, rgba(191,0,255,0.15), transparent 34%),
+                  radial-gradient(circle at 86% 10%, rgba(255,0,153,0.08), transparent 30%),
+                  linear-gradient(135deg, #05020b 0%, #160520 44%, #07020c 100%);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#05020b]">
+
+  <!-- Header -->
+  <div class="p-6 text-center">
+    <h1 class="text-xl font-bold text-white mb-2">Attendance Result — Glassmorphism</h1>
+    <p class="text-xs text-white/30 mb-6">Design baru dengan glassmorphism effect</p>
+  </div>
+
+  <div class="px-4 space-y-8 max-w-lg mx-auto">
+
+    <!-- ===== CASE 1: TEPAT WAKTU — CHECK IN ===== -->
+    <div class="relative">
+      <div class="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-3 text-center">Case 1: Tepat Waktu — Check In</div>
+      
+      <div class="bg-[#05020b] rounded-[28px] border border-white/5 overflow-hidden" style="max-width: 400px; margin: 0 auto;">
+        <!-- Simulated app background -->
+        <div class="app-gradient p-4 opacity-25 blur-[0.5px]">
+          <div class="h-28 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-2xl mb-4"></div>
+          <div class="space-y-2">
+            <div class="h-3 bg-white/5 rounded w-3/4"></div>
+            <div class="h-3 bg-white/5 rounded w-1/2"></div>
+            <div class="h-3 bg-white/5 rounded w-2/3"></div>
+          </div>
+        </div>
+        
+        <!-- Overlay + Bottom Sheet -->
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 flex items-end justify-center" style="position:relative;">
+          <div class="w-full max-w-sm rounded-t-[28px] bg-[#161320]/95 border border-white/10 shadow-2xl animate-slide-up relative overflow-hidden flex flex-col" style="position:relative;">
+            <!-- Handle bar -->
+            <div class="flex justify-center pt-2.5 pb-1 shrink-0">
+              <div class="w-10 h-2 rounded-full bg-white/10"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex flex-col items-center text-center pt-4 pb-5 px-5">
+              <!-- Icon: hijau -->
+              <div class="w-16 h-16 rounded-full flex items-center justify-center mb-3 bg-emerald-500/10">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ADFF2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="16 12 12 16 8 12"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-white tracking-tight">Absen Masuk Berhasil!</h3>
+              <p class="text-[11px] text-white/30 mt-1 font-medium">Senin, 27 Juli 2026</p>
+            </div>
+
+            <!-- Glass Card -->
+            <div class="glass-strong rounded-[18px] p-4 mx-4 mb-4">
+              <!-- Clock In -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10 border border-violet-500/20">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Masuk</p>
+                    <p class="text-base font-bold text-white mt-0.5">07:15</p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="text-[10px] font-bold text-emerald-400">Tepat Waktu</span>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Shift -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10 border border-violet-500/20">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Shift</p>
+                    <p class="text-base font-bold text-white mt-0.5">Pagi (PG)</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Status -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ADFF2F" stroke-width="2.5" stroke-linecap="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Status</p>
+                    <p class="text-base font-bold text-emerald-400">Tepat Waktu</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Location -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10 border border-violet-500/20">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Lokasi</p>
+                    <p class="text-base font-bold text-white mt-0.5">32m dari Lokasi Presensi</p>
+                  </div>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-400">Valid</span>
+              </div>
+            </div>
+
+            <!-- Glass Tombol -->
+            <button class="w-full mb-6 mx-4 py-3.5 rounded-full font-bold text-[13px] glass-button text-white transition-all active:scale-[0.98]">
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CASE 2: TERLAMBAT — CHECK IN ===== -->
+    <div class="relative">
+      <div class="text-[10px] uppercase tracking-widest text-amber-400 font-bold mb-3 text-center">Case 2: Terlambat 277 menit — Check In</div>
+      
+      <div class="bg-[#05020b] rounded-[28px] border border-white/5 overflow-hidden" style="max-width: 400px; margin: 0 auto;">
+        <div class="app-gradient p-4 opacity-25 blur-[0.5px]">
+          <div class="h-28 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-2xl mb-4"></div>
+          <div class="space-y-2">
+            <div class="h-3 bg-white/5 rounded w-3/4"></div>
+          </div>
+        </div>
+        
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 flex items-end justify-center" style="position:relative;">
+          <div class="w-full max-w-sm rounded-t-[28px] bg-[#161320]/95 border border-white/10 shadow-2xl animate-slide-up relative overflow-hidden flex flex-col" style="position:relative;">
+            <div class="flex justify-center pt-2.5 pb-1 shrink-0">
+              <div class="w-10 h-2 rounded-full bg-white/10"></div>
+            </div>
+
+            <div class="flex flex-col items-center text-center pt-4 pb-5 px-5">
+              <!-- Icon: amber -->
+              <div class="w-16 h-16 rounded-full flex items-center justify-center mb-3 bg-amber-500/10">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-white tracking-tight">Absen Masuk Berhasil!</h3>
+              <p class="text-[11px] text-white/30 mt-1 font-medium">Senin, 27 Juli 2026</p>
+              <p class="text-[10px] text-amber-400/70 mt-1.5 bg-amber-500/10 px-3 py-1 rounded-full font-medium border border-amber-500/10">
+                ⚠ Keterlambatan tercatat
+              </p>
+            </div>
+
+            <div class="glass-strong rounded-[18px] p-4 mx-4 mb-4">
+              <!-- Clock In -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10 border border-violet-500/20">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Masuk</p>
+                    <p class="text-base font-bold text-white mt-0.5">12:07</p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="text-[10px] font-bold text-amber-400">Terlambat</span>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Shift -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10 border border-violet-500/20">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Shift</p>
+                    <p class="text-base font-bold text-white mt-0.5">Pagi (PG)</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Status -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Status</p>
+                    <p class="text-base font-bold text-amber-400">Terlambat 277 menit</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Location -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10 border border-violet-500/20">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Lokasi</p>
+                    <p class="text-base font-bold text-white mt-0.5">32m dari Lokasi Presensi</p>
+                  </div>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-400">Valid</span>
+              </div>
+            </div>
+
+            <button class="w-full mb-6 mx-4 py-3.5 rounded-full font-bold text-[13px] glass-button text-white transition-all active:scale-[0.98]">
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CASE 3: CHECK OUT — ADA TOTAL JAM ===== -->
+    <div class="relative">
+      <div class="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-3 text-center">Case 3: Absen Pulang — Ada Total Jam</div>
+      
+      <div class="bg-[#05020b] rounded-[28px] border border-white/5 overflow-hidden" style="max-width: 400px; margin: 0 auto;">
+        <div class="app-gradient p-4 opacity-25 blur-[0.5px]">
+          <div class="h-28 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-2xl mb-4"></div>
+        </div>
+        
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 flex items-end justify-center" style="position:relative;">
+          <div class="w-full max-w-sm rounded-t-[28px] bg-[#161320]/95 border border-white/10 shadow-2xl animate-slide-up relative overflow-hidden flex flex-col" style="position:relative;">
+            <div class="flex justify-center pt-2.5 pb-1 shrink-0">
+              <div class="w-10 h-2 rounded-full bg-white/10"></div>
+            </div>
+
+            <div class="flex flex-col items-center text-center pt-4 pb-5 px-5">
+              <div class="w-16 h-16 rounded-full flex items-center justify-center mb-3 bg-emerald-500/10">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ADFF2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="16 12 12 16 8 12"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-white tracking-tight">Absen Pulang Berhasil!</h3>
+              <p class="text-[11px] text-white/30 mt-1 font-medium">Senin, 27 Juli 2026</p>
+            </div>
+
+            <div class="glass-strong rounded-[18px] p-4 mx-4 mb-4">
+              <!-- Clock In -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10 border border-violet-500/20">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Masuk</p>
+                    <p class="text-base font-bold text-white mt-0.5">07:15</p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="text-[10px] font-bold text-emerald-400">Tepat Waktu</span>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Clock Out -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10 border border-violet-500/20">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                      <polyline points="16 17 21 12 16 7"/>
+                      <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Pulang</p>
+                    <p class="text-base font-bold text-white mt-0.5">14:00</p>
+                  </div>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-400">Selesai</span>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Total Jam -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10 border border-violet-500/20">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Total Jam</p>
+                    <p class="text-base font-bold text-white mt-0.5">6j 45m</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Shift -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10 border border-violet-500/20">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Shift</p>
+                    <p class="text-base font-bold text-white mt-0.5">Pagi (PG)</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Status -->
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ADFF2F" stroke-width="2.5" stroke-linecap="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/25">Status</p>
+                    <p class="text-base font-bold text-emerald-400">Tepat Waktu</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button class="w-full mb-6 mx-4 py-3.5 rounded-full font-bold text-[13px] glass-button text-white transition-all active:scale-[0.98]">
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Glassmorphism breakdown -->
+    <div class="max-w-sm mx-auto border-t border-white/5 pt-6 mt-8">
+      <h3 class="text-xs font-bold text-white/30 uppercase tracking-widest text-center mb-4">Glassmorphism Elements</h3>
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Card glass -->
+        <div class="glass-strong rounded-xl p-3 text-center">
+          <p class="text-[9px] text-white/30 mb-1">Detail Card</p>
+          <p class="text-[10px] font-bold text-white">glass-strong</p>
+          <p class="text-[8px] text-white/20 mt-1">blur(20px) + opacity</p>
+        </div>
+        <!-- Button glass -->
+        <div class="glass-button rounded-xl p-3 text-center">
+          <p class="text-[9px] text-white/30 mb-1">Tombol Tutup</p>
+          <p class="text-[10px] font-bold text-white">glass-button</p>
+          <p class="text-[8px] text-white/20 mt-1">blur(20px) + border</p>
+        </div>
+        <!-- Icon container -->
+        <div class="bg-violet-500/10 border border-violet-500/20 rounded-xl p-3 text-center">
+          <p class="text-[9px] text-white/30 mb-1">Icon Container</p>
+          <p class="text-[10px] font-bold text-white">border glow</p>
+          <p class="text-[8px] text-white/20 mt-1">border-violet-500/20</p>
+        </div>
+        <!-- Overlay -->
+        <div class="bg-black/60 backdrop-blur-sm rounded-xl p-3 text-center">
+          <p class="text-[9px] text-white/30 mb-1">Overlay</p>
+          <p class="text-[10px] font-bold text-white">backdrop-blur</p>
+          <p class="text-[8px] text-white/20 mt-1">bg-black/60</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

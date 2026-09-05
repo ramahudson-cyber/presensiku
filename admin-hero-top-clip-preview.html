@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin Hero Top-Clip Fix Preview</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #F4F2FB; }
+  .violet-grad { background: linear-gradient(135deg, #C44DFF 0%, #BF00FF 50%, #8A00CC 100%); }
+</style>
+</head>
+<body class="min-h-screen">
+<div class="max-w-[1400px] mx-auto p-6">
+
+  <h1 class="text-2xl font-bold text-slate-800 mb-2">Hero Top-Clip Diagnostic</h1>
+  <p class="text-sm text-slate-600 mb-6">Repro: top hero edge clip. Variants di bawah = opsi fix.</p>
+
+  <!-- VARIANT A: hero full-bleed negative margin, top-left/top-right square -->
+  <section class="mb-10">
+    <div class="text-[11px] uppercase tracking-widest text-violet-700 font-bold mb-2">A — Full-bleed negative margin (korek padding main)</div>
+    <div class="relative bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-md">
+      <div class="violet-grad -mt-6 -mx-6 rounded-b-[32px] shadow-xl">
+        <div class="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
+          <div class="shrink-0">
+            <div class="text-xl sm:text-2xl font-bold text-white tabular-nums leading-none tracking-tight">20.06</div>
+            <div class="text-[10px] sm:text-[11px] text-white/70 font-medium mt-1 tabular-nums">Sabtu, 5 September 2026</div>
+          </div>
+          <div class="w-px h-10 bg-white/25 shrink-0 hidden sm:block"></div>
+          <div class="flex items-center gap-2.5 min-w-0 flex-1">
+            <div class="w-9 h-9 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-white text-sm font-bold shadow-md shrink-0">L</div>
+            <div class="min-w-0">
+              <div class="text-sm sm:text-[15px] font-bold text-white truncate tracking-tight">Lalu Rama Jalil Wijaya</div>
+              <div class="text-[10px] sm:text-[11px] text-white/70 truncate font-medium uppercase tracking-wider">SUPER_ADMIN &middot; RAMAHUDSON@GMAIL.COM</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white text-[15px]">🔔</button>
+            <button class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white text-[15px]">⎋</button>
+          </div>
+        </div>
+      </div>
+      <div class="px-6 py-6">
+        <p class="text-xs text-slate-500 mb-3">↑ Hero top edge = top viewport (full-bleed), bottom tetap rounded. Mirip iOS status bar pattern.</p>
+        <div class="h-32 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 text-sm">Content area di bawah hero</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VARIANT B: padding-top: 0 main, hero stay rounded semua -->
+  <section class="mb-10">
+    <div class="text-[11px] uppercase tracking-widest text-violet-700 font-bold mb-2">B — Hero in-flow (NO negative margin) + slight top padding supaya shadow tidak ke-clip</div>
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-md overflow-hidden">
+      <div class="violet-grad rounded-t-2xl rounded-b-[32px] shadow-xl mx-3 mt-3">
+        <div class="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
+          <div class="shrink-0">
+            <div class="text-xl sm:text-2xl font-bold text-white tabular-nums leading-none tracking-tight">20.06</div>
+            <div class="text-[10px] sm:text-[11px] text-white/70 font-medium mt-1 tabular-nums">Sabtu, 5 September 2026</div>
+          </div>
+          <div class="w-px h-10 bg-white/25 shrink-0 hidden sm:block"></div>
+          <div class="flex items-center gap-2.5 min-w-0 flex-1">
+            <div class="w-9 h-9 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-white text-sm font-bold shadow-md shrink-0">L</div>
+            <div class="min-w-0">
+              <div class="text-sm sm:text-[15px] font-bold text-white truncate tracking-tight">Lalu Rama Jalil Wijaya</div>
+              <div class="text-[10px] sm:text-[11px] text-white/70 truncate font-medium uppercase tracking-wider">SUPER_ADMIN &middot; RAMAHUDSON@GMAIL.COM</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white text-[15px]">🔔</button>
+            <button class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white text-[15px]">⎋</button>
+          </div>
+        </div>
+      </div>
+      <div class="px-6 py-6">
+        <div class="h-32 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 text-sm">Content area di bawah hero</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VARIANT C: keep current but explicit px-0 mx-auto collapse -->
+  <section class="mb-10">
+    <div class="text-[11px] uppercase tracking-widest text-violet-700 font-bold mb-2">C — Current (one-row) with shadow-none + ring-1 violet</div>
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-md overflow-hidden p-4">
+      <div class="violet-grad rounded-[24px] ring-1 ring-violet-300/50">
+        <div class="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
+          <div class="shrink-0">
+            <div class="text-xl sm:text-2xl font-bold text-white tabular-nums leading-none tracking-tight">20.06</div>
+            <div class="text-[10px] sm:text-[11px] text-white/70 font-medium mt-1 tabular-nums">Sabtu, 5 September 2026</div>
+          </div>
+          <div class="w-px h-10 bg-white/25 shrink-0 hidden sm:block"></div>
+          <div class="flex items-center gap-2.5 min-w-0 flex-1">
+            <div class="w-9 h-9 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-white text-sm font-bold shadow-md shrink-0">L</div>
+            <div class="min-w-0">
+              <div class="text-sm sm:text-[15px] font-bold text-white truncate tracking-tight">Lalu Rama Jalil Wijaya</div>
+              <div class="text-[10px] sm:text-[11px] text-white/70 truncate font-medium uppercase tracking-wider">SUPER_ADMIN &middot; RAMAHUDSON@GMAIL.COM</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white text-[15px]">🔔</button>
+            <button class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white text-[15px]">⎋</button>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4 h-32 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 text-sm">Content area di bawah hero</div>
+    </div>
+  </section>
+
+  <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-900">
+    <strong>Diagnosis:</strong> Hero card sekarang hidup di dalam flex container yang punya padding dari <code class="bg-amber-100 px-1 rounded">&lt;main&gt;</code>. Saat viewport mobile + safe-area top, hero ke-push ke bawah lalu shadow bagian top ke-clip karena parent <code class="bg-amber-100 px-1 rounded">.flex-1</code> di DashboardPage bikin card hanya nempel pas di-padding area, sementara di layout real ada <code class="bg-amber-100 px-1 rounded">overflow-x-hidden</code> + <code class="bg-amber-100 px-1 rounded">mx-auto</code> yang bikin card punya inset kiri-kanan. Solusi: <strong>full-bleed</strong> (Variant A) = paling clean, ngikutin pattern iOS/Material.
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin Header — Rapih Preview</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root { --violet: #BF00FF; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #F4F2FB; }
+  .violet-grad { background: linear-gradient(135deg, #C44DFF 0%, #BF00FF 50%, #8A00CC 100%); }
+  .glass { background: rgba(255,255,255,0.18); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+</style>
+</head>
+<body class="min-h-screen p-4 sm:p-6 lg:p-10">
+  <div class="max-w-[1280px] mx-auto">
+
+    <div class="mb-4 text-xs text-slate-500 font-mono">PREVIEW — Admin Dashboard Hero (rapih)</div>
+
+    <!-- VARIANT A: Clean two-row, generous spacing, pill actions -->
+    <section class="mb-12">
+      <div class="text-[11px] uppercase tracking-widest text-violet-700 font-bold mb-3">Variant A — Clean two-row</div>
+      <div class="violet-grad rounded-[28px] px-5 sm:px-8 py-5 sm:py-7 shadow-xl">
+        <!-- Row 1: time block + actions -->
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="text-[10px] uppercase tracking-[0.18em] text-white/60 font-semibold mb-1">WITA · Puskesmas Ampenan</div>
+            <div class="text-2xl sm:text-[28px] font-bold text-white tracking-tight tabular-nums leading-none">19.23</div>
+            <div class="text-xs sm:text-sm text-white/75 font-medium mt-1.5">Sabtu, 5 September 2026</div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button class="glass w-10 h-10 rounded-full flex items-center justify-center relative hover:bg-white/30 transition">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-400 rounded-full ring-2 ring-[#8A00CC]"></span>
+            </button>
+            <button class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/30 transition">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+        <!-- hairline divider -->
+        <div class="h-px bg-white/15 my-5"></div>
+        <!-- Row 2: profile -->
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center text-white text-lg sm:text-xl font-bold shadow-lg shrink-0">L</div>
+          <div class="min-w-0 flex-1">
+            <div class="text-[11px] text-white/65 font-medium uppercase tracking-wider">Selamat datang</div>
+            <div class="text-base sm:text-lg font-bold text-white tracking-tight truncate">Lalu Rama Jalil Wijaya</div>
+          </div>
+          <div class="hidden sm:flex flex-col items-end shrink-0">
+            <span class="px-2.5 py-1 rounded-md bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider">SUPER_ADMIN</span>
+            <span class="text-[11px] text-white/70 mt-1 truncate max-w-[180px]">ramahudson@gmail.com</span>
+          </div>
+        </div>
+        <!-- mobile: badge+email below profile -->
+        <div class="sm:hidden flex items-center gap-2 mt-3 ml-[62px]">
+          <span class="px-2 py-0.5 rounded-md bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider">SUPER_ADMIN</span>
+          <span class="text-[11px] text-white/75 truncate">ramahudson@gmail.com</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- VARIANT B: Compact one-row, time | profile | actions -->
+    <section class="mb-12">
+      <div class="text-[11px] uppercase tracking-widest text-violet-700 font-bold mb-3">Variant B — One-row compact</div>
+      <div class="violet-grad rounded-2xl px-4 sm:px-6 py-3.5 sm:py-4 shadow-lg flex items-center gap-3 sm:gap-4">
+        <!-- time -->
+        <div class="shrink-0">
+          <div class="text-xl sm:text-2xl font-bold text-white tabular-nums leading-none">19.23</div>
+          <div class="text-[10px] text-white/65 font-medium mt-0.5 hidden sm:block">Sabtu, 5 Sep 2026</div>
+        </div>
+        <!-- divider -->
+        <div class="w-px h-10 bg-white/20 shrink-0 hidden sm:block"></div>
+        <!-- profile -->
+        <div class="flex items-center gap-2.5 min-w-0 flex-1">
+          <div class="w-10 h-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-white font-bold shrink-0">L</div>
+          <div class="min-w-0">
+            <div class="text-sm font-bold text-white truncate">Lalu Rama Jalil Wijaya</div>
+            <div class="text-[10px] text-white/65 truncate">SUPER_ADMIN · ramahudson@gmail.com</div>
+          </div>
+        </div>
+        <!-- actions -->
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25 relative">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-400 rounded-full"></span>
+          </button>
+          <button class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VARIANT C: Split — left text block, right profile card -->
+    <section class="mb-12">
+      <div class="text-[11px] uppercase tracking-widest text-violet-700 font-bold mb-3">Variant C — Split panel</div>
+      <div class="violet-grad rounded-3xl px-5 sm:px-8 py-5 sm:py-6 shadow-xl">
+        <div class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-5 sm:gap-6 items-center">
+          <!-- left: time + date -->
+          <div class="flex items-center gap-4 sm:gap-5">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center shrink-0">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[10px] uppercase tracking-widest text-white/60 font-semibold">WITA · Real-time</div>
+              <div class="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums leading-none mt-1">19.23</div>
+              <div class="text-xs sm:text-sm text-white/80 font-medium mt-1.5">Sabtu, 5 September 2026</div>
+            </div>
+          </div>
+          <!-- right: profile pill -->
+          <div class="flex items-center gap-3 bg-white/10 border border-white/20 rounded-2xl pl-2 pr-3 py-2">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-white/40 to-white/10 border border-white/40 flex items-center justify-center text-white font-bold shrink-0">L</div>
+            <div class="min-w-0 hidden sm:block">
+              <div class="text-sm font-bold text-white truncate">Lalu Rama Jalil Wijaya</div>
+              <div class="text-[10px] text-white/70 font-semibold uppercase tracking-wider">SUPER_ADMIN</div>
+            </div>
+            <div class="flex flex-col gap-1.5 ml-1">
+              <button class="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25 relative">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-400 rounded-full ring-2 ring-[#8A00CC]"></span>
+              </button>
+              <button class="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- email bar (mobile: shown; desktop: subtle) -->
+        <div class="text-[11px] text-white/60 mt-3 truncate sm:text-right">ramahudson@gmail.com</div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>

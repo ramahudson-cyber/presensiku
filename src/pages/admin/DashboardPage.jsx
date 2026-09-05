@@ -107,8 +107,8 @@ export default function DashboardPage() {
 
   return (
     <div className="flex-1">
-      {/* Hero Section — violet gradient, one-row compact (Variant B) */}
-      <div className="hero-card-bg bg-gradient-to-r from-[#C44DFF] via-[#BF00FF] to-[#8A00CC] rounded-b-[32px] shadow-xl">
+      {/* Hero Section — violet gradient, one-row compact, in-flow with margin (Variant B) */}
+      <div className="hero-card-bg mx-3 mt-3 sm:mx-4 sm:mt-4 md:mx-5 md:mt-5 lg:mx-6 lg:mt-6 xl:mx-8 xl:mt-8 bg-gradient-to-r from-[#C44DFF] via-[#BF00FF] to-[#8A00CC] rounded-[24px] shadow-xl ring-1 ring-violet-300/40">
         <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
           {/* Time block */}
           <div className="shrink-0">

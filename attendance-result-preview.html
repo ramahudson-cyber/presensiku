@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Result Sheet Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .animate-slide-up {
+      animation: slideUp 0.3s ease-out;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.2s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body class="bg-[#05020b] min-h-screen">
+
+  <!-- Header -->
+  <div class="p-6 text-center">
+    <h1 class="text-xl font-bold text-white mb-2">Attendance Result Sheet — Preview</h1>
+    <p class="text-xs text-white/30 mb-6">Design baru: dark mode matching, icon contextual</p>
+  </div>
+
+  <div class="px-4 space-y-8 max-w-lg mx-auto">
+
+    <!-- ===== CASE 1: TEPAT WAKTU (CHECK IN) ===== -->
+    <div class="relative">
+      <div class="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-3 text-center">Case 1: Tepat Waktu — Check In</div>
+      
+      <!-- Simulated phone screen -->
+      <div class="bg-[#05020b] rounded-[28px] border border-white/5 overflow-hidden" style="max-width: 400px; margin: 0 auto;">
+        <!-- Background (simulated app) -->
+        <div class="p-4 opacity-30 blur-[1px]">
+          <div class="h-32 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-2xl mb-4"></div>
+          <div class="space-y-2">
+            <div class="h-4 bg-white/5 rounded w-3/4"></div>
+            <div class="h-4 bg-white/5 rounded w-1/2"></div>
+            <div class="h-4 bg-white/5 rounded w-2/3"></div>
+          </div>
+        </div>
+        
+        <!-- Overlay -->
+        <div class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-end justify-center" style="position:relative;">
+          <!-- Bottom Sheet -->
+          <div class="w-full max-w-sm rounded-t-[28px] bg-[#161320] border border-white/10 shadow-2xl animate-slide-up relative overflow-hidden flex flex-col" style="position:relative;">
+            <!-- Handle bar -->
+            <div class="flex md:hidden justify-center pt-2.5 pb-1 shrink-0">
+              <div class="w-10 h-2 rounded-full bg-white/10"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex flex-col items-center text-center pt-4 pb-5 px-5">
+              <!-- Icon: hijau (tepat waktu) -->
+              <div class="w-16 h-16 rounded-full flex items-center justify-center mb-3 bg-emerald-500/15">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ADFF2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="16 12 12 16 8 12"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-white tracking-tight">Absen Masuk Berhasil!</h3>
+              <p class="text-[11px] text-white/40 mt-1 font-medium">Senin, 27 Juli 2026</p>
+            </div>
+
+            <!-- Detail Card -->
+            <div class="rounded-[18px] p-4 border bg-white/[0.03] border-white/5 mx-4 mb-4">
+              <!-- Clock In -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Masuk</p>
+                    <p class="text-base font-bold text-white mt-0.5">07:15</p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="text-[10px] font-bold text-emerald-400">Tepat Waktu</span>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Shift -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Shift</p>
+                    <p class="text-base font-bold text-white mt-0.5">Pagi (PG)</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Status -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ADFF2F" stroke-width="2.5" stroke-linecap="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Status</p>
+                    <p class="text-base font-bold text-emerald-400">Tepat Waktu</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Location -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Lokasi</p>
+                    <p class="text-base font-bold text-white mt-0.5">32m dari Lokasi Presensi</p>
+                  </div>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-400">Valid</span>
+              </div>
+            </div>
+
+            <!-- Tombol -->
+            <button class="w-full mb-6 mx-4 py-3.5 rounded-full font-bold text-[13px] bg-white/10 text-white hover:bg-white/15 border border-white/10 transition-all">
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CASE 2: TERLAMBAT (CHECK IN) ===== -->
+    <div class="relative">
+      <div class="text-[10px] uppercase tracking-widest text-amber-400 font-bold mb-3 text-center">Case 2: Terlambat 277 menit — Check In</div>
+      
+      <div class="bg-[#05020b] rounded-[28px] border border-white/5 overflow-hidden" style="max-width: 400px; margin: 0 auto;">
+        <!-- Background (simulated app) -->
+        <div class="p-4 opacity-30 blur-[1px]">
+          <div class="h-32 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-2xl mb-4"></div>
+          <div class="space-y-2">
+            <div class="h-4 bg-white/5 rounded w-3/4"></div>
+            <div class="h-4 bg-white/5 rounded w-1/2"></div>
+          </div>
+        </div>
+        
+        <!-- Overlay -->
+        <div class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-end justify-center" style="position:relative;">
+          <!-- Bottom Sheet -->
+          <div class="w-full max-w-sm rounded-t-[28px] bg-[#161320] border border-white/10 shadow-2xl animate-slide-up relative overflow-hidden flex flex-col" style="position:relative;">
+            <div class="flex md:hidden justify-center pt-2.5 pb-1 shrink-0">
+              <div class="w-10 h-2 rounded-full bg-white/10"></div>
+            </div>
+
+            <div class="flex flex-col items-center text-center pt-4 pb-5 px-5">
+              <!-- Icon: amber (terlambat) -->
+              <div class="w-16 h-16 rounded-full flex items-center justify-center mb-3 bg-amber-500/15">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-white tracking-tight">Absen Masuk Berhasil!</h3>
+              <p class="text-[11px] text-white/40 mt-1 font-medium">Senin, 27 Juli 2026</p>
+              <p class="text-[10px] text-amber-400/80 mt-1.5 bg-amber-500/10 px-3 py-1 rounded-full font-medium">
+                ⚠ Keterlambatan tercatat
+              </p>
+            </div>
+
+            <div class="rounded-[18px] p-4 border bg-white/[0.03] border-white/5 mx-4 mb-4">
+              <!-- Clock In -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Masuk</p>
+                    <p class="text-base font-bold text-white mt-0.5">12:07</p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="text-[10px] font-bold text-amber-400">Terlambat</span>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Shift -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Shift</p>
+                    <p class="text-base font-bold text-white mt-0.5">Pagi (PG)</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Status -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Status</p>
+                    <p class="text-base font-bold text-amber-400">Terlambat 277 menit</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Location -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Lokasi</p>
+                    <p class="text-base font-bold text-white mt-0.5">32m dari Lokasi Presensi</p>
+                  </div>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-400">Valid</span>
+              </div>
+            </div>
+
+            <button class="w-full mb-6 mx-4 py-3.5 rounded-full font-bold text-[13px] bg-white/10 text-white hover:bg-white/15 border border-white/10 transition-all">
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CASE 3: CHECK OUT SELESAI ===== -->
+    <div class="relative">
+      <div class="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-3 text-center">Case 3: Absen Pulang — Tepat Waktu</div>
+      
+      <div class="bg-[#05020b] rounded-[28px] border border-white/5 overflow-hidden" style="max-width: 400px; margin: 0 auto;">
+        <div class="p-4 opacity-30 blur-[1px]">
+          <div class="h-32 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-2xl mb-4"></div>
+          <div class="space-y-2">
+            <div class="h-4 bg-white/5 rounded w-3/4"></div>
+          </div>
+        </div>
+        
+        <div class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-end justify-center" style="position:relative;">
+          <div class="w-full max-w-sm rounded-t-[28px] bg-[#161320] border border-white/10 shadow-2xl animate-slide-up relative overflow-hidden flex flex-col" style="position:relative;">
+            <div class="flex md:hidden justify-center pt-2.5 pb-1 shrink-0">
+              <div class="w-10 h-2 rounded-full bg-white/10"></div>
+            </div>
+
+            <div class="flex flex-col items-center text-center pt-4 pb-5 px-5">
+              <div class="w-16 h-16 rounded-full flex items-center justify-center mb-3 bg-emerald-500/15">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ADFF2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="16 12 12 16 8 12"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-white tracking-tight">Absen Pulang Berhasil!</h3>
+              <p class="text-[11px] text-white/40 mt-1 font-medium">Senin, 27 Juli 2026</p>
+            </div>
+
+            <div class="rounded-[18px] p-4 border bg-white/[0.03] border-white/5 mx-4 mb-4">
+              <!-- Clock In -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Masuk</p>
+                    <p class="text-base font-bold text-white mt-0.5">07:15</p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="text-[10px] font-bold text-emerald-400">Tepat Waktu</span>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Clock Out -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                      <polyline points="16 17 21 12 16 7"/>
+                      <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Pulang</p>
+                    <p class="text-base font-bold text-white mt-0.5">14:00</p>
+                  </div>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-400">Selesai</span>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Total Jam -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Total Jam</p>
+                    <p class="text-base font-bold text-white mt-0.5">6j 45m</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Shift -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#BF00FF" stroke-width="2" stroke-linecap="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Shift</p>
+                    <p class="text-base font-bold text-white mt-0.5">Pagi (PG)</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px my-2 bg-white/[0.04]"></div>
+
+              <!-- Status -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ADFF2F" stroke-width="2.5" stroke-linecap="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-white/30">Status</p>
+                    <p class="text-base font-bold text-emerald-400">Tepat Waktu</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button class="w-full mb-6 mx-4 py-3.5 rounded-full font-bold text-[13px] bg-white/10 text-white hover:bg-white/15 border border-white/10 transition-all">
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="max-w-sm mx-auto border-t border-white/5 pt-6 mt-8">
+      <h3 class="text-xs font-bold text-white/30 uppercase tracking-widest text-center mb-3">Perubahan dari Design Lama</h3>
+      <div class="space-y-2 text-[11px]">
+        <div class="flex items-center gap-2">
+          <span class="text-white/50">✅</span>
+          <span class="text-white/50">Icon: <span class="text-emerald-400">Hijau</span> tepat waktu, <span class="text-amber-400">Kuning</span> terlambat</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-white/50">✅</span>
+          <span class="text-white/50">Card dark mode: <span class="text-white/50">bg-white/03</span> bukan putih solid</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-white/50">✅</span>
+          <span class="text-white/50">Tombol Tutup: <span class="text-white/50">semi-transparan</span> bukan ungu mencolok</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-white/50">✅</span>
+          <span class="text-white/50">Badge "⚠ Keterlambatan tercatat" muncul saat terlambat</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-white/50">✅</span>
+          <span class="text-white/50">Label lokasi: Valid (hijau) &lt;= 100m, Di Luar Jarak (kuning) &gt; 100m</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

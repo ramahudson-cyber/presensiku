@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview — Admin Light Mode (Hadir.Kuy)</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',ui-sans-serif,system-ui,sans-serif; background:#F4F2FB; color:#0f172a; }
+  .app { display:flex; min-height:100vh; }
+
+  /* ===== Sidebar (light) ===== */
+  .sidebar { width:260px; background:#ffffff; border-right:1px solid #e2e8f0; position:fixed; top:0; bottom:0; display:flex; flex-direction:column; z-index:40; }
+  .s-logo { display:flex; gap:2px; align-items:center; border-bottom:1px solid #eef2f7; }
+  .s-brand { display:flex; gap:12px; align-items:center; flex:1; min-width:0; padding:14px 20px; background:linear-gradient(135deg,#BF00FF 0%,#9900CC 45%,#660099 100%); box-shadow:inset 0 1px 0 rgba(255,255,255,0.14); }
+  .s-brand h1 { font-size:15px; font-weight:700; letter-spacing:0.12em; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .s-brand p { font-size:10px; color:rgba(255,255,255,0.72); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* ===== Logo pin animated (salinan live: draw + ripple + core pulse) ===== */
+  .sp { position:relative; width:100%; height:100%; }
+  .sp svg { display:block; width:100%; height:100%; overflow:visible; }
+  .sp .sp-draw { fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:100; stroke-dashoffset:100; }
+  .sp .sp-pin { stroke-width:2; animation:spDraw 1.6s cubic-bezier(0.16,1,0.3,1) .3s forwards; }
+  .sp .sp-inner { stroke-width:1.6; stroke:rgba(255,255,255,.85); animation:spDraw .8s cubic-bezier(0.16,1,0.3,1) 1.7s forwards; }
+  @keyframes spDraw { to { stroke-dashoffset:0; } }
+  .sp .sp-ripple { fill:none; stroke:rgba(255,255,255,.35); stroke-width:1.2; transform-box:fill-box; transform-origin:center; opacity:0; animation:spRipple 3s cubic-bezier(0.32,.72,0,1) infinite; animation-delay:var(--sp-delay,0s); }
+  @keyframes spRipple { 0%{transform:scale(.35);opacity:0} 12%{opacity:.5} 100%{transform:scale(2.6);opacity:0} }
+  .sp .sp-core { opacity:0; transform-box:fill-box; transform-origin:center; animation:spPop .7s cubic-bezier(0.34,1.56,.64,1) 2s forwards, spPulse 3.2s cubic-bezier(0.32,.72,0,1) 2.8s infinite alternate; }
+  .sp .sp-core-outer { fill:rgba(255,255,255,.16); }
+  .sp .sp-core-mid { fill:rgba(255,255,255,.45); }
+  .sp .sp-core-dot { fill:#fff; }
+  @keyframes spPop { from{opacity:0;transform:scale(.3)} to{opacity:1;transform:scale(1)} }
+  @keyframes spPulse { from{transform:scale(.96)} to{transform:scale(1.06)} }
+
+  .s-logo h1 { font-size:17px; font-weight:800; letter-spacing:0.02em; }
+  .s-logo p { font-size:10px; color:#94a3b8; }
+  .s-user { padding:14px 18px; display:flex; gap:10px; align-items:center; border-bottom:1px solid #eef2f7; background:#faf9ff; }
+  .s-avatar { width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#BF00FF,#7066ed);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800; }
+  .s-nav { flex:1; padding:14px 10px; overflow-y:auto; }
+  .s-nav p { font-size:9px; font-weight:700; color:#94a3b8; letter-spacing:0.15em; text-transform:uppercase; padding:0 12px 8px; }
+  .s-item { display:flex; gap:12px; align-items:center; padding:11px 12px; border-radius:12px; font-size:14px; color:#475569; margin-bottom:2px; }
+  .s-item.active { border:1px solid rgba(191,0,255,0.35); background:rgba(191,0,255,0.07); color:#7c16c4; font-weight:600; }
+  .s-item:hover:not(.active) { background:#f8fafc; }
+  .s-foot { padding:12px; border-top:1px solid #eef2f7; }
+  .s-logout { display:flex; gap:12px; width:100%; padding:11px 12px; color:#e11d48; background:transparent; border:0; border-radius:12px; font-size:14px; cursor:pointer; }
+  .s-logout:hover{ background:#fef2f2; }
+
+  /* ===== Main ===== */
+  .main { flex:1; margin-left:260px; }
+  .header { height:72px; display:flex; align-items:center; justify-content:space-between; padding:0 32px; background:rgba(255,255,255,0.85); backdrop-filter:blur(14px); border-bottom:1px solid #e2e8f0; position:sticky; top:0; z-index:30; }
+  .h-avatar { width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#BF00FF,#7066ed);display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px; }
+  .h-actions { display:flex; gap:8px; }
+  .h-btn { width:44px;height:44px;border-radius:16px;display:grid;place-items:center;background:#fff;border:1px solid #e2e8f0;color:#64748b;position:relative;cursor:pointer; }
+  .dot { position:absolute; top:10px; right:10px; width:8px;height:8px;border-radius:50%;background:#e11d48;box-shadow:0 0 0 3px #fff; }
+
+  .content { padding:20px 32px 48px; max-width:1400px; margin:0 auto; width:100%; }
+
+  /* ===== Hero ===== */
+  .hero { border-radius:0 0 32px 32px; background:linear-gradient(100deg,#C44DFF 0%,#BF00FF 30%,#8A00CC 100%); color:#fff; padding:16px 32px 20px; margin:-20px -32px 0; }
+  .hero-top { display:flex; justify-content:space-between; align-items:flex-start; }
+  .hero-time { font-size:34px; font-weight:800; letter-spacing:-0.02em; }
+  .hero-date { font-size:12px; color:rgba(255,255,255,0.65); margin-top:2px; }
+  .hero-actions { display:flex; gap:8px; }
+  .hbtn { width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);display:grid;place-items:center;border:0;cursor:pointer;font-size:16px; }
+  .hero-user { display:flex; gap:16px; align-items:center; margin-top:20px; }
+  .hero-av { width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,0.45),rgba(255,255,255,0.12));border:2px solid rgba(255,255,255,0.45);display:grid;place-items:center;font-size:26px;font-weight:800; }
+  .hero-greet { font-size:14px;color:rgba(255,255,255,0.7); }
+  .hero-name { font-size:20px; font-weight:800; }
+  .hero-meta { display:flex; gap:8px; align-items:center; font-size:12px; color:rgba(255,255,255,0.65); margin-top:4px; }
+  .role-chip { background:rgba(255,255,255,0.2); color:rgba(255,255,255,0.95); font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:4px 10px; border-radius:8px; }
+
+  /* ===== Cards ===== */
+  .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-top:24px; }
+  .card { background:#fff; border:1px solid #e2e8f0; border-radius:28px; padding:20px; box-shadow:0 4px 16px rgba(15,23,42,0.06); transition:all .3s; }
+  .card:hover { transform:translateY(-2px); border-color:rgba(191,0,255,0.3); box-shadow:0 12px 32px rgba(191,0,255,0.12); }
+  .c-top { display:flex; justify-content:space-between; align-items:flex-start; }
+  .c-title { font-size:11px; font-weight:900; letter-spacing:0.18em; text-transform:uppercase; color:#0f172a; }
+  .c-sub { font-size:12px; color:#64748b; margin-top:4px; font-weight:600; }
+  .c-ico { width:44px;height:44px;border-radius:16px; display:grid; place-items:center; color:#fff; box-shadow:0 8px 20px rgba(15,23,42,0.18); }
+  .c-val { font-size:48px; font-weight:900; letter-spacing:-0.03em; margin-top:26px; line-height:1; }
+  .c-note { font-size:12px; color:#64748b; margin-top:16px; }
+  .stack { display:flex; flex-direction:row-reverse; margin-top:16px; }
+  .c-face { width:32px;height:32px;border-radius:50%;border:2px solid #fff;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;margin-left:-8px;box-shadow:0 2px 6px rgba(15,23,42,0.12); }
+  .c-face.more { background:#f1f5f9; color:#64748b; }
+  .grad-v { background:linear-gradient(135deg,#BF00FF,#8A00CC); }
+  .grad-g { background:linear-gradient(135deg,#10b981,#0d9488); }
+  .grad-a { background:linear-gradient(135deg,#f59e0b,#ea580c); }
+  .grad-b { background:linear-gradient(135deg,#0ea5e9,#2563eb); }
+
+  /* ===== Grid ===== */
+  .grid2 { display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-top:20px; }
+  .chart { display:flex; align-items:flex-end; gap:10px; height:190px; margin-top:18px; }
+  .bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .bar-val { font-size:12px; font-weight:700; color:#334155; }
+  .bar { width:100%; border-radius:10px 10px 0 0; background:linear-gradient(180deg,#ddd6fe,#e9d5ff); transition:transform .3s; }
+  .bar.today { background:linear-gradient(180deg,#BF00FF,#a78bfa); box-shadow:0 6px 16px rgba(191,0,255,0.35); }
+  .bar-day { font-size:11px; color:#94a3b8; }
+  .bar-day.today { color:#BF00FF; font-weight:800; }
+  .h2row { display:flex; justify-content:space-between; align-items:center; }
+  .h2 { font-size:16px; font-weight:800; color:#0f172a; }
+  .h2-note { font-size:12px; color:#64748b; display:flex; gap:6px; align-items:center; }
+  .bell-ico { width:34px;height:34px;border-radius:12px;background:#f5f3ff;display:grid;place-items:center;color:#BF00FF; }
+  .ann { padding:12px; background:#f8fafc; border:1px solid #f1f5f9; border-radius:16px; margin-top:10px; }
+  .ann h4 { font-size:14px; font-weight:700; }
+  .ann p { font-size:12px; color:#475569; margin-top:4px; }
+  .ann span { font-size:12px; color:#7032c4; font-weight:600; margin-top:6px; display:block; }
+
+  /* ===== Tables ===== */
+  .tabs { margin-top:20px; display:flex; gap:8px; flex-wrap:wrap; }
+  .tab { padding:8px 16px; border-radius:9999px; font-size:12px; font-weight:600; border:1px solid #e2e8f0; color:#475569; cursor:pointer; background:#fff; }
+  .tab.on { background:rgba(191,0,255,0.08); border-color:rgba(191,0,255,0.35); color:#7c16c4; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th { text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:#64748b; font-weight:700; padding:12px 16px; background:#f8fafc; }
+  td { padding:12px 16px; border-bottom:1px solid #eef2f7; color:#1e293b; }
+  tr:hover td { background:#f8fafc; }
+  .avatar-sm { width:32px;height:32px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;font-size:11px;font-weight:800; }
+  .mono { font-family:ui-monospace,monospace; font-size:13px; }
+  .badge { display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:9999px; font-size:11px; font-weight:700; }
+  .b-hadir { background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; }
+  .b-terlambat { background:#fff7ed; color:#ea580c; border:1px solid #fed7aa; }
+  .b-izin { background:#fefce8; color:#a16207; border:1px solid #fef08a; }
+  .b-sakit { background:#fef2f2; color:#e11d48; border:1px solid #fecaca; }
+  .b-cuti { background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd; }
+  .b-alpha { background:#fef2f2; color:#e11d48; border:1px solid #fecaca; }
+  .b-super_admin { background:#fef2f2; color:#e11d48; border:1px solid #fecaca; }
+  .b-admin_puskesmas { background:#f5f3ff; color:#9333ea; border:1px solid #e9d5ff; }
+  .b-kepala_unit { background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd; }
+  .b-pegawai { background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; }
+  .btn { display:inline-flex; gap:8px; align-items:center; padding:9px 18px; border-radius:9999px; border:0; font-size:13px; font-weight:600; cursor:pointer; }
+  .btn-primary { background:#BF00FF; color:#fff; }
+  .btn-primary:hover { background:#a000e6; }
+  .btn-ghost { background:#fff; border:1px solid #e2e8f0; color:#64748b; }
+  .btn-ghost:hover { background:#f8fafc; color:#0f172a; }
+
+  /* ===== Shift cells ===== */
+  .cal { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
+  .cal-day { aspect-ratio:4/3; border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:11px; font-weight:700; cursor:pointer; }
+  .cal-empty { background:#f8fafc; color:#94a3b8; }
+  .cal-empty:hover { background:#eef2f7; }
+  .cal-today { outline:2px solid #8b5cf6; outline-offset:2px; }
+  .pg { background:#1e40af; color:#fff !important; }
+  .sr { background:#f97316; color:#fff !important; }
+  .si { background:#adff2f; color:#1a2e05 !important; }
+  .ml { background:#8b5cf6; color:#fff !important; }
+  .legend { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+  .chip { display:inline-flex; gap:6px; align-items:center; padding:4px 12px; border-radius:9999px; font-size:10px; font-weight:600; }
+
+  /* ===== Settings tab ===== */
+  .set-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px; }
+  .set-item { padding:12px; background:#f8fafc; border:1px solid #eef2f7; border-radius:18px; }
+  .set-item label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#334155; display:flex; gap:6px; align-items:center; }
+  .set-item .in { width:100%; margin-top:8px; padding:10px 14px; border-radius:14px; border:1px solid #e2e8f0; background:#fff; font-size:14px; color:#0f172a; }
+  .ghost-note { position:fixed; left:50%; transform:translateX(-50%); }
+  footer { text-align:center; font-size:10px; color:#94a3b8; margin-top:28px; }
+  @media (max-width:1100px){ .cards{grid-template-columns:repeat(2,1fr);} .grid2{grid-template-columns:1fr;} .sidebar{display:none;} .main{margin-left:0;} }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="s-logo">
+    <div class="s-brand">
+      <div class="sp" style="width:40px;height:40px;flex-shrink:0;border-radius:12px;overflow:hidden" aria-hidden="true">
+        <svg viewBox="0 0 120 120" fill="none">
+          <ellipse class="sp-ripple" cx="60" cy="66" rx="38" ry="26" style="--sp-delay:0.6s"></ellipse>
+          <ellipse class="sp-ripple" cx="60" cy="66" rx="38" ry="26" style="--sp-delay:2.1s"></ellipse>
+          <path class="sp-draw sp-pin" d="M60 10 C38 10 22 26 22 46 C22 66 43 92 60 106 C77 92 98 66 98 46 C98 26 82 10 60 10 Z" pathLength="100" stroke="#fff"></path>
+          <circle class="sp-draw sp-inner" cx="60" cy="46" r="26" pathLength="100"></circle>
+          <g>
+            <circle class="sp-core sp-core-outer" cx="60" cy="46" r="17"></circle>
+            <circle class="sp-core sp-core-mid" cx="60" cy="46" r="11"></circle>
+            <circle class="sp-core sp-core-dot" cx="60" cy="46" r="5"></circle>
+          </g>
+        </svg>
+      </div>
+      <div style="min-width:0">
+        <h1>Presensiku</h1>
+        <p>Absen anti ribet, kerja makin greget!</p>
+      </div>
+    </div>
+    <button style="flex-shrink:0;width:34px;height:34px;border-radius:10px;background:transparent;border:1px solid rgba(191,0,255,0.35);color:#7c16c4;font-family:inherit;font-weight:700;cursor:pointer;margin-right:12px">✕</button>
+  </div>
+    </div>
+    <div class="s-user">
+      <div class="s-avatar">D</div>
+      <div><div style="font-size:14px;font-weight:700;">dr. H. Ahmad Fauzi</div><div style="font-size:10px;color:#94a3b8;text-transform:capitalize">super admin</div></div>
+    </div>
+    <nav class="s-nav">
+      <p>Menu Utama</p>
+      <div class="s-item active">▦ Dashboard</div>
+      <div class="s-item">👥 Pegawai</div>
+      <div class="s-item">✓ Absensi</div>
+      <div class="s-item">🕘 Riwayat Absensi</div>
+      <div class="s-item">📅 Jadwal Kerja</div>
+      <div class="s-item">📄 Cuti &amp; Izin</div>
+      <div class="s-item">📣 Pengumuman</div>
+      <div class="s-item">⚙ Pengaturan</div>
+    </nav>
+    <div class="s-foot">
+      <button class="s-logout">⏻ Logout</button>
+      <p style="text-align:center;font-size:9px;color:#94a3b8;margin-top:8px">v1.3.0</p>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="header">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="s-avatar" style="width:40px;height:40px">D</div>
+        <div><b style="font-size:15px">Hai, dr. Ahmad Fauzi</b><div style="font-size:11px;color:#64748b">SABTU, 8 AGUSTUS 2026</div></div>
+      </div>
+      <div class="h-actions">
+        <button class="h-btn">🔔<span class="dot"></span></button>
+        <button class="h-btn">⏻</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="hero-time">07:42</div>
+            <div class="hero-date">Sabtu, 8 Agustus 2026</div>
+          </div>
+          <div class="hero-actions"><button class="hbtn">🔔</button><button class="hbtn">⏻</button></div>
+        </div>
+        <div class="hero-user">
+          <div class="hero-av">D</div>
+          <div>
+            <div class="hero-greet">Selamat datang,</div>
+            <div class="hero-name">dr. H. Ahmad Fauzi</div>
+            <div class="hero-meta"><span class="role-chip">Super Admin</span><span>drfauzi@puskesmas.local</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="cards">
+        <div class="card">
+          <div class="c-top"><div><div class="c-title">Total Pegawai</div><div class="c-sub">Seluruh status</div></div><div class="c-ico c-ico"><div class="c-val" style="display:none"></div><div class="c-ico" style="width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,#BF00FF,#8A00CC);display:grid;place-items:center;color:#fff;font-size:19px">👥</div></div></div>
+          <div class="c-val">86</div>
+          <div class="c-note">86 akun terdaftar</div>
+        </div>
+        <div class="card"><div class="c-top"><div><div class="c-title">Hadir Hari Ini</div><div class="c-sub">Sudah check-in</div></div><div class="c-ico" style="width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,#10b981,#0d9488);display:grid;place-items:center;color:#fff;font-size:19px">✔</div></div><div class="c-val">72</div><div class="c-note">72 sudah check-in</div></div>
+        <div class="card"><div class="c-top"><div><div class="c-title">Izin / Sakit</div><div class="c-sub">Hari ini</div></div><div class="c-ico" style="width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,#f59e0b,#ea580c);display:grid;place-items:center;color:#fff;font-size:19px">✚</div></div><div class="c-val">8</div><div class="c-stack"><div class="c-stack"></div></div><div class="c-note">8 perlu dipantau</div></div>
+        <div class="card"><div class="c-top"><div><div class="c-title">Cuti</div><div class="c-sub">Hari ini</div></div><div class="c-ico" style="width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,#0ea5e9,#2563eb);display:grid;place-items:center;color:#fff;font-size:19px">📅</div></div><div class="c-val">3</div><div class="c-note">3 cuti aktif</div></div>
+      </div>
+
+      <!-- CHART + ANNOUNCEMENTS -->
+      <div class="grid2">
+        <div class="card">
+          <div class="h2row"><h2 class="h2">Grafik Presensi 7 Hari</h2><div class="h2-note">📈 Kehadiran harian</div></div>
+          <div class="chart">
+            <div class="bar-col"><span class="bar-val">58</span><div class="bar" style="height:68%"></div><span class="bar-day">Min</span></div>
+            <div class="bar-col"><span class="bar-val">62</span><div class="bar" style="height:74%"></div><span class="bar-day">Sen</span></div>
+            <div class="bar-col"><span class="bar-val">66</span><div class="bar" style="height:79%"></div><span class="bar-day">Sel</span></div>
+            <div class="bar-col"><span class="bar-val">61</span><div class="bar" style="height:72%"></div><span class="bar-day">Rab</span></div>
+            <div class="bar-col"><span class="bar-val">70</span><div class="bar" style="height:84%"></div><span class="bar-day">Kam</span></div>
+            <div class="bar-col"><span class="bar-val">64</span><div class="bar" style="height:76%"></div><span class="bar-day">Jum</span></div>
+            <div class="bar-col"><span class="bar-val">72</span><div class="bar today" style="height:86%"></div><span class="bar-day today">Sab</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="h2row"><h2 class="h2">Pengumuman</h2><div class="bell-ico">🔔</div></div>
+          <div class="ann"><h4>Rapat Koordinasi Bulanan</h4><p>Seluruh pegawai diharap hadir di aula puskesmas...</p><span>8 Agustus 2026</span></div>
+          <div class="ann"><h4>Jadwal Vaksinasi Anak</h4><p>Pelaksanaan imunisasi rutin dimulai minggu depan...</p><span>7 Agustus 2026</span></div>
+        </div>
+      </div>
+
+      <!-- TABLES -->
+      <div class="tabs">
+        <span class="tab on">👥 Manajemen Pegawai</span>
+        <span class="tab">🕘 Riwayat Absensi</span>
+        <span class="tab">📋 Cuti &amp; Izin</span>
+        <span class="tab">📅 Kelola Shift</span>
+      </div>
+      <div class="card" style="margin-top:14px;border-radius:20px;overflow:hidden;padding:0">
+        <div style="display:flex;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #eef2f7">
+          <div><b style="font-size:17px">Riwayat Absensi</b><div style="font-size:12px;color:#94a3b8">Data absensi seluruh pegawai</div></div>
+          <button class="btn btn-primary">⬇ Export CSV</button>
+        </div>
+        <table>
+          <tr><th>Tanggal</th><th>Nama</th><th>Absen Masuk</th><th>Absen Pulang</th><th>Status</th><th>Terlambat</th></tr>
+          <tr><td>8 Agu 2026</td><td><span class="avatar-sm" style="background:linear-gradient(135deg,#BF00FF,#7066ed)">NF</span> <b>Ns. Fitriani, S.Kep</b></td><td class="mono" style="color:#059669">07:28</td><td class="mono" style="color:#e11d48">14:02</td><td><span class="badge b-hadir">✔ HADIR</span></td><td style="color:#94a3b8">–</td></tr>
+          <tr><td>8 Agu 2026</td><td><span class="avatar-sm" style="background:linear-gradient(135deg,#0ea5e9,#2563eb)">BW</span> <b>drg. Baiq Wulan</b></td><td class="mono" style="color:#059669">07:41</td><td class="mono" style="color:#e11d48">-</td><td><span class="badge b-terlambat">⏰ TERLAMBAT</span></td><td style="color:#d97706">+6 menit</td></tr>
+          <tr><td>8 Agu 2026</td><td><span class="avatar-sm" style="background:linear-gradient(135deg,#10b981,#0d9488)">HA</span> <b>H. Abdul Rahim</b></td><td class="mono" style="color:#059669">07:35</td><td class="mono" style="color:#e11d48">-</td><td><span class="badge b-hadir">✔ HADIR</span></td><td style="color:#94a3b8">–</td></tr>
+          <tr><td>8 Agu 2026</td><td><span class="avatar-sm" style="background:linear-gradient(135deg,#f59e0b,#ea580c)">RS</span> <b>Ratna Sari, A.Md</b></td><td class="mono">-</td><td class="mono">-</td><td><span class="badge b-izin">⌛ IZIN</span></td><td style="color:#94a3b8">–</td></tr>
+          <tr><td>8 Agu 2026</td><td><span class="avatar-sm" style="background:linear-gradient(135deg,#e11d48,#be123c)">MH</span> <b>M. Hafiz, A.Md.Kep</b></td><td class="mono">-</td><td class="mono">-</td><td><span class="badge b-sakit">✚ SAKIT</span></td><td style="color:#94a3b8">–</td></tr>
+        </table>
+      </div>
+
+      <!-- TAB PEGAWAI -->
+      <div class="card" style="margin-top:20px;border-radius:20px;padding:0;overflow:hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid #eef2f7">
+          <div><b style="font-size:17px">Manajemen Pegawai</b><div style="font-size:12px;color:#94a3b8;margin-top:2px">Total: <b style="color:#0f172a">86</b> pegawai</div></div>
+          <button class="btn btn-primary">+ Tambah Pegawai</button>
+        </div>
+        <div style="padding:14px 20px"><input class="set-item in" style="width:100%;max-width:380px;border:1px solid #e2e8f0;background:#fff;border-radius:16px;padding:11px 16px 11px 40px;font-size:14px" placeholder="🔍 Cari nama atau username..."></div>
+        <table>
+          <tr><th>Nama</th><th>Username</th><th>Role</th><th>Status</th><th>Jabatan</th><th>Aksi</th></tr>
+          <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#BF00FF,#4d0099)">DF</span> <b>dr. Ahmad Fauzi</b></td><td class="mono">AMP0001</td><td><span class="badge b-super">SUPER_ADMIN</span></td><td><span class="badge b-hadir">ASN</span></td><td>Kepala Puskesmas</td><td><span style="color:#0284c7">✎</span> <span style="color:#e11d48;margin-left:12px">🗑</span></td></tr>
+          <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#0ea5e9,#2563eb)">M</span> <b>Murni, S.KM</b></td><td class="mono">AMP0024</td><td><span class="badge b-admin_puskesmas">ADMIN_PUSKESMAS</span></td><td><span class="badge b-hadir">ASN</span></td><td>Kasubag TU</td><td><span style="color:#0284c7">✎</span> <span style="color:#e11d48;margin-left:12px">🗑</span></td></tr>
+          <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#10b981,#0d9488)">W</span> <b>drg. Winda</b></td><td class="mono">AMP0009</td><td><span class="badge b-kepala_unit">KEPALA_UNIT</span></td><td><span class="badge b-hadir">PPPK PENUH WAKTU</span></td><td>Perawat Gigi</td><td><span style="color:#0284c7">✎</span> <span style="color:#e11d48;margin-left:12px">🗑</span></td></tr>
+          <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#f59e0b,#d97706)">R</span> <b>Rizal Saputra</b></td><td class="mono">AMP0055</td><td><span class="badge b-pegawai">PEGAWAI</span></td><td><span class="badge b-slip">TPK</span></td><td>Cleaning Service</td><td><span style="color:#0284c7">✎</span> <span style="color:#e11d48;margin-left:12px">🗑</span></td></tr>
+        </table>
+      </div>
+
+      <!-- SHIFT -->
+      <div class="card" style="margin-top:20px">
+        <div class="h2row" style="margin-bottom:14px">
+          <div><b style="font-size:17px">Jadwal Shift — Agustus 2026</b><div style="font-size:12px;color:#94a3b8;margin-top:2px">dr. Ahmad Fauzi · 21/31 hari terisi</div></div>
+          <button class="btn btn-ghost">🔄 Copy Bulan Lalu</button>
+        </div>
+        <div class="legend">
+          <span class="chip pg">☀️ Pagi</span><span class="chip sr">🌇 Sore</span><span class="chip sl">⛅ Siang</span><span class="chip ml">🌙 Malam</span><span class="chip" style="background:#f8fafc;border:1px solid #e2e8f0;color:#64748b">✕ Kosong</span>
+        </div>
+        <div class="cal" style="margin-top:16px">
+          <div class="cal-day empty" style="visibility:hidden"></div>
+          <div class="cal-day empty" style="visibility:hidden"></div>
+          <div class="cal-day empty" style="visibility:hidden"></div>
+          <div class="cal-day empty" style="visibility:hidden"></div>
+          <div class="cal-day empty" style="visibility:hidden"></div>
+          <div class="cal-day empty">1<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day empty">2<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day sr">3<br><span style="font-size:8px">SR</span></div>
+          <div class="cal-day empty">4<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day sl">5<br><span style="font-size:8px">SI</span></div>
+          <div class="cal-day ml">6<br><span style="font-size:8px">ML</span></div>
+          <div class="cal-day empty">7<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day pg cal-today">8<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day empty">9<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day sr">10<br><span style="font-size:8px">SR</span></div>
+          <div class="cal-day empty">11<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day empty">12<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day ml">13<br><span style="font-size:8px">ML</span></div>
+          <div class="cal-day empty">14<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day empty">15<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day sl">16<br><span style="font-size:8px">SI</span></div>
+          <div class="cal-day empty">17<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day empty">18<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day sr">19<br><span style="font-size:8px">SR</span></div>
+          <div class="cal-day empty">20<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day empty">21<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day ml">22<br><span style="font-size:8px">ML</span></div>
+          <div class="cal-day empty">23<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day empty">24<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day empty">25<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day sl">26<br><span style="font-size:8px">SI</span></div>
+          <div class="cal-day empty">27<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day empty">28<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day empty">29<br><span style="font-size:8px">PG</span></div>
+          <div class="cal-day ml">30<br><span style="font-size:8px">ML</span></div>
+          <div class="cal-day empty">31<br><span style="font-size:8px">PG</span></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="card" style="margin-top:24px">
+        <div class="h2row" style="margin-bottom:4px"><b style="font-size:17px">Pengaturan — Jam Kerja &amp; Konfigurasi</b><button class="btn btn-primary">💾 Simpan Semua</button></div>
+        <div class="set-grid">
+          <div class="set-item"><label>⏰ Jam Mulai Kerja</label><input class="in" type="time" value="07:30"></div>
+          <div class="set-item"><label>⏰ Jam Selesai Kerja</label><input class="in" type="time" value="14:00"></div>
+          <div class="set-item"><label>⚠ Toleransi Terlambat (menit)</label><input class="in" type="number" value="5"></div>
+          <div class="set-item"><label>📍 Radius GPS Default (meter)</label><input class="in" type="number" value="200"></div>
+        </div>
+      </div>
+
+      <footer>v1.3.0 — Presensiku · Admin &amp; Super Admin Light Mode Preview</footer>
+    </div>
+  </div>
+</div>
+</body>
+</html>

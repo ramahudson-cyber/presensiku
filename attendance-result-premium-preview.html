@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Result — Premium Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+
+    .phone-frame {
+      width: 380px;
+      height: 780px;
+      border-radius: 44px;
+      background: #000;
+      box-shadow:
+        0 0 0 2px #1a1a1a,
+        0 30px 80px rgba(0,0,0,0.7),
+        0 0 40px rgba(191,0,255,0.15);
+      overflow: hidden;
+      position: relative;
+    }
+    .phone-notch {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 26px;
+      background: #000;
+      border-radius: 0 0 18px 18px;
+      z-index: 10;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 44px;
+      overflow: hidden;
+      position: relative;
+    }
+    .status-bar {
+      position: absolute;
+      top: 14px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
+      z-index: 5;
+    }
+
+    /* Background gradient */
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 25%, #BF00FF 0%, #9900CC 25%, #2B0066 55%, #05020b 95%);
+    }
+    .bg-layer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(255,0,153,0.2), transparent 40%),
+        radial-gradient(circle at 80% 85%, rgba(112,102,237,0.2), transparent 40%);
+    }
+
+    /* Confetti — jatuh terus-menerus */
+    .confetti {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 2;
+    }
+    .confetti span {
+      position: absolute;
+      display: block;
+      border-radius: 1px;
+      animation: confetti-fall linear infinite;
+      top: -20px;
+    }
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-20px) rotate(0deg) translateX(0);
+        opacity: 1;
+      }
+      70% { opacity: 1; }
+      100% {
+        transform: translateY(820px) rotate(var(--rot, 720deg)) translateX(var(--sway, 30px));
+        opacity: 0;
+      }
+    }
+    .c1 { background: #BF00FF; }
+    .c2 { background: #FF0099; }
+    .c3 { background: #ADFF2F; }
+    .c4 { background: #FBBF24; }
+    .c5 { background: #7B00E0; }
+    .c6 { background: #3B82F6; }
+
+    /* Modal card */
+    .modal-card {
+      position: absolute;
+      top: 60px;
+      left: 24px;
+      right: 24px;
+      bottom: 60px;
+      background: linear-gradient(165deg, #8B00CC 0%, #7B00E0 20%, #4A0099 55%, #05020b 100%);
+      border: 1px solid rgba(255,0,153,0.4);
+      border-radius: 28px;
+      padding: 28px 22px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 5;
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.6),
+        0 0 40px rgba(191,0,255,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .modal-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(circle at 50% 5%, rgba(255,0,153,0.35), transparent 50%),
+        radial-gradient(circle at 50% 95%, rgba(112,102,237,0.25), transparent 50%);
+      border-radius: 28px;
+      pointer-events: none;
+    }
+
+    @keyframes badge-bounce {
+      0%, 100% { transform: rotate(-6deg) scale(1); }
+      50% { transform: rotate(-6deg) scale(1.05); }
+    }
+
+    /* 3D Badge */
+    .badge-3d {
+      width: 76px;
+      height: 76px;
+      background: linear-gradient(145deg, #FF0099 0%, #BF00FF 50%, #7B00E0 100%);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 16px;
+      transform: rotate(-6deg);
+      animation: badge-bounce 2s ease-in-out infinite;
+      box-shadow:
+        0 10px 24px rgba(191,0,255,0.4),
+        0 4px 8px rgba(0,0,0,0.3),
+        inset 0 -3px 6px rgba(0,0,0,0.2),
+        inset 0 3px 6px rgba(255,255,255,0.2);
+    }
+    .badge-3d::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 22px;
+      background: linear-gradient(145deg, #FF0099, #7B00E0);
+      z-index: -1;
+      opacity: 0.35;
+      filter: blur(6px);
+    }
+    .badge-3d.late {
+      background: linear-gradient(145deg, #FBBF24 0%, #F59E0B 50%, #D97706 100%);
+    }
+    .badge-3d.late::after {
+      background: linear-gradient(145deg, #FBBF24, #D97706);
+    }
+
+    .modal-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: white;
+      text-align: center;
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+    .modal-subtitle {
+      font-size: 11px;
+      color: white;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      margin-bottom: 14px;
+    }
+    .stat-box {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .stat-box .label {
+      font-size: 9px;
+      font-weight: 600;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .stat-box .value {
+      font-size: 16px;
+      font-weight: 800;
+      color: white;
+      margin-top: 2px;
+    }
+    .value.green { color: #ADFF2F; }
+    .value.amber { color: #FBBF24; }
+
+    /* Detail */
+    .detail-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 12px;
+      width: 100%;
+      border-radius: 10px;
+    }
+    .detail-item .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .icon-box {
+      width: 26px;
+      height: 26px;
+      background: rgba(191,0,255,0.12);
+      border: 1px solid rgba(191,0,255,0.25);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .name {
+      font-size: 10px;
+      font-weight: 600;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .val {
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+    }
+    .loc-sub {
+      font-size: 10px;
+      font-weight: 400;
+      color: white;
+      display: block;
+      margin-top: 1px;
+    }
+    .right-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-left: 8px;
+    }
+    .right-badge.green { color: #ADFF2F; background: rgba(173,255,47,0.1); }
+    .right-badge.amber { color: #FBBF24; background: rgba(251,191,36,0.1); }
+    .divider { height: 1px; background: rgba(255,255,255,0.05); width: 100%; margin: 2px 0; }
+
+    /* Late badge */
+    .late-badge {
+      font-size: 9px;
+      font-weight: 600;
+      color: #FBBF24;
+      background: rgba(251,191,36,0.1);
+      border: 1px solid rgba(251,191,36,0.2);
+      border-radius: 20px;
+      padding: 3px 10px;
+      margin-bottom: 14px;
+    }
+
+    /* Progress dots */
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .progress-dot {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .progress-dot.done {
+      background: rgba(173,255,47,0.15);
+      border: 1px solid #ADFF2F;
+      color: #ADFF2F;
+    }
+    .progress-dot.active {
+      background: rgba(191,0,255,0.2);
+      border: 1px solid #BF00FF;
+      color: #BF00FF;
+    }
+    .progress-dot.pending {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.25);
+    }
+    .progress-connector {
+      width: 12px;
+      height: 1px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* Continue button */
+    .btn-continue {
+      width: 100%;
+      padding: 14px 0;
+      background: linear-gradient(135deg, #BF00FF 0%, #9900CC 50%, #7B00E0 100%);
+      border: none;
+      border-radius: 16px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      margin-top: 14px;
+      box-shadow:
+        0 8px 24px rgba(191,0,255,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+      transition: all 0.2s;
+    }
+    .btn-continue:hover { filter: brightness(1.1); }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#0a0510]">
+
+<div style="display:flex; gap:50px; padding:30px; align-items:center; flex-wrap:wrap; justify-content:center;">
+
+  <!-- ===== CASE 1: TEPAT WAKTU — CHECK IN ===== -->
+  <div>
+    <p class="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-3 text-center">✓ Tepat Waktu — Check In</p>
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="bg-layer"></div>
+
+        <div class="confetti" id="confetti1"></div>
+
+        <div class="status-bar"><span>9:41</span><span>●●●●●</span></div>
+
+        <div class="modal-card">
+          <div class="badge-3d">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/>
+            </svg>
+          </div>
+
+          <h2 class="modal-title">Absen Masuk!</h2>
+          <p class="modal-subtitle">Senin, 27 Juli 2026</p>
+
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="label">Masuk</div>
+              <div class="value green">07:15</div>
+            </div>
+            <div class="stat-box">
+              <div class="label">Status</div>
+              <div class="value green">Tepat Waktu</div>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="left">
+              <div class="icon-box">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="4" width="18" height="18" rx="2" fill="#BF00FF" opacity="0.2"/>
+                  <rect x="3" y="4" width="18" height="18" rx="2" stroke="#BF00FF" stroke-width="1.5"/>
+                  <path d="M16 2v4M8 2v4M3 10h18" stroke="#BF00FF" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="name">Shift</span>
+            </div>
+            <span class="val">Pagi (PG)</span>
+          </div>
+          <div class="divider"></div>
+          <div class="detail-item">
+            <div class="left">
+              <div class="icon-box">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                  <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 0116 0z" fill="#BF00FF" opacity="0.2"/>
+                  <circle cx="12" cy="10" r="5" fill="#BF00FF"/>
+                  <circle cx="12" cy="10" r="2" fill="white"/>
+                  <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 0116 0z" stroke="#BF00FF" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <div>
+                <span class="name">Lokasi</span>
+                <span class="loc-sub">32m dari Puskes</span>
+              </div>
+            </div>
+            <span class="right-badge green">Valid</span>
+          </div>
+          <div class="divider"></div>
+          <div class="detail-item">
+            <div class="left">
+              <div class="icon-box">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" fill="#ADFF2F" opacity="0.2" stroke="#ADFF2F" stroke-width="1.5"/>
+                  <path d="M16 8l-6 8-3-3" stroke="#ADFF2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <span class="name">Status</span>
+            </div>
+            <span class="val green">Tepat Waktu</span>
+          </div>
+
+          <button class="btn-continue">Lanjut</button>
+        </div>
+      </div>
+      <div class="phone-notch"></div>
+    </div>
+  </div>
+
+  <!-- ===== CASE 2: TERLAMBAT — CHECK IN ===== -->
+  <div>
+    <p class="text-[10px] uppercase tracking-widest text-amber-400 font-bold mb-3 text-center">⚠ Terlambat 277 menit</p>
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="bg-layer"></div>
+        <div class="confetti" id="confetti2"></div>
+        <div class="status-bar"><span>12:07</span><span>●●●●●</span></div>
+
+        <div class="modal-card">
+          <div class="badge-3d late">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+
+          <h2 class="modal-title">Absen Masuk!</h2>
+          <p class="modal-subtitle">Senin, 27 Juli 2026</p>
+          <span class="late-badge">⚠ Keterlambatan tercatat</span>
+
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="label">Masuk</div>
+              <div class="value amber">12:07</div>
+            </div>
+            <div class="stat-box">
+              <div class="label">Terlambat</div>
+              <div class="value amber">277m</div>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="left">
+              <div class="icon-box">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="4" width="18" height="18" rx="2" fill="#BF00FF" opacity="0.2"/>
+                  <rect x="3" y="4" width="18" height="18" rx="2" stroke="#BF00FF" stroke-width="1.5"/>
+                  <path d="M16 2v4M8 2v4M3 10h18" stroke="#BF00FF" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="name">Shift</span>
+            </div>
+            <span class="val">Pagi (PG)</span>
+          </div>
+          <div class="divider"></div>
+          <div class="detail-item">
+            <div class="left">
+              <div class="icon-box">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                  <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 0116 0z" fill="#BF00FF" opacity="0.2"/>
+                  <circle cx="12" cy="10" r="5" fill="#BF00FF"/>
+                  <circle cx="12" cy="10" r="2" fill="white"/>
+                  <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 0116 0z" stroke="#BF00FF" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <div>
+                <span class="name">Lokasi</span>
+                <span class="loc-sub">32m dari Puskes</span>
+              </div>
+            </div>
+            <span class="right-badge green">Valid</span>
+          </div>
+          <div class="divider"></div>
+          <div class="detail-item">
+            <div class="left">
+              <div class="icon-box">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" fill="#FBBF24" opacity="0.2" stroke="#FBBF24" stroke-width="1.5"/>
+                  <path d="M16 8l-6 8-3-3" stroke="#FBBF24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <span class="name">Status</span>
+            </div>
+            <span class="val amber">Terlambat 277m</span>
+          </div>
+
+          <button class="btn-continue">Lanjut</button>
+        </div>
+      </div>
+      <div class="phone-notch"></div>
+	</div>
+  </div>
+
+  <!-- ===== CASE 3: ABSEN PULANG — CHECK OUT ===== -->
+  <div>
+    <p class="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-3 text-center">↩ Absen Pulang — Tepat Waktu</p>
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="bg-layer"></div>
+        <div class="confetti" id="confetti3"></div>
+        <div class="status-bar"><span>14:00</span><span>●●●●●</span></div>
+
+        <div class="modal-card">
+          <div class="badge-3d">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </div>
+
+          <h2 class="modal-title">Absen Pulang!</h2>
+          <p class="modal-subtitle">Senin, 27 Juli 2026</p>
+
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="label">Pulang</div>
+              <div class="value green">14:00</div>
+            </div>
+            <div class="stat-box">
+              <div class="label">Total</div>
+              <div class="value green">6j 45m</div>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="left">
+              <div class="icon-box">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="4" width="18" height="18" rx="2" fill="#BF00FF" opacity="0.2"/>
+                  <rect x="3" y="4" width="18" height="18" rx="2" stroke="#BF00FF" stroke-width="1.5"/>
+                  <path d="M16 2v4M8 2v4M3 10h18" stroke="#BF00FF" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="name">Shift</span>
+            </div>
+            <span class="val">Pagi (PG)</span>
+          </div>
+          <div class="divider"></div>
+          <div class="detail-item">
+            <div class="left">
+              <div class="icon-box">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                  <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 0116 0z" fill="#BF00FF" opacity="0.2"/>
+                  <circle cx="12" cy="10" r="5" fill="#BF00FF"/>
+                  <circle cx="12" cy="10" r="2" fill="white"/>
+                  <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 0116 0z" stroke="#BF00FF" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <div>
+                <span class="name">Lokasi</span>
+                <span class="loc-sub">32m dari Puskes</span>
+              </div>
+            </div>
+            <span class="right-badge green">Valid</span>
+          </div>
+          <div class="divider"></div>
+          <div class="detail-item">
+            <div class="left">
+              <div class="icon-box">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" fill="#ADFF2F" opacity="0.2" stroke="#ADFF2F" stroke-width="1.5"/>
+                  <path d="M16 8l-6 8-3-3" stroke="#ADFF2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <span class="name">Status</span>
+            </div>
+            <span class="val green">Selesai</span>
+          </div>
+
+          <button class="btn-continue">Lanjut</button>
+        </div>
+      </div>
+      <div class="phone-notch"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Generate 80 confetti particles per container
+  function fillConfetti(containerId, count = 80) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const colors = ['c1','c2','c3','c4','c5','c6'];
+    const delays = [];
+    for (let i = 0; i < count; i++) {
+      const left = (Math.random() * 100).toFixed(1) + '%';
+      const w = (3 + Math.random() * 4).toFixed(1) + 'px';
+      const h = (3 + Math.random() * 4).toFixed(1) + 'px';
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const delay = (Math.random() * 3).toFixed(1) + 's';
+      const duration = (2.5 + Math.random() * 1.5).toFixed(1) + 's';
+      const rot = (Math.random() > 0.5 ? '' : '-') + Math.floor(720 + Math.random() * 720);
+      const sway = (Math.random() * 80 - 40).toFixed(0) + 'px';
+      el.innerHTML += `<span class="${color}" style="left:${left};width:${w};height:${h};animation-delay:${delay};animation-duration:${duration};--rot:${rot}deg;--sway:${sway};"></span>`;
+    }
+  }
+  fillConfetti('confetti1', 80);
+  fillConfetti('confetti2', 80);
+  fillConfetti('confetti3', 80);
+</script>
+</body>
+</html>

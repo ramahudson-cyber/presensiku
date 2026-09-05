@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview — Kepala Unit Monitoring Light (Hadir.Kuy)</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',ui-sans-serif,system-ui,sans-serif; background:#F4F2FB; color:#0f172a; }
+  .app { display:flex; min-height:100vh; }
+  .sidebar { width:260px; background:#fff; border-right:1px solid #e2e8f0; position:fixed; top:0; bottom:0; display:flex; flex-direction:column; z-index:40; }
+  .s-logo { padding:20px; display:flex; gap:12px; align-items:center; border-bottom:1px solid #eef2f7; }
+  .s-badge { width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg,#BF00FF,#5b21b6); display:grid; place-items:center; color:#fff; font-weight:800; font-size:18px; }
+  .s-logo h1 { font-size:17px; font-weight:800; }
+  .s-logo p { font-size:10px; color:#94a3b8; }
+  .s-user { padding:14px 18px; display:flex; gap:10px; align-items:center; border-bottom:1px solid #eef2f7; background:#faf9ff; }
+  .s-avatar { width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#BF00FF,#7066ed);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800; }
+  .s-nav { flex:1; padding:14px 10px; }
+  .s-nav p { font-size:9px; font-weight:700; color:#94a3b8; letter-spacing:0.15em; text-transform:uppercase; padding:0 12px 8px; }
+  .s-item { display:flex; gap:12px; align-items:center; padding:11px 12px; border-radius:12px; font-size:14px; color:#475569; margin-bottom:2px; }
+  .s-item.active { border:1px solid rgba(191,0,255,0.35); background:rgba(191,0,255,0.07); color:#7c16c4; font-weight:600; }
+  .s-foot { padding:12px; border-top:1px solid #eef2f7; }
+
+  .main { flex:1; margin-left:260px; min-width:0; }
+  .content { padding:24px 32px; max-width:1400px; margin:0 auto; }
+
+  /* Hero — dashboard style, HEAD removed (langsung ke badan) */
+  .hero { border-radius:0 0 32px 32px; background:linear-gradient(100deg,#4A0099 0%,#8A00CC 40%,#BF00FF 100%); color:#fff; padding:20px 32px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+  .hero-left { display:flex; align-items:center; gap:18px; }
+  .hero-av { width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,0.45),rgba(255,255,255,0.12));border:2px solid rgba(255,255,255,0.45);display:grid;place-items:center;font-size:28px;font-weight:800; }
+  .hero-greet { font-size:13px;color:rgba(255,255,255,0.7); }
+  .hero-name { font-size:21px;font-weight:800; }
+  .hero-meta { display:flex;gap:8px;align-items:center;font-size:12px;color:rgba(255,255,255,0.65);margin-top:4px; }
+  .role-chip { background:rgba(255,255,255,0.2); color:rgba(255,255,255,0.95); font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:4px 10px; border-radius:8px; }
+  .hero-right { display:flex; gap:10px; align-items:center; }
+  .hero-stat { text-align:center; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.18); border-radius:20px; padding:12px 22px; min-width:110px; }
+  .hero-stat b { font-size:24px; display:block; }
+  .hero-stat span { font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.75); font-weight:700; }
+
+  .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-top:24px; }
+  .card { background:#fff; border:1px solid #e2e8f0; border-radius:28px; padding:20px; box-shadow:0 4px 16px rgba(15,23,42,0.06); transition:all .3s; }
+  .card:hover { transform:translateY(-2px); border-color:rgba(191,0,255,0.3); box-shadow:0 12px 32px rgba(191,0,255,0.12); }
+  .c-top { display:flex; justify-content:space-between; align-items:flex-start; }
+  .c-title { font-size:11px; font-weight:900; letter-spacing:0.18em; text-transform:uppercase; color:#0f172a; }
+  .c-sub { font-size:12px; color:#64748b; margin-top:4px; font-weight:600; }
+  .c-val { font-size:48px; font-weight:900; letter-spacing:-0.03em; margin-top:30px; line-height:1; }
+  .c-note { font-size:12px; color:#64748b; margin-top:16px; }
+  .c-ico { width:44px;height:44px;border-radius:16px; display:grid; place-items:center; color:#fff; box-shadow:0 8px 20px rgba(15,23,42,0.18); font-size:19px; }
+
+  .grid2 { display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-top:20px; }
+  .h2row { display:flex; justify-content:space-between; align-items:center; }
+  .h2 { font-size:16px; font-weight:800; color:#0f172a; }
+  .h2-note { font-size:12px; color:#64748b; display:flex; gap:6px; align-items:center; }
+  .chart { display:flex; align-items:flex-end; gap:10px; height:190px; margin-top:18px; }
+  .bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .bar { width:100%; border-radius:10px 10px 0 0; background:linear-gradient(180deg,#ddd6fe,#e9d5ff); }
+  .bar.today { background:linear-gradient(180deg,#BF00FF,#a78bfa); box-shadow:0 6px 16px rgba(191,0,255,0.35); }
+  .bar-val { font-size:12px; font-weight:700; color:#334155; }
+  .bar-day { font-size:11px; color:#94a3b8; }
+  .bar-day.today { color:#BF00FF; font-weight:800; }
+  .bell-ico { width:34px;height:34px;border-radius:12px;background:#f5f3ff;display:grid;place-items:center;color:#BF00FF; }
+  .ann { padding:12px; background:#f8fafc; border:1px solid #f1f5f9; border-radius:16px; margin-top:10px; }
+  .ann h4 { font-size:14px; font-weight:700; }
+  .ann p { font-size:12px; color:#475569; margin-top:4px; }
+  .ann span { font-size:12px; color:#7032c4; font-weight:600; margin-top:6px; display:block; }
+
+  /* unit attendance table */
+  .unit-table { margin-top:20px; border-radius:24px; overflow:hidden; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th { text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:#64748b; font-weight:700; padding:12px 24px; background:#f8fafc; border-bottom:1px solid #eef2f7; }
+  td { padding:12px 24px; border-bottom:1px solid #eef2f7; color:#1e293b; }
+  tr:hover td { background:#f8fafc; }
+  .avatar-sm { width:32px;height:32px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;font-size:11px;font-weight:800;vertical-align:middle; }
+  .mono { font-family:ui-monospace,monospace; font-size:13px; }
+  .badge { display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:9999px; font-size:11px; font-weight:700; }
+  .b-hadir { background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; }
+  .b-terlambat { background:#fff7ed; color:#ea580c; border:1px solid #fed7aa; }
+  .b-izin { background:#fefce8; color:#a16207; border:1px solid #fef08a; }
+  .b-sakit { background:#fef2f2; color:#e11d48; border:1px solid #fecaca; }
+  .b-cuti { background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd; }
+  .b-alpha { background:#fef2f2; color:#e11d48; border:1px solid #fecaca; }
+  footer { text-align:center; font-size:10px; color:#94a3b8; padding:24px; }
+  @media (max-width:1100px){ .cards{grid-template-columns:repeat(2,1fr);} .grid2{grid-template-columns:1fr;} .sidebar{display:none;} .main{margin-left:0;} }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="s-logo"><div class="s-badge">📍</div><div><h1>Presensiku</h1><p>Absen anti ribet, kerja makin greget!</p></div></div>
+    <div class="s-user"><div class="s-avatar">W</div><div><div style="font-size:14px;font-weight:700;">drg. Winda</div><div style="font-size:10px;color:#94a3b8;text-transform:capitalize">kepala unit</div></div></div>
+    <nav class="s-nav">
+      <p>Menu Utama</p>
+      <div class="s-item active">📊 Dashboard Monitoring</div>
+      <div class="s-item">✓ Absensi Unit</div>
+      <div class="s-item">🕘 Riwayat Unit</div>
+      <div class="s-item">📣 Pengumuman</div>
+    </nav>
+    <div class="s-foot"><p style="text-align:center;font-size:9px;color:#94a3b8">Poli Gigi · v1.3.0</p></div>
+  </aside>
+
+  <div class="main">
+    <div class="hero">
+      <div class="hero-left">
+        <div class="hero-av">W</div>
+        <div>
+          <div class="hero-greet">Selamat datang,</div>
+          <div class="hero-name">drg. Winda</div>
+          <div class="hero-meta"><span class="role-chip">Kepala Unit · Poli Gigi</span><span>07:42 WITA · Sabtu, 8 Agustus 2026</span></div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-stat"><b>11</b><span>Pegawai Unit</span></div>
+        <div class="hero-stat"><b>9</b><span>Hadir</span></div>
+        <div class="hero-stat"><b>2</b><span>Izin / Sakit</span></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="cards">
+        <div class="card"><div class="c-top"><div><div class="c-title">Total Pegawai</div><div class="c-sub">Unit Poli Gigi</div></div><div class="c-ico grad-v" style="background:linear-gradient(135deg,#BF00FF,#8A00CC)">👥</div></div><div class="c-val">11</div><div class="c-note">11 orang terdaftar</div></div>
+        <div class="card"><div class="c-top"><div><div class="c-title">Hadir Hari Ini</div><div class="c-sub">Sudah check-in</div></div><div class="c-ico" style="background:linear-gradient(135deg,#10b981,#0d9488)">✔</div></div><div class="c-val">9</div><div class="c-note">9 sudah check-in</div></div>
+        <div class="card"><div class="c-top"><div><div class="c-title">Izin / Sakit</div><div class="c-sub">Hari ini</div></div><div class="c-ico" style="background:linear-gradient(135deg,#f59e0b,#ea580c)">✚</div></div><div class="c-val">1</div><div class="c-note">1 perlu dipantau</div></div>
+        <div class="card"><div class="c-top"><div><div class="c-title">Cuti</div><div class="c-sub">Hari ini</div></div><div class="c-ico" style="background:linear-gradient(135deg,#0ea5e9,#2563eb)">📅</div></div><div class="c-val">1</div><div class="c-note">1 cuti aktif</div></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="h2row"><h2 class="h2">Grafik Presensi Unit — 7 Hari</h2><div class="h2-note">📈 Kehadiran harian</div></div>
+          <div class="chart">
+            <div class="bar-col"><span class="bar-val">7</span><div class="bar" style="height:62%"></div><span class="bar-day">Min</span></div>
+            <div class="bar-col"><span class="bar-val">8</span><div class="bar" style="height:72%"></div><span class="bar-day">Sen</span></div>
+            <div class="bar-col"><span class="bar-val">9</span><div class="bar" style="height:82%"></div><span class="bar-day">Sel</span></div>
+            <div class="bar-col"><span class="bar-val">8</span><div class="bar" style="height:74%"></div><span class="bar-day">Rab</span></div>
+            <div class="bar-col"><span class="bar-val">8</span><div class="bar" style="height:76%"></div><span class="bar-day">Kam</span></div>
+            <div class="bar-col"><span class="bar-val">7</span><div class="bar" style="height:68%"></div><span class="bar-day">Jum</span></div>
+            <div class="bar-col"><span class="bar-val">9</span><div class="bar today" style="height:85%"></div><span class="bar-day today">Sab</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="h2row"><h2 class="h2">Pengumuman</h2><div class="bell-ico">🔔</div></div>
+          <div class="ann"><h4>SOP Sterilisasi Alat</h4><p>Perbaruan prosedur sterilisasi berlaku mulai pekan depan...</p><span>7 Agustus 2026</span></div>
+          <div class="ann"><h4>Pemeriksaan Berkala</h4><p>Stok bahan kedokteran gigi akan dicek Kamis...</p><span>6 Agustus 2026</span></div>
+        </div>
+      </div>
+
+      <div class="card unit-table">
+        <div class="h2row" style="padding:18px 24px;border-bottom:1px solid #eef2f7">
+          <div><b style="font-size:16px">Absensi Unit Hari Ini</b><div style="font-size:12px;color:#64748b;margin-top:2px">Sabtu, 8 Agustus 2026 · Poli Gigi</div></div>
+          <span class="badge b-hadir">9 / 11 HADIR</span>
+        </div>
+        <table>
+          <tr><th>Nama</th><th>Shift</th><th>Absen Masuk</th><th>Absen Pulang</th><th>Status</th></tr>
+          <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#BF00FF,#7066ed)">WI</span>&nbsp; <b>drg. Winda</b></td><td><span style="background:#1e40af;color:#fff;padding:2px 10px;border-radius:9999px;font-size:10px;font-weight:700">PAGI</span></td><td class="mono" style="color:#059669">07:32</td><td class="mono" style="color:#334155">-</td><td><span class="badge b-hadir">✔ HADIR</span></td></tr>
+          <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#10b981,#0d9488)">DR</span>&nbsp; <b>Dedi Ramdani</b></td><td><span style="background:#1e40af;color:#fff;padding:2px 10px;border-radius:9999px;font-size:10px;font-weight:700">PAGI</span></td><td class="mono" style="color:#059669">07:28</td><td class="mono" style="color:#334155">-</td><td><span class="badge b-hadir">✔ HADIR</span></td></tr>
+          <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#f59e0b,#d97706)">NI</span>&nbsp; <b>Nita Pratama</b></td><td><span style="background:#1e40af;color:#fff;padding:2px 10px;border-radius:9999px;font-size:10px;font-weight:700">PAGI</span></td><td class="mono" style="color:#059669">07:41</td><td class="mono" style="color:#334155">-</td><td><span class="badge b-terlambat">⏰ TERLAMBAT</span></td></tr>
+          <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#0ea5e9,#2563eb)">YU</span>&nbsp; <b>Yusuf Maulana</b></td><td><span style="background:#f97316;color:#fff;padding:2px 10px;border-radius:9999px;font-size:10px;font-weight:700">SORE</span></td><td class="mono" style="color:#94a3b8">-</td><td class="mono" style="color:#94a3b8">-</td><td><span class="badge b-izin">⌛ IZIN</span></td></tr>
+          <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#e11d48,#be123c)">AR</span>&nbsp; <b>Arif Rahman</b></td><td><span style="background:#8b5cf6;color:#fff;padding:2px 10px;border-radius:9999px;font-size:10px;font-weight:700">MALAM</span></td><td class="mono" style="color:#059669">20:03</td><td class="mono" style="color:#94a3b8">-</td><td><span class="badge b-hadir">✔ HADIR</span></td></tr>
+        </table>
+      </div>
+      <footer>v1.3.0 — Presensiku · Kepala Unit Monitoring Light Mode Preview</footer>
+    </div>
+  </div>
+</div>
+</body>
+</html>

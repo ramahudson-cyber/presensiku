@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview — Admin Tables Light (Hadir.Kuy)</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',ui-sans-serif,system-ui,sans-serif; background:#F4F2FB; color:#0f172a; padding:32px; }
+  .wrap { max-width:1200px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  .hdr { display:flex; justify-content:space-between; align-items:center; }
+  .hdr h1 { font-size:22px; font-weight:800; }
+  .hdr p { font-size:12px; color:#94a3b8; margin-top:2px; }
+  .card { background:#fff; border:1px solid #e2e8f0; border-radius:24px; box-shadow:0 4px 16px rgba(15,23,42,0.06); overflow:hidden; }
+  .card-h { display:flex; justify-content:space-between; align-items:center; padding:18px 24px; border-bottom:1px solid #eef2f7; }
+  .card-h b { font-size:16px; }
+  .card-h .sub { font-size:12px; color:#64748b; margin-top:2px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th { text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:#64748b; font-weight:700; padding:12px 24px; background:#f8fafc; border-bottom:1px solid #eef2f7; }
+  td { padding:12px 24px; border-bottom:1px solid #eef2f7; color:#1e293b; }
+  tr:last-child td { border-bottom:0; }
+  tr:hover td { background:#f8fafc; }
+  .mono { font-family:ui-monospace,monospace; font-size:13px; }
+  .badge { display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:9999px; font-size:11px; font-weight:700; }
+  .b-hadir { background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; }
+  .b-terlambat { background:#fff7ed; color:#ea580c; border:1px solid #fed7aa; }
+  .b-izin { background:#fefce8; color:#a16207; border:1px solid #fef08a; }
+  .b-sakit { background:#fef2f2; color:#e11d48; border:1px solid #fecaca; }
+  .b-cuti { background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd; }
+  .b-alpha { background:#fef2f2; color:#e11d48; border:1px solid #fecaca; }
+  .b-super_admin { background:#fef2f2; color:#e11d48; border:1px solid #fecaca; }
+  .b-admin_puskesmas { background:#f5f3ff; color:#9333ea; border:1px solid #e9d5ff; }
+  .b-kepala_unit { background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd; }
+  .b-pegawai { background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; }
+  .b-asn { background:#f5f3ff; color:#6d28d9; border:1px solid #e9d5ff; }
+  .b-pppk { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+  .b-tpk { background:#f8fafc; color:#475569; border:1px solid #e2e8f0; }
+  .avatar-sm { width:32px;height:32px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;font-size:11px;font-weight:800; vertical-align:middle; }
+  .btn { display:inline-flex; gap:8px; align-items:center; padding:9px 18px; border-radius:9999px; border:0; font-size:13px; font-weight:600; cursor:pointer; }
+  .btn-primary { background:#BF00FF; color:#fff; }
+  .btn-primary:hover { background:#a000e6; }
+  .btn-ghost { background:#fff; border:1px solid #e2e8f0; color:#64748b; }
+  .btn-ghost:hover { background:#f8fafc; }
+  .icon-btn { width:32px;height:32px;border-radius:10px;border:0;cursor:pointer;color:#fff;font-size:13px;display:inline-grid;place-items:center; }
+  .ic-edit { background:rgba(2,132,199,0.12); color:#0284c7; }
+  .ic-edit:hover { background:rgba(2,132,199,0.2); }
+  .ic-del { background:rgba(225,29,72,0.1); color:#e11d48; margin-left:6px; }
+  .ic-del:hover { background:rgba(225,29,72,0.18); }
+  .pagination { display:flex; justify-content:space-between; align-items:center; padding:14px 24px; border-top:1px solid #eef2f7; font-size:12px; color:#64748b; }
+  .pg-btn { padding:6px 14px; border-radius:9999px; border:1px solid #e2e8f0; background:#fff; color:#475569; font-size:12px; font-weight:600; cursor:pointer; }
+  .pg-btn.on { background:linear-gradient(135deg,#BF00FF,#8A00CC); color:#fff; border-color:transparent; }
+  .pg-btn:hover:not(.on) { background:#f8fafc; }
+  .search { border:1px solid #e2e8f0; background:#fff; border-radius:16px; padding:11px 16px 11px 42px; font-size:14px; width:320px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:14px center; }
+  .modal { position:relative; background:#fff; border-radius:28px; padding:28px; border:1px solid #e2e8f0; box-shadow:0 24px 64px rgba(15,23,42,0.18); }
+  .modal h3 { font-size:17px; font-weight:800; margin-bottom:16px; }
+  label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#334155; display:block; margin:12px 0 6px; }
+  .in { width:100%; padding:11px 14px; border-radius:14px; border:1px solid #e2e8f0; background:#fff; font-size:14px; color:#0f172a; }
+  .in:focus { outline:2px solid rgba(191,0,255,0.35); border-color:#BF00FF; }
+  .modal-foot { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; }
+  .note { font-size:11px; color:#94a3b8; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hdr">
+    <div><h1>Preview — Tabel &amp; Badge Light Mode</h1><p>Pegawai · Riwayat Absensi · Cuti &amp; Izin · Modal form</p></div>
+    <span class="badge b-admin_puskesmas">ADMIN_PUSKESMAS · LIGHT ONLY</span>
+  </div>
+
+  <!-- PEGAWAI -->
+  <div class="card">
+    <div class="card-h">
+      <div><b>Manajemen Pegawai</b><div class="sub">Total: <b style="color:#0f172a">86</b> pegawai terdaftar</div></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <input class="search" placeholder="Cari nama atau username...">
+        <button class="btn btn-primary">+ Tambah Pegawai</button>
+      </div>
+    </div>
+    <table>
+      <tr><th>Nama</th><th>Username</th><th>Role</th><th>Status</th><th>Jabatan</th><th style="text-align:center">Aksi</th></tr>
+      <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#BF00FF,#4d0099)">DF</span>&nbsp; <b>dr. Ahmad Fauzi</b></td><td class="mono">AMP0001</td><td><span class="badge b-super_admin">SUPER_ADMIN</span></td><td><span class="badge b-asn">ASN</span></td><td>Kepala Puskesmas</td><td style="text-align:center"><button class="icon-btn ic-edit">✎</button><button class="icon-btn ic-del">🗑</button></td></tr>
+      <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#0ea5e9,#2563eb)">MU</span>&nbsp; <b>Murni, S.KM</b></td><td class="mono">AMP0024</td><td><span class="badge b-admin_puskesmas">ADMIN_PUSKESMAS</span></td><td><span class="badge b-asn">ASN</span></td><td>Kasubag TU</td><td style="text-align:center"><button class="icon-btn ic-edit">✎</button><button class="icon-btn ic-del">🗑</button></td></tr>
+      <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#10b981,#0d9488)">WI</span>&nbsp; <b>drg. Winda</b></td><td class="mono">AMP0009</td><td><span class="badge b-kepala_unit">KEPALA_UNIT</span></td><td><span class="badge b-ppkp">PPPK</span></td><td>Perawat Gigi</td><td style="text-align:center"><button class="icon-btn ic-edit">✎</button><button class="icon-btn ic-del">🗑</button></td></tr>
+      <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#f59e0b,#d97706)">RI</span>&nbsp; <b>Rizal Saputra</b></td><td class="mono">AMP0055</td><td><span class="badge b-pegawai">PEGAWAI</span></td><td><span class="badge b-tpk">TPK</span></td><td>Cleaning Service</td><td style="text-align:center"><button class="icon-btn ic-edit">✎</button><button class="icon-btn ic-del">🗑</button></td></tr>
+      <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#e11d48,#be123c)">HA</span>&nbsp; <b>Hariyanto, A.Md</b></td><td class="mono">AMP0088</td><td><span class="badge b-pegawai">PEGAWAI</span></td><td><span class="badge b-asn">ASN</span></td><td>Sanitasi</td><td style="text-align:center"><button class="icon-btn ic-edit">✎</button><button class="icon-btn ic-del">🗑</button></td></tr>
+    </table>
+    <div class="pagination"><span>Menampilkan 1–5 dari 86</span><div style="display:flex;gap:6px"><button class="pg-btn">‹</button><button class="pg-btn on">1</button><button class="pg-btn">2</button><button class="pg-btn">3</button><button class="pg-btn">›</button></div></div>
+  </div>
+
+  <!-- RIWAYAT ABSENSI -->
+  <div class="card">
+    <div class="card-h">
+      <div><b>Riwayat Absensi</b><div class="sub">Sabtu, 8 Agustus 2026 · semua pegawai</div></div>
+      <div style="display:flex;gap:10px"><select class="in" style="width:auto;padding:9px 14px"><option>Semua Status</option><option>Hadir</option><option>Terlambat</option><option>Izin</option><option>Sakit</option><option>Cuti</option><option>Alpha</option></select><button class="btn btn-ghost">🗓 Pilih Tanggal</button><button class="btn btn-primary">⬇ Export CSV</button></div>
+    </div>
+    <table>
+      <tr><th>Tanggal</th><th>Nama</th><th>Absen Masuk</th><th>Absen Pulang</th><th>Status</th><th>Terlambat</th></tr>
+      <tr><td>8 Agu 2026</td><td><span class="avatar-sm" style="background:linear-gradient(135deg,#BF00FF,#7066ed)">FI</span>&nbsp; <b>Ns. Fitriani, S.Kep</b></td><td class="mono" style="color:#059669">07:28</td><td class="mono" style="color:#334155">14:02</td><td><span class="badge b-hadir">✔ HADIR</span></td><td style="color:#94a3b8">–</td></tr>
+      <tr><td>8 Agu 2026</td><td><span class="avatar-sm" style="background:linear-gradient(135deg,#0ea5e9,#2563eb)">BW</span>&nbsp; <b>drg. Baiq Wulan</b></td><td class="mono" style="color:#059669">07:41</td><td class="mono" style="color:#94a3b8">–</td><td><span class="badge b-terlambat">⏰ TERLAMBAT</span></td><td style="color:#d97706">+6 menit</td></tr>
+      <tr><td>8 Agu 2026</td><td><span class="avatar-sm" style="background:linear-gradient(135deg,#10b981,#0d9488)">HA</span>&nbsp; <b>H. Abdul Rahim</b></td><td class="mono" style="color:#059669">07:35</td><td class="mono" style="color:#94a3b8">–</td><td><span class="badge b-hadir">✔ HADIR</span></td><td style="color:#94a3b8">–</td></tr>
+      <tr><td>8 Agu 2026</td><td><span class="avatar-sm" style="background:linear-gradient(135deg,#f59e0b,#ea580c)">RS</span>&nbsp; <b>Ratna Sari, A.Md</b></td><td class="mono" style="color:#94a3b8">–</td><td class="mono" style="color:#94a3b8">–</td><td><span class="badge b-izin">⌛ IZIN</span></td><td style="color:#94a3b8">–</td></tr>
+      <tr><td>8 Agu 2026</td><td><span class="avatar-sm" style="background:linear-gradient(135deg,#e11d48,#be123c)">MH</span>&nbsp; <b>M. Hafiz, A.Md.Kep</b></td><td class="mono" style="color:#94a3b8">–</td><td class="mono" style="color:#94a3b8">–</td><td><span class="badge b-sakit">✚ SAKIT</span></td><td style="color:#94a3b8">–</td></tr>
+      <tr><td>7 Agu 2026</td><td><span class="avatar-sm" style="background:linear-gradient(135deg,#f43f5e,#be123c)">AH</span>&nbsp; <b>Ahmad Hariyadi</b></td><td class="mono" style="color:#94a3b8">–</td><td class="mono" style="color:#94a3b8">–</td><td><span class="badge b-cuti">🏖 CUTI</span></td><td style="color:#94a3b8">–</td></tr>
+      <tr><td>7 Agu 2026</td><td><span class="avatar-sm" style="background:linear-gradient(135deg,#64748b,#475569)">DP</span>&nbsp; <b>Dedi Prayitno</b></td><td class="mono" style="color:#94a3b8">–</td><td class="mono" style="color:#94a3b8">–</td><td><span class="badge b-alpha">✕ ALPHA</span></td><td style="color:#94a3b8">–</td></tr>
+    </table>
+    <div class="pagination"><span>Menampilkan 1–7 hasil</span><div style="display:flex;gap:6px"><button class="pg-btn">‹</button><button class="pg-btn on">1</button><button class="pg-btn">›</button></div></div>
+  </div>
+
+  <!-- CUTI & IZIN -->
+  <div class="card">
+    <div class="card-h">
+      <div><b>Cuti &amp; Izin</b><div class="sub">3 permohonan menunggu persetujuan</div></div>
+      <div style="display:flex;gap:10px"><span class="badge b-terlambat">MENUNGGU</span><span class="badge b-hadir">DISETUJUI</span><span class="badge b-alpha">DITOLAK</span></div>
+    </div>
+    <table>
+      <tr><th>Pemohon</th><th>Jenis</th><th>Tanggal</th><th>Hari</th><th>Alasan</th><th>Status</th><th style="text-align:center">Aksi</th></tr>
+      <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#0ea5e9,#2563eb)">BW</span>&nbsp; <b>drg. Baiq Wulan</b></td><td>Cuti Tahunan</td><td>12–14 Agu 2026</td><td><span style="font-weight:800;color:#7c3aed">3 hari</span></td><td>Perjalanan keluarga</td><td><span class="badge b-izin">MENUNGGU</span></td><td style="text-align:center"><button class="btn btn-primary" style="padding:6px 14px;font-size:12px">✔ Setujui</button> <button class="btn btn-ghost" style="padding:6px 14px;font-size:12px">✕ Tolak</button></td></tr>
+      <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#f59e0b,#d97706)">SA</span>&nbsp; <b>Siti Aminah</b></td><td>Izin Sakit</td><td>8 Agu 2026</td><td><b style="font-weight:800;color:#7c3aed">1 hari</b></td><td>Demam</td><td><span class="badge b-sakit">SAKIT</span></td><td style="text-align:center"><span class="badge b-hadir">✔ DISETUJUI</span></td></tr>
+      <tr><td><span class="avatar-sm" style="background:linear-gradient(135deg,#10b981,#0d9488)">BA</span>&nbsp; <b>Baiq Ani</b></td><td>Cuti Melahirkan</td><td>1–30 Sep 2026</td><td><b style="font-weight:800;color:#7c3aed">30 hari</b></td><td>Persalinan</td><td><span class="badge b-izin">MENUNGGU</span></td><td style="text-align:center"><button class="btn btn-primary" style="padding:6px 14px;font-size:12px">✔ Setujui</button> <button class="btn btn-ghost" style="padding:6px 14px;font-size:12px">✕ Tolak</button></td></tr>
+    </table>
+    <div class="pagination"><span>Total hari cuti dikonversi otomatis dari tanggal</span><span class="note">Perhitungan hari kerja otomatis</span></div>
+  </div>
+
+  <!-- MODAL form -->
+  <div class="modal">
+    <h3>✎ Edit Pegawai</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 16px">
+      <div><label>Nama Lengkap</label><input class="in" value="Murni, S.KM"></div>
+      <div><label>Username / NIP</label><input class="in" value="AMP0024"></div>
+      <div><label>Role</label><select class="in"><option>admin_puskesmas</option><option>super_admin</option><option>kepala_unit</option><option>pegawai</option></select></div>
+      <div><label>Jabatan</label><input class="in" value="Kasubag TU"></div>
+      <div><label>Status Pegawai</label><select class="in"><option>ASN</option><option>PPKP Penuh Waktu</option><option>TPK</option></select></div>
+      <div><label>Unit</label><select class="in"><option>Poli Umum</option><option>UGD</option><option>Poli Gigi</option><option>Administrasi</option></select></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost">Batal</button><button class="btn btn-primary">💾 Simpan Perubahan</button></div>
+  </div>
+
+  <p style="text-align:center;font-size:10px;color:#94a3b8">v1.3.0 — Presensiku · Admin Light Preview (tabel &amp; form)</p>
+</div>
+</body>
+</html>
