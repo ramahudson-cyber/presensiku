@@ -44,7 +44,7 @@ function Header() {
 
   return (
     <header
-      className="sticky top-0 z-30 bg-white/80 dark:bg-onyx/90 backdrop-blur-xl border-b border-slate-200/60 dark:border-white/[0.06] transition-colors duration-300"
+      className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 transition-colors duration-300"
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="flex items-center justify-between h-[72px] md:h-20 px-4 md:px-10">
@@ -54,10 +54,10 @@ function Header() {
             {userName.charAt(0).toUpperCase()}
           </div>
           <div className="flex flex-col min-w-0">
-            <h1 className="text-sm sm:text-base md:text-lg font-bold text-slate-800 dark:text-pure-white truncate tracking-tight">
+            <h1 className="text-sm sm:text-base md:text-lg font-bold text-slate-800 truncate tracking-tight">
               Hai, {userName}
             </h1>
-            <span className="text-[10px] md:text-xs text-slate-500 dark:text-slate-mist truncate font-medium">
+            <span className="text-[10px] md:text-xs text-slate-500 truncate font-medium">
               {todayLabel}
             </span>
           </div>
@@ -65,13 +65,13 @@ function Header() {
 
         {/* RIGHT: Actions */}
         <div className="flex items-center gap-1 md:gap-1.5 shrink-0">
-          <button className="p-2.5 md:p-3 rounded-2xl text-slate-500 dark:text-slate-mist hover:bg-slate-100 dark:hover:bg-white/[0.06] relative transition-colors" aria-label="Notifications">
+          <button className="p-2.5 md:p-3 rounded-2xl text-slate-500 hover:bg-slate-100 relative transition-colors" aria-label="Notifications">
             <Bell size={18} />
-            <span className="absolute top-2 right-2 md:top-2.5 md:right-2.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white dark:ring-obsidian"></span>
+            <span className="absolute top-2 right-2 md:top-2.5 md:right-2.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
           </button>
           <button
             onClick={handleLogout}
-            className="p-2.5 md:p-3 rounded-2xl text-slate-500 dark:text-slate-mist hover:bg-slate-100 dark:hover:bg-white/[0.06] dark:hover:text-rose-400 hover:text-rose-500 transition-colors"
+            className="p-2.5 md:p-3 rounded-2xl text-slate-500 hover:bg-slate-100 hover:text-rose-500 transition-colors"
             aria-label="Logout"
           >
             <LogOut size={18} />

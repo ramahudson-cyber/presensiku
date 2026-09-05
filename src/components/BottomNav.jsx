@@ -1,6 +1,5 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
 import {
   LayoutDashboard, CalendarCheck, CalendarDays,
   Users, History, FileText, Megaphone, Settings, MoreHorizontal,
@@ -11,7 +10,6 @@ import BottomSheet from "./BottomSheet";
 
 export default function BottomNav({ hidden = false }) {
   const { user } = useAuth();
-  const { darkMode } = useTheme();
   const [moreOpen, setMoreOpen] = useState(false);
   const userRole = user?.role || "pegawai";
 
@@ -62,32 +60,22 @@ export default function BottomNav({ hidden = false }) {
         <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-center z-20">
           <NavLink
             to={centerPath}
-            className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg shadow-purple-500/50 border-4 ${
-              darkMode ? "border-[#0a0514]" : "border-white"
-            }`}
+            className="w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg shadow-purple-500/50 border-4 border-white"
             style={{ background: "linear-gradient(135deg, #BF00FF, #6366f1)", color: "#ffffff" }}
           >
             <FingerprintPattern size={28} className="text-white" />
           </NavLink>
-          <p className={`text-[10px] mt-1 font-bold tracking-tight uppercase ${
-            darkMode ? "text-slate-400" : "text-slate-600"
-          }`}>Presensi</p>
+          <p className="text-[10px] mt-1 font-bold tracking-tight uppercase text-slate-600">Presensi</p>
         </div>
 
         {/* Cutout Notch — blends with app background */}
-        <div className={`absolute left-1/2 -translate-x-1/2 top-0 w-32 h-8 z-10 rounded-b-2xl ${
-          darkMode ? "bg-[#161320]/85" : "bg-white/95"
-        }`}></div>
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-32 h-8 z-10 rounded-b-2xl bg-white/95"></div>
 
         {/* Navbar Base — Glassmorphism */}
         <div
-          className={`w-full h-[85px] rounded-t-3xl flex justify-between items-center px-4 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] border-t ${
-            darkMode ? "border-white/10" : "border-gray-100"
-          }`}
+          className="w-full h-[85px] rounded-t-3xl flex justify-between items-center px-4 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] border-t border-gray-100"
           style={{
-            background: darkMode 
-              ? "linear-gradient(180deg, rgba(22, 19, 32, 0.95), rgba(10, 5, 20, 0.98))"
-              : "linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.99))",
+            background: "linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.99))",
             backdropFilter: "blur(20px)",
           }}
         >
@@ -103,7 +91,7 @@ export default function BottomNav({ hidden = false }) {
                   end={item.end}
                   className={({ isActive }) =>
                     `flex flex-col items-center justify-center gap-0.5 h-full pt-2 transition-all flex-1 ${
-                      isActive ? "text-electric-violet" : (darkMode ? "text-slate-mist" : "text-slate-500")
+                      isActive ? "text-electric-violet" : "text-slate-500"
                     }`
                   }
               >
@@ -143,12 +131,8 @@ export default function BottomNav({ hidden = false }) {
               <NavLink key={item.path} to={item.path} onClick={() => setMoreOpen(false)}
                      className={({ isActive }) =>
                   `flex flex-col items-center gap-2 p-4 rounded-3xl transition-all ${isActive
-                    ? darkMode
-                      ? "bg-white/10 text-pure-white"
-                      : "bg-electric-violet/10 text-electric-violet"
-                    : darkMode
-                      ? "bg-white/5 hover:bg-white/[0.07] text-gray-300"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"}`
+                    ? "bg-electric-violet/10 text-electric-violet"
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-700"}`
                 }>
                 <Icon size={24} />
                 <span className="text-[10px] font-medium text-center leading-tight">{item.label}</span>

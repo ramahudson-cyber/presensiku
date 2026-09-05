@@ -133,9 +133,9 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
             style={{
               maxHeight: "93vh", width: "100%", maxWidth: 420,
               borderRadius: "28px 28px 0 0",
-              background: "linear-gradient(165deg, #8B00CC 0%, #7B00E0 20%, #4A0099 55%, #05020b 100%)",
+              background: "linear-gradient(165deg, #8B00CC 0%, #7B00E0 20%, #4A0099 55%, #6600CC 100%)",
               border: "1px solid rgba(255,0,153,0.4)",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(191,0,255,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
+              boxShadow: "0 20px 60px rgba(76,29,149,0.45), 0 0 40px rgba(191,0,255,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
               position: "relative", overflow: "hidden",
             }}
             className="md:rounded-3xl mx-auto flex flex-col animate-slide-up z-[9999]"
@@ -223,7 +223,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
                     <IconBox><MapPinIcon /></IconBox>
                     <div>
                       <span style={{ fontSize: 10, fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: 0.5 }}>Lokasi</span>
-                      {distance && <span style={{ fontSize: 10, fontWeight: 400, color: "white", display: "block", marginTop: 1 }}>{distance}m dari Puskes</span>}
+                      {distance && <span style={{ fontSize: 10, fontWeight: 400, color: "white", display: "block", marginTop: 1 }}>{distance}m dari Lokasi</span>}
                     </div>
                   </div>
                   {distance && (

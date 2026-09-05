@@ -53,7 +53,10 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-obsidian relative overflow-hidden">
+    <div className="login-dark-bg min-h-screen relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%)'
+      }}>
       {/* Radial glow dari atas */}
       <div
         className="absolute inset-0 pointer-events-none"

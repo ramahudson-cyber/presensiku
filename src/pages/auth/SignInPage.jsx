@@ -350,7 +350,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden"
+    <div className="login-dark-bg min-h-screen relative overflow-hidden"
       style={{
         background: 'linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%)'
       }}>
