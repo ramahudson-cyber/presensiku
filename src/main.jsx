@@ -16,13 +16,16 @@ sessionStorage.removeItem("sw-reloaded");
 
 // Registrasi service worker manual (vite-plugin-pwa injectRegister: null).
 // updateViaCache: "none" memastikan cek /sw.js tidak kena HTTP cache browser,
-// jadi SW baru terdeteksi segera setiap cold-open.
+// jadi SW baru terdeteksi segera setiap cold-open. Retry sekali bila gagal
+// (jaringan lemah) supaya registrasi tidak diam-diam hilang.
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
+  const registerSW = () =>
     navigator.serviceWorker.register("/sw.js", {
       scope: "/",
       updateViaCache: "none",
     });
+  window.addEventListener("load", () => {
+    registerSW().catch(() => setTimeout(() => registerSW().catch(() => {}), 5000));
   });
 }
 

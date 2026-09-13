@@ -73,7 +73,8 @@ export default function EmployeeDashboard() {
 
       setTodayAttendance(attRes.data);
 
-      setShift(shiftRes.data?.shift_code ? getShiftName(shiftRes.data.shift_code) : "N/A");
+      // null (BUKAN string "N/A") agar badge merender "Tidak ada jadwal hari ini"
+      setShift(shiftRes.data?.shift_code ? getShiftName(shiftRes.data.shift_code) : null);
 
       const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
       monthAttRes.data?.forEach(a => {
