@@ -221,7 +221,7 @@ export default function EmployeeProfile() {
             <MenuRow icon={icons.lock} title="Keamanan"
               desc="Ubah password & verifikasi identitas"
               right={
-                <span className="shrink-0 text-[9px] font-bold uppercase tracking-[0.5px] px-2.5 py-1 rounded-full text-white"
+                <span className="shrink-0 text-[9px] font-bold uppercase tracking-[0.5px] px-2.5 py-1 rounded-full text-white hero-card-bg"
                   style={{ background: 'linear-gradient(135deg, #BF00FF, #9900CC)' }}>
                   BARU
                 </span>

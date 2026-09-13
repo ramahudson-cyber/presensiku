@@ -164,7 +164,7 @@ export default function EmployeeDashboard() {
             </div>
             <div className="text-red-600 text-xs font-medium text-center max-w-[200px]">{fetchError}</div>
             <button onClick={retryFetchData}
-              className="mt-3 px-6 py-2 bg-[#BF00FF] hover:bg-[#a000e6] text-white text-xs font-semibold rounded-full transition-all duration-200 shadow-md">
+              className="mt-3 px-6 py-2 bg-[#BF00FF] hover:bg-[#a000e6] text-white hero-card-bg text-xs font-semibold rounded-full transition-all duration-200 shadow-md">
               Coba Lagi
             </button>
           </>
@@ -188,9 +188,10 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 pb-24" style={{ background: T.bg, color: T.text }}>
-      {/* HERO — vibrant violet gradient (text-white di container: semua teks
-          mewarisi putih, tidak ada lagi teks gelap bocor dari warna root) */}
-      <div className="w-full p-8 pt-12 shadow-lg rounded-b-[32px] text-white"
+      {/* HERO — vibrant violet gradient. hero-card-bg dipakai karena rule global
+          index.css `.text-white !important` memaksa teks gelap di light mode;
+          rule proteksi hero-card-bg mengembalikan teks jadi putih. */}
+      <div className="w-full p-8 pt-12 shadow-lg rounded-b-[32px] text-white hero-card-bg"
         style={{ background: 'linear-gradient(160deg, #C44DFF 0%, #BF00FF 30%, #8A00CC 60%, #4A0099 100%)' }}>
         <div className="max-w-md mx-auto">
           <div className="flex items-center gap-4 mb-8">
@@ -240,7 +241,7 @@ export default function EmployeeDashboard() {
         {/* 2 CARDS: MASUK & PULANG */}
         <div className="grid grid-cols-2 gap-3">
           {/* MASUK — Purple Gradient */}
-          <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white"
+          <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white hero-card-bg"
             style={{ background: 'linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)', boxShadow: '0 6px 20px rgba(191,0,255,0.25)' }}>
             <div className="text-[9px] uppercase tracking-[0.2em] opacity-75 font-semibold mb-3 flex items-center gap-1.5">
               <Sun size={13} /> Masuk

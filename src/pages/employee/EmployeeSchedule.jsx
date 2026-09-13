@@ -384,7 +384,7 @@ export default function EmployeeSchedule() {
               return (
                 <button key={i} onClick={() => selectMonth(i)}
                   className={`p-3 rounded-2xl text-sm font-semibold transition-all active:scale-95
-                    ${isActive ? "bg-[#BF00FF] text-white shadow-lg"
+                    ${isActive ? "bg-[#BF00FF] text-white hero-card-bg shadow-lg"
                       : "bg-white border text-slate-600 hover:bg-slate-50"}`}
                   style={isActive ? { boxShadow: '0 8px 20px rgba(191,0,255,0.3)' } : { borderColor: T.border, background: T.surface }}>
                   {name.substring(0, 3)}

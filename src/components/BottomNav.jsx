@@ -118,7 +118,7 @@ export default function BottomNav({ hidden = false }) {
           <NavLink
             to={centerPath}
             aria-label="Buka presensi"
-            className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white text-3xl shadow-lg shadow-purple-500/50"
+            className="hero-card-bg flex h-16 w-16 items-center justify-center rounded-full border-4 border-white text-3xl shadow-lg shadow-purple-500/50"
             style={{ background: "linear-gradient(135deg, #BF00FF, #6366f1)", color: "#ffffff" }}
           >
             <FingerprintPattern size={28} className="text-white" />

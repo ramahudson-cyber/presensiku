@@ -609,7 +609,7 @@ const handleCheckIn = async () => {
               <button
                 onClick={todayAttendance ? handleCheckOut : handleCheckIn}
                 disabled={locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
-                className="relative w-[120px] h-[120px] rounded-full bg-gradient-to-br from-electric-violet via-[#8B00CC] to-[#6600CC] flex items-center justify-center
+                className="hero-card-bg relative w-[120px] h-[120px] rounded-full bg-gradient-to-br from-electric-violet via-[#8B00CC] to-[#6600CC] flex items-center justify-center
                   transition-all duration-300 hover:scale-105 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed
                   shadow-[0_0_40px_rgba(191,0,255,0.5),0_0_80px_rgba(191,0,255,0.25),0_10px_40px_rgba(0,0,0,0.4)]
                   hover:shadow-[0_0_60px_rgba(191,0,255,0.7),0_0_100px_rgba(191,0,255,0.4),0_15px_50px_rgba(0,0,0,0.5)]

@@ -282,7 +282,7 @@ export default function EmployeeHistory() {
             </div>
             <div className="text-red-600 text-xs font-medium text-center max-w-[200px]">{fetchError}</div>
             <button onClick={fetchData}
-              className="mt-3 px-6 py-2 bg-[#BF00FF] hover:bg-[#a000e6] text-white text-xs font-semibold rounded-full transition-all duration-200 shadow-md">
+              className="mt-3 px-6 py-2 bg-[#BF00FF] hover:bg-[#a000e6] text-white hero-card-bg text-xs font-semibold rounded-full transition-all duration-200 shadow-md">
               Coba Lagi
             </button>
           </div>
