@@ -1,0 +1,450 @@
+[
+  {
+    "cmd": "ALL",
+    "policyname": "Admins can manage announcements",
+    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))",
+    "roles": "{public}",
+    "tablename": "announcements",
+    "with_check": ""
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Anyone can view active announcements",
+    "qual": "(is_active = true)",
+    "roles": "{public}",
+    "tablename": "announcements",
+    "with_check": ""
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Admins can view all attendance",
+    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))",
+    "roles": "{public}",
+    "tablename": "attendance",
+    "with_check": ""
+  },
+  {
+    "cmd": "INSERT",
+    "policyname": "Users can insert own attendance",
+    "qual": "",
+    "roles": "{authenticated}",
+    "tablename": "attendance",
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Users can select own attendance",
+    "qual": "(auth.uid() = user_id)",
+    "roles": "{authenticated}",
+    "tablename": "attendance",
+    "with_check": ""
+  },
+  {
+    "cmd": "UPDATE",
+    "policyname": "Users can update own attendance",
+    "qual": "(auth.uid() = user_id)",
+    "roles": "{authenticated}",
+    "tablename": "attendance",
+    "with_check": ""
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "Admin manage locations",
+    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))",
+    "roles": "{authenticated}",
+    "tablename": "attendance_locations",
+    "with_check": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Public read active locations",
+    "qual": "true",
+    "roles": "{anon,authenticated}",
+    "tablename": "attendance_locations",
+    "with_check": ""
+  },
+  {
+    "cmd": "INSERT",
+    "policyname": "Authenticated insert audit log",
+    "qual": "",
+    "roles": "{authenticated}",
+    "tablename": "audit_logs",
+    "with_check": "true"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Super admin read audit logs",
+    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = 'super_admin'::user_role))))",
+    "roles": "{authenticated}",
+    "tablename": "audit_logs",
+    "with_check": ""
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "Admin manage all requests",
+    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))",
+    "roles": "{authenticated}",
+    "tablename": "device_requests",
+    "with_check": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Users read own requests",
+    "qual": "((user_id = auth.uid()) OR (EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role]))))))",
+    "roles": "{authenticated}",
+    "tablename": "device_requests",
+    "with_check": ""
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "admin_select_device_requests",
+    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role]))))",
+    "roles": "{public}",
+    "tablename": "device_requests",
+    "with_check": ""
+  },
+  {
+    "cmd": "UPDATE",
+    "policyname": "admin_update_device_requests",
+    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role]))))",
+    "roles": "{public}",
+    "tablename": "device_requests",
+    "with_check": ""
+  },
+  {
+    "cmd": "INSERT",
+    "policyname": "user_insert_device_requests",
+    "qual": "",
+    "roles": "{public}",
+    "tablename": "device_requests",
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "user_select_own_device_requests",
+    "qual": "(auth.uid() = user_id)",
+    "roles": "{public}",
+    "tablename": "device_requests",
+    "with_check": ""
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "admin_all_employee_schedules",
+    "qual": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role, 'kepala_unit'::user_role])))))",
+    "roles": "{public}",
+    "tablename": "employee_schedules",
+    "with_check": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role, 'kepala_unit'::user_role])))))"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "employee_read_own_schedules",
+    "qual": "(user_id = auth.uid())",
+    "roles": "{public}",
+    "tablename": "employee_schedules",
+    "with_check": ""
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "admin_all_statuses",
+    "qual": "true",
+    "roles": "{public}",
+    "tablename": "employment_statuses",
+    "with_check": "true"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Admins can view all leave requests",
+    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role, 'kepala_unit'::user_role])))))",
+    "roles": "{public}",
+    "tablename": "leave_requests",
+    "with_check": ""
+  },
+  {
+    "cmd": "INSERT",
+    "policyname": "Users can create own leave requests",
+    "qual": "",
+    "roles": "{public}",
+    "tablename": "leave_requests",
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Users can view own leave requests",
+    "qual": "(auth.uid() = user_id)",
+    "roles": "{public}",
+    "tablename": "leave_requests",
+    "with_check": ""
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "admin_select_leave",
+    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role, 'kepala_unit'::user_role]))))",
+    "roles": "{public}",
+    "tablename": "leave_requests",
+    "with_check": ""
+  },
+  {
+    "cmd": "DELETE",
+    "policyname": "user_delete_own_pending_leave",
+    "qual": "((auth.uid() = user_id) AND (status = 'pending'::leave_status))",
+    "roles": "{public}",
+    "tablename": "leave_requests",
+    "with_check": ""
+  },
+  {
+    "cmd": "INSERT",
+    "policyname": "user_insert_own_leave",
+    "qual": "",
+    "roles": "{public}",
+    "tablename": "leave_requests",
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "user_select_own_leave",
+    "qual": "(auth.uid() = user_id)",
+    "roles": "{public}",
+    "tablename": "leave_requests",
+    "with_check": ""
+  },
+  {
+    "cmd": "UPDATE",
+    "policyname": "Users can update own notifications",
+    "qual": "(auth.uid() = user_id)",
+    "roles": "{public}",
+    "tablename": "notifications",
+    "with_check": ""
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "Users manage own OTP",
+    "qual": "(user_id = auth.uid())",
+    "roles": "{authenticated}",
+    "tablename": "otp_codes",
+    "with_check": "(user_id = auth.uid())"
+  },
+  {
+    "cmd": "INSERT",
+    "policyname": "user_insert_own_otp",
+    "qual": "",
+    "roles": "{public}",
+    "tablename": "otp_codes",
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "user_select_own_otp",
+    "qual": "(auth.uid() = user_id)",
+    "roles": "{public}",
+    "tablename": "otp_codes",
+    "with_check": ""
+  },
+  {
+    "cmd": "UPDATE",
+    "policyname": "user_update_own_otp",
+    "qual": "(auth.uid() = user_id)",
+    "roles": "{public}",
+    "tablename": "otp_codes",
+    "with_check": ""
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "admin_all_positions",
+    "qual": "true",
+    "roles": "{public}",
+    "tablename": "positions",
+    "with_check": "true"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Allow authenticated read all profiles",
+    "qual": "true",
+    "roles": "{authenticated}",
+    "tablename": "profiles",
+    "with_check": ""
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Allow public lookup username for login",
+    "qual": "true",
+    "roles": "{anon}",
+    "tablename": "profiles",
+    "with_check": ""
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Authenticated users can view all profiles",
+    "qual": "true",
+    "roles": "{authenticated}",
+    "tablename": "profiles",
+    "with_check": ""
+  },
+  {
+    "cmd": "INSERT",
+    "policyname": "Service role can insert profiles",
+    "qual": "",
+    "roles": "{authenticated}",
+    "tablename": "profiles",
+    "with_check": "true"
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "Service role full access",
+    "qual": "true",
+    "roles": "{service_role}",
+    "tablename": "profiles",
+    "with_check": "true"
+  },
+  {
+    "cmd": "UPDATE",
+    "policyname": "Users can update own profile",
+    "qual": "(auth.uid() = id)",
+    "roles": "{authenticated}",
+    "tablename": "profiles",
+    "with_check": "(auth.uid() = id)"
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "admin_all_roles",
+    "qual": "true",
+    "roles": "{public}",
+    "tablename": "roles",
+    "with_check": "true"
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "Admin manage schedules",
+    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))",
+    "roles": "{authenticated}",
+    "tablename": "schedules",
+    "with_check": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Users read own schedules",
+    "qual": "((user_id = auth.uid()) OR (EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role, 'kepala_unit'::user_role]))))))",
+    "roles": "{authenticated}",
+    "tablename": "schedules",
+    "with_check": ""
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "Admin manage shift_schedules",
+    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))",
+    "roles": "{authenticated}",
+    "tablename": "shift_schedules",
+    "with_check": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Authenticated read shift_schedules",
+    "qual": "true",
+    "roles": "{authenticated}",
+    "tablename": "shift_schedules",
+    "with_check": ""
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "Admin manage shifts",
+    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))",
+    "roles": "{authenticated}",
+    "tablename": "shifts",
+    "with_check": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Authenticated read shifts",
+    "qual": "true",
+    "roles": "{authenticated}",
+    "tablename": "shifts",
+    "with_check": ""
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Authenticated read settings",
+    "qual": "true",
+    "roles": "{authenticated}",
+    "tablename": "system_settings",
+    "with_check": ""
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "Super admin manage settings",
+    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = 'super_admin'::user_role))))",
+    "roles": "{authenticated}",
+    "tablename": "system_settings",
+    "with_check": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = 'super_admin'::user_role))))"
+  },
+  {
+    "cmd": "ALL",
+    "policyname": "Admin manage all devices",
+    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))",
+    "roles": "{authenticated}",
+    "tablename": "user_devices",
+    "with_check": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role])))))"
+  },
+  {
+    "cmd": "INSERT",
+    "policyname": "Users insert own device",
+    "qual": "",
+    "roles": "{authenticated}",
+    "tablename": "user_devices",
+    "with_check": "(user_id = auth.uid())"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "Users read own devices",
+    "qual": "((user_id = auth.uid()) OR (EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role]))))))",
+    "roles": "{authenticated}",
+    "tablename": "user_devices",
+    "with_check": ""
+  },
+  {
+    "cmd": "UPDATE",
+    "policyname": "Users update own device",
+    "qual": "(user_id = auth.uid())",
+    "roles": "{authenticated}",
+    "tablename": "user_devices",
+    "with_check": "(user_id = auth.uid())"
+  },
+  {
+    "cmd": "DELETE",
+    "policyname": "admin_delete_user_devices",
+    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role]))))",
+    "roles": "{public}",
+    "tablename": "user_devices",
+    "with_check": ""
+  },
+  {
+    "cmd": "INSERT",
+    "policyname": "admin_insert_user_devices",
+    "qual": "",
+    "roles": "{public}",
+    "tablename": "user_devices",
+    "with_check": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role]))))"
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "admin_select_user_devices",
+    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role]))))",
+    "roles": "{public}",
+    "tablename": "user_devices",
+    "with_check": ""
+  },
+  {
+    "cmd": "UPDATE",
+    "policyname": "admin_update_user_devices",
+    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.role = ANY (ARRAY['super_admin'::user_role, 'admin_puskesmas'::user_role]))))",
+    "roles": "{public}",
+    "tablename": "user_devices",
+    "with_check": ""
+  },
+  {
+    "cmd": "SELECT",
+    "policyname": "user_select_own_devices",
+    "qual": "(auth.uid() = user_id)",
+    "roles": "{public}",
+    "tablename": "user_devices",
+    "with_check": ""
+  }
+]

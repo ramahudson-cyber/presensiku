@@ -2,6 +2,24 @@
 
 > File ini di-update otomatis. Setiap selesai tugas → bilang **"catat progress"** untuk update.
 
+## 🏢 MULTI-TENANT (Fase 1, Sept 2026) — ✅ SUDAH LIVE DI DB + frontend siap deploy
+Aplikasi multi-tenant SaaS. **Semua migration SUDAH dieksekusi ke DB live** (`muhxylbcgvwxjzrbkgdc`) + terverifikasi uji isolasi end-to-end (admin instansi uji TIDAK bisa melihat data instansi lain). File migration (urutan eksekusi historis):
+1. `supabase/migrations/20260913000001_multi_tenant_organizations.sql`
+2. `supabase/migrations/20260913000002_multi_tenant_rls_policies.sql`
+3. `supabase/migrations/20260913000003_multi_tenant_rpc_security.sql`
+4. `supabase/migrations/20260913000004_create_organization_rpc.sql`
+5. `supabase/migrations/20260913000005_shifts_per_org_constraints.sql` (shifts/shift_schedules per instansi, composite key)
+- Baseline policy lama: `supabase/migrations/archive/live_policies_baseline_2026-09-13.json`
+
+Yang berubah:
+- Tabel `organizations` baru; semua tabel diberi `organization_id` (+trigger auto-fill dari profiles)
+- RLS semua tabel ter-scope instansi; `super_admin` = platform admin (lihat semua), `admin_puskesmas` = admin instansi
+- Login: `username` (instansi tunggal) atau `username@kode-instansi` (multi) via RPC `resolve_login_identity`
+- Pegawai baru dibuat admin: auth email sintetis `<slug>__<username>@users.presensiku.app` (email asli tetap di `profiles.email`)
+- RPC security fix: create/delete_employee, device RPC, settings, lokasi — semua ada guard tenant
+- Halaman **Kelola Instansi** (`/admin/organizations`, super_admin saja) + RPC `create_organization_with_admin`
+- ⚠️ Deploy web HARUS setelah SQL dijalankan; app lama di APK tetap aman (trigger isi org otomatis)
+
 ## ⚠️ Kebijakan Update PWA/Web (WAJIB DIBACA SEBELUM DEPLOY UI)
 - **`public/version.json` punya 2 channel terpisah:**
   - `versionCode` → khusus update **APK/native**. JANGAN di-bump untuk perubahan web saja.

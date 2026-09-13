@@ -37,7 +37,7 @@ export default function SignInPage() {
   const [generatedOtp, setGeneratedOtp] = useState("");
   const [deviceInfo, setDeviceInfo] = useState(null);
   const [userEmail, setUserEmail] = useState("");
-  const [deviceDebug, setDeviceDebug] = useState("");
+  const [, setDeviceDebug] = useState("");
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("");
   const appVersion = getCurrentVersion().version;
@@ -86,17 +86,32 @@ export default function SignInPage() {
   };
 
   const resolveEmail = async (input) => {
-    if (input.includes("@")) return input;
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("email")
-      .eq("username", input.trim())
-      .maybeSingle();
-    if (error || !data?.email) {
-      if (error) console.error("resolveEmail error:", error);
-      throw new Error("Akun tidak ditemukan. Hubungi admin.");
+    const value = input.trim();
+    const atCount = (value.match(/@/g) || []).length;
+
+    // Email asli lengkap (satu @ + domain bertitik) → langsung dipakai login
+    if (atCount === 1 && /\.[a-z]{2,}$/i.test(value)) return value;
+
+    let username = value;
+    let slug = null;
+    // username@slug-instansi (domain tanpa titik) → pakai namespace instansi
+    if (atCount >= 1) {
+      const sep = value.indexOf("@");
+      username = value.slice(0, sep);
+      slug = value.slice(sep + 1);
+      if (!username || !slug) throw new Error("Format login: username@kode-instansi");
     }
-    return data.email;
+
+    // Resolve via RPC (aman untuk anon — tidak membuka tabel profiles)
+    const { data, error } = await supabase.rpc("resolve_login_identity", {
+      p_username: username,
+      p_org_slug: slug,
+    });
+    if (error || !data) {
+      if (error) console.error("resolveEmail error:", error);
+      throw new Error(error?.message || "Akun tidak ditemukan. Hubungi admin.");
+    }
+    return data;
   };
 
   function withTimeout(promise, ms, label) {
@@ -400,7 +415,7 @@ export default function SignInPage() {
               <span className="text-slate-mist/20 text-sm">•</span>
               <span className="text-[#c4b5fd] text-sm tracking-[2.5px] uppercase font-semibold">Optimal</span>
             </div>
-            <p className="text-pure-white text-sm tracking-[1px] mt-6 uppercase">Puskesmas Ampenan</p>
+            <p className="text-pure-white text-sm tracking-[1px] mt-6 uppercase">Absensi Multi-Instansi</p>
           </div>
         </div>
 
@@ -422,7 +437,7 @@ export default function SignInPage() {
                 <span className="text-slate-mist/20 text-xs sm:text-sm">•</span>
                 <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Optimal</span>
               </div>
-              <p className="text-pure-white text-xs sm:text-sm tracking-[1px] mt-4 uppercase">Puskesmas Ampenan</p>
+              <p className="text-pure-white text-xs sm:text-sm tracking-[1px] mt-4 uppercase">Absensi Multi-Instansi</p>
             </div>
 
             {/* Card */}

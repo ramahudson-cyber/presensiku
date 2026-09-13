@@ -19,7 +19,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-  const initialized = useRef(false);
   const applyingSession = useRef(false);
 
   // Satu-satunya penulis sesi: semua path bikin loading sinkron di sini,
@@ -35,7 +34,10 @@ export function AuthProvider({ children }) {
         let profile = null;
         try {
           profile = await withTimeout(
-            supabase.from("profiles").select("*").eq("id", nextSession.user.id).maybeSingle(),
+            supabase.from("profiles")
+              .select("*, organization:organizations(id,name,slug)")
+              .eq("id", nextSession.user.id)
+              .maybeSingle(),
             PROFILE_TIMEOUT_MS
           ).then(({ data }) => data);
         } catch {
@@ -58,10 +60,10 @@ export function AuthProvider({ children }) {
       const { data: { session } } = await withTimeout(supabase.auth.getSession(), PROFILE_TIMEOUT_MS);
       await applySession(session, true);
       if (session?.user) {
-        // Return userData gabungan biar caller bisa baca role langsung
+        // Return userData gabungan biar caller bisa baca role/instansi langsung
         const { data: profile } = await supabase
           .from("profiles")
-          .select("*")
+          .select("*, organization:organizations(id,name,slug)")
           .eq("id", session.user.id)
           .maybeSingle();
         return profile ? { ...session.user, ...profile } : session.user;

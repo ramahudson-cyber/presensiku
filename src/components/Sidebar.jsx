@@ -5,7 +5,7 @@ import { getCurrentVersion } from "../services/updateService";
 import {
   LayoutDashboard, Users, CalendarCheck, CalendarDays,
   FileText, Megaphone, Settings, LogOut,
-  History, X, ClipboardList
+  History, X, ClipboardList, Building2
 } from "lucide-react";
 
 export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
@@ -26,6 +26,11 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
     { path: "/employee/leave", label: "Izin / Sakit", icon: ClipboardList },
   ];
 
+  // Menu khusus platform super_admin (Kelola Instansi)
+  const superAdminMenus = [
+    { path: "/admin/organizations", label: "Kelola Instansi", icon: Building2 },
+  ];
+
   const adminMenus = [
     { path: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
     { path: "/admin/employees", label: "Pegawai", icon: Users },
@@ -34,6 +39,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
     { path: "/admin/schedules", label: "Jadwal Kerja", icon: CalendarDays },
     { path: "/admin/leave", label: "Cuti & Izin", icon: FileText },
     { path: "/admin/announcements", label: "Pengumuman", icon: Megaphone },
+    ...(userRole === "super_admin" ? superAdminMenus : []),
     { path: "/admin/settings", label: "Pengaturan", icon: Settings },
     { path: "/employee/profile", label: "Profil", icon: Users },
   ];

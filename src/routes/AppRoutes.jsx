@@ -16,6 +16,7 @@ import SchedulingPage from "../pages/admin/SchedulingPage";
 import LeaveManagementPage from "../pages/admin/LeaveManagementPage";
 import LeaveRequestPage from "../pages/employee/LeaveRequestPage";
 import ComingSoonPage from "../pages/admin/ComingSoonPage";
+import OrganizationsPage from "../pages/admin/OrganizationsPage";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
 import BlockPage from "../pages/BlockPage";
 import NotFoundPage from "../pages/NotFoundPage";
@@ -62,6 +63,7 @@ function AppRoutes() {
         <Route path="schedules" element={<SchedulingPage />} />
         <Route path="leave" element={<LeaveManagementPage />} />
         <Route path="announcements" element={<ComingSoonPage />} />
+        <Route path="organizations" element={<OrganizationsPage />} />
         <Route path="settings" element={<PengaturanPage />} />
       </Route>
 
