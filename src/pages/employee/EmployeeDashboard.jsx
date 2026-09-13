@@ -188,8 +188,9 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 pb-24" style={{ background: T.bg, color: T.text }}>
-      {/* HERO — vibrant violet gradient */}
-      <div className="w-full p-8 pt-12 shadow-lg rounded-b-[32px]"
+      {/* HERO — vibrant violet gradient (text-white di container: semua teks
+          mewarisi putih, tidak ada lagi teks gelap bocor dari warna root) */}
+      <div className="w-full p-8 pt-12 shadow-lg rounded-b-[32px] text-white"
         style={{ background: 'linear-gradient(160deg, #C44DFF 0%, #BF00FF 30%, #8A00CC 60%, #4A0099 100%)' }}>
         <div className="max-w-md mx-auto">
           <div className="flex items-center gap-4 mb-8">
@@ -210,8 +211,8 @@ export default function EmployeeDashboard() {
             <div>
               <div className="text-4xl font-bold text-white">{serverTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</div>
               <div className="text-xs opacity-70 mt-1 text-white">{serverTime.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
-              <div className="text-[10px] mt-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full inline-block font-semibold text-white" style={{ border: '1px solid rgba(255,255,255,0.25)' }}>
-                SHIFT: {(shift || 'N/A').toUpperCase()}
+              <div className="text-[10px] mt-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full inline-block font-semibold" style={{ border: '1px solid rgba(255,255,255,0.25)' }}>
+                {shift ? `SHIFT: ${shift.toUpperCase()}` : "Tidak ada jadwal hari ini"}
               </div>
             </div>
             <Link to="/employee/attendance" className="bg-white text-[#8A00CC] px-8 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200">
