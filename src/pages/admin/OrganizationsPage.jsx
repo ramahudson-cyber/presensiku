@@ -82,7 +82,36 @@ function OrganizationsPage() {
       });
       if (error) throw error;
       if (!data?.success) throw new Error(data?.error || "Gagal membuat instansi");
-      setSuccess(`Instansi "${form.orgName}" dibuat. Login admin: ${data.login}`);
+
+      // Kirim kredensial admin via email (non-blocking: instansi tetap jadi
+      // walau SMTP gagal — admin bisa login dengan password yang diinput)
+      let emailNote = "";
+      if (form.adminEmail) {
+        try {
+          const resp = await fetch(window.location.origin + "/api/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              to: form.adminEmail.trim(),
+              username: form.adminUsername.trim(),
+              full_name: form.adminFullName.trim(),
+              password: form.adminPassword,
+              org_name: form.orgName.trim(),
+            }),
+          });
+          if (!resp.ok) {
+            const errBody = await resp.json().catch(() => ({}));
+            throw new Error(errBody.error || `HTTP ${resp.status}`);
+          }
+          emailNote = ` Kredensial dikirim ke ${form.adminEmail.trim()}.`;
+        } catch (emailErr) {
+          emailNote = ` GAGAL kirim email (${emailErr.message}) — cek alamat email, atau berikan kredensial langsung: ${data.login}`;
+        }
+      } else {
+        emailNote = ` Berikan kredensial langsung ke admin: ${data.login}`;
+      }
+
+      setSuccess(`Instansi "${form.orgName}" dibuat.${emailNote}`);
       setForm({ orgName: "", slug: "", adminUsername: "", adminFullName: "", adminEmail: "", adminPassword: "" });
       setShowForm(false);
       loadOrgs();

@@ -16,10 +16,13 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { to, username, full_name, password } = req.body;
+  const { to, username, full_name, password, org_name } = req.body;
   if (!to || !username || !full_name) {
     return res.status(400).json({ error: "Missing required fields" });
   }
+
+  // Branding multi-tenant: nama instansi dari pemanggil (fallback nama app)
+  const ORG_LABEL = org_name || "Presensiku";
 
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp-relay.brevo.com",
@@ -34,7 +37,7 @@ export default async function handler(req, res) {
   const html = `
     <div style="font-family: Inter, Arial, sans-serif; max-width: 480px; margin: 0 auto; background: #0f0214; border-radius: 16px; overflow: hidden; border: 1px solid rgba(139,92,246,0.2);">
       <div style="padding: 32px 24px; text-align: center; background: linear-gradient(135deg, #0f0214, #1a0533);">
-        <h1 style="color: #fff; font-size: 22px; margin: 0 0 4px;">SIAP Puskesmas Ampenan</h1>
+        <h1 style="color: #fff; font-size: 22px; margin: 0 0 4px;">${ORG_LABEL}</h1>
         <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0;">Sistem Informasi Administrasi & Presensi</p>
       </div>
       <div style="padding: 24px; background: #1a0a35;">
@@ -71,7 +74,7 @@ export default async function handler(req, res) {
     const info = await transporter.sendMail({
       from: process.env.SMTP_FROM || `"SIAP Puskesmas" <RAMAHUDSON@GMAIL.COM>`,
       to,
-      subject: "Akun SIAP Puskesmas Ampenan",
+      subject: `Akun ${ORG_LABEL}`,
       html,
     });
 
