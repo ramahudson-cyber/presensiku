@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
-import { Building2, Plus, Loader2, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import Swal from "sweetalert2";
+import { Building2, Plus, Loader2, CheckCircle2, XCircle, AlertCircle, Trash2 } from "lucide-react";
 
 const T = {
   text: "#0F172A",
@@ -15,6 +16,7 @@ function OrganizationsPage() {
   const [orgs, setOrgs] = useState([]);
   const [loading, setLoading] = useState(user?.role === "super_admin");
   const [creating, setCreating] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -130,6 +132,45 @@ function OrganizationsPage() {
       .eq("id", org.id);
     if (error) setError(error.message);
     else loadOrgs();
+  };
+
+  const handleDelete = async (org) => {
+    const result = await Swal.fire({
+      title: "Hapus instansi?",
+      html: `<b>${org.name}</b> dan <b>SELURUH datanya</b> akan dihapus permanen:<br>
+             akun semua pegawai, absensi, jadwal, izin, device, dan pengaturan.<br>
+             <span style="color:#ef4444">Tindakan ini tidak bisa dibatalkan.</span>`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus permanen",
+      cancelButtonText: "Batal",
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#64748b",
+      focusCancel: true,
+    });
+    if (!result.isConfirmed) return;
+
+    setDeletingId(org.id);
+    setError("");
+    try {
+      const { data, error } = await supabase.rpc("delete_organization", {
+        p_org_id: org.id,
+      });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Gagal menghapus instansi");
+      Swal.fire({
+        title: "Terhapus",
+        text: `${org.name} beserta ${data.deleted_users} akun penggunanya telah dihapus.`,
+        icon: "success",
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      loadOrgs();
+    } catch (err) {
+      Swal.fire({ title: "Gagal", text: err.message, icon: "error" });
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   if (!isPlatformAdmin) {
@@ -303,6 +344,15 @@ function OrganizationsPage() {
                     style={{ borderColor: T.border, color: T.textSec }}
                   >
                     {org.is_active ? "Suspend" : "Aktifkan"}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(org)}
+                    disabled={deletingId === org.id}
+                    className="inline-flex items-center gap-1.5 text-xs px-4 py-1.5 rounded-full border border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-50 transition-colors"
+                    title={`Hapus ${org.name} permanen`}
+                  >
+                    {deletingId === org.id ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+                    Hapus
                   </button>
                 </div>
               </div>
