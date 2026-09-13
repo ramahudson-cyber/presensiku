@@ -11,6 +11,8 @@ localStorage.removeItem("theme");
 
 // App berhasil boot — reset flag recovery white screen (lihat index.html).
 sessionStorage.removeItem("boot-recovered");
+// Reset flag auto-reload SW supaya update berikutnya juga bisa auto-reload.
+sessionStorage.removeItem("sw-reloaded");
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

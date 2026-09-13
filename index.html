@@ -53,6 +53,21 @@
           }
         }, true);
       })();
+
+      // Auto-reload saat service worker baru mengambil alih halaman. Tanpa ini,
+      // PWA standalone (iOS) terus menjalankan versi lama dari cache sampai user
+      // force-close & buka ulang app. Guard: hanya bila sebelumnya SUDAH ada
+      // controller (bukan kunjungan pertama) dan hanya sekali per sesi.
+      (function () {
+        if (!("serviceWorker" in navigator)) return;
+        var hadController = !!navigator.serviceWorker.controller;
+        var swReloaded = sessionStorage.getItem("sw-reloaded");
+        navigator.serviceWorker.addEventListener("controllerchange", function () {
+          if (!hadController || swReloaded) return;
+          sessionStorage.setItem("sw-reloaded", "1");
+          window.location.reload();
+        });
+      })();
     </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
