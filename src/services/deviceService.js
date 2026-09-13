@@ -233,7 +233,7 @@ export async function checkDeviceRequestStatus(userId, visitorId) {
 /**
  * Generate OTP & kirim ke email pegawai
  */
-const API_BASE = typeof window !== 'undefined' ? window.location.origin : 'https://presensiku.vercel.app';
+const API_BASE = typeof window !== 'undefined' ? window.location.origin : 'https://presensiku-beige.vercel.app';
 
 export async function sendOtpEmail(userEmail, userName) {
   try {

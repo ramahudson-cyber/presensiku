@@ -24,6 +24,12 @@ export default async function handler(req, res) {
   // Branding multi-tenant: nama instansi dari pemanggil (fallback nama app)
   const ORG_LABEL = org_name || "Presensiku";
 
+  // Link login mengikuti domain pemanggil (Vercel preview/prod/APK fallback).
+  // Origin dari browser = domain yang benar; fallback ke produksi resmi.
+  const APP_URL = (req.headers.origin && req.headers.origin.startsWith("http")
+    ? req.headers.origin
+    : "https://presensiku-beige.vercel.app");
+
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp-relay.brevo.com",
     port: parseInt(process.env.SMTP_PORT || "587"),
@@ -57,15 +63,15 @@ export default async function handler(req, res) {
             </tr>
           </table>
         </div>
-        <a href="https://presensiku.vercel.app" style="display: block; text-align: center; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: #fff; text-decoration: none; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; margin-bottom: 16px;">
-          Buka SIAP
+        <a href="${APP_URL}" style="display: block; text-align: center; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: #fff; text-decoration: none; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; margin-bottom: 16px;">
+          Buka ${ORG_LABEL}
         </a>
         <p style="color: rgba(255,255,255,0.4); font-size: 11px; margin: 0; line-height: 1.5;">
           Setelah login, Anda akan diminta mengganti password untuk keamanan akun Anda.
         </p>
       </div>
       <div style="padding: 16px 24px; text-align: center; background: #0f0214;">
-        <p style="color: rgba(255,255,255,0.2); font-size: 10px; margin: 0;">Puskesmas Ampenan &copy; ${new Date().getFullYear()}</p>
+        <p style="color: rgba(255,255,255,0.2); font-size: 10px; margin: 0;">${ORG_LABEL} &copy; ${new Date().getFullYear()}</p>
       </div>
     </div>
   `;
