@@ -9,6 +9,9 @@ import "./index.css";
 document.documentElement.classList.remove("dark");
 localStorage.removeItem("theme");
 
+// App berhasil boot — reset flag recovery white screen (lihat index.html).
+sessionStorage.removeItem("boot-recovered");
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <HashRouter>

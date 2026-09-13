@@ -15,7 +15,9 @@ export default class ErrorBoundary extends Component {
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null });
+    // Reset state saja tidak cukup bila error berasal dari aset basi/cache lama —
+    // hard reload memastikan index.html & chunk baru diambil dan SW di-refresh.
+    window.location.reload();
   };
 
   render() {

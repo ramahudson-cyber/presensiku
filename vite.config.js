@@ -29,15 +29,27 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{ico,png,svg,woff2,html}"],
+        // Hanya index.html yang diprecache sebagai dokumen — file HTML lain di public/ tidak.
+        globPatterns: ["index.html", "**/*.{ico,png,svg,woff2}"],
+        navigateFallbackDenylist: [
+          /^\/assets\//,
+          /^\/api\//,
+          /^\/version\.json$/,
+          /^\/sw\.js$/,
+          /^\/registerSW\.js$/,
+        ],
         runtimeCaching: [
-          // JS/CSS: NetworkFirst with longer timeout for reliability on slow networks
+          // JS/CSS: NetworkFirst, tapi JANGAN pernah cache respons HTML (bisa terjadi
+          // saat SPA-fallback menelan 404 aset lama) — MIME text/html bikin module gagal
+          // dieksekusi = white screen permanen.
           {
             urlPattern: ({ request }) => request.destination === "script" || request.destination === "style",
             handler: "NetworkFirst",
             options: {
+              cacheName: "js-css-runtime-cache",
               networkTimeoutSeconds: 10,
-              cacheableResponse: { statuses: [0, 200] },
+              cacheableResponse: { statuses: [200] },
+              expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 14, purgeOnQuotaError: true },
             },
           },
           // HTML: NetworkFirst

@@ -24,6 +24,36 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Jaring pengaman white screen: bila module utama gagal dimuat (aset lama
+      // hilang setelah deploy / cache SW basi), bersihkan cache & SW lalu reload
+      // sekali. Tanpa ini user terkunci di layar putih sampai force-close.
+      (function () {
+        var reloaded = sessionStorage.getItem("boot-recovered");
+        window.addEventListener("error", function (e) {
+          var src = e && (e.target && (e.target.src || e.target.href));
+          if (!src || String(src).indexOf("/assets/") === -1) return;
+          if (reloaded) return;
+          sessionStorage.setItem("boot-recovered", "1");
+          if (window.caches && caches.keys) {
+            caches.keys().then(function (keys) {
+              return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+            }).then(function () {
+              if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+                navigator.serviceWorker.getRegistrations().then(function (regs) {
+                  regs.forEach(function (r) { r.unregister(); });
+                  window.location.reload();
+                });
+              } else {
+                window.location.reload();
+              }
+            });
+          } else {
+            window.location.reload();
+          }
+        }, true);
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

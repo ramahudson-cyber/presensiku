@@ -15,14 +15,14 @@ export default function BottomNav({ hidden = false }) {
 
   if (hidden) return null;
 
-  // Pegawai: 2 menu utama, sisanya ada di Bottom Sheet "Menu"
+  // Pegawai: Jadwal tetap di nav; sisanya ada di Bottom Sheet "Menu"
   const pegawaiMenus = [
     { path: "/employee", label: "Home", icon: LayoutDashboard, end: true },
     { path: "/employee/profile", label: "Profil", icon: User },
+    { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
   ];
 
   const pegawaiMore = [
-    { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
     { path: "/employee/leave", label: "Pengajuan Izin/Sakit", icon: ClipboardList },
     { path: "/employee/history", label: "Riwayat Kehadiran", icon: History },
   ];
