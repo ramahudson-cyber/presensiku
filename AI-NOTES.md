@@ -2,6 +2,13 @@
 
 > File ini di-update otomatis. Setiap selesai tugas → bilang **"catat progress"** untuk update.
 
+## ⚠️ Kebijakan Update PWA/Web (WAJIB DIBACA SEBELUM DEPLOY UI)
+- **`public/version.json` punya 2 channel terpisah:**
+  - `versionCode` → khusus update **APK/native**. JANGAN di-bump untuk perubahan web saja.
+  - `webVersionCode` → khusus deploy **web/PWA**. **Bump +1 setiap deploy yang mengubah UI/logika web** — semua halaman lama yang terbuka akan auto-reload dalam ±30 detik (mekanisme di `UpdateDialog` + `checkWebUpdate` di `updateService.js`).
+- Registrasi SW manual di `main.jsx` (`injectRegister: null`, `updateViaCache: 'none'`).
+- Auto-reload SW `controllerchange` ada di `index.html` (guard sessionStorage).
+
 ## Izin/Sakit (Cuti & Sakit)
 ✅ Form permohonan: LeaveRequestPage selesai
 ✅ Admin approval: LeaveManagementPage selesai

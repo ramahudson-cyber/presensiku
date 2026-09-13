@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Capacitor } from "@capacitor/core";
-import { checkUpdate } from "../services/updateService";
+import { checkUpdate, checkWebUpdate } from "../services/updateService";
 import { downloadApk } from "../services/apkDownloader";
 import { Download, RefreshCw, Settings, FileDown } from "lucide-react";
 
@@ -27,6 +27,28 @@ export default function UpdateDialog() {
 
     return () => clearInterval(pollingRef.current);
   }, []);
+
+  // Web/PWA: saat deploy baru terdeteksi (webVersionCode naik), reload otomatis
+  // sekali per sesi — user dapat versi baru tanpa tutup-buka app. APK tidak
+  // tersentuh karena alur native tetap memakai versionCode + dialog unduhan.
+  useEffect(() => {
+    if (isNative) return;
+    let cancelled = false;
+    const check = async () => {
+      if (cancelled) return;
+      const webUpdate = await checkWebUpdate();
+      if (!webUpdate) return;
+      if (sessionStorage.getItem("web-autoreload")) return;
+      sessionStorage.setItem("web-autoreload", "1");
+      window.location.reload();
+    };
+    check();
+    const t = setInterval(check, 30000);
+    return () => {
+      cancelled = true;
+      clearInterval(t);
+    };
+  }, [isNative]);
 
   useEffect(() => {
     if (update?.forceUpdate) {
@@ -109,7 +131,9 @@ export default function UpdateDialog() {
     if (Capacitor.isNativePlatform()) {
       try {
         Capacitor.getPlatform();
-      } catch (_) {}
+      } catch {
+        // platform check only — hasilnya tidak dipakai
+      }
     }
     const a = document.createElement("a");
     a.href = "package:com.puskesmas.ampenan.siap";

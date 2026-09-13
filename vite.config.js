@@ -9,7 +9,11 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "icons.svg", "manifest.json"],
+      // Registrasi manual di main.jsx (butuh updateViaCache: "none").
+      injectRegister: null,
+      // svg/png/ico/woff2 sudah tercakup globPatterns — jangan diulang di sini
+      // supaya tidak dobel di precache manifest.
+      includeAssets: ["manifest.json"],
       manifest: {
         name: "Presensiku",
         short_name: "Presensiku",

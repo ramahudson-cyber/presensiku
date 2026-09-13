@@ -14,6 +14,18 @@ sessionStorage.removeItem("boot-recovered");
 // Reset flag auto-reload SW supaya update berikutnya juga bisa auto-reload.
 sessionStorage.removeItem("sw-reloaded");
 
+// Registrasi service worker manual (vite-plugin-pwa injectRegister: null).
+// updateViaCache: "none" memastikan cek /sw.js tidak kena HTTP cache browser,
+// jadi SW baru terdeteksi segera setiap cold-open.
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js", {
+      scope: "/",
+      updateViaCache: "none",
+    });
+  });
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <HashRouter>

@@ -1,6 +1,9 @@
 const VERSION_URL = (typeof window !== 'undefined' ? window.location.origin : 'https://presensiku.vercel.app') + '/version.json';
 const CURRENT_VERSION = "1.6.10";
 const CURRENT_VERSION_CODE = 22;
+// Channel update khusus web/PWA — terpisah dari versionCode (milik alur update APK).
+// Bump field `webVersionCode` di public/version.json pada deploy web berisi perubahan UI.
+const CURRENT_WEB_VERSION_CODE = 1;
 
 export async function checkUpdate() {
   try {
@@ -19,6 +22,20 @@ export async function checkUpdate() {
       requiresNativeUpdate: data.requiresNativeUpdate ?? true,
       forceUpdate: data.forceUpdate,
     };
+  } catch {
+    return null;
+  }
+}
+
+// Deteksi deploy web baru. Halaman lama (bundle lama) yang masih berjalan akan
+// me-reload otomatis satu kali (lihat UpdateDialog) begitu webVersionCode naik.
+export async function checkWebUpdate() {
+  try {
+    const res = await fetch(VERSION_URL, { cache: "no-cache" });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!(data.webVersionCode > CURRENT_WEB_VERSION_CODE)) return null;
+    return { webVersionCode: data.webVersionCode };
   } catch {
     return null;
   }
