@@ -43,7 +43,7 @@ export default function SignInPage() {
   const appVersion = getCurrentVersion().version;
 
   const navigate = useNavigate();
-  const { refreshUser, isAuthenticated } = useAuth();
+  const { refreshUser, isAuthenticated, setLoading: setAuthLoading, loading: authLoading } = useAuth();
 
   useEffect(() => {
     (async () => {
@@ -110,6 +110,7 @@ export default function SignInPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading || authLoading) return; // cegah double-submit / race
     setError("");
     setLoading(true);
 
@@ -166,6 +167,8 @@ export default function SignInPage() {
         console.log(`[Login] ${profile.role} — skip device binding & OTP`);
         setLoadingText("Memuat dashboard...");
         await withTimeout(refreshUser(), 15000, "refreshUser");
+        setAuthLoading(false); // tutup spinner global sebelum navigasi
+        await new Promise((r) => setTimeout(r, 0)); // pastikan AuthContext re-render loading=false
         if (profile.role !== "super_admin" && profile.password_changed === false) {
           navigate("/ubah-password", { replace: true });
           return;
@@ -196,6 +199,8 @@ export default function SignInPage() {
         console.log("[Login] 6/9 Memuat dashboard...");
         setLoadingText("Memuat dashboard...");
         await withTimeout(refreshUser(), 15000, "refreshUser");
+        setAuthLoading(false);
+        await new Promise((r) => setTimeout(r, 0));
         if (profile.role !== "super_admin" && profile.password_changed === false) {
           navigate("/ubah-password", { replace: true });
           return;
@@ -217,6 +222,8 @@ export default function SignInPage() {
         }
         if (reqStatus.status === "approved") {
           await withTimeout(refreshUser(), 15000, "refreshUser");
+          setAuthLoading(false);
+          await new Promise((r) => setTimeout(r, 0));
           redirectByRole(profile.role);
           return;
         }
@@ -256,6 +263,7 @@ export default function SignInPage() {
     } finally {
       setLoading(false);
       setLoadingText("");
+      setAuthLoading(false);
 
       console.log("[Login] FINISHED — loading=false, error shown if any");
     }
@@ -286,6 +294,7 @@ export default function SignInPage() {
     } finally {
       setLoading(false);
       setLoadingText("");
+      setAuthLoading(false);
     }
   };
 
@@ -296,6 +305,8 @@ export default function SignInPage() {
       const status = await checkDeviceRequestStatus(userId, deviceInfo.visitorId);
       if (status.status === "approved") {
         await refreshUser();
+        setAuthLoading(false);
+        await new Promise((r) => setTimeout(r, 0));
         const { data: profile } = await supabase.from("profiles").select("role, password_changed").eq("id", userId).single();
         if (profile) {
           if (profile.role !== "super_admin" && profile.password_changed === false) {
@@ -318,6 +329,7 @@ export default function SignInPage() {
     } finally {
       setLoading(false);
       setLoadingText("");
+      setAuthLoading(false);
     }
   };
 

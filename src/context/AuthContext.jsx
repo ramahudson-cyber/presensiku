@@ -1,145 +1,132 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 
-const AuthContext = createContext();
+const PROFILE_TIMEOUT_MS = 12000;
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
-  return context;
-};
+// Bungkus promise dengan timeout supaya `loading` tidak pernah menggantung.
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const initialized = useRef(false);
+  const applyingSession = useRef(false);
 
-  // Function untuk fetch profile data
-  const fetchUserProfile = async (userId) => {
-    if (!userId) return null;
-    
+  // Satu-satunya penulis sesi: semua path bikin loading sinkron di sini,
+  // jadi handler onAuthStateChange & refreshUser tidak saling menimpa / meninggalkan spinner.
+  const applySession = useCallback(async (nextSession, skipLoading) => {
+    if (applyingSession.current) return;
+    applyingSession.current = true;
     try {
-      const { data: profile, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
+      if (!skipLoading) setLoading(true);
+      setSession(nextSession);
 
-      if (error) {
-        if (error.code === 'PGRST116') {
-          console.warn('⚠️ Profile not found for user:', userId);
-          return null;
+      if (nextSession?.user) {
+        let profile = null;
+        try {
+          profile = await withTimeout(
+            supabase.from("profiles").select("*").eq("id", nextSession.user.id).maybeSingle(),
+            PROFILE_TIMEOUT_MS
+          ).then(({ data }) => data);
+        } catch {
+          // Profil gagal/timeout — pakai user polos, jangan macetkan loading
         }
-        console.error("❌ Error fetching profile:", error);
-        return null;
-      }
-      
-      return profile;
-    } catch (err) {
-      console.error("❌ Error in fetchUserProfile:", err);
-      return null;
-    }
-  };
-
-  // ✅ Fungsi refreshUser - DIPAKAI DI LOGIN
-  const refreshUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    setSession(session);
-    
-    if (session?.user) {
-      const profile = await fetchUserProfile(session.user.id);
-      if (profile) {
-        const userData = {
-          ...session.user,
-          ...profile
-        };
-        setUser(userData);
-        return userData; // ✅ Return supaya bisa dipakai
+        setUser({ ...nextSession.user, ...(profile || {}) });
       } else {
-        setUser(session.user);
-        return session.user;
+        setUser(null);
       }
-    } else {
-      setUser(null);
+    } finally {
+      applyingSession.current = false;
+      setLoading(false);
+    }
+  }, []);
+
+  // refreshUser — dipakai di halaman login & cek approval.
+  // Memberi sync update ke caller + menyinkronkan semua konsumen.
+  const refreshUser = useCallback(async () => {
+    try {
+      const { data: { session } } = await withTimeout(supabase.auth.getSession(), PROFILE_TIMEOUT_MS);
+      await applySession(session, true);
+      if (session?.user) {
+        // Return userData gabungan biar caller bisa baca role langsung
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .maybeSingle();
+        return profile ? { ...session.user, ...profile } : session.user;
+      }
+      return null;
+    } catch (err) {
+      console.error("❌ Error in refreshUser:", err);
       return null;
     }
-  };
+  }, [applySession]);
 
   useEffect(() => {
     let cancelled = false;
 
     const initializeAuth = async () => {
       try {
-        // Timeout: jika session tidak terverifikasi dalam 15 detik, anggap expired
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Session verification timeout')), 15000)
-        );
-
-        const sessionPromise = supabase.auth.getSession();
-        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]);
-
+        const { data: { session } } = await withTimeout(supabase.auth.getSession(), PROFILE_TIMEOUT_MS);
         if (cancelled) return;
-        setSession(session);
-
-        if (session?.user) {
-          const profile = await fetchUserProfile(session.user.id);
-          if (!cancelled) {
-            if (profile) {
-              setUser({ ...session.user, ...profile });
-            } else {
-              setUser(session.user);
-            }
-          }
-        } else {
-          if (!cancelled) setUser(null);
-        }
+        await applySession(session, false);
       } catch (err) {
-        console.warn('⚠️ Session init failed or timed out:', err.message);
-        if (!cancelled) {
-          setSession(null);
-          setUser(null);
-        }
-      } finally {
+        console.warn("⚠️ Session init failed or timed out:", err.message);
         if (!cancelled) setLoading(false);
       }
     };
 
     initializeAuth();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session);
-
-      if (session?.user && event !== 'SIGNED_OUT') {
-        const profile = await fetchUserProfile(session.user.id);
-        if (profile) {
-          setUser({ ...session.user, ...profile });
-        } else {
-          setUser(session.user);
-        }
-      } else {
+    // Subscribe ke perubahan auth. Handler TIDAK menunggu mengatur loading abadi:
+    // pakai applySession yang selalu menutup loading di `finally`.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (cancelled) return;
+      if (event === "SIGNED_OUT") {
+        setSession(null);
         setUser(null);
+        setLoading(false);
+        return;
       }
-
-      setLoading(false);
+      applySession(nextSession, true);
     });
 
     return () => {
       cancelled = true;
       subscription.unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const isAuthenticated = !!session;
+
   const value = {
-    session,
     user,
+    session,
     loading,
-    isAuthenticated: !!session,
-    refreshUser, // ✅ Expose refresh function
+    isAuthenticated,
+    refreshUser,
+    setUser,
+    setSession,
+    setLoading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  return ctx;
 }
