@@ -15,12 +15,16 @@ export default function BottomNav({ hidden = false }) {
 
   if (hidden) return null;
 
+  // Pegawai: 2 menu utama, sisanya ada di Bottom Sheet "Menu"
   const pegawaiMenus = [
     { path: "/employee", label: "Home", icon: LayoutDashboard, end: true },
     { path: "/employee/profile", label: "Profil", icon: User },
+  ];
+
+  const pegawaiMore = [
     { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
-    { path: "/employee/leave", label: "Izin / Sakit", icon: ClipboardList },
-    { path: "/employee/history", label: "Riwayat", icon: History },
+    { path: "/employee/leave", label: "Pengajuan Izin/Sakit", icon: ClipboardList },
+    { path: "/employee/history", label: "Riwayat Kehadiran", icon: History },
   ];
 
   const adminMain = [
@@ -37,17 +41,18 @@ export default function BottomNav({ hidden = false }) {
   ];
 
   const mainMenus = userRole === "pegawai" ? pegawaiMenus : adminMain;
-  const moreMenus = userRole === "pegawai" ? [] : adminMore;
+  const moreMenus = userRole === "pegawai" ? pegawaiMore : adminMore;
   const centerPath = userRole === "pegawai"
     ? "/employee/attendance"
     : "/admin/attendance";
 
   // The center action gets a real grid column. This keeps it centered even when
   // the left and right groups contain a different number of items.
+  const moreLabel = userRole === "pegawai" ? "Menu" : "Lainnya";
   const navItems = moreMenus.length > 0
-    ? [...mainMenus, { key: "more", label: "Lainnya", icon: MoreHorizontal }]
+    ? [...mainMenus, { key: "more", label: moreLabel, icon: MoreHorizontal }]
     : mainMenus;
-  const midIndex = Math.floor(navItems.length / 2);
+  const midIndex = Math.ceil(navItems.length / 2);
   const leftMenus = navItems.slice(0, midIndex);
   const rightMenus = navItems.slice(midIndex);
 
