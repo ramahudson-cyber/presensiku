@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase'; // ✅ FIX: path yang benar
 import { MasterService } from '../../services/masterService';
+import { useAuth } from '../../context/AuthContext';
 import { getSetting } from '../../lib/settings';
 import { toast } from 'react-toastify';
 import {
@@ -25,12 +26,18 @@ const inputBase = 'design-input';
 const labelBase = 'design-label';
 
 const EmployeesPage = () => {
+  const { user } = useAuth();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [masterData, setMasterData] = useState({ positions: [], roles: [], statuses: [] });
+  // Admin instansi hanya boleh kelola pegawai & kepala_unit — super_admin
+  // dan admin_puskesmas hanya bisa dibuat oleh super_admin.
+  const allowedRoles = user?.role === 'super_admin'
+    ? masterData.roles
+    : masterData.roles.filter(r => ['pegawai', 'kepala_unit'].includes(r.name));
   const [formData, setFormData] = useState({
     id: '',
     username: '',
@@ -110,7 +117,12 @@ const EmployeesPage = () => {
 
     try {
       if (formData.id) {
-        // UPDATE
+        // UPDATE — admin instansi tidak boleh naikkan role ke admin/super_admin
+        if (user?.role !== 'super_admin' && !['pegawai', 'kepala_unit'].includes(formData.role)) {
+          toast.error('Admin hanya dapat mengatur role pegawai/kepala unit');
+          setLoading(false);
+          return;
+        }
         const { error } = await supabase
           .from('profiles')
           .update({
@@ -125,6 +137,12 @@ const EmployeesPage = () => {
         if (error) throw error;
         toast.success('Pegawai berhasil diperbarui');
       } else {
+        // CREATE — admin instansi hanya boleh buat pegawai/kepala_unit
+        if (user?.role !== 'super_admin' && !['pegawai', 'kepala_unit'].includes(formData.role)) {
+          toast.error('Admin hanya dapat membuat pegawai/kepala unit');
+          setLoading(false);
+          return;
+        }
         const defaultPass = await getSetting('default_password', 'Puskesmas@123');
         // CREATE via RPC
         const { data: rpcResult, error } = await supabase.rpc('create_employee_with_auth', {
@@ -328,7 +346,7 @@ const EmployeesPage = () => {
                   <select name="role" value={formData.role} onChange={handleInputChange} required
                     className={inputBase}>
                     <option value="" className="bg-onyx">Pilih Role</option>
-                    {masterData.roles.map(r => (
+                    {allowedRoles.map(r => (
                       <option key={r.id} value={r.name} className="bg-onyx">{r.name}</option>
                     ))}
                   </select>

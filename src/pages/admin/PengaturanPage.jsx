@@ -668,6 +668,7 @@ function TabJamKerja() {
    TAB 3: MANAJEMEN USER
    ============================================================ */
 function TabManajemenUser() {
+  const { user: currentUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -741,6 +742,12 @@ function TabManajemenUser() {
 
   const confirmResetPassword = async () => {
     const { user, password: newPassword } = resetModal;
+    // Admin instansi tidak boleh reset password super_admin / sesama admin —
+    // itu jalan pintas takeover akun. RPC server juga menolak (migrasi 1D).
+    if (currentUser?.role !== 'super_admin' && !['pegawai', 'kepala_unit'].includes(user?.role)) {
+      toast.error('Admin hanya dapat mereset password pegawai/kepala unit');
+      return;
+    }
     const minLen = Number(await getSetting('password_min_length', '6'));
     if (newPassword.length < minLen) {
       toast.error(`Password minimal ${minLen} karakter`);
@@ -1542,7 +1549,7 @@ if (!["super_admin", "admin_puskesmas"].includes(user?.role)) {
           <Shield size={48} className="text-rose-300" />
         </div>
         <h2 className="text-2xl font-bold text-pure-white mb-2">Akses Ditolak</h2>
-        <p className="text-slate-mist">Halaman ini hanya untuk Super Admin.</p>
+        <p className="text-slate-mist">Halaman ini hanya untuk Super Admin dan Admin Puskesmas.</p>
       </div>
     );
   }
@@ -1554,7 +1561,11 @@ if (!["super_admin", "admin_puskesmas"].includes(user?.role)) {
     { id: "user", label: "Manajemen User", icon: Users },
     { id: "approval", label: "Approval Device", icon: Smartphone },
     { id: "audit", label: "Audit Log", icon: Activity },
-    { id: "master-data", label: "Master Data", icon: Briefcase },
+    // Master Data (tambah/rename role) hanya untuk super_admin —
+    // admin instansi bisa selipkan role super_admin lewat sini.
+    ...(user?.role === "super_admin"
+      ? [{ id: "master-data", label: "Master Data", icon: Briefcase }]
+      : []),
   ];
 
   const renderTab = () => {
@@ -1603,7 +1614,7 @@ if (!["super_admin", "admin_puskesmas"].includes(user?.role)) {
         {activeTab === "profil" && <TabProfilPuskesmas />}
         {activeTab === "jam-kerja" && <TabJamKerja />}
       {activeTab === "shift" && <TabShift />}
-      {activeTab === "master-data" && <MasterDataManagementPage />}
+      {activeTab === "master-data" && user?.role === "super_admin" && <MasterDataManagementPage />}
       {activeTab === "user" && <TabManajemenUser />}
 
         {activeTab === "approval" && <TabApprovalDevice />}

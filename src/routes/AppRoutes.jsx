@@ -57,14 +57,26 @@ function AppRoutes() {
         }
       >
         <Route index element={<RoleBasedDashboard />} />
-        <Route path="employees" element={<EmployeesPage />} />
+        <Route path="employees" element={
+          <ProtectedRoute allowedRoles={["super_admin", "admin_puskesmas"]}>
+            <EmployeesPage />
+          </ProtectedRoute>
+        } />
         <Route path="attendance" element={<AttendancePage />} />
         <Route path="attendance-history" element={<AttendanceHistoryPage />} />
         <Route path="schedules" element={<SchedulingPage />} />
         <Route path="leave" element={<LeaveManagementPage />} />
         <Route path="announcements" element={<ComingSoonPage />} />
-        <Route path="organizations" element={<OrganizationsPage />} />
-        <Route path="settings" element={<PengaturanPage />} />
+        <Route path="organizations" element={
+          <ProtectedRoute allowedRoles={["super_admin"]}>
+            <OrganizationsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="settings" element={
+          <ProtectedRoute allowedRoles={["super_admin", "admin_puskesmas"]}>
+            <PengaturanPage />
+          </ProtectedRoute>
+        } />
       </Route>
 
       {/* PEGAWAI - DETEKSI DEVICE DINONAKTIFKAN SEMENTARA */}
