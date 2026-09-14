@@ -49,7 +49,7 @@ function AppRoutes() {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute allowedRoles={["super_admin", "admin_puskesmas", "kepala_unit"]}>
+          <ProtectedRoute allowedRoles={["super_admin", "admin", "admin_puskesmas", "kepala_unit"]}>
             <PlatformGuard>
               <AdminLayout />
             </PlatformGuard>
@@ -58,7 +58,7 @@ function AppRoutes() {
       >
         <Route index element={<RoleBasedDashboard />} />
         <Route path="employees" element={
-          <ProtectedRoute allowedRoles={["super_admin", "admin_puskesmas"]}>
+          <ProtectedRoute allowedRoles={["super_admin", "admin", "admin_puskesmas"]}>
             <EmployeesPage />
           </ProtectedRoute>
         } />
@@ -73,7 +73,7 @@ function AppRoutes() {
           </ProtectedRoute>
         } />
         <Route path="settings" element={
-          <ProtectedRoute allowedRoles={["super_admin", "admin_puskesmas"]}>
+          <ProtectedRoute allowedRoles={["super_admin", "admin", "admin_puskesmas"]}>
             <PengaturanPage />
           </ProtectedRoute>
         } />

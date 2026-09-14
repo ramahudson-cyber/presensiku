@@ -902,7 +902,7 @@ function TabManajemenUser() {
                     <td className="px-4 py-3 text-pure-white/60 font-mono text-xs hidden md:table-cell">{u.username || "-"}</td>
                     <td className="px-4 py-3 text-pure-white/60 text-xs hidden lg:table-cell">{u.email || "-"}</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${roleBadge(u.role)}`}>{u.role || "-"}</span>
+                      <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${roleBadge(u.role)}`}>{u.role === "admin_puskesmas" ? "admin" : (u.role || "-")}</span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-1.5 flex-wrap">
@@ -1544,14 +1544,14 @@ export default function PengaturanPage() {
   const [activeTab, setActiveTab] = useState("profil");
 
 // Cek role (double safety)
-if (!["super_admin", "admin_puskesmas"].includes(user?.role)) {
+if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8 animate-fade-in">
         <div className="p-5 rounded-3xl bg-rose-500/10 mb-4">
           <Shield size={48} className="text-rose-300" />
         </div>
         <h2 className="text-2xl font-bold text-pure-white mb-2">Akses Ditolak</h2>
-        <p className="text-slate-mist">Halaman ini hanya untuk Super Admin dan Admin Puskesmas.</p>
+        <p className="text-slate-mist">Halaman ini hanya untuk Super Admin dan Admin.</p>
       </div>
     );
   }

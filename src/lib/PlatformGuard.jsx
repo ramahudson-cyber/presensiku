@@ -2,7 +2,8 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Capacitor } from '@capacitor/core';
 
-const WEB_ALLOWED_ROLES = ["super_admin", "admin_puskesmas", "kepala_unit"];
+// Terima 'admin' baru + 'admin_puskesmas' lama (masa transisi sampai DB bersih).
+const WEB_ALLOWED_ROLES = ["super_admin", "admin", "admin_puskesmas", "kepala_unit"];
 
 function getDeviceType() {
   try {

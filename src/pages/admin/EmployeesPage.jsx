@@ -34,7 +34,9 @@ const EmployeesPage = () => {
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [masterData, setMasterData] = useState({ positions: [], roles: [], statuses: [] });
   // Admin instansi hanya boleh kelola pegawai & kepala_unit — super_admin
-  // dan admin_puskesmas hanya bisa dibuat oleh super_admin.
+  // dan admin hanya bisa dibuat oleh super_admin.
+  // Terima 'admin' baru + 'admin_puskesmas' lama (masa transisi DB).
+  const isAdmin = user?.role === 'admin' || user?.role === 'admin_puskesmas';
   const allowedRoles = user?.role === 'super_admin'
     ? masterData.roles
     : masterData.roles.filter(r => ['pegawai', 'kepala_unit'].includes(r.name));
@@ -206,9 +208,13 @@ const EmployeesPage = () => {
     (emp.position || '').toLowerCase().includes(search.toLowerCase())
   );
 
+  // Nilai DB lama 'admin_puskesmas' tampil sebagai 'admin' (masa transisi).
+  const roleLabel = (role) => role === 'admin_puskesmas' ? 'admin' : (role || '-');
+
   const roleBadge = (role) => {
     const map = {
       super_admin: 'bg-rose-500/15 text-rose-300 ring-rose-500/30',
+      admin: 'bg-purple-500/15 text-purple-300 ring-purple-500/30',
       admin_puskesmas: 'bg-purple-500/15 text-purple-300 ring-purple-500/30',
       kepala_unit: 'bg-sky-500/15 text-sky-300 ring-sky-500/30',
       pegawai: 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30',
@@ -456,7 +462,7 @@ const EmployeesPage = () => {
                       <td className="px-4 py-3 text-pure-white/60 font-mono text-xs hidden xl:table-cell">{emp.username || '-'}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${roleBadge(emp.role)}`}>
-                          {emp.role || '-'}
+                          {roleLabel(emp.role)}
                         </span>
                       </td>
                       <td className="px-4 py-3 hidden lg:table-cell">
@@ -518,7 +524,7 @@ const EmployeesPage = () => {
                       </div>
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ring-1 ${roleBadge(emp.role)}`}>
-                          {emp.role || '-'}
+                          {roleLabel(emp.role)}
                         </span>
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusBadge(emp.employee_status)}`}>
                           {emp.employee_status || '-'}

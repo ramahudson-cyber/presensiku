@@ -72,7 +72,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate text-pure-white">{user?.full_name || user?.username || "User"}</p>
-              <p className="text-[10px] text-slate-mist capitalize">{userRole.replace("_", " ")}</p>
+              <p className="text-[10px] text-slate-mist capitalize">{userRole === "admin_puskesmas" ? "admin" : userRole.replace("_", " ")}</p>
             </div>
           </div>
         </div>
