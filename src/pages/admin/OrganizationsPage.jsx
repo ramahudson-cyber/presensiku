@@ -201,7 +201,7 @@ function OrganizationsPage() {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-electric-violet text-white text-sm font-semibold hover:brightness-110 active:scale-[0.98] transition-all"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-electric-violet text-pure-white text-sm font-semibold hover:brightness-110 active:scale-[0.98] transition-all"
         >
           <Plus size={16} /> Instansi Baru
         </button>
@@ -287,7 +287,7 @@ function OrganizationsPage() {
           <div className="flex items-center gap-3 pt-1">
             <button
               type="submit" disabled={creating}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-electric-violet text-white text-sm font-semibold hover:brightness-110 disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-electric-violet text-pure-white text-sm font-semibold hover:brightness-110 disabled:opacity-50 transition-all"
             >
               {creating ? <Loader2 size={15} className="animate-spin" /> : <Building2 size={15} />}
               {creating ? "Membuat..." : "Buat Instansi"}
