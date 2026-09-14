@@ -887,9 +887,13 @@ function TabManajemenUser() {
                       <div className="flex items-center gap-2.5">
                         <button
                           onClick={() => { if (window.innerWidth < 768) openDeviceSheet(u); else toggleExpand(u.id); }}
-                          className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarGradient(u.full_name)} flex items-center justify-center text-pure-white text-xs font-bold shadow-lg shrink-0 hover:scale-110 transition-all`}
+                          className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarGradient(u.full_name)} flex items-center justify-center text-pure-white text-xs font-bold shadow-lg shrink-0 hover:scale-110 transition-all overflow-hidden`}
                         >
-                          {initials(u.full_name)}
+                          {u.avatar_url ? (
+                            <img src={u.avatar_url} alt={u.full_name || "User"} className="w-full h-full object-cover" />
+                          ) : (
+                            initials(u.full_name)
+                          )}
                         </button>
                         <div className="min-w-0">
                           <p className="font-medium text-pure-white truncate">{u.full_name || "-"}</p>
