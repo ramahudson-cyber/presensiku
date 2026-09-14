@@ -54,6 +54,10 @@ const EmployeesPage = () => {
       MasterService.getRoles(),
       MasterService.getStatuses(),
     ]);
+    // Jangan telan error RLS diam-diam — dropdown kosong tanpa sebab itu bug.
+    [p, r, s].forEach(res => {
+      if (res.error) console.error('❌ Master data error:', res.error.message);
+    });
     setMasterData({ positions: p.data || [], roles: r.data || [], statuses: s.data || [] });
   };
 
