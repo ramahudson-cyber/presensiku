@@ -262,8 +262,8 @@ function TabProfilPuskesmas() {
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="min-w-0">
-          <h2 className={sectionTitle}>Lokasi Puskesmas</h2>
-          <p className={sectionSub}>Kelola lokasi puskesmas & radius absensi GPS</p>
+          <h2 className={sectionTitle}>Lokasi Absensi</h2>
+          <p className={sectionSub}>Kelola lokasi & radius absensi GPS</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
@@ -297,7 +297,7 @@ function TabProfilPuskesmas() {
                 type="text" required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Contoh: Puskesmas Ampenan"
+                placeholder="Contoh: Gedung Utama"
                 className={inputBase}
               />
             </div>
@@ -470,7 +470,7 @@ function TabProfilPuskesmas() {
               <a href="https://www.google.com/maps" target="_blank" rel="noreferrer" className="underline text-sky-300">
                 Google Maps
               </a>
-              , klik kanan di lokasi puskesmas, copy koordinatnya (format: -8.569700, 116.082100).
+              , klik kanan di titik lokasi, copy koordinatnya (format: -8.569700, 116.082100).
             </p>
           </div>
         </div>

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">SIAP Puskesmas</string>
-    <string name="title_activity_main">SIAP Puskesmas</string>
+    <string name="app_name">Presensiku</string>
+    <string name="title_activity_main">Presensiku</string>
     <string name="package_name">com.puskesmas.ampenan.siap</string>
     <string name="custom_url_scheme">com.puskesmas.ampenan.siap</string>
 </resources>

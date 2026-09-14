@@ -459,7 +459,7 @@ export default function SignInPage() {
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      placeholder="nama@puskesmas.com"
+                      placeholder="nama@email.com"
                       required
                       disabled={loading}
                       className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-white/[0.06] border border-white/[0.08] rounded-[16px] text-pure-white text-sm placeholder-white/30 focus:outline-none focus:border-electric-violet/50 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40"

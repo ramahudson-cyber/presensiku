@@ -34,7 +34,7 @@ export default async function handler(req, res) {
   const html = `
     <div style="font-family: Inter, Arial, sans-serif; max-width: 480px; margin: 0 auto; background: #0f0214; border-radius: 16px; overflow: hidden; border: 1px solid rgba(139,92,246,0.2);">
       <div style="padding: 32px 24px; text-align: center; background: linear-gradient(135deg, #0f0214, #1a0533);">
-        <h1 style="color: #fff; font-size: 22px; margin: 0 0 4px;">SIAP Puskesmas Ampenan</h1>
+        <h1 style="color: #fff; font-size: 22px; margin: 0 0 4px;">Presensiku</h1>
         <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0;">Verifikasi Perangkat</p>
       </div>
       <div style="padding: 24px; background: #1a0a35;">
@@ -50,16 +50,16 @@ export default async function handler(req, res) {
         </p>
       </div>
       <div style="padding: 16px 24px; text-align: center; background: #0f0214;">
-        <p style="color: rgba(255,255,255,0.2); font-size: 10px; margin: 0;">Puskesmas Ampenan &copy; ${new Date().getFullYear()}</p>
+        <p style="color: rgba(255,255,255,0.2); font-size: 10px; margin: 0;">Presensiku &copy; ${new Date().getFullYear()}</p>
       </div>
     </div>
   `;
 
   try {
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"SIAP Puskesmas" <RAMAHUDSON@GMAIL.COM>`,
+      from: process.env.SMTP_FROM || `"Presensiku" <RAMAHUDSON@GMAIL.COM>`,
       to: email,
-      subject: "Kode OTP - Verifikasi Perangkat SIAP",
+      subject: "Kode OTP - Verifikasi Perangkat Presensiku",
       html,
     });
 

@@ -65,7 +65,7 @@ export default function AttendancePage() {
   const [isFakeGPS, setIsFakeGPS] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
-  const [puskesmasLocation, setPuskesmasLocation] = useState({ latitude: -8.5697, longitude: 116.0821, radius_meter: 200, name: "Puskesmas Ampenan" });
+  const [puskesmasLocation, setPuskesmasLocation] = useState({ latitude: -8.5697, longitude: 116.0821, radius_meter: 200, name: "Lokasi Absensi" });
   const prevDistanceRef = useRef(null);
 	  const zoomMapRef = useRef(null);
 	  const DISTANCE_THRESHOLD = 5;
@@ -258,7 +258,7 @@ const handleCheckIn = async () => {
       // Validasi SERVER sebelum absen
       const serverCheck = await validateLocationOnServer(freshLoc.latitude, freshLoc.longitude, freshLoc.accuracy);
       if (!serverCheck.valid) {
-        setError(serverCheck.error || "Anda di luar radius absen. Silakan mendekat ke Puskesmas.");
+        setError(serverCheck.error || "Anda di luar radius absen. Silakan mendekat ke titik absensi.");
         setIsFakeGPS(!!serverCheck.suspicious_accuracy);
         setSaving(false);
         return;

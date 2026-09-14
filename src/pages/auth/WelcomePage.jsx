@@ -70,7 +70,7 @@ export default function WelcomePage() {
         </div>
 
         <footer className="footer reveal d-foot">
-          <p className="place">Puskesmas Ampenan</p>
+          <p className="place">Presensiku</p>
           <p className="ver">v{appVersion} — Presensiku</p>
         </footer>
       </div>

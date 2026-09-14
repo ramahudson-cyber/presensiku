@@ -289,7 +289,7 @@ export default function KepalaUnitDashboard() {
           <div className="text-white/50 text-[11px] sm:text-xs mt-0.5 flex items-center justify-center gap-1.5">
             <span className="px-2 py-0.5 rounded-full bg-white/20 text-white/90 text-[10px] font-medium">{user?.role || "kepala_unit"}</span>
             <span className="text-white/40">•</span>
-            <span>{user?.email || "kepala@puskesmas"}</span>
+            <span>{user?.email || "kepala@presensiku"}</span>
           </div>
         </div>
       </div>

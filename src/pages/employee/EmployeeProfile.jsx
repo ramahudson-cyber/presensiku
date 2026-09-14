@@ -284,7 +284,7 @@ export default function EmployeeProfile() {
 
           {/* Footer */}
           <div className="border-t flex items-center justify-between px-5 py-3" style={{ borderColor: T.div }}>
-            <span className="text-[9px] font-medium" style={{ color: T.sub }}>Hadir.Kuy v1.6.6</span>
+            <span className="text-[9px] font-medium" style={{ color: T.sub }}>Presensiku v1.6.6</span>
             <span className="text-[9px] font-medium" style={{ color: T.sub }}>Build 18</span>
           </div>
         </Card>

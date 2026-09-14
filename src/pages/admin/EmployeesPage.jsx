@@ -336,7 +336,7 @@ const EmployeesPage = () => {
                 <input
                   type="email" name="email" value={formData.email}
                   onChange={handleInputChange} required
-                  placeholder="email@puskesmas.local"
+                  placeholder="nama@email.com"
                   className={inputBase}
                 />
               </div>

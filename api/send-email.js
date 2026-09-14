@@ -49,7 +49,7 @@ export default async function handler(req, res) {
       <div style="padding: 24px; background: #1a0a35;">
         <p style="color: #fff; font-size: 14px; margin: 0 0 16px;">Yth. <strong>${full_name}</strong>,</p>
         <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin: 0 0 20px; line-height: 1.6;">
-          Akun SIAP Anda telah dibuat. Silakan login dengan kredensial berikut:
+          Akun Presensiku Anda telah dibuat. Silakan login dengan kredensial berikut:
         </p>
         <div style="background: #2d0a4e; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
           <table style="width: 100%; border-collapse: collapse;">
@@ -78,7 +78,7 @@ export default async function handler(req, res) {
 
   try {
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"SIAP Puskesmas" <RAMAHUDSON@GMAIL.COM>`,
+      from: process.env.SMTP_FROM || `"Presensiku" <RAMAHUDSON@GMAIL.COM>`,
       to,
       subject: `Akun ${ORG_LABEL}`,
       html,

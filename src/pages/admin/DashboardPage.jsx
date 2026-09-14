@@ -125,7 +125,7 @@ export default function DashboardPage() {
             <div className="min-w-0">
               <div className="text-sm sm:text-[15px] font-bold text-white truncate tracking-tight">{user?.full_name || "Super Admin"}</div>
               <div className="text-[10px] sm:text-[11px] text-white/70 truncate font-medium uppercase tracking-wider">
-                {user?.role || "super_admin"}<span className="hidden sm:inline"> &middot; {user?.email || "admin@puskesmas"}</span>
+                {user?.role || "super_admin"}<span className="hidden sm:inline"> &middot; {user?.email || "admin@presensiku"}</span>
               </div>
             </div>
           </div>

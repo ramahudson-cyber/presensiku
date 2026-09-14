@@ -5,7 +5,7 @@ import { supabase } from "../lib/supabase";
 const DEFAULT_PUSKESMAS_LOCATION = {
   latitude: -8.5697,
   longitude: 116.0821,
-  name: "Puskesmas Ampenan",
+  name: "Lokasi Absensi",
 };
 const DEFAULT_RADIUS_METER = 200;
 
