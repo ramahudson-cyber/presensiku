@@ -282,9 +282,10 @@ export default function EmployeeEditProfile() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full py-3.5 rounded-2xl text-sm font-semibold text-white transition-all duration-200 active:scale-[0.98]"
+              className="w-full py-3.5 rounded-2xl text-sm font-semibold text-pure-white transition-all duration-200 active:scale-[0.98]"
               style={{
                 background: "linear-gradient(135deg, #BF00FF, #9900CC)",
+                color: "#ffffff",
                 boxShadow: "0 4px 16px rgba(191,0,255,0.3)",
                 opacity: saving ? 0.7 : 1,
               }}

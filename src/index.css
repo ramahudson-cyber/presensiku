@@ -486,6 +486,8 @@ button.bg-gradient-to-r.from-electric-violet,
 }
 /* Tombol hantu border-gradient + text-pure-white di area admin: ungu terbaca */
 .admin-light .border-gradient.text-pure-white { color: #7c16c4 !important; }
+/* Tombol submit gradien ungu inline-style (Edit Profil): teks tetap putih */
+.admin-light button[type="submit"].text-pure-white { color: #ffffff !important; }
 /* Badge kalender gelap (PG/SR/ML): isi kartu tetap putih */
 .cal-badge-pg, .cal-badge-sr, .cal-badge-ml,
 .cal-badge-pg *, .cal-badge-sr *, .cal-badge-ml * { color: #ffffff !important; }
