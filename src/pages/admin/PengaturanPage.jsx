@@ -4,7 +4,7 @@ import { getSetting } from "../../lib/settings";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import {
-  MapPin, Clock, Users, FileText, Save, RefreshCw,
+  MapPin, Clock, Users, Save, RefreshCw,
   Plus, Pencil, Trash2, Search, Key, Shield,
   CheckCircle2, AlertTriangle, Activity, Eye, Smartphone,
   Mail, Clock as ClockIcon, XCircle, Inbox, MapPinned,
@@ -495,7 +495,6 @@ const DEFAULT_SETTINGS = {
   work_end_time: "14:00",
   late_tolerance_minutes: "5",
   default_radius_meter: "200",
-  selfie_retention_days: "30",
   annual_leave_quota_asn: "12",
   annual_leave_quota_pppk: "12",
   annual_leave_quota_tpk: "12",
@@ -508,7 +507,6 @@ const SETTING_KEYS = [
   { key: "work_end_time", label: "Jam Selesai Kerja", type: "time", category: "attendance", icon: Clock, desc: "Waktu selesai jam kerja" },
   { key: "late_tolerance_minutes", label: "Toleransi Terlambat (menit)", type: "number", category: "attendance", icon: AlertTriangle, desc: "Batas toleransi keterlambatan" },
   { key: "default_radius_meter", label: "Radius Default (meter)", type: "number", category: "attendance", icon: MapPin, desc: "Radius GPS default untuk absensi" },
-  { key: "selfie_retention_days", label: "Retensi Foto Selfie (hari)", type: "number", category: "attendance", icon: FileText, desc: "Lama penyimpanan foto selfie" },
   { key: "annual_leave_quota_asn", label: "Kuota Cuti ASN (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan ASN" },
   { key: "annual_leave_quota_pppk", label: "Kuota Cuti PPPK (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan PPPK" },
   { key: "annual_leave_quota_tpk", label: "Kuota Cuti TPK (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan TPK" },
