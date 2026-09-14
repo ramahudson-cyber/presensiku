@@ -495,9 +495,6 @@ const DEFAULT_SETTINGS = {
   work_end_time: "14:00",
   late_tolerance_minutes: "5",
   default_radius_meter: "200",
-  annual_leave_quota_asn: "12",
-  annual_leave_quota_pppk: "12",
-  annual_leave_quota_tpk: "12",
   default_password: "puskesmas123",
   password_min_length: "6",
 };
@@ -507,9 +504,6 @@ const SETTING_KEYS = [
   { key: "work_end_time", label: "Jam Selesai Kerja", type: "time", category: "attendance", icon: Clock, desc: "Waktu selesai jam kerja" },
   { key: "late_tolerance_minutes", label: "Toleransi Terlambat (menit)", type: "number", category: "attendance", icon: AlertTriangle, desc: "Batas toleransi keterlambatan" },
   { key: "default_radius_meter", label: "Radius Default (meter)", type: "number", category: "attendance", icon: MapPin, desc: "Radius GPS default untuk absensi" },
-  { key: "annual_leave_quota_asn", label: "Kuota Cuti ASN (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan ASN" },
-  { key: "annual_leave_quota_pppk", label: "Kuota Cuti PPPK (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan PPPK" },
-  { key: "annual_leave_quota_tpk", label: "Kuota Cuti TPK (hari/tahun)", type: "number", category: "leave", icon: Users, desc: "Kuota cuti tahunan TPK" },
   { key: "default_password", label: "Password Default Pegawai Baru", type: "text", category: "security", icon: Key, desc: "Password awal pegawai baru" },
   { key: "password_min_length", label: "Panjang Minimal Password", type: "number", category: "security", icon: Shield, desc: "Jumlah karakter minimal password" },
 ];
@@ -579,12 +573,10 @@ function TabJamKerja() {
   const categories = [...new Set(SETTING_KEYS.map(s => s.category))];
   const categoryLabels = {
     attendance: "Pengaturan Absensi",
-    leave: "Pengaturan Cuti",
     security: "Keamanan",
   };
   const categoryIcons = {
     attendance: Clock,
-    leave: Calendar,
     security: Shield,
   };
 
@@ -593,7 +585,7 @@ function TabJamKerja() {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h2 className={sectionTitle}>Jam Kerja & Konfigurasi</h2>
-          <p className={sectionSub}>Atur jam kerja, radius, kuota cuti, dll</p>
+          <p className={sectionSub}>Atur jam kerja, radius, dll</p>
         </div>
         <button
           onClick={handleSave} disabled={saving}
