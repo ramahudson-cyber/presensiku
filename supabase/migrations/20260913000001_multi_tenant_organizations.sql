@@ -34,9 +34,14 @@ UPDATE profiles SET auth_email = email
 WHERE auth_email IS NULL AND email IS NOT NULL AND email <> '';
 
 DO $$ BEGIN
-  ALTER TABLE profiles ADD CONSTRAINT profiles_org_fk
-    FOREIGN KEY (organization_id) REFERENCES organizations(id);
-EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_column THEN NULL; END $$;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_org_fk') THEN
+    BEGIN
+      ALTER TABLE profiles ADD CONSTRAINT profiles_org_fk
+        FOREIGN KEY (organization_id) REFERENCES organizations(id);
+    EXCEPTION WHEN duplicate_object THEN NULL; WHEN undefined_column THEN NULL;
+    END;
+  END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_profiles_org ON profiles(organization_id);
 CREATE INDEX IF NOT EXISTS idx_profiles_org_username ON profiles(organization_id, username);
 
@@ -72,12 +77,12 @@ BEGIN
       EXECUTE format(
         'CREATE TRIGGER trg_%I_set_org BEFORE INSERT ON %I
          FOR EACH ROW EXECUTE FUNCTION set_org_from_user()', t, t);
-      EXECUTE format($f$
-        DO $blk$ BEGIN
-          ALTER TABLE %I ADD CONSTRAINT %I_org_fk
-            FOREIGN KEY (organization_id) REFERENCES organizations(id);
-        EXCEPTION WHEN duplicate_object THEN NULL; END $blk$;
-      $f$, t, t);
+      IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = t || '_org_fk') THEN
+        BEGIN
+          EXECUTE format('ALTER TABLE %I ADD CONSTRAINT %I FOREIGN KEY (organization_id) REFERENCES organizations(id)', t, t || '_org_fk');
+        EXCEPTION WHEN duplicate_object THEN NULL;
+        END;
+      END IF;
       EXECUTE format('CREATE INDEX IF NOT EXISTS idx_%I_org ON %I(organization_id)', t, t);
     EXCEPTION WHEN undefined_table THEN
       RAISE NOTICE 'Tabel % tidak ada, dilewati', t;
@@ -100,12 +105,12 @@ BEGIN
         UPDATE %I SET organization_id = (SELECT id FROM organizations LIMIT 1)
         WHERE organization_id IS NULL
       $f$, t);
-      EXECUTE format($f$
-        DO $blk$ BEGIN
-          ALTER TABLE %I ADD CONSTRAINT %I_org_fk
-            FOREIGN KEY (organization_id) REFERENCES organizations(id);
-        EXCEPTION WHEN duplicate_object THEN NULL; END $blk$;
-      $f$, t, t);
+      IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = t || '_org_fk') THEN
+        BEGIN
+          EXECUTE format('ALTER TABLE %I ADD CONSTRAINT %I FOREIGN KEY (organization_id) REFERENCES organizations(id)', t, t || '_org_fk');
+        EXCEPTION WHEN duplicate_object THEN NULL;
+        END;
+      END IF;
       EXECUTE format('CREATE INDEX IF NOT EXISTS idx_%I_org ON %I(organization_id)', t, t);
     EXCEPTION WHEN undefined_table THEN
       RAISE NOTICE 'Tabel % tidak ada, dilewati', t;
@@ -118,16 +123,32 @@ ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS organization_id UUID;
 UPDATE system_settings SET organization_id = (SELECT id FROM organizations LIMIT 1)
 WHERE organization_id IS NULL;
 DO $$ BEGIN
-  ALTER TABLE system_settings DROP CONSTRAINT system_settings_setting_key_key;
-EXCEPTION WHEN undefined_object THEN NULL; END $$;
+  IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'system_settings_setting_key_key') THEN
+    ALTER TABLE system_settings DROP CONSTRAINT system_settings_setting_key_key;
+  END IF;
+END $$;
 DO $$ BEGIN
-  ALTER TABLE system_settings ADD CONSTRAINT system_settings_org_key_key
-    UNIQUE (organization_id, setting_key);
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'system_settings_org_key_key') THEN
+    -- Index yatim sisa run parsial Picu 42P07 (bukan duplicate_object). Drop dulu.
+    IF EXISTS (SELECT 1 FROM pg_class WHERE relname = 'system_settings_org_key_key') THEN
+      DROP INDEX IF EXISTS system_settings_org_key_key;
+    END IF;
+    BEGIN
+      ALTER TABLE system_settings ADD CONSTRAINT system_settings_org_key_key
+        UNIQUE (organization_id, setting_key);
+    EXCEPTION WHEN duplicate_object THEN NULL; WHEN duplicate_table THEN NULL;
+    END;
+  END IF;
+END $$;
 DO $$ BEGIN
-  ALTER TABLE system_settings ADD CONSTRAINT system_settings_org_fk
-    FOREIGN KEY (organization_id) REFERENCES organizations(id);
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'system_settings_org_fk') THEN
+    BEGIN
+      ALTER TABLE system_settings ADD CONSTRAINT system_settings_org_fk
+        FOREIGN KEY (organization_id) REFERENCES organizations(id);
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END;
+  END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_system_settings_org ON system_settings(organization_id);
 
 -- ---------------------------------------------------------------------

@@ -234,6 +234,7 @@ EXCEPTION WHEN undefined_table THEN NULL; END $$;
 --    upload ke folder user lain). Public read dipertahankan untuk URL.
 -- ---------------------------------------------------------------------
 DROP POLICY IF EXISTS "Authenticated users can upload" ON storage.objects;
+DROP POLICY IF EXISTS "Avatar upload own folder" ON storage.objects;
 CREATE POLICY "Avatar upload own folder" ON storage.objects FOR INSERT
   TO authenticated
   WITH CHECK (
