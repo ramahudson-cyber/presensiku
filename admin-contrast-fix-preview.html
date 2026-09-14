@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin Contrast Fix — Before / After</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #F4F2FB; }
+  /* Simulasi CSS lama (bug): .text-white dipaksa gelap */
+  .before .text-white { color: #0f172a !important; }
+  .before .text-pure-white { color: #0f172a !important; }
+  /* Simulasi CSS baru (fix): ungu solid + gradient gelap kembalikan teks putih */
+  .after .bg-electric-violet, .after .bg-bf00ff,
+  .after .bg-electric-violet .text-white, .after .bg-bf00ff .text-white,
+  .after .bg-grad .text-white, .after .bg-grad .text-pure-white { color: #ffffff !important; }
+  .bg-electric-violet { background-color: #BF00FF; }
+  .bg-bf00ff { background-color: #BF00FF; }
+  .bg-grad { background: linear-gradient(135deg, #BF00FF, #4c1d95); }
+</style>
+</head>
+<body class="min-h-screen">
+<div class="max-w-[1100px] mx-auto p-4 sm:p-6">
+  <h1 class="text-2xl font-bold text-slate-800 mb-1">Admin Contrast Fix — Before / After</h1>
+  <p class="text-sm text-slate-600 mb-6">Root cause: rule global <code class="bg-slate-200 px-1 rounded">.text-white → #0f172a</code> (index.css:355) menimpa SEMUA teks putih — termasuk di atas tombol ungu &amp; avatar gradient. Fix: proteksi CSS, tanpa ubah JSX.</p>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <!-- BEFORE -->
+    <section class="before bg-white border-2 border-rose-200 rounded-2xl p-5">
+      <div class="text-[11px] uppercase tracking-widest text-rose-600 font-bold mb-4">Before — bug (live sekarang)</div>
+      <div class="space-y-4">
+        <button class="w-full py-2.5 rounded-full bg-electric-violet text-white text-sm font-semibold">Tambah Pegawai</button>
+        <button class="w-full py-2.5 rounded-full bg-bf00ff text-white text-sm font-semibold">Export CSV</button>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-grad flex items-center justify-center text-white text-xs font-bold">LA</div>
+          <div class="w-10 h-10 rounded-2xl bg-grad flex items-center justify-center text-pure-white text-sm">📊</div>
+          <span class="text-xs text-slate-500">Avatar &amp; icon chip: inisial hitam di atas ungu</span>
+        </div>
+        <div class="w-16 h-16 rounded-full grid place-items-center bg-grad text-white text-2xl">◉</div>
+        <p class="text-xs text-slate-500">Tombol FAB presensi: ikon hitam di atas ungu</p>
+      </div>
+    </section>
+
+    <!-- AFTER -->
+    <section class="after bg-white border-2 border-emerald-200 rounded-2xl p-5">
+      <div class="text-[11px] uppercase tracking-widest text-emerald-600 font-bold mb-4">After — fix (yang diajukan)</div>
+      <div class="space-y-4">
+        <button class="w-full py-2.5 rounded-full bg-electric-violet text-white text-sm font-semibold">Tambah Pegawai</button>
+        <button class="w-full py-2.5 rounded-full bg-bf00ff text-white text-sm font-semibold">Export CSV</button>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-grad flex items-center justify-center text-white text-xs font-bold">LA</div>
+          <div class="w-10 h-10 rounded-2xl bg-grad flex items-center justify-center text-pure-white text-sm">📊</div>
+          <span class="text-xs text-slate-500">Avatar &amp; icon chip: putih terbaca</span>
+        </div>
+        <div class="w-16 h-16 rounded-full grid place-items-center bg-grad text-white text-2xl">◉</div>
+        <p class="text-xs text-slate-500">Tombol FAB presensi: ikon putih terbaca</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-900 mt-6">
+    <strong>Scope fix (1 file, CSS saja):</strong> <code>src/index.css</code> — tambah blok proteksi setelah baris 681
+    (<code>.admin-light .bg-electric-violet.text-pure-white</code>). Perluas proteksi global baris 454–467 untuk
+    <code>bg-[#BF00FF]</code> + turunan <code>.text-white</code> di dalam gradient gelap. Nol ubahan JSX.
+  </div>
+</div>
+</body>
+</html>

@@ -462,9 +462,34 @@ button.bg-gradient-to-r.from-violet-600.to-purple-700,
 .bg-green-600,
 .bg-green-500,
 .bg-blue-600,
+/* Tombol ungu solid arbitrary: bg tetap gelap, teks jangan dipaksa gelap */
+.bg-\[\#BF00FF\].text-white,
+button.bg-\[\#BF00FF\],
+/* Gradien gelap arbitrary: teks + anak terang tetap putih */
+.bg-gradient-to-br.from-\[\#BF00FF\],
+.bg-gradient-to-br.from-\[\#BF00FF\] .text-white,
+.bg-gradient-to-t.from-electric-violet,
+/* Tombol gradien ungu (UpdateDialog): teks putih */
+button.bg-gradient-to-r.from-electric-violet,
 .bg-gradient-to-br.from-electric-violet.to-deep-indigo {
   color: #ffffff !important;
 }
+/* Anak terang di dalam gradien gelap arbitrary + ungu (avatar, icon chip, FAB) */
+.bg-gradient-to-br.from-\[\#BF00FF\] .text-pure-white,
+.bg-gradient-to-br.from-electric-violet .text-white,
+.bg-gradient-to-r.from-electric-violet .text-white,
+.bg-gradient-to-t.from-electric-violet .text-white,
+.bg-gradient-to-br.from-fuchsia-500 .text-white,
+.admin-light .bg-gradient-to-br .text-pure-white,
+.admin-light .bg-gradient-to-br .text-white {
+  color: #ffffff !important;
+}
+/* Tombol hantu border-gradient + text-pure-white di area admin: ungu terbaca */
+.admin-light .border-gradient.text-pure-white { color: #7c16c4 !important; }
+/* Badge kalender gelap (PG/SR/ML): isi kartu tetap putih */
+.cal-badge-pg, .cal-badge-sr, .cal-badge-ml,
+.cal-badge-pg *, .cal-badge-sr *, .cal-badge-ml * { color: #ffffff !important; }
+.cal-badge-si, .cal-badge-si * { color: #1a2e05 !important; }
 
 /* Shadows */
 .shadow-violet-950\/20 { box-shadow: var(--shadow-md); }
@@ -801,7 +826,14 @@ textarea::placeholder { color: #94a3b8; }
 .admin-light .text-purple-300 { color: #9333ea !important; }
 .admin-light .bg-purple-500\/15 { background-color: #f5f3ff !important; }
 .admin-light .ring-purple-500\/30 { --tw-ring-color: #e9d5ff; }
-.admin-light .border-gradient.text-white { color: #7c16c4 !important; }
+/* Master Data tab (dalam .admin-light): kartu gelap peninggalan dark mode → terang */
+.admin-light .bg-black\/40 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+.admin-light .bg-black\/40 .text-white,
+.admin-light .bg-black\/40 h2,
+.admin-light .bg-black\/40 span:not(.text-slate-mist):not(.text-green-400):not(.text-sky-300) { color: #0f172a !important; }
 
 /* Additional tint variants & 25%-hover tints */
 .admin-light .bg-sky-500\/10,
