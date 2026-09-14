@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
+import { toast } from "react-toastify";
 
 // Light-mode tokens — per DESIGN.md
 const T = {
@@ -128,15 +129,16 @@ export default function EmployeeProfile() {
 
   const avatarUrl = user?.avatar_url || user?.user_metadata?.avatar_url || null;
   const initial = user?.full_name?.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() || '--';
-  const nip = user?.nip || user?.user_metadata?.nip || '-';
+  const unitKerja = user?.organization?.name || user?.department || '-';
 
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
       await supabase.auth.signOut();
       navigate('/login', { replace: true });
-    } catch {
+    } catch (err) {
       setLoggingOut(false);
+      toast.error("Gagal keluar: " + (err?.message || "periksa koneksi"));
     }
   };
 
@@ -204,10 +206,10 @@ export default function EmployeeProfile() {
               value={user?.full_name || '-'} active />
             <InfoRow icon={icons.atSign} label="Username" desc="ID akun login"
               value={user?.username || user?.email?.split('@')[0] || '-'} active />
-            <InfoRow icon={icons.idCard} label="NIP" desc="Nomor Induk Pegawai"
-              value={nip} active />
+            <InfoRow icon={icons.idCard} label="Jabatan" desc="Posisi / jabatan"
+              value={user?.position || '-'} active />
             <InfoRow icon={icons.building} label="Unit Kerja" desc="Departemen / Instansi"
-              value={user?.department || '-'} active={false} />
+              value={unitKerja} active={unitKerja !== '-'} />
           </div>
         </Card>
 

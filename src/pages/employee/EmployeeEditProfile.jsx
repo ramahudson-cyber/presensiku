@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
@@ -30,6 +30,15 @@ export default function EmployeeEditProfile() {
   const [preview, setPreview] = useState(user?.avatar_url || null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  // Sinkron ulang saat user tiba (misal refresh langsung di halaman edit)
+  useEffect(() => {
+    if (!user) return;
+    setForm({ full_name: user.full_name || "", email: user.email || "" });
+    setAvatarUrl(user.avatar_url || null);
+    setPreview((prev) => (avatarFile ? prev : (user.avatar_url || null)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, user?.avatar_url]);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
@@ -79,7 +88,10 @@ export default function EmployeeEditProfile() {
       if (uploadError.message?.includes("exceeded") || uploadError.message?.includes("size")) {
         throw new Error("Ukuran foto terlalu besar. Silakan pilih foto yang lebih kecil (max 500KB).");
       }
-      throw uploadError;
+      if (uploadError.message?.includes("mime") || uploadError.message?.includes("type") || uploadError.message?.includes("format")) {
+        throw new Error("Format foto tidak didukung. Gunakan JPG, PNG, GIF, atau WebP.");
+      }
+      throw new Error("Gagal mengunggah foto. Coba lagi.");
     }
 
     const { data: { publicUrl } } = supabase.storage
