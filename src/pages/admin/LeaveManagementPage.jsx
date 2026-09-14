@@ -238,29 +238,17 @@ export default function LeaveManagementPage() {
       }}
     >
 
-      {/* ═══ Hero — simpel, satu warna ═══ */}
-      <section style={{ padding: "32px 0 28px" }} aria-label="Hero">
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#94a3b8" }}>
-          {monthLabel}
+      {/* ═══ Header — sama pola EmployeesPage ═══ */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+        <div className="min-w-0">
+          <h1 className="design-section-title">
+            Cuti &amp; Izin
+          </h1>
+          <p className="text-slate-mist text-sm mt-1 flex items-center gap-1.5">
+            {monthLabel} · {items.length} pengajuan masuk · {pendingCount > 0 ? `${pendingCount} butuh keputusan` : "semua sudah diproses"}
+          </p>
         </div>
-        <h1
-          style={{
-            fontSize: "clamp(2.6rem,5.5vw,4.4rem)", lineHeight: 1.04,
-            letterSpacing: "-0.045em", fontWeight: 800, color: "#0f172a",
-            marginTop: 14, textWrap: "balance",
-          }}
-        >
-          Permintaan dari pegawai
-        </h1>
-          <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 22, fontSize: 12.5, color: "#94a3b8", letterSpacing: "0.02em" }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-              <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#059669", display: "inline-block" }} />
-              {items.length} pengajuan masuk
-            </span>
-            <span style={{ width: 1, height: 10, background: "#e2e8f0", display: "inline-block" }} />
-          <span>{pendingCount > 0 ? `${pendingCount} butuh keputusan` : "semua sudah diproses"}</span>
-        </div>
-      </section>
+      </div>
 
       {/* ═══ Bento Stats — gapless, white ═══ */}
       <section id="stats" aria-label="Status overview" style={{ marginBottom: 36 }}>
