@@ -515,7 +515,11 @@ button.bg-gradient-to-r.from-electric-violet,
 .sidebar-gradient h1 { color: #0f172a; }
 .sidebar-gradient p { color: #64748b; }
 .sidebar-gradient .text-pure-white { color: #0f172a; }
-.sidebar-gradient .border-gradient.text-pure-white { color: #ffffff; }
+.sidebar-gradient a.border-gradient,
+.sidebar-gradient button.border-gradient.text-pure-white {
+  background-color: #eef2ff !important;
+  color: #4f46e5 !important;
+}
 .sidebar-gradient .text-violet-100\/70,
 .sidebar-gradient .text-violet-100\/60,
 .sidebar-gradient .text-violet-100\/40,
