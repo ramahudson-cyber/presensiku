@@ -436,8 +436,12 @@ const EmployeesPage = () => {
                     <tr key={emp.id} className="design-table-row">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarGradient(emp.full_name)} flex items-center justify-center text-pure-white text-xs font-bold shadow-lg shrink-0`}>
-                            {initials(emp.full_name)}
+                          <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarGradient(emp.full_name)} flex items-center justify-center text-pure-white text-xs font-bold shadow-lg shrink-0 overflow-hidden`}>
+                            {emp.avatar_url ? (
+                              <img src={emp.avatar_url} alt={emp.full_name || "Pegawai"} className="w-full h-full object-cover" />
+                            ) : (
+                              initials(emp.full_name)
+                            )}
                           </div>
                           <div className="min-w-0">
                             <p className="font-medium text-pure-white">{emp.full_name || '-'}</p>
@@ -482,8 +486,12 @@ const EmployeesPage = () => {
               {filtered.map((emp) => (
                 <div key={emp.id} className="p-4 hover:bg-white/[0.03] transition-all">
                   <div className="flex items-start gap-3">
-                    <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${avatarGradient(emp.full_name)} flex items-center justify-center text-white text-sm font-bold shadow-lg shrink-0`}>
-                      {initials(emp.full_name)}
+                    <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${avatarGradient(emp.full_name)} flex items-center justify-center text-white text-sm font-bold shadow-lg shrink-0 overflow-hidden`}>
+                      {emp.avatar_url ? (
+                        <img src={emp.avatar_url} alt={emp.full_name || "Pegawai"} className="w-full h-full object-cover" />
+                      ) : (
+                        initials(emp.full_name)
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
