@@ -183,7 +183,7 @@ BEGIN
     RAISE EXCEPTION 'Akurasi GPS tidak dikirim perangkat';
   END IF;
   IF v_acc < 5 THEN
-    RAISE EXCEPTION 'Akurasi GPS mencurigakan (%% m)', round(v_acc::numeric, 1);
+    RAISE EXCEPTION 'Akurasi GPS mencurigakan (% m)', round(v_acc::numeric, 1);
   END IF;
 
   v_site := active_attendance_location();
@@ -195,7 +195,7 @@ BEGIN
   v_tolerance := LEAST(v_acc, 30);
 
   IF v_dist > v_site.radius_meter + v_tolerance THEN
-    RAISE EXCEPTION 'Anda berada %% m dari %% (radius %% m)',
+    RAISE EXCEPTION 'Anda berada % m dari % (radius % m)',
       round(v_dist)::int, v_site.name, v_site.radius_meter;
   END IF;
 
