@@ -217,11 +217,7 @@ export default function AttendanceHistoryPage() {
     <div className="space-y-5 animate-fade-in">
 
       {/* Header */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="text-2xl md:text-3xl font-bold text-pure-white tracking-tight">Riwayat Absensi</h1>
-          <p className="text-sm text-slate-mist mt-1">Data absensi seluruh pegawai</p>
-        </div>
+      <div className="flex items-center justify-end gap-3">
         <button
           onClick={exportCSV}
           className="flex items-center gap-2.5 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium hover:brightness-110 active:brightness-90 transition-all duration-200 shrink-0"

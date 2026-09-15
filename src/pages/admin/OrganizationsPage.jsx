@@ -190,15 +190,7 @@ function OrganizationsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: T.text }}>
-            Kelola Instansi
-          </h1>
-          <p className="text-sm mt-0.5" style={{ color: T.textSec }}>
-            Daftarkan instansi baru beserta akun admin pertamanya
-          </p>
-        </div>
+      <div className="flex flex-wrap items-center justify-end gap-3">
         <button
           onClick={() => setShowForm(!showForm)}
           className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-electric-violet text-pure-white text-sm font-semibold hover:brightness-110 active:scale-[0.98] transition-all"

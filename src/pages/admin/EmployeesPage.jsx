@@ -260,10 +260,7 @@ const EmployeesPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
         <div className="min-w-0">
-          <h1 className="design-section-title">
-            Manajemen Pegawai
-          </h1>
-          <p className="text-slate-mist text-sm mt-1 flex items-center gap-1.5">
+          <p className="text-slate-mist text-sm flex items-center gap-1.5">
             <Users size={13} />
             Total: <span className="font-semibold text-pure-white">{employees.length}</span> pegawai
           </p>

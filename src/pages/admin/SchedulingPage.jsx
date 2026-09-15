@@ -89,18 +89,7 @@ export default function SchedulingPage() {
       <div className="relative design-card p-5 md:p-6 overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-electric-violet/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-deep-indigo/10 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none" />
-        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 bg-gradient-to-br from-electric-violet to-deep-indigo rounded-2xl flex items-center justify-center shadow-lg">
-                <CalendarRange size={20} className="text-pure-white" />
-              </div>
-              <div>
-                <h1 className="text-xl md:text-2xl font-bold text-pure-white tracking-tight">Penjadwalan Shift</h1>
-                <p className="text-sm text-slate-mist mt-0.5">Atur jadwal shift pegawai per bulan</p>
-              </div>
-            </div>
-          </div>
+        <div className="relative flex flex-col sm:flex-row sm:items-center justify-end gap-4">
           <div className="flex flex-wrap gap-2">
             <button onClick={handleDownloadTemplate}
               className="flex items-center gap-2 px-3.5 py-2 bg-electric-violet text-pure-white rounded-full text-xs hover:brightness-110 active:brightness-90 transition-all duration-200">

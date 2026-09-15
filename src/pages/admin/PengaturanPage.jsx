@@ -1575,13 +1575,6 @@ if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
 
   return (
     <div className="space-y-6 pb-20 animate-fade-in min-w-0">
-      <div className="min-w-0">
-        <h1 className="text-2xl md:text-3xl font-bold text-pure-white tracking-tight">Pengaturan Sistem</h1>
-        <p className="text-slate-mist mt-1.5 text-sm">
-          Kelola konfigurasi aplikasi, lokasi, user, dan audit log
-        </p>
-      </div>
-
       {/* Tab nav — horizontal scroll on mobile, grid on desktop */}
       <div className="flex md:grid md:grid-cols-7 gap-2 overflow-x-auto pb-2 md:overflow-visible md:pb-0">
         {tabs.map(tab => {

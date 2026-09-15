@@ -238,13 +238,10 @@ export default function LeaveManagementPage() {
       }}
     >
 
-      {/* ═══ Header — sama pola EmployeesPage ═══ */}
+      {/* ═══ Header — ringkasan; judul tampil di header violet ═══ */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
         <div className="min-w-0">
-          <h1 className="design-section-title">
-            Cuti &amp; Izin
-          </h1>
-          <p className="text-slate-mist text-sm mt-1 flex items-center gap-1.5">
+          <p className="text-slate-mist text-sm flex items-center gap-1.5">
             {monthLabel} · {items.length} pengajuan masuk · {pendingCount > 0 ? `${pendingCount} butuh keputusan` : "semua sudah diproses"}
           </p>
         </div>
