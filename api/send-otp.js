@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { guardRequest, isValidEmail, isValidOtp, safeText } from './_security';
+import { guardRequest, isValidEmail, isValidOtp, safeText } from './_security.js';
 
 export default async function handler(req, res) {
   // CORS headers — dibutuhkan oleh Capacitor APK (origin http://localhost)
