@@ -29,12 +29,11 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
     <>
       {open && (
         <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center pb-0 animate-fade-in" onClick={onClose}>
-        <div className="fixed inset-0 z-[9998] bg-black/50" onClick={onClose} />
+        <div className="fixed inset-0 z-[9998] bg-[rgba(0,0,0,0.5)]" onClick={onClose} />
 
           <div ref={sheetRef} onClick={e => e.stopPropagation()}
-            style={{ maxHeight: snap === "full" ? "95vh" : snap === "half" ? "60vh" : "90vh" }}
             className={`relative z-[9999] w-full max-w-lg rounded-t-[28px] md:rounded-3xl shadow-2xl animate-slide-up md:animate-fade-in overflow-hidden flex flex-col mt-auto md:mt-0 bg-white border`}
-            style={{ borderColor: T.border }}>
+            style={{ maxHeight: snap === "full" ? "95vh" : snap === "half" ? "60vh" : "90vh", borderColor: T.border }}>
 
             <div className="flex md:hidden justify-center pt-2.5 pb-1 shrink-0">
               <div className="w-10 h-2 rounded-full bg-black/10" />
@@ -53,7 +52,10 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
               </div>
             )}
 
-            <div className="flex-1 overflow-y-auto px-5 md:pb-6 scrollbar-thin"
+            {/* min-h-0: wajib agar scroller flex-child mau menyusut & benar2
+                bisa di-scroll (pola sama dgn AttendanceResultSheet).
+                overscroll-contain: cegah scroll chaining mengunci body. */}
+            <div className="flex-1 min-h-0 overscroll-contain overflow-y-auto px-5 md:pb-6 scrollbar-thin"
               style={{ paddingBottom: "calc(100px + env(safe-area-inset-bottom, 0px))" }}>
               {children}
             </div>
