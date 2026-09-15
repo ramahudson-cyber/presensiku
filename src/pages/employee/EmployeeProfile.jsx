@@ -3,6 +3,21 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
+import BottomSheet from "../../components/BottomSheet";
+import {
+  Info, MapPin, FileText, Users, Database, Eye,
+  Pencil, MessageCircle, Smartphone,
+} from "lucide-react";
+
+// Sumber: public/version.json — ubah konstanta ini saat rilis agar footer,
+// dialog "Tentang Aplikasi", dan versi live selalu sinkron.
+const APP = {
+  nama: "Presensiku",
+  tagline: "Aplikasi Absensi Digital",
+  versi: "1.6.11",
+  build: 22,
+  web: "https://presensiku-beige.vercel.app",
+};
 
 // Light-mode tokens — per DESIGN.md
 const T = {
@@ -110,6 +125,30 @@ const Card = ({ children }) => (
   </div>
 );
 
+// ── Privacy sheet: seksi dengan ikon + judul + isi ──
+const PrivacySection = ({ icon: Icon, title, children }) => (
+  <div className="flex gap-3">
+    <div className="w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
+      <Icon size={15} strokeWidth={2} color="#BF00FF" />
+    </div>
+    <div className="min-w-0 flex-1 pb-5">
+      <div className="text-[12px] font-bold leading-snug mb-1" style={{ color: T.text }}>{title}</div>
+      <div className="text-[11px] leading-relaxed" style={{ color: T.textSec }}>{children}</div>
+    </div>
+  </div>
+);
+
+// ── Kotak data terkumpul (dipakai di Kebijakan Privasi) ──
+const DataItem = ({ icon: Icon, nama, isi }) => (
+  <div className="flex items-start gap-2.5 py-2">
+    <Icon size={14} strokeWidth={2} className="shrink-0 mt-0.5" color="#BF00FF" />
+    <div className="min-w-0">
+      <span className="text-[11px] font-bold" style={{ color: T.text }}>{nama}</span>
+      <p className="text-[11px] leading-relaxed" style={{ color: T.textSec }}>{isi}</p>
+    </div>
+  </div>
+);
+
 // ==============================
 // EMPLOYEE PROFILE PAGE
 // ==============================
@@ -117,6 +156,7 @@ export default function EmployeeProfile() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [sheet, setSheet] = useState(null); // 'about' | 'privacy' | null
 
   const avatarUrl = user?.avatar_url || user?.user_metadata?.avatar_url || null;
   const initial = user?.full_name?.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() || '--';
@@ -235,10 +275,10 @@ export default function EmployeeProfile() {
               right={<span className="text-[12px] font-medium" style={{ color: T.sub }}>Indonesia</span>} />
             <MenuRow icon={icons.info} title="Tentang Aplikasi"
               desc="Versi, syarat & ketentuan"
-              onClick={() => {}} />
+              onClick={() => setSheet('about')} />
             <MenuRow icon={icons.shield} title="Kebijakan Privasi"
               desc="Perlindungan data pribadi"
-              onClick={() => {}} />
+              onClick={() => setSheet('privacy')} />
           </div>
         </Card>
 
@@ -273,13 +313,134 @@ export default function EmployeeProfile() {
           </div>
 
           {/* Footer */}
-          <div className="border-t flex items-center justify-between px-5 py-3" style={{ borderColor: T.div }}>
-            <span className="text-[9px] font-medium" style={{ color: T.sub }}>Presensiku v1.6.6</span>
-            <span className="text-[9px] font-medium" style={{ color: T.sub }}>Build 18</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => setSheet('about')}
+            className="w-full border-t flex items-center justify-between px-5 py-3 transition-colors hover:bg-[rgba(191,0,255,0.03)]"
+            style={{ borderColor: T.div }}
+          >
+            <span className="text-[9px] font-medium" style={{ color: T.sub }}>{APP.nama} v{APP.versi}</span>
+            <span className="text-[9px] font-medium" style={{ color: T.sub }}>Build {APP.build}</span>
+          </button>
         </Card>
 
       </div>
+
+      {/* ═══ SHEET: TENTANG APLIKASI ═══ */}
+      <BottomSheet open={sheet === 'about'} onClose={() => setSheet(null)}
+        title="Tentang Aplikasi" subtitle={`${APP.nama} — ${APP.tagline}`}>
+        <div className="pb-2">
+          {/* Brand */}
+          <div className="pb-4">
+            <div className="text-[15px] font-extrabold tracking-tight" style={{ color: T.text }}>{APP.nama}</div>
+            <div className="text-[10px]" style={{ color: T.sub }}>{APP.tagline} · Universal</div>
+          </div>
+
+          <p className="text-[11px] leading-relaxed pb-4" style={{ color: T.textSec }}>
+            {APP.nama} membantu pencatatan kehadiran secara digital untuk instansi, kantor, dan
+            organisasi apa pun: absensi mengikuti jadwal yang diatur admin, riwayat presensi
+            tersimpan rapi, serta pengajuan izin, sakit, dan cuti tanpa kertas.
+          </p>
+
+          {/* Fitur */}
+          <div className="text-[10px] font-bold uppercase tracking-wide pb-2" style={{ color: T.textMuted }}>
+            Fitur utama
+          </div>
+          <div className="space-y-1.5 pb-4">
+            {[
+              ["Absensi sesuai jadwal shift", "Deteksi terlambat otomatis, toleransi diatur admin per instansi"],
+              ["Riwayat & rekap kehadiran", "Semua presensi tercatat dan bisa dicek kapan saja"],
+              ["Pengajuan izin, sakit & cuti", "Diajukan lewat aplikasi, divalidasi admin"],
+            ].map(([judul, ket]) => (
+              <div key={judul} className="flex items-start gap-2.5">
+                <span className="mt-1 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: '#BF00FF' }} />
+                <div className="min-w-0">
+                  <span className="text-[11px] font-semibold" style={{ color: T.text }}>{judul}</span>
+                  <p className="text-[10px] leading-snug" style={{ color: T.sub }}>{ket}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Syarat & Ketentuan */}
+          <div className="text-[10px] font-bold uppercase tracking-wide pb-1.5" style={{ color: T.textMuted }}>
+            Syarat & Ketentuan
+          </div>
+          <ol className="text-[11px] leading-relaxed list-decimal list-inside space-y-1.5 pb-4" style={{ color: T.textSec }}>
+            <li>Absensi hanya dilakukan oleh pengguna yang bersangkutan, tidak boleh diwakilkan.</li>
+            <li>Data kehadiran yang sudah terekam menjadi milik instansi masing-masing dan dapat diverifikasi admin.</li>
+            <li>Perubahan jadwal shift dilakukan melalui admin sesuai kebijakan instansi masing-masing.</li>
+            <li>Kegagalan sistem atau gangguan koneksi dilaporkan ke admin untuk dikoreksi manual.</li>
+          </ol>
+
+          <div className="rounded-2xl px-4 py-3 mb-2" style={{ background: T.iconBg }}>
+            <p className="text-[10px] leading-relaxed" style={{ color: T.textSec }}>
+              Versi terbaru tersedia lewat pembaruan aplikasi. Saran atau kendala teknis? Sampaikan melalui
+              admin instansi Anda.
+            </p>
+            <a href={APP.web} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 mt-2 text-[11px] font-bold" style={{ color: '#BF00FF' }}>
+              {APP.web.replace('https://', '')}
+            </a>
+          </div>
+          <p className="text-[9px] text-center pb-1" style={{ color: T.textMuted }}>
+            © {new Date().getFullYear()} {APP.nama}. Dapat digunakan oleh instansi dan kantor mana pun.
+          </p>
+        </div>
+      </BottomSheet>
+
+      {/* ═══ SHEET: KEBIJAKAN PRIVASI ═══ */}
+      <BottomSheet open={sheet === 'privacy'} onClose={() => setSheet(null)}
+        title="Kebijakan Privasi" subtitle="Diperbarui September 2026">
+        <div className="pb-2">
+          <p className="text-[11px] leading-relaxed pb-4" style={{ color: T.textSec }}>
+            {APP.nama} menghormati privasi setiap pengguna. Kebijakan ini menjelaskan data apa yang
+            dikumpulkan aplikasi, bagaimana data digunakan, dan hak Anda atas data tersebut,
+            sejalan dengan UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi.
+          </p>
+
+          <PrivacySection icon={FileText} title="Data yang dikumpulkan">
+            <DataItem icon={Users} nama="Identitas pengguna"
+              isi="Nama, username, jabatan, dan instansi/unit kerja, untuk mengenali akun Anda." />
+            <DataItem icon={Info} nama="Data kehadiran"
+              isi="Waktu masuk/pulang, shift yang dijalankan, status tepat waktu/terlambat, serta pengajuan izin, sakit, dan cuti beserta lampirannya." />
+            <DataItem icon={MapPin} nama="Lokasi perangkat"
+              isi="Koordinat singkat saat absen, hanya untuk membuktikan Anda berada di lingkungan kerja. Lokasi tidak dilacak terus-menerus." />
+            <DataItem icon={Smartphone} nama="Data perangkat"
+              isi="Versi aplikasi dan tipe perangkat, untuk memperbaiki gangguan dan menghadirkan pembaruan." />
+          </PrivacySection>
+
+          <PrivacySection icon={Eye} title="Cara data digunakan">
+            Data digunakan semata-mata untuk pencatatan kehadiran resmi, rekap kepegawaian,
+            pengawasan jadwal shift oleh instansi masing-masing, dan peningkatan kualitas aplikasi.
+            Data tidak dijual dan tidak dibagikan ke pihak ketiga di luar kebutuhan tersebut.
+          </PrivacySection>
+
+          <PrivacySection icon={Database} title="Penyimpanan & keamanan">
+            Data disimpan pada basis data terenkripsi dengan akses terbatas: hanya admin dan
+            pengelola unit di instansi Anda yang berwenang melihatnya. Zona waktu pencatatan
+            mengikuti pengaturan instansi agar rekap kehadiran konsisten.
+          </PrivacySection>
+
+          <PrivacySection icon={Pencil} title="Hak Anda">
+            Anda dapat melihat dan memperbaiki data profil melalui menu Edit Profil, serta meminta
+            koreksi data kehadiran ke admin. Anda juga berhak meminta salinan atau penghapusan data
+            pribadi sesuai ketentuan yang berlaku di instansi Anda.
+          </PrivacySection>
+
+          <PrivacySection icon={MessageCircle} title="Pertanyaan tentang privasi">
+            Hubungi admin instansi Anda melalui kantor, atau kirim pesan lewat kanal pengaduan
+            internal. Keluhan terkait penyalahgunaan data ditindaklanjuti sesuai prosedur yang berlaku.
+          </PrivacySection>
+
+          <div className="rounded-2xl px-4 py-3 mt-1 mb-2" style={{ background: T.iconBg }}>
+            <p className="text-[10px] leading-relaxed" style={{ color: T.textSec }}>
+              Dengan menggunakan {APP.nama}, Anda menyetujui kebijakan ini. Perubahan kebijakan akan
+              diumumkan melalui aplikasi sebelum berlaku.
+            </p>
+          </div>
+        </div>
+      </BottomSheet>
     </div>
   );
 }
