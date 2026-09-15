@@ -415,7 +415,6 @@ export default function SignInPage() {
               <span className="text-slate-mist/20 text-sm">•</span>
               <span className="text-[#c4b5fd] text-sm tracking-[2.5px] uppercase font-semibold">Optimal</span>
             </div>
-            <p className="text-pure-white text-sm tracking-[1px] mt-6 uppercase">Absensi Multi-Instansi</p>
           </div>
         </div>
 
@@ -437,7 +436,6 @@ export default function SignInPage() {
                 <span className="text-slate-mist/20 text-xs sm:text-sm">•</span>
                 <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Optimal</span>
               </div>
-              <p className="text-pure-white text-xs sm:text-sm tracking-[1px] mt-4 uppercase">Absensi Multi-Instansi</p>
             </div>
 
             {/* Card */}
