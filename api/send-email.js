@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { guardRequest, isValidEmail, safeText } from './_security';
 
 export default async function handler(req, res) {
   // CORS headers — dibutuhkan oleh Capacitor APK (origin http://localhost)
@@ -16,19 +17,29 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { to, username, full_name, password, org_name } = req.body;
-  if (!to || !username || !full_name) {
-    return res.status(400).json({ error: "Missing required fields" });
+  const blocked = guardRequest(req);
+  if (blocked) {
+    return res.status(429).json({ error: blocked });
   }
 
-  // Branding multi-tenant: nama instansi dari pemanggil (fallback nama app)
-  const ORG_LABEL = org_name || "Presensiku";
+  const { to, username, full_name, password, org_name } = req.body;
+  if (!isValidEmail(to) || !username || !full_name) {
+    return res.status(400).json({ error: "Penerima tidak valid atau field wajib kosong" });
+  }
+  const safeFullName = safeText(full_name, 80);
+  const safeUsername = safeText(username, 60);
+  const safePassword = safeText(password, 64);
 
-  // Link login mengikuti domain pemanggil (Vercel preview/prod/APK fallback).
-  // Origin dari browser = domain yang benar; fallback ke produksi resmi.
-  const APP_URL = (req.headers.origin && req.headers.origin.startsWith("http")
-    ? req.headers.origin
-    : "https://presensiku-beige.vercel.app");
+  // Branding multi-tenant: nama instansi dari pemanggil (fallback nama app)
+  const ORG_LABEL = safeText(org_name, 60) || "Presensiku";
+
+  // Link login: HANYA origin vercel.app resmi / dev lokal — cegah tautan
+  // phishing dari origin asing. Fallback ke produksi resmi.
+  const rawOrigin = req.headers.origin || "";
+  const SAFE_APP_ORIGIN = /^https:\/\/([a-z0-9-]+\.)*vercel\.app$|^https?:\/\/localhost(:\d+)?$/i;
+  const APP_URL = SAFE_APP_ORIGIN.test(rawOrigin)
+    ? rawOrigin
+    : "https://presensiku-beige.vercel.app";
 
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp-relay.brevo.com",
@@ -47,7 +58,7 @@ export default async function handler(req, res) {
         <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0;">Sistem Informasi Administrasi & Presensi</p>
       </div>
       <div style="padding: 24px; background: #1a0a35;">
-        <p style="color: #fff; font-size: 14px; margin: 0 0 16px;">Yth. <strong>${full_name}</strong>,</p>
+        <p style="color: #fff; font-size: 14px; margin: 0 0 16px;">Yth. <strong>${safeFullName}</strong>,</p>
         <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin: 0 0 20px; line-height: 1.6;">
           Akun Presensiku Anda telah dibuat. Silakan login dengan kredensial berikut:
         </p>
@@ -55,11 +66,11 @@ export default async function handler(req, res) {
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="color: rgba(255,255,255,0.4); font-size: 12px; padding: 6px 0;">Username</td>
-              <td style="color: #fff; font-size: 14px; padding: 6px 0; text-align: right; font-weight: 600;">${username}</td>
+              <td style="color: #fff; font-size: 14px; padding: 6px 0; text-align: right; font-weight: 600;">${safeUsername}</td>
             </tr>
             <tr>
               <td style="color: rgba(255,255,255,0.4); font-size: 12px; padding: 6px 0;">Password</td>
-              <td style="color: #a78bfa; font-size: 14px; padding: 6px 0; text-align: right; font-weight: 600;">${password || 'Puskesmas@123'}</td>
+              <td style="color: #a78bfa; font-size: 14px; padding: 6px 0; text-align: right; font-weight: 600;">${safePassword || 'Puskesmas@123'}</td>
             </tr>
           </table>
         </div>

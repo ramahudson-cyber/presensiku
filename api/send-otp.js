@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { guardRequest, isValidEmail, isValidOtp, safeText } from './_security';
 
 export default async function handler(req, res) {
   // CORS headers — dibutuhkan oleh Capacitor APK (origin http://localhost)
@@ -16,10 +17,16 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { email, otp, name } = req.body;
-  if (!email || !otp) {
-    return res.status(400).json({ error: "Missing required fields" });
+  const blocked = guardRequest(req);
+  if (blocked) {
+    return res.status(429).json({ error: blocked });
   }
+
+  const { email, otp, name } = req.body;
+  if (!isValidEmail(email) || !isValidOtp(otp)) {
+    return res.status(400).json({ error: "Email atau format kode tidak valid" });
+  }
+  const safeName = safeText(name, 80);
 
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp-relay.brevo.com",
@@ -38,7 +45,7 @@ export default async function handler(req, res) {
         <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0;">Verifikasi Perangkat</p>
       </div>
       <div style="padding: 24px; background: #1a0a35;">
-        <p style="color: #fff; font-size: 14px; margin: 0 0 16px;">Yth. <strong>${name || email}</strong>,</p>
+          <p style="color: #fff; font-size: 14px; margin: 0 0 16px;">Yth. <strong>${safeName || email}</strong>,</p>
         <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin: 0 0 20px; line-height: 1.6;">
           Masukkan kode OTP berikut untuk memverifikasi perangkat Anda:
         </p>
