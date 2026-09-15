@@ -15,15 +15,15 @@ export default function BottomNav({ hidden = false }) {
 
   if (hidden) return null;
 
-  // Pegawai: Jadwal tetap di nav; sisanya ada di Bottom Sheet "Menu"
+  // Pegawai: Izin/Sakit di bar (slot bekas Profil); Profil masuk Bottom Sheet "Menu"
   const pegawaiMenus = [
     { path: "/employee", label: "Home", icon: LayoutDashboard, end: true },
-    { path: "/employee/profile", label: "Profil", icon: User },
+    { path: "/employee/leave", label: "Izin/Sakit", icon: ClipboardList },
     { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
   ];
 
   const pegawaiMore = [
-    { path: "/employee/leave", label: "Pengajuan Izin/Sakit", icon: ClipboardList },
+    { path: "/employee/profile", label: "Profil", icon: User },
     { path: "/employee/history", label: "Riwayat Kehadiran", icon: History },
   ];
 
