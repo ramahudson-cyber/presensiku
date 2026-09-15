@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 // Light-mode only — per DESIGN.md
@@ -22,7 +23,9 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
     return () => { document.removeEventListener("keydown", handler); document.body.style.overflow = ""; };
   }, [open, onClose]);
 
-  return (
+  // Portal ke <body>: hindari sheet terjebak stacking context (mis. wrapper
+  // z-10 di AdminLayout) sehingga BottomNav (z-30) menutupi bagian bawah sheet.
+  return createPortal(
     <>
       {open && (
         <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center pb-0 animate-fade-in" onClick={onClose}>
@@ -57,6 +60,7 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
           </div>
         </div>
       )}
-    </>
+    </>,
+    document.body
   );
 }
