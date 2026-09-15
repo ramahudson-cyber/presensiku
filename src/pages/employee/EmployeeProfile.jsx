@@ -102,15 +102,6 @@ const MenuRow = ({ icon, title, desc, right, onClick }) => (
   </div>
 );
 
-// ── Toggle ──
-const Toggle = ({ on }) => (
-  <div className="w-[40px] h-[22px] rounded-[11px] shrink-0 relative cursor-pointer"
-    style={{ background: 'linear-gradient(135deg, #BF00FF, #6366f1)' }}>
-    <div className="w-4 h-4 rounded-full bg-white absolute top-[3px] left-[21px]"
-      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
-  </div>
-);
-
 // ── Card container ──
 const Card = ({ children }) => (
   <div className="rounded-3xl relative overflow-hidden"
@@ -229,9 +220,6 @@ export default function EmployeeProfile() {
                 </span>
               }
               onClick={() => {}} />
-            <MenuRow icon={icons.shield} title="Sidik Jari & Face ID"
-              desc="Akses cepat dengan biometrik"
-              right={<Toggle on />} />
             <MenuRow icon={icons.bell} title="Notifikasi"
               desc="Pengingat & pemberitahuan"
               onClick={() => {}} />
