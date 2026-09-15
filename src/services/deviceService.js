@@ -265,10 +265,12 @@ export async function sendOtpEmail(userEmail, userName) {
       }),
     });
 
-    const result = await response.json();
+    // Body bisa bukan JSON (mis. error infra Vercel) — parse defensif
+    let result = {};
+    try { result = await response.json(); } catch { result = {}; }
 
     if (!response.ok) {
-      throw new Error(result.error || "Gagal mengirim OTP");
+      throw new Error(result.error || `Gagal mengirim OTP (server ${response.status})`);
     }
 
     return { success: true, otp };
