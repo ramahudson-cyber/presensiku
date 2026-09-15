@@ -79,10 +79,15 @@ function AppRoutes() {
         } />
       </Route>
 
-      {/* PEGAWAI - DETEKSI DEVICE DINONAKTIFKAN SEMENTARA */}
+      {/* PEGAWAI — wajib login (data tetap dilindungi RLS; guard ini
+          menutup render halaman kosong saat sesi belum/hilang) */}
       <Route
         path="/employee"
-        element={<AdminLayout />}
+        element={
+          <ProtectedRoute>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
       >
         <Route index element={<EmployeeDashboard />} />
         <Route path="attendance" element={<AttendancePage />} />
