@@ -23,7 +23,13 @@ jobs:
           java-version: "21"
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        # android-actions/setup-android@v3 rusak sejak Google menghapus paket
+        # legacy 'tools' (semua run gagal di langkah ini). Pakai SDK bawaan
+        # runner + install eksplisit komponen yang dibutuhkan (compileSdk 36).
+        run: |
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKM" --licenses > /dev/null 2>&1 || true
+          "$SDKM" --install "platform-tools" "platforms;android-36" "build-tools;36.0.0" | grep -v "^$" | tail -5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
