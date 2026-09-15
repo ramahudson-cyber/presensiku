@@ -57,14 +57,15 @@
       // Auto-reload saat service worker baru mengambil alih halaman. Tanpa ini,
       // PWA standalone (iOS) terus menjalankan versi lama dari cache sampai user
       // force-close & buka ulang app. Guard: hanya bila sebelumnya SUDAH ada
-      // controller (bukan kunjungan pertama) dan hanya sekali per sesi.
+      // controller (bukan kunjungan pertama). Kunci "app-reloaded" dipakai bersama
+      // UpdateDialog (jalur webVersionCode) — maksimal SATU reload per cold-open.
       (function () {
         if (!("serviceWorker" in navigator)) return;
         var hadController = !!navigator.serviceWorker.controller;
-        var swReloaded = sessionStorage.getItem("sw-reloaded");
+        var appReloaded = sessionStorage.getItem("app-reloaded");
         navigator.serviceWorker.addEventListener("controllerchange", function () {
-          if (!hadController || swReloaded) return;
-          sessionStorage.setItem("sw-reloaded", "1");
+          if (!hadController || appReloaded) return;
+          sessionStorage.setItem("app-reloaded", "1");
           window.location.reload();
         });
       })();

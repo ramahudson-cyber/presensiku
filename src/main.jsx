@@ -11,8 +11,12 @@ localStorage.removeItem("theme");
 
 // App berhasil boot — reset flag recovery white screen (lihat index.html).
 sessionStorage.removeItem("boot-recovered");
-// Reset flag auto-reload SW supaya update berikutnya juga bisa auto-reload.
-sessionStorage.removeItem("sw-reloaded");
+// Reset guard auto-reload supaya cold-start berikutnya boleh reload lagi.
+// Aman dari dobel-reload: inline script index.html membaca flag SAAT PARSE
+// (sebelum file ini jalan), jadi reload hasil sesi ini tetap ter-guard.
+sessionStorage.removeItem("sw-reloaded");    // kunci lama (sisa sesi)
+sessionStorage.removeItem("web-autoreload"); // kunci lama (sisa sesi)
+sessionStorage.removeItem("app-reloaded");   // kunci baru bersama
 
 // Registrasi service worker manual (vite-plugin-pwa injectRegister: null).
 // updateViaCache: "none" memastikan cek /sw.js tidak kena HTTP cache browser,

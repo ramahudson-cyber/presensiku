@@ -31,15 +31,25 @@ export default function UpdateDialog() {
   // Web/PWA: saat deploy baru terdeteksi (webVersionCode naik), reload otomatis
   // sekali per sesi — user dapat versi baru tanpa tutup-buka app. APK tidak
   // tersentuh karena alur native tetap memakai versionCode + dialog unduhan.
+  // Guard "app-reloaded" dipakai bersama jalur SW controllerchange (index.html):
+  // maksimal SATU reload per cold-open, bukan dua beruntun.
   useEffect(() => {
     if (isNative) return;
+    // Bila SW aktif mengendalikan halaman, jalur controllerchange (index.html)
+    // sudah menjamin reload saat SW baru claim — reload kedua dari sini
+    // cuma menambah dobel-reload. Lewati saja.
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) return;
     let cancelled = false;
     const check = async () => {
       if (cancelled) return;
       const webUpdate = await checkWebUpdate();
-      if (!webUpdate) return;
-      if (sessionStorage.getItem("web-autoreload")) return;
-      sessionStorage.setItem("web-autoreload", "1");
+      if (!webUpdate) {
+        // Versi running = versi live → re-arm guard untuk update berikutnya.
+        sessionStorage.removeItem("app-reloaded");
+        return;
+      }
+      if (sessionStorage.getItem("app-reloaded")) return;
+      sessionStorage.setItem("app-reloaded", "1");
       window.location.reload();
     };
     check();
