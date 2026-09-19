@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { supabase } from "../../lib/supabase";
+import { getShiftDefinition, getWitaParts, isShiftEnded } from "../../lib/shiftTime";
 
 const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 
@@ -46,9 +47,12 @@ export default function EmployeeHistory() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const today = new Date();
-  const [year, setYear] = useState(today.getFullYear());
-  const [month, setMonth] = useState(today.getMonth());
+  const now = new Date();
+  const todayParts = getWitaParts(now);
+  const today = new Date(todayParts.year, todayParts.month - 1, todayParts.day);
+  const todayWita = todayParts.dateKey;
+  const [year, setYear] = useState(todayParts.year);
+  const [month, setMonth] = useState(todayParts.month - 1);
   const [history, setHistory] = useState([]);
   const [totalDays, setTotalDays] = useState(0);
   const [workingDaysPassed, setWorkingDaysPassed] = useState(0);
@@ -76,26 +80,36 @@ export default function EmployeeHistory() {
     const dateTo = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
     // Batasi jadwal ke hari ini kalo bulan berjalan (future dates bukan alpha)
     const schedDateTo = isCurrentMonth
-      ? `${year}-${String(month + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`
+      ? todayWita
       : dateTo;
 
     try {
-      const [attData, schedRes] = await Promise.all([
+      const [{ data: serverTimeData }, attData, schedRes, shiftDefinitionsRes] = await Promise.all([
+        supabase.rpc("get_server_time"),
         getAttendanceHistory(user.id, null, dateFrom, dateTo),
         supabase
           .from("employee_schedules")
           .select("date, shift_code")
           .eq("user_id", user.id)
           .gte("date", dateFrom)
-          .lte("date", dateTo),
+          .lte("date", schedDateTo),
+        supabase
+          .from("shift_schedules")
+          .select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
       ]);
+      const serverNow = new Date(serverTimeData || Date.now());
+      const shiftDefinitions = shiftDefinitionsRes.data || [];
 
       setHistory(attData || []);
 
       const schedules = schedRes.data || [];
-      setTotalDays(schedules.length);
+      setTotalDays(schedules.filter((schedule) => schedule.date <= todayWita).length);
       setWorkingDaysPassed(
-        schedules.filter((sch) => new Date(sch.date + "T00:00:00") <= today).length
+        schedules.filter((schedule) => isShiftEnded(
+          schedule.date,
+          getShiftDefinition(shiftDefinitions, schedule),
+          serverNow
+        )).length
       );
     } catch (e) {
       console.error(e);
@@ -118,12 +132,11 @@ export default function EmployeeHistory() {
       const lastDay = new Date(year, month + 1, 0).getDate();
       const dateFrom = `${year}-${String(month + 1).padStart(2, "0")}-01`;
       const dateTo = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
-      const schedDateTo = isCurrentMonth
-        ? `${year}-${String(month + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`
-        : dateTo;
+      const schedDateTo = isCurrentMonth ? todayWita : dateTo;
 
       try {
-        const [attData, schedRes] = await Promise.all([
+        const [{ data: serverTimeData }, attData, schedRes, shiftDefinitionsRes] = await Promise.all([
+          supabase.rpc("get_server_time"),
           getAttendanceHistory(user.id, null, dateFrom, dateTo),
           supabase
             .from("employee_schedules")
@@ -131,15 +144,24 @@ export default function EmployeeHistory() {
             .eq("user_id", user.id)
             .gte("date", dateFrom)
             .lte("date", schedDateTo),
+          supabase
+            .from("shift_schedules")
+            .select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
         ]);
 
         if (cancelled) return;
+        const serverNow = new Date(serverTimeData || Date.now());
+        const shiftDefinitions = shiftDefinitionsRes.data || [];
         setHistory(attData || []);
 
         const schedules = schedRes.data || [];
-        setTotalDays(schedules.length);
+        setTotalDays(schedules.filter((schedule) => schedule.date <= todayWita).length);
         setWorkingDaysPassed(
-          schedules.filter((sch) => new Date(sch.date + "T00:00:00") <= today).length
+          schedules.filter((schedule) => isShiftEnded(
+            schedule.date,
+            getShiftDefinition(shiftDefinitions, schedule),
+            serverNow
+          )).length
         );
       } catch (e) {
         if (!cancelled) {

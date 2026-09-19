@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
 import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, ArrowRight } from "lucide-react";
+import { addCalendarDays, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
 
 function withTimeout(promise, ms, label) {
   return Promise.race([
@@ -51,25 +52,29 @@ export default function EmployeeDashboard() {
 
   const fetchData = async () => {
     try {
-      const today = new Date().toLocaleString("sv-SE", {timeZone: "Asia/Makassar"}).split(" ")[0];
-      const monthStart = new Date(); monthStart.setDate(1);
-      const monthStartStr = monthStart.toISOString().split("T")[0];
-      const year = monthStart.getFullYear();
-      const month = String(monthStart.getMonth() + 1).padStart(2, '0');
-      const lastDay = new Date(year, monthStart.getMonth() + 1, 0).getDate();
+      const { data: serverTimeData } = await supabase.rpc('get_server_time');
+      const serverNow = new Date(serverTimeData || Date.now());
+      const today = getWitaDateKey(serverNow);
+      const todayParts = today.split('-').map(Number);
+      const year = todayParts[0];
+      const monthNumber = todayParts[1];
+      const month = String(monthNumber).padStart(2, '0');
+      const monthStartStr = `${year}-${month}-01`;
+      const lastDay = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
       const monthEndStr = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
 
-      const [stRes, attRes, shiftRes, monthAttRes, annRes, histRes, schedRes] = await withTimeout(Promise.all([
-        supabase.rpc('get_server_time'),
+      const [attRes, shiftRes, monthAttRes, annRes, histRes, schedRes, shiftSchedulesRes] = await withTimeout(Promise.all([
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
-        supabase.from("attendance").select("attendance_status").eq("user_id", user.id).gte("date", monthStartStr),
+        supabase.from("attendance").select("date, attendance_status").eq("user_id", user.id).gte("date", monthStartStr).lte("date", today),
         supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3),
         getAttendanceHistory(user.id),
         supabase.from("employee_schedules").select("date, shift_code").eq("user_id", user.id).gte("date", monthStartStr).lte("date", monthEndStr),
+        supabase.from("shift_schedules").select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
       ]), 20000, "fetchAll");
+      const shiftDefinitions = shiftSchedulesRes.data || [];
 
-      if (stRes.data) setServerTime(new Date(stRes.data));
+      if (serverTimeData) setServerTime(serverNow);
 
       setTodayAttendance(attRes.data);
 
@@ -83,22 +88,23 @@ export default function EmployeeDashboard() {
       });
 
       const schedules = schedRes.data || [];
-      const jadwalCount = schedules.length;
-
-      const workingDaysSoFar = schedules.filter(
-        (sch) => new Date(sch.date + 'T00:00:00') <= new Date(today + 'T00:00:00')
-      ).length;
+      const isEnded = (schedule) => isShiftEnded(
+        schedule.date,
+        getShiftDefinition(shiftDefinitions, schedule),
+        serverNow
+      );
+      const completedSchedules = schedules.filter(isEnded);
+      const jadwalCount = schedules.filter((schedule) => schedule.date <= today).length;
 
       const totalHadir = s.hadir;
-      const alphaCount = Math.max(0, workingDaysSoFar - totalHadir - s.izin - s.sakit);
+      const alphaCount = Math.max(0, completedSchedules.length - totalHadir - s.izin - s.sakit);
 
       setStats({ ...s, alpha: alphaCount, jadwalCount });
       setAnnouncements(annRes.data || []);
 
-      const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
-      const weekAgoStr = weekAgo.toISOString().split("T")[0];
+      const weekAgo = addCalendarDays(today, -7);
       const recentSchedules = schedRes.data
-        ? schedRes.data.filter(sch => sch.date >= weekAgoStr)
+        ? schedRes.data.filter(sch => sch.date >= weekAgo)
           .sort((a, b) => b.date.localeCompare(a.date))
         : [];
 
@@ -107,7 +113,7 @@ export default function EmployeeDashboard() {
 
       const mergedHistory = recentSchedules.map(sch => {
         const att = attMap[sch.date] || null;
-        const isPast = sch.date < today;
+        const isPast = isEnded(sch);
         return {
           ...sch,
           shift_code: sch.shift_code,
