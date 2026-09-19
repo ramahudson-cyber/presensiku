@@ -274,9 +274,9 @@ export default function EmployeeDashboard() {
             )}
           </div>
 
-          {/* PULANG — Green-Yellow Gradient */}
-          <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg"
-            style={{ background: 'linear-gradient(135deg, #fbbf24 0%, #85c600 100%)', color: '#000000', boxShadow: '0 6px 20px rgba(133,198,0,0.2)' }}>
+          {/* PULANG — solid black for high-contrast readability */}
+          <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-black/20"
+            style={{ background: '#000000', color: '#FFFFFF', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
             <div className="text-[9px] uppercase tracking-[0.2em] opacity-65 font-semibold mb-3 flex items-center gap-1.5">
               <Sunset size={13} /> Pulang
             </div>
@@ -292,8 +292,8 @@ export default function EmployeeDashboard() {
               </>
             ) : (
               <>
-                <div className="text-base font-bold leading-none mb-2" style={{ color: '#000000' }}>Belum Absen</div>
-                <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-black/5 px-2.5 py-1 rounded-full opacity-50">—</div>
+                <div className="text-base font-bold leading-none mb-2" style={{ color: '#FFFFFF' }}>Belum Absen</div>
+                <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/10 px-2.5 py-1 rounded-full opacity-60">—</div>
               </>
             )}
           </div>
