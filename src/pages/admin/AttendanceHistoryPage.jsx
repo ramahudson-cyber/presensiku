@@ -124,7 +124,7 @@ export default function AttendanceHistoryPage() {
       // Base query dengan join profiles
       let query = supabase
         .from("attendance")
-        .select("*, profiles(full_name, position)", { count: "exact" })
+        .select("*, profiles(full_name, position, avatar_url)", { count: "exact" })
         .gte("date", dateFrom)
         .lte("date", dateTo)
         .order("date", { ascending: false })
@@ -337,8 +337,16 @@ export default function AttendanceHistoryPage() {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2.5">
-                          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${avatarGradient(r.profiles?.full_name)} flex items-center justify-center text-pure-white text-xs font-bold shadow shrink-0`}>
-                            {initials(r.profiles?.full_name)}
+                          <div className={`w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br ${avatarGradient(r.profiles?.full_name)} flex items-center justify-center text-pure-white text-xs font-bold shadow shrink-0`}>
+                            {r.profiles?.avatar_url ? (
+                              <img
+                                src={r.profiles.avatar_url}
+                                alt={r.profiles?.full_name || "Foto profil"}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              initials(r.profiles?.full_name)
+                            )}
                           </div>
                           <span className="font-medium text-pure-white">
                             {r.profiles?.full_name ?? "–"}
@@ -374,8 +382,16 @@ export default function AttendanceHistoryPage() {
               {records.map(r => (
                 <div key={r.id} className="p-4 hover:bg-white/[0.03] transition-all">
                   <div className="flex items-start gap-3">
-                    <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${avatarGradient(r.profiles?.full_name)} flex items-center justify-center text-white text-xs font-bold shadow shrink-0`}>
-                      {initials(r.profiles?.full_name)}
+                    <div className={`w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br ${avatarGradient(r.profiles?.full_name)} flex items-center justify-center text-white text-xs font-bold shadow shrink-0`}>
+                      {r.profiles?.avatar_url ? (
+                        <img
+                          src={r.profiles.avatar_url}
+                          alt={r.profiles?.full_name || "Foto profil"}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        initials(r.profiles?.full_name)
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
