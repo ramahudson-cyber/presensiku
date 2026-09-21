@@ -85,7 +85,9 @@ function AppRoutes() {
         path="/employee"
         element={
           <ProtectedRoute>
-            <AdminLayout />
+            <PlatformGuard>
+              <AdminLayout />
+            </PlatformGuard>
           </ProtectedRoute>
         }
       >

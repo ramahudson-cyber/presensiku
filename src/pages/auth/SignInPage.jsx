@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { signIn } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
-import { isNativePlatform } from "../../lib/devicePlatform";
+import { getBlockDeviceType, getDeviceType, isPegawaiWebBlocked, isNativePlatform } from "../../lib/devicePlatform";
 import { getCurrentVersion } from "../../services/updateService";
 import {
   getDeviceInfo,
@@ -133,11 +133,8 @@ export default function SignInPage() {
       await withTimeout((async () => {
       console.log("[Login] 1/9 Memverifikasi akun...");
       setLoadingText("Memverifikasi akun...");
-      const [email, deviceInfoResult] = await Promise.all([
-        resolveEmail(username),
-        getDeviceInfo(),
-      ]);
-      console.log("[Login] 1/9 OK — email:", email, "visitorId:", deviceInfoResult?.visitorId);
+      const email = await resolveEmail(username);
+      console.log("[Login] 1/9 OK — email:", email);
 
       console.log("[Login] 2/9 signIn...");
       setLoadingText("Masuk ke sistem...");
@@ -145,20 +142,7 @@ export default function SignInPage() {
       console.log("[Login] 2/9 OK — signed in");
 
       console.log("[Login] 3/9 Credential ops...");
-      await withTimeout((async () => {
-        if (rememberMe) {
-          await saveCredentials(username, password);
-          if (isNativePlatform()) {
-            await setBiometricEnabled(useBiometric);
-          }
-        } else {
-          await clearCredentials();
-          await setBiometricEnabled(false);
-        }
-      })(), 15000, "credentialOps");
-      console.log("[Login] 3/9 OK — credentials saved/cleared");
-
-      console.log("[Login] 4/9 Memuat data pengguna...");
+      console.log("[Login] 3/9 Memuat data pengguna...");
       setLoadingText("Memuat data pengguna...");
       const [
         { data: { user: authUser } },
@@ -172,12 +156,35 @@ export default function SignInPage() {
       if (!authUser) throw new Error("No session");
       if (!profile) throw new Error("No profile");
 
+      const deviceType = getDeviceType();
+      if (isPegawaiWebBlocked(profile.role, deviceType)) {
+        await supabase.auth.signOut();
+        await clearCredentials();
+        await setBiometricEnabled(false);
+        setAuthLoading(false);
+        setLoading(false);
+        navigate(`/block?device=${getBlockDeviceType(deviceType)}`, { replace: true });
+        return;
+      }
+
+      await withTimeout((async () => {
+        if (rememberMe) {
+          await saveCredentials(username, password);
+          if (isNativePlatform()) {
+            await setBiometricEnabled(useBiometric);
+          }
+        } else {
+          await clearCredentials();
+          await setBiometricEnabled(false);
+        }
+      })(), 15000, "credentialOps");
+      console.log("[Login] 3/9 OK — credentials saved/cleared");
+
       setUserEmail(profile.email || email);
       setUserName(profile.full_name || username);
       setUserId(authUser.id);
-      setDeviceInfo(deviceInfoResult);
 
-      // Admin & super_admin skip OTP entirely
+      // Admin & super_admin skip device binding and OTP entirely.
       if (profile.role === "super_admin" || profile.role === "admin") {
         console.log(`[Login] ${profile.role} — skip device binding & OTP`);
         setLoadingText("Memuat dashboard...");
@@ -191,6 +198,9 @@ export default function SignInPage() {
         redirectByRole(profile.role);
         return;
       }
+
+      const deviceInfoResult = await getDeviceInfo();
+      setDeviceInfo(deviceInfoResult);
 
       console.log("[Login] 5/9 Memeriksa perangkat...");
       setLoadingText("Memeriksa perangkat...");

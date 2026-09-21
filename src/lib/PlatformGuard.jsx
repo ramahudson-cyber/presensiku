@@ -1,19 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Capacitor } from '@capacitor/core';
-
-// Terima 'admin' baru + 'admin_puskesmas' lama (masa transisi sampai DB bersih).
-const WEB_ALLOWED_ROLES = ["super_admin", "admin", "admin_puskesmas", "kepala_unit"];
-
-function getDeviceType() {
-  try {
-    if (Capacitor.isNativePlatform()) return "native";
-  } catch {}
-  const ua = navigator.userAgent;
-  if (/iPhone|iPad|iPod/i.test(ua)) return "ios";
-  if (/Android/i.test(ua)) return "android";
-  return "desktop";
-}
+import { getBlockDeviceType, isPegawaiWebBlocked } from "./devicePlatform";
 
 function PlatformGuard({ children }) {
   const { user, loading } = useAuth();
@@ -29,20 +16,11 @@ function PlatformGuard({ children }) {
     );
   }
 
-  const deviceType = getDeviceType();
-  const userRole = user?.role;
+  if (isPegawaiWebBlocked(user?.role)) {
+    return <Navigate to={`/block?device=${getBlockDeviceType()}`} replace />;
+  }
 
-  // Native app (Capacitor) always allowed
-  if (deviceType === "native") return children;
-
-  // Admin roles always allowed
-  if (WEB_ALLOWED_ROLES.includes(userRole)) return children;
-
-  // iOS pegawai allowed (no APK available)
-  if (deviceType === "ios") return children;
-
-  // Android or Desktop pegawai → blocked
-  return <Navigate to={`/block?device=${deviceType}`} replace />;
+  return children;
 }
 
 export default PlatformGuard;
