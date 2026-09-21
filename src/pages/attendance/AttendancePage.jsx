@@ -327,11 +327,6 @@ const handleCheckIn = async () => {
         lateMinutes = isLate ? totalWitaMinutes - shiftStartMinutes : 0;
         status = isLate ? "terlambat" : "hadir";
 
-        if (lateMinutes > 600) {
-          setError("Anda terlambat " + lateMinutes + " menit. Tidak dapat absen. Hubungi admin.");
-          setSaving(false);
-          return;
-        }
       }
 
       const payload = {
