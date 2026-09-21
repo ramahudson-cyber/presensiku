@@ -562,7 +562,7 @@ const handleCheckIn = async () => {
                 <div className="ml-auto flex gap-2">
                   <span className="text-[8px] text-black">Masuk {formatTimeSimple(todayAttendance.clock_in_time)}</span>
                   {todayAttendance.clock_out_time && (
-                    <span className="text-[8px] text-periwinkle-glow/40">Pulang {formatTimeSimple(todayAttendance.clock_out_time)}</span>
+                    <span className="text-[8px] text-black">Pulang {formatTimeSimple(todayAttendance.clock_out_time)}</span>
                   )}
                 </div>
               </div>
