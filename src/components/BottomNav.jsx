@@ -123,7 +123,7 @@ export default function BottomNav({ hidden = false }) {
           >
             <FingerprintPattern size={28} className="text-white" />
           </NavLink>
-          <p className="mt-1 text-[10px] font-bold uppercase leading-none tracking-tight text-slate-600">
+          <p className="mt-[5px] text-[10px] font-bold uppercase leading-none tracking-tight text-slate-600">
             Presensi
           </p>
         </div>
