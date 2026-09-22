@@ -81,12 +81,14 @@ export default function WelcomePage() {
 const PREMIUM_STYLES = `
   .premium-frame {
     position: relative;
+    box-sizing: border-box;
+    min-height: 100svh;
     min-height: 100dvh;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px));
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background: linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%);
     -webkit-font-smoothing: antialiased;
@@ -222,7 +224,7 @@ const PREMIUM_STYLES = `
     opacity: 0;
     filter: blur(10px);
     transform: translate3d(0,26px,0);
-    animation: reveal 1s cubic-bezier(0.16,1,0.3,1) forwards;
+    animation: reveal 0.65s cubic-bezier(0.16,1,0.3,1) forwards;
     animation-delay: var(--d, 0s);
   }
   @keyframes reveal { to { opacity: 1; filter: blur(0); transform: translate3d(0,0,0); } }
@@ -304,11 +306,11 @@ const PREMIUM_STYLES = `
 
   /* ── Urutan muncul ── */
   .d-logo  { --d: 0s; }
-  .d-word  { --d: 3s; }
-  .d-tag   { --d: 3.3s; }
-  .d-motto { --d: 3.6s; }
-  .d-btn   { --d: 3.9s; }
-  .d-foot  { --d: 4.15s; }
+  .d-word  { --d: 0.8s; }
+  .d-tag   { --d: 1s; }
+  .d-motto { --d: 1.2s; }
+  .d-btn   { --d: 1.4s; }
+  .d-foot  { --d: 1.6s; }
 
   @media (prefers-reduced-motion: reduce) {
     .draw, .reveal, .orb, .logo, .logo-glow, .core, .ripple { animation: none !important; }
