@@ -100,20 +100,26 @@ const EmployeesPage = () => {
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
-    setConfirmDelete(id);
+  const handleDelete = (employee) => {
+    if (employee?.role === 'super_admin') {
+      toast.error('Super admin tidak dapat dihapus');
+      return;
+    }
+    setConfirmDelete(employee.id);
   };
 
   const confirmDeleteAction = async () => {
     if (!confirmDelete) return;
     const id = confirmDelete;
     setConfirmDelete(null);
-    const { error } = await supabase.rpc('delete_employee_with_auth', { p_user_id: id });
-    if (error) {
-      toast.error('Gagal menghapus pegawai');
-    } else {
-      toast.success('Pegawai berhasil dihapus');
+    const { data, error } = await supabase.rpc('delete_employee_with_auth', { p_user_id: id });
+    if (error || data?.success === false) {
+      toast.error(data?.error || error?.message || 'Gagal menghapus pegawai');
+    } else if (data?.success === true) {
+      toast.success(data.message || 'Pegawai berhasil dihapus');
       fetchEmployees();
+    } else {
+      toast.error('Respons penghapusan user tidak valid');
     }
   };
 
@@ -475,11 +481,13 @@ const EmployeesPage = () => {
                             title="Edit">
                             <Pencil size={15} />
                           </button>
-                          <button onClick={() => handleDelete(emp.id)}
-                            className="p-1.5 text-rose-300 hover:bg-rose-500/15 rounded-lg transition-all hover:scale-110"
-                            title="Hapus">
-                            <Trash2 size={15} />
-                          </button>
+                          {emp.role !== 'super_admin' && (
+                            <button onClick={() => handleDelete(emp)}
+                              className="p-1.5 text-rose-300 hover:bg-rose-500/15 rounded-lg transition-all hover:scale-110"
+                              title="Hapus">
+                              <Trash2 size={15} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -512,11 +520,13 @@ const EmployeesPage = () => {
                             aria-label="Edit">
                             <Pencil size={14} />
                           </button>
-                          <button onClick={() => handleDelete(emp.id)}
-                            className="p-1.5 text-rose-300 bg-rose-500/10 rounded-lg active:scale-95 transition-all"
-                            aria-label="Hapus">
-                            <Trash2 size={14} />
-                          </button>
+                          {emp.role !== 'super_admin' && (
+                            <button onClick={() => handleDelete(emp)}
+                              className="p-1.5 text-rose-300 bg-rose-500/10 rounded-lg active:scale-95 transition-all"
+                              aria-label="Hapus">
+                              <Trash2 size={14} />
+                            </button>
+                          )}
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-1.5 mt-2">
