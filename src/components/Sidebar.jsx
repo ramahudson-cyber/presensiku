@@ -41,7 +41,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
     { path: "/admin/announcements", label: "Pengumuman", icon: Megaphone },
     ...(userRole === "super_admin" ? superAdminMenus : []),
     { path: "/admin/settings", label: "Pengaturan", icon: Settings },
-    { path: "/employee/profile", label: "Profil", icon: Users },
+    { path: "/admin/profile", label: "Profil", icon: Users },
   ];
 
   const menus = userRole === "pegawai" ? pegawaiMenus : adminMenus;

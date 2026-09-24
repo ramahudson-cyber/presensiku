@@ -81,6 +81,16 @@ function AppRoutes() {
             <PengaturanPage />
           </ProtectedRoute>
         } />
+        <Route path="profile" element={
+          <ProtectedRoute allowedRoles={["super_admin", "admin", "admin_puskesmas", "kepala_unit"]}>
+            <EmployeeProfile />
+          </ProtectedRoute>
+        } />
+        <Route path="profile/edit" element={
+          <ProtectedRoute allowedRoles={["super_admin", "admin", "admin_puskesmas", "kepala_unit"]}>
+            <EmployeeEditProfile />
+          </ProtectedRoute>
+        } />
       </Route>
 
       {/* PEGAWAI — wajib login (data tetap dilindungi RLS; guard ini

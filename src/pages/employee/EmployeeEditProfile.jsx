@@ -136,7 +136,7 @@ export default function EmployeeEditProfile() {
 
       await refreshUser();
       toast.success("Profil berhasil diperbarui");
-      navigate("/employee/profile");
+      navigate(user?.role === "pegawai" ? "/employee/profile" : "/admin/profile");
     } catch (err) {
       toast.error("Gagal menyimpan: " + err.message);
     } finally {
