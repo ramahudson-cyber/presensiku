@@ -96,24 +96,22 @@ export default function SignInPage() {
 
   const resolveEmail = async (input) => {
     const value = input.trim();
-    const atCount = (value.match(/@/g) || []).length;
+    if (!value) throw new Error("Username atau email wajib diisi");
 
-    // Email asli lengkap (satu @ + domain bertitik) → langsung dipakai login
-    if (atCount === 1 && /\.[a-z]{2,}$/i.test(value)) return value;
-
-    let username = value;
+    let identifier = value;
     let slug = null;
-    // username@slug-instansi (domain tanpa titik) → pakai namespace instansi
-    if (atCount >= 1) {
+    // username@slug-instansi tetap memakai namespace; email kontak berdomain
+    // titik dikirim utuh agar resolver dapat memetakan ke auth_email sintetis.
+    const atCount = (value.match(/@/g) || []).length;
+    if (atCount === 1 && !/\.[a-z]{2,}$/i.test(value)) {
       const sep = value.indexOf("@");
-      username = value.slice(0, sep);
+      identifier = value.slice(0, sep);
       slug = value.slice(sep + 1);
-      if (!username || !slug) throw new Error("Format login: username@kode-instansi");
+      if (!identifier || !slug) throw new Error("Format login: username@kode-instansi");
     }
 
-    // Resolve via RPC (aman untuk anon — tidak membuka tabel profiles)
     const { data, error } = await supabase.rpc("resolve_login_identity", {
-      p_username: username,
+      p_username: identifier,
       p_org_slug: slug,
     });
     if (error || !data) {
