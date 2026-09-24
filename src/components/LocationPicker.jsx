@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Crosshair, Check, Search, Loader2, AlertTriangle } from "lucide-react";
+import { getCurrentPosition } from "../services/geoService";
 
 // Light-mode tokens — per DESIGN.md
 const T = {
@@ -24,6 +25,8 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [mapError, setMapError] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState("");
   const [manualLat, setManualLat] = useState(initialLat.toString());
   const [manualLng, setManualLng] = useState(initialLng.toString());
 
@@ -115,47 +118,60 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const goToResult = (result) => {
-    const newLat = parseFloat(result.lat);
-    const newLng = parseFloat(result.lon);
-    setLat(newLat);
-    setLng(newLng);
+  const isValidCoordinate = (latitude, longitude) => (
+    Number.isFinite(latitude) && latitude >= -90 && latitude <= 90
+    && Number.isFinite(longitude) && longitude >= -180 && longitude <= 180
+  );
+
+  const updateMapPosition = (newLat, newLng) => {
+    if (!isValidCoordinate(newLat, newLng)) return false;
+    setLat(parseFloat(newLat.toFixed(6)));
+    setLng(parseFloat(newLng.toFixed(6)));
     if (mapInstanceRef.current) {
       mapInstanceRef.current.setView([newLat, newLng], 17);
       if (markerRef.current) markerRef.current.setLatLng([newLat, newLng]);
     }
+    return true;
+  };
+
+  const goToResult = (result) => {
+    const newLat = parseFloat(result.lat);
+    const newLng = parseFloat(result.lon);
+    if (!updateMapPosition(newLat, newLng)) return;
     setShowResults(false);
     setSearchQuery(result.display_name);
   };
 
-  const handleLocateMe = () => {
-    if (!navigator.geolocation || !mapInstanceRef.current) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        mapInstanceRef.current.setView([latitude, longitude], 17);
-        if (markerRef.current) markerRef.current.setLatLng([latitude, longitude]);
-        setLat(parseFloat(latitude.toFixed(6)));
-        setLng(parseFloat(longitude.toFixed(6)));
-      },
-      () => {},
-      { enableHighAccuracy: true, timeout: 5000 }
-    );
+  const handleLocateMe = async () => {
+    setLocating(true);
+    setLocationError("");
+    try {
+      const position = await getCurrentPosition({ timeout: 15000 });
+      if (!updateMapPosition(position.latitude, position.longitude)) {
+        throw new Error("Koordinat GPS tidak valid");
+      }
+    } catch (error) {
+      setLocationError(error?.message || "Lokasi saat ini tidak dapat dibaca");
+    } finally {
+      setLocating(false);
+    }
   };
 
   const handleManualInput = () => {
     const newLat = parseFloat(manualLat);
     const newLng = parseFloat(manualLng);
-    if (isNaN(newLat) || isNaN(newLng)) return;
-    setLat(newLat);
-    setLng(newLng);
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.setView([newLat, newLng], 17);
-      if (markerRef.current) markerRef.current.setLatLng([newLat, newLng]);
+    if (!updateMapPosition(newLat, newLng)) {
+      setLocationError("Latitude harus -90 sampai 90 dan longitude -180 sampai 180");
+      return;
     }
+    setLocationError("");
   };
 
   const handleConfirm = () => {
+    if (!isValidCoordinate(lat, lng)) {
+      setLocationError("Koordinat lokasi belum valid");
+      return;
+    }
     onConfirm(lat, lng);
     onCancel();
   };
@@ -196,6 +212,13 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
         )}
       </div>
 
+      {locationError && (
+        <div className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+          <AlertTriangle size={14} className="mt-0.5 shrink-0" />
+          <span>{locationError}</span>
+        </div>
+      )}
+
       {!mapError ? (
         <div className="relative rounded-2xl overflow-hidden border border-gray-200" style={{ height: 350, touchAction: "none" }}>
           <div ref={mapRef} className="w-full h-full" />
@@ -203,10 +226,11 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
             <button
               type="button"
               onClick={handleLocateMe}
-              className="p-2.5 bg-white shadow-lg rounded-full text-[#BF00FF] border border-gray-200 hover:bg-gray-50 transition-all"
+              disabled={locating}
+              className="p-2.5 bg-white shadow-lg rounded-full text-[#BF00FF] border border-gray-200 hover:bg-gray-50 transition-all disabled:opacity-60"
               title="Pakai lokasi saya"
             >
-              <Crosshair size={16} />
+              {locating ? <Loader2 size={16} className="animate-spin" /> : <Crosshair size={16} />}
             </button>
           </div>
         </div>

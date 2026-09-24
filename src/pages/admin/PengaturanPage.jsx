@@ -58,6 +58,8 @@ const initials = (name) => {
    TAB 1: PROFIL PUSKESMAS & LOKASI GPS
    ============================================================ */
 function TabProfilPuskesmas() {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "super_admin";
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [locations, setLocations] = useState([]);
@@ -125,6 +127,23 @@ function TabProfilPuskesmas() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const latitude = Number(formData.latitude);
+    const longitude = Number(formData.longitude);
+    const radius = Number(formData.radius_meter);
+    if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+      toast.error("Latitude harus berada di antara -90 dan 90");
+      return;
+    }
+    if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+      toast.error("Longitude harus berada di antara -180 dan 180");
+      return;
+    }
+    if (!Number.isInteger(radius) || radius < 10 || radius > 2000) {
+      toast.error("Radius harus berupa bilangan bulat antara 10 dan 2000 meter");
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -134,9 +153,9 @@ function TabProfilPuskesmas() {
           .update({
             name: formData.name,
             address: formData.address,
-            latitude: parseFloat(formData.latitude),
-            longitude: parseFloat(formData.longitude),
-            radius_meter: parseInt(formData.radius_meter),
+            latitude,
+            longitude,
+            radius_meter: radius,
             is_active: formData.is_active,
             updated_at: new Date().toISOString(),
           })
@@ -157,9 +176,9 @@ function TabProfilPuskesmas() {
           .insert({
             name: formData.name,
             address: formData.address,
-            latitude: parseFloat(formData.latitude),
-            longitude: parseFloat(formData.longitude),
-            radius_meter: parseInt(formData.radius_meter),
+            latitude,
+            longitude,
+            radius_meter: radius,
             is_active: formData.is_active,
           })
           .select()
@@ -185,6 +204,8 @@ function TabProfilPuskesmas() {
       setSaving(false);
     }
   };
+
+  const canManageLocation = (loc) => isSuperAdmin || loc.created_by === user?.id;
 
   const handleDelete = (id, name) => {
     setConfirmDeleteLoc({ id, name });
@@ -413,35 +434,42 @@ function TabProfilPuskesmas() {
                       <div className="flex flex-wrap gap-3 text-xs text-slate-mist mt-1">
                         <span className="font-mono break-all">📍 {loc.latitude}, {loc.longitude}</span>
                         <span>📏 {loc.radius_meter}m</span>
+                        {isSuperAdmin && (
+                          <span className="text-electric-violet">
+                            {loc.created_by ? `Pemilik: ${loc.created_by.slice(0, 8)}…` : "Belum ada pemilik"}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1 shrink-0 justify-end sm:justify-start">
-                    {!loc.is_active && (
+                  {canManageLocation(loc) && (
+                    <div className="flex items-center gap-1 shrink-0 justify-end sm:justify-start">
+                      {!loc.is_active && (
+                        <button
+                          onClick={() => handleSetActive(loc.id, loc.name)}
+                          title="Jadikan aktif"
+                          className="p-2 text-green-yellow hover:bg-green-yellow/15 rounded-full transition-all hover:scale-110"
+                        >
+                          <CheckCircle2 size={16} />
+                        </button>
+                      )}
                       <button
-                        onClick={() => handleSetActive(loc.id, loc.name)}
-                        title="Jadikan aktif"
-                        className="p-2 text-green-yellow hover:bg-green-yellow/15 rounded-full transition-all hover:scale-110"
+                        onClick={() => handleEdit(loc)}
+                        className="p-2 text-sky-300 hover:bg-sky-500/15 rounded-full transition-all hover:scale-110"
+                        title="Edit"
                       >
-                        <CheckCircle2 size={16} />
+                        <Pencil size={15} />
                       </button>
-                    )}
-                    <button
-                      onClick={() => handleEdit(loc)}
-                      className="p-2 text-sky-300 hover:bg-sky-500/15 rounded-full transition-all hover:scale-110"
-                      title="Edit"
-                    >
-                      <Pencil size={15} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(loc.id, loc.name)}
-                      className="p-2 text-rose-300 hover:bg-rose-500/15 rounded-full transition-all hover:scale-110"
-                      title="Hapus"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
+                      <button
+                        onClick={() => handleDelete(loc.id, loc.name)}
+                        className="p-2 text-rose-300 hover:bg-rose-500/15 rounded-full transition-all hover:scale-110"
+                        title="Hapus"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
