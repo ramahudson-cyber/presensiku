@@ -45,6 +45,15 @@ export default function SignInPage() {
   const navigate = useNavigate();
   const { refreshUser, isAuthenticated, setLoading: setAuthLoading, loading: authLoading } = useAuth();
 
+  const redirectAfterLogin = (profile) => {
+    if (profile?.role !== "super_admin" && profile?.password_changed !== true) {
+      navigate("/ubah-password", { replace: true });
+      return true;
+    }
+    redirectByRole(profile?.role);
+    return false;
+  };
+
   useEffect(() => {
     (async () => {
       const creds = await getCredentials();
@@ -191,11 +200,7 @@ export default function SignInPage() {
         await withTimeout(refreshUser(), 15000, "refreshUser");
         setAuthLoading(false); // tutup spinner global sebelum navigasi
         await new Promise((r) => setTimeout(r, 0)); // pastikan AuthContext re-render loading=false
-        if (profile.role !== "super_admin" && profile.password_changed === false) {
-          navigate("/ubah-password", { replace: true });
-          return;
-        }
-        redirectByRole(profile.role);
+        if (redirectAfterLogin(profile)) return;
         return;
       }
 
@@ -226,11 +231,7 @@ export default function SignInPage() {
         await withTimeout(refreshUser(), 15000, "refreshUser");
         setAuthLoading(false);
         await new Promise((r) => setTimeout(r, 0));
-        if (profile.role !== "super_admin" && profile.password_changed === false) {
-          navigate("/ubah-password", { replace: true });
-          return;
-        }
-        redirectByRole(profile.role);
+        if (redirectAfterLogin(profile)) return;
         return;
       }
 
@@ -249,7 +250,7 @@ export default function SignInPage() {
           await withTimeout(refreshUser(), 15000, "refreshUser");
           setAuthLoading(false);
           await new Promise((r) => setTimeout(r, 0));
-          redirectByRole(profile.role);
+          redirectAfterLogin(profile);
           return;
         }
         if (reqStatus.status === "rejected") {
@@ -334,14 +335,10 @@ export default function SignInPage() {
         await new Promise((r) => setTimeout(r, 0));
         const { data: profile } = await supabase.from("profiles").select("role, password_changed").eq("id", userId).single();
         if (profile) {
-          if (profile.role !== "super_admin" && profile.password_changed === false) {
-            navigate("/ubah-password", { replace: true });
-            return;
-          }
-          redirectByRole(profile.role);
+          if (redirectAfterLogin(profile)) return;
           return;
         }
-        navigate("/admin", { replace: true });
+        navigate("/login", { replace: true });
       } else if (status.status === "rejected") {
         setError("DITOLAK. Hubungi admin.");
         await supabase.auth.signOut();

@@ -88,7 +88,7 @@ function AppRoutes() {
       <Route
         path="/employee"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["pegawai"]}>
             <PlatformGuard>
               <AdminLayout />
             </PlatformGuard>

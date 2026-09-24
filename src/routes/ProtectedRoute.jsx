@@ -47,7 +47,11 @@ function ProtectedRoute({ children, allowedRoles }) {
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
   // Check role if allowedRoles is specified
@@ -64,7 +68,7 @@ function ProtectedRoute({ children, allowedRoles }) {
   if (
     user &&
     user.role !== "super_admin" &&
-    user.password_changed === false &&
+    user.password_changed !== true &&
     location.pathname !== "/ubah-password"
   ) {
     return <Navigate to="/ubah-password" replace />;

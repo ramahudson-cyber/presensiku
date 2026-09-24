@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
+import { signOut } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
-import { Loader2, AlertCircle, Eye, EyeOff, Lock, Shield } from "lucide-react";
+import BottomSheet from "../../components/BottomSheet";
+import { Loader2, AlertCircle, Eye, EyeOff, Lock, Shield, CheckCircle2 } from "lucide-react";
 
 export default function ChangePasswordPage() {
   const [newPassword, setNewPassword] = useState("");
@@ -10,12 +12,22 @@ export default function ChangePasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState("");
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
 
-  const redirectByRole = (role) => {
-    if (role === "pegawai") navigate("/employee", { replace: true });
-    else navigate("/admin", { replace: true });
+  const handleLogoutAfterPasswordChange = async () => {
+    setLoggingOut(true);
+    setLogoutError("");
+    try {
+      await signOut();
+      navigate("/login", { replace: true });
+    } catch (err) {
+      setLogoutError(err.message || "Gagal keluar dari akun.");
+      setLoggingOut(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -38,13 +50,17 @@ export default function ChangePasswordPage() {
       });
       if (updateError) throw updateError;
 
-      await supabase
+      const { error: profileError } = await supabase
         .from("profiles")
         .update({ password_changed: true })
         .eq("id", user?.id);
+      if (profileError) throw profileError;
 
-      await refreshUser();
-      redirectByRole(user?.role);
+      const refreshedUser = await refreshUser();
+      if (refreshedUser?.password_changed !== true) {
+        throw new Error("Status password belum berhasil diperbarui.");
+      }
+      setShowSuccessModal(true);
     } catch (err) {
       setError(err.message || "Gagal mengubah password.");
     } finally {
@@ -151,6 +167,20 @@ export default function ChangePasswordPage() {
           </div>
         </div>
       </div>
+
+      <BottomSheet open={showSuccessModal} onClose={() => {}} dismissible={false} title="Password Berhasil Diperbarui" subtitle="Keamanan akun">
+        <div className="flex flex-col items-center text-center py-5">
+          <div className="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mb-4">
+            <CheckCircle2 size={34} className="text-emerald-500" />
+          </div>
+          <h2 className="text-lg font-bold text-gray-900">Password baru sudah tersimpan</h2>
+          <p className="mt-2 text-sm text-gray-500 max-w-sm">Silakan keluar dari akun, lalu login kembali menggunakan password baru Anda.</p>
+          {logoutError && <p className="mt-4 w-full rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{logoutError}</p>}
+          <button type="button" onClick={handleLogoutAfterPasswordChange} disabled={loggingOut} className="mt-6 w-full rounded-full bg-electric-violet px-5 py-3 text-sm font-semibold text-white disabled:opacity-50 flex items-center justify-center gap-2">
+            {loggingOut ? <><Loader2 size={16} className="animate-spin" /> Keluar...</> : "Keluar dari Akun"}
+          </button>
+        </div>
+      </BottomSheet>
     </div>
   );
 }

@@ -19,6 +19,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profileError, setProfileError] = useState(null);
   const applyingSession = useRef(false);
 
   // Satu-satunya penulis sesi: semua path bikin loading sinkron di sini,
@@ -31,20 +32,24 @@ export function AuthProvider({ children }) {
       setSession(nextSession);
 
       if (nextSession?.user) {
-        let profile = null;
         try {
-          profile = await withTimeout(
+          const { data: profile, error } = await withTimeout(
             supabase.from("profiles")
               .select("*, organization:organizations(id,name,slug)")
               .eq("id", nextSession.user.id)
               .maybeSingle(),
             PROFILE_TIMEOUT_MS
-          ).then(({ data }) => data);
-        } catch {
-          // Profil gagal/timeout — pakai user polos, jangan macetkan loading
+          );
+          if (error) throw error;
+          if (!profile) throw new Error("Profil pengguna tidak ditemukan");
+          setProfileError(null);
+          setUser({ ...nextSession.user, ...profile });
+        } catch (error) {
+          setProfileError(error);
+          setUser(null);
         }
-        setUser({ ...nextSession.user, ...(profile || {}) });
       } else {
+        setProfileError(null);
         setUser(null);
       }
     } finally {
@@ -61,12 +66,14 @@ export function AuthProvider({ children }) {
       await applySession(session, true);
       if (session?.user) {
         // Return userData gabungan biar caller bisa baca role/instansi langsung
-        const { data: profile } = await supabase
+        const { data: profile, error } = await supabase
           .from("profiles")
           .select("*, organization:organizations(id,name,slug)")
           .eq("id", session.user.id)
           .maybeSingle();
-        return profile ? { ...session.user, ...profile } : session.user;
+        if (error) throw error;
+        if (!profile) throw new Error("Profil pengguna tidak ditemukan");
+        return { ...session.user, ...profile };
       }
       return null;
     } catch (err) {
@@ -98,6 +105,7 @@ export function AuthProvider({ children }) {
       if (event === "SIGNED_OUT") {
         setSession(null);
         setUser(null);
+        setProfileError(null);
         setLoading(false);
         return;
       }
@@ -117,6 +125,7 @@ export function AuthProvider({ children }) {
     user,
     session,
     loading,
+    profileError,
     isAuthenticated,
     refreshUser,
     setUser,
