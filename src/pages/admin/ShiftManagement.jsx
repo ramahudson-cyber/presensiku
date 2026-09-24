@@ -3,7 +3,7 @@ import { supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
 import {
   Clock, Save, RefreshCw, Sun, Moon, CloudSun,
-  Sunset, CheckCircle2, XCircle, Info, ArrowRightLeft
+  Sunset, CheckCircle2, XCircle, Info, ArrowRightLeft, Plus
 } from "lucide-react";
 
 const DAY_NAMES = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
@@ -27,6 +27,8 @@ export default function TabShift() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+  const [newShift, setNewShift] = useState({ code: "", name: "" });
 
   const fetchData = async () => {
     setLoading(true);
@@ -50,6 +52,41 @@ export default function TabShift() {
   };
 
   useEffect(() => { fetchData(); }, []);
+
+  const createShift = async (event) => {
+    event.preventDefault();
+    const code = newShift.code.trim().toUpperCase();
+    const name = newShift.name.trim();
+    if (!/^[A-Z0-9_]{2,8}$/.test(code) || !name) {
+      toast.error("Kode shift 2-8 karakter dan nama wajib diisi");
+      return;
+    }
+    setSaving(true);
+    try {
+      const { data: created, error } = await supabase.from("shifts").insert({ code, name }).select().single();
+      if (error) throw error;
+      const rows = DAY_NAMES.map((_, day_of_week) => ({
+        organization_id: created.organization_id,
+        shift_code: code,
+        day_of_week,
+        start_time: "08:00",
+        end_time: "17:00",
+        latest_check_in: add5min("08:00"),
+        crosses_midnight: code === "ML",
+        is_working_day: day_of_week < 6,
+      }));
+      const { error: scheduleError } = await supabase.from("shift_schedules").insert(rows);
+      if (scheduleError) throw scheduleError;
+      setNewShift({ code: "", name: "" });
+      setShowCreate(false);
+      toast.success("Master shift berhasil dibuat");
+      await fetchData();
+    } catch (error) {
+      toast.error("Gagal membuat shift: " + error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const update = (code, day, field, value) => {
     setDirty(true);
@@ -136,7 +173,14 @@ export default function TabShift() {
 
       {/* Shift Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {shifts.map(shift => {
+        {shifts.length === 0 ? (
+          <div className="md:col-span-2 design-card p-10 text-center">
+            <Clock size={32} className="mx-auto mb-3 text-periwinkle-glow" />
+            <h3 className="text-base font-semibold text-pure-white">Belum ada master shift</h3>
+            <p className="text-sm text-slate-mist mt-1">Instansi ini belum memiliki konfigurasi jam kerja.</p>
+            <button onClick={() => setShowCreate(true)} className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium"><Plus size={15} /> Tambah Shift</button>
+          </div>
+        ) : shifts.map(shift => {
           const meta = SHIFT_META[shift.code];
           const Icon = meta?.icon || Clock;
           const shiftScheds = schedules.filter(s => s.shift_code === shift.code);
@@ -205,6 +249,18 @@ export default function TabShift() {
           );
         })}
       </div>
+
+      {shifts.length > 0 && <button onClick={() => setShowCreate(true)} className="inline-flex items-center gap-2 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium"><Plus size={15} /> Tambah Shift</button>}
+      {showCreate && (
+        <form onSubmit={createShift} className="design-card p-4 space-y-3">
+          <h3 className="text-sm font-semibold text-pure-white">Tambah Master Shift</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input value={newShift.code} onChange={e => setNewShift(p => ({ ...p, code: e.target.value }))} placeholder="Kode, contoh PG" maxLength={8} className="design-input uppercase" />
+            <input value={newShift.name} onChange={e => setNewShift(p => ({ ...p, name: e.target.value }))} placeholder="Nama shift" className="design-input" />
+          </div>
+          <div className="flex gap-2"><button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 rounded-full border border-white/10 text-slate-mist text-sm">Batal</button><button type="submit" disabled={saving} className="px-4 py-2 rounded-full bg-electric-violet text-pure-white text-sm">Simpan</button></div>
+        </form>
+      )}
 
       {/* Info */}
       <div className="flex items-center gap-2 p-3.5 rounded-xl bg-electric-violet/5 border border-electric-violet/10 text-[11px] text-slate-mist">
