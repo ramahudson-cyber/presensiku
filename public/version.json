@@ -1,7 +1,7 @@
 {
   "version": "1.6.11",
   "versionCode": 22,
-  "webVersionCode": 2,
+  "webVersionCode": 3,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.6.10/app-debug.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-debug.apk",
   "changelog": "Fix: PWA update mechanism, stats header alignment and responsiveness.",

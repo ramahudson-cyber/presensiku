@@ -67,7 +67,9 @@ const EmployeesPage = () => {
     setLoading(true);
     await fetchMasterData();
     try {
-      const { data, error } = await supabase.from('profiles').select('*');
+      let query = supabase.from('profiles').select('*');
+      if (user?.role !== 'super_admin') query = query.neq('role', 'super_admin');
+      const { data, error } = await query;
       if (error) {
         console.error('❌ Fetch error:', error);
         toast.error('Gagal memuat data pegawai: ' + error.message);
