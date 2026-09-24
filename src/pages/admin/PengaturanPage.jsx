@@ -128,13 +128,6 @@ function TabProfilPuskesmas() {
     setSaving(true);
 
     try {
-      if (formData.is_active) {
-        await supabase
-          .from("attendance_locations")
-          .update({ is_active: false })
-          .neq("id", editingId || "00000000-0000-0000-0000-000000000000");
-      }
-
       if (editingId) {
         const { error } = await supabase
           .from("attendance_locations")
@@ -225,16 +218,12 @@ function TabProfilPuskesmas() {
 
   const handleSetActive = async (id, name) => {
     try {
-      await supabase
-        .from("attendance_locations")
-        .update({ is_active: false })
-        .neq("id", id);
-
-      await supabase
+      const { error } = await supabase
         .from("attendance_locations")
         .update({ is_active: true, updated_at: new Date().toISOString() })
         .eq("id", id);
 
+      if (error) throw error;
       toast.success(`✅ ${name} dijadikan lokasi aktif`);
 
       await supabase.rpc("log_audit", {
