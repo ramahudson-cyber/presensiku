@@ -736,20 +736,21 @@ function TabManajemenUser() {
     setResettingId(user.id);
     try {
       const { error } = await supabase.rpc("reset_user_password", {
-        user_email: user.email,
-        new_password: newPassword,
+        p_user_id: user.id,
+        p_new_password: newPassword,
       });
 
       if (error) throw error;
       toast.success(`✅ Password ${user.full_name} berhasil diubah`);
+      setResetModal({ show: false, user: null, password: "" });
 
-      await supabase.rpc("log_audit", {
+      const { error: auditError } = await supabase.rpc("log_audit", {
         p_action: "RESET_PASSWORD",
         p_description: `Reset password user: ${user.full_name} (${user.email}) oleh admin`,
         p_entity_type: "profiles",
         p_entity_id: user.id,
       });
-      setResetModal({ show: false, user: null, password: "" });
+      if (auditError) console.warn("Audit reset password gagal:", auditError);
     } catch (err) {
       toast.error("Gagal reset: " + err.message);
     } finally {
