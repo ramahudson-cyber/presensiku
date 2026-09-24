@@ -93,7 +93,9 @@ export default function TabShift() {
     setSchedules(prev => {
       const existing = prev.find(s => s.shift_code === code && s.day_of_week === day);
       if (!existing) {
+        const shift = shifts.find(item => item.code === code);
         return [...prev, {
+          organization_id: shift?.organization_id,
           shift_code: code,
           day_of_week: day,
           is_working_day: true,
@@ -124,6 +126,7 @@ export default function TabShift() {
     try {
       const { error } = await supabase.from("shift_schedules").upsert(
         schedules.map(s => ({
+          organization_id: s.organization_id,
           shift_code: s.shift_code,
           day_of_week: s.day_of_week,
           start_time: s.is_working_day ? s.start_time : "00:00",
@@ -132,7 +135,7 @@ export default function TabShift() {
           crosses_midnight: s.crosses_midnight || false,
           is_working_day: s.is_working_day,
         })),
-        { onConflict: "shift_code,day_of_week" }
+        { onConflict: "organization_id,shift_code,day_of_week" }
       );
       if (error) throw error;
       toast.success("Jadwal shift disimpan");
