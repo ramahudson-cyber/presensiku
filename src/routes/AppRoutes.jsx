@@ -64,7 +64,11 @@ function AppRoutes() {
         } />
         <Route path="attendance" element={<AttendancePage />} />
         <Route path="attendance-history" element={<AttendanceHistoryPage />} />
-        <Route path="schedules" element={<SchedulingPage />} />
+        <Route path="schedules" element={
+          <ProtectedRoute allowedRoles={["super_admin", "admin", "admin_puskesmas"]}>
+            <SchedulingPage />
+          </ProtectedRoute>
+        } />
         <Route path="leave" element={<LeaveManagementPage />} />
         <Route path="announcements" element={<ComingSoonPage />} />
         <Route path="organizations" element={

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import {
@@ -35,6 +36,8 @@ function getDaysInMonth(year, month) {
 }
 
 export default function SchedulingPage() {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "super_admin";
   const [employees, setEmployees] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
   const [year, setYear] = useState(new Date().getFullYear());
@@ -55,9 +58,26 @@ export default function SchedulingPage() {
   const assignedCount = Object.keys(schedules).length;
 
   useEffect(() => {
-    supabase.from("profiles").select("id, full_name, role").order("full_name")
-      .then(({ data }) => setEmployees(data || []));
-  }, []);
+    let query = supabase
+      .from("profiles")
+      .select("id, full_name, role, created_by, organization_id")
+      .order("full_name");
+
+    if (!isSuperAdmin && user?.id) {
+      query = query.or(`id.eq.${user.id},created_by.eq.${user.id}`);
+    }
+
+    query.then(({ data, error }) => {
+      if (error) {
+        toast.error("Gagal memuat daftar pegawai: " + error.message);
+        return;
+      }
+      setEmployees(data || []);
+      if (!selectedUser && user?.id && (isSuperAdmin || data?.some(item => item.id === user.id))) {
+        setSelectedUser(user.id);
+      }
+    });
+  }, [isSuperAdmin, user?.id]);
 
   const loadSchedules = useCallback(async () => {
     if (!selectedUser) return;
@@ -342,10 +362,15 @@ export default function SchedulingPage() {
         let pd; if (/^\d{4}-\d{2}-\d{2}$/.test(tgl)) pd = tgl;
         else if (/^\d{2}\/\d{2}\/\d{4}$/.test(tgl)) { const [d,m,y] = tgl.split("/"); pd = `${y}-${m}-${d}`; }
         else { fail++; continue; }
-        const { data: ps } = await supabase.from("profiles").select("id").ilike("full_name", `%${nama}%`).limit(1);
-        if (!ps?.[0]) { fail++; continue; }
+        const normalizedName = nama.toLowerCase();
+        const matchedEmployee = employees.find(employee =>
+          employee.full_name?.toLowerCase() === normalizedName
+        ) || employees.find(employee =>
+          employee.full_name?.toLowerCase().includes(normalizedName)
+        );
+        if (!matchedEmployee) { fail++; continue; }
         const { error } = await supabase.from("employee_schedules").upsert(
-          { user_id: ps[0].id, date: pd, shift_code: sc }, { onConflict: "user_id,date" }
+          { user_id: matchedEmployee.id, date: pd, shift_code: sc }, { onConflict: "user_id,date" }
         );
         if (error) fail++; else ok++;
       }
