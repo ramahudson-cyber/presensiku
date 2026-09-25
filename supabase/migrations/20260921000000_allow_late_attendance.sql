@@ -19,8 +19,11 @@ DECLARE
   v_shift      TEXT;
   v_start      TIME;
   v_latest     TIME;
+  v_end        TIME;
   v_workday    BOOLEAN;
   v_crosses    BOOLEAN := false;
+  v_end_at     TIMESTAMP;
+  v_existing_status TEXT;
   v_start_min  INT;
   v_late_min   INT;
 BEGIN
@@ -62,9 +65,9 @@ BEGIN
     END IF;
     NEW.shift_code := v_shift;
 
-    SELECT ss.start_time, ss.latest_check_in, ss.is_working_day,
+    SELECT ss.start_time, ss.latest_check_in, ss.end_time, ss.is_working_day,
            COALESCE(ss.crosses_midnight, false)
-      INTO v_start, v_latest, v_workday, v_crosses
+      INTO v_start, v_latest, v_end, v_workday, v_crosses
     FROM shift_schedules ss
     WHERE ss.shift_code = v_shift
       AND ss.day_of_week = v_dow
@@ -74,9 +77,9 @@ BEGIN
 
     -- Non-working/placeholder memakai jam hari kerja shift yang sama.
     IF v_start IS NULL OR v_start = '00:00' OR COALESCE(v_workday, true) = false THEN
-      SELECT ss.start_time, ss.latest_check_in,
+      SELECT ss.start_time, ss.latest_check_in, ss.end_time,
              COALESCE(ss.crosses_midnight, false)
-        INTO v_start, v_latest, v_crosses
+        INTO v_start, v_latest, v_end, v_crosses
       FROM shift_schedules ss
       WHERE ss.shift_code = v_shift
         AND ss.is_working_day = true
@@ -97,6 +100,31 @@ BEGIN
     -- dari shift malam sebelumnya. Check-in sebelum jam mulai tidak digeser.
     IF v_crosses AND v_minutes < 720 AND v_minutes < v_start_min THEN
       v_minutes := v_minutes + 1440;
+    END IF;
+
+    -- Alpha bersifat terminal untuk pegawai biasa: jadwal yang sudah lewat
+    -- jam selesai tidak menerima check-in regular lagi. Admin/platform tetap
+    -- melewati guard ini melalui bypass di awal function.
+    SELECT a.attendance_status INTO v_existing_status
+    FROM attendance a
+    WHERE a.user_id = NEW.user_id AND a.date = v_date
+    LIMIT 1;
+
+    IF v_existing_status = 'alpha' THEN
+      RAISE EXCEPTION 'Absensi sudah berstatus Alpha dan tidak dapat diubah';
+    END IF;
+
+    IF v_end IS NULL THEN
+      RAISE EXCEPTION 'Konfigurasi jam selesai shift belum lengkap — hubungi admin';
+    END IF;
+
+    v_end_at := v_date + v_end;
+    IF v_crosses AND v_end <= v_start THEN
+      v_end_at := v_end_at + INTERVAL '1 day';
+    END IF;
+
+    IF v_wita >= v_end_at THEN
+      RAISE EXCEPTION 'Absensi ditutup karena jadwal hari ini sudah berstatus Alpha';
     END IF;
 
     -- Tidak ada lagi penolakan berdasarkan jumlah keterlambatan.

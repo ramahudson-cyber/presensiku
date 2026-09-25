@@ -10,6 +10,7 @@ import AttendanceResultSheet from "../../components/AttendanceResultSheet";
 import BottomNav from "../../components/BottomNav";
 import { getCurrentPosition } from "../../services/geoService";
 import { getPuskesmasLocation, calculateDistance, verifyLocationServer } from "../../services/attendanceService";
+import { getMondayFirstDayOfWeek, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
 
 const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
 
@@ -52,6 +53,7 @@ export default function AttendancePage() {
 
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [todaySchedule, setTodaySchedule] = useState(null);
+  const [shiftDefinition, setShiftDefinition] = useState(null);
   const [locationStatus, setLocationStatus] = useState("checking");
   const [distance, setDistance] = useState(null);
   const [currentCoords, setCurrentCoords] = useState(null);
@@ -162,6 +164,14 @@ export default function AttendancePage() {
           .select("name")
           .eq("code", sched.shift_code)
           .single();
+        const dayOfWeek = getMondayFirstDayOfWeek(today);
+        const { data: definition } = await supabase
+          .from("shift_schedules")
+          .select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day")
+          .eq("shift_code", sched.shift_code)
+          .eq("day_of_week", dayOfWeek)
+          .maybeSingle();
+        setShiftDefinition(definition || null);
         setTodaySchedule({ code: sched.shift_code, name: shiftInfo?.name || sched.shift_code });
       } else {
         setTodaySchedule(null);
@@ -241,9 +251,20 @@ export default function AttendancePage() {
   return result;
 };
 
-const handleCheckIn = async () => {
+  const isAlphaLocked = todayAttendance?.attendance_status === "alpha"
+    || (!todayAttendance && shiftDefinition && serverTime && isShiftEnded(
+      getWitaDateKey(serverTime),
+      shiftDefinition,
+      serverTime
+    ));
+
+  const handleCheckIn = async () => {
     setError("");
     setSuccessMsg("");
+    if (isAlphaLocked) {
+      setError("Absensi ditutup. Jadwal hari ini sudah berstatus Alpha.");
+      return;
+    }
     setSaving(true);
     try {
       const freshLoc = await getCurrentPosition();
@@ -590,8 +611,13 @@ const handleCheckIn = async () => {
 	        </div>
 
 		        {todayAttendance && todayAttendance.clock_out_time ? null : (
-          <div className="pointer-events-auto flex flex-col items-center gap-3 mt-auto pb-16">
-            <div className="relative">
+              <div className="pointer-events-auto flex flex-col items-center gap-3 mt-auto pb-16">
+                {isAlphaLocked && (
+                  <p className="text-[11px] font-semibold text-red-600 text-center max-w-[240px]">
+                    Absensi ditutup karena jadwal hari ini sudah Alpha.
+                  </p>
+                )}
+                <div className="relative">
               {/* Ripple rings */}
               <div className="absolute inset-0 rounded-full border-2 border-electric-violet/30 animate-ripple z-0"></div>
               <div className="absolute inset-0 rounded-full border-2 border-electric-violet/20 animate-ripple2 z-0"></div>
@@ -603,7 +629,7 @@ const handleCheckIn = async () => {
               {/* Main button */}
               <button
                 onClick={todayAttendance ? handleCheckOut : handleCheckIn}
-                disabled={locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
+                disabled={isAlphaLocked || locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
                 className="hero-card-bg relative w-[120px] h-[120px] rounded-full bg-gradient-to-br from-electric-violet via-[#8B00CC] to-[#6600CC] flex items-center justify-center
                   transition-all duration-300 hover:scale-105 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed
                   shadow-[0_0_40px_rgba(191,0,255,0.5),0_0_80px_rgba(191,0,255,0.25),0_10px_40px_rgba(0,0,0,0.4)]
@@ -630,7 +656,7 @@ const handleCheckIn = async () => {
             <span className="text-[13px] font-bold text-black tracking-[3px] uppercase" style={{
               textShadow: '0 0 15px rgba(191,0,255,0.3)'
             }}>
-              {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
+              {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : isAlphaLocked ? "Absen Ditutup" : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
             </span>
           </div>
 		        )}
