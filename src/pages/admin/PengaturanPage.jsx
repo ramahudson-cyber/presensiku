@@ -505,173 +505,6 @@ function TabProfilPuskesmas() {
 }
 
 /* ============================================================
-   TAB 2: JAM KERJA & SETTINGS
-   ============================================================ */
-const DEFAULT_SETTINGS = {
-  work_start_time: "07:30",
-  work_end_time: "14:00",
-  late_tolerance_minutes: "5",
-  default_radius_meter: "200",
-  default_password: "puskesmas123",
-  password_min_length: "6",
-};
-
-const SETTING_KEYS = [
-  { key: "work_start_time", label: "Jam Mulai Kerja", type: "time", category: "attendance", icon: Clock, desc: "Waktu mulai jam kerja" },
-  { key: "work_end_time", label: "Jam Selesai Kerja", type: "time", category: "attendance", icon: Clock, desc: "Waktu selesai jam kerja" },
-  { key: "late_tolerance_minutes", label: "Toleransi Terlambat (menit)", type: "number", category: "attendance", icon: AlertTriangle, desc: "Batas toleransi keterlambatan" },
-  { key: "default_radius_meter", label: "Radius Default (meter)", type: "number", category: "attendance", icon: MapPin, desc: "Radius GPS default untuk absensi" },
-  { key: "default_password", label: "Password Default Pegawai Baru", type: "text", category: "security", icon: Key, desc: "Password awal pegawai baru" },
-  { key: "password_min_length", label: "Panjang Minimal Password", type: "number", category: "security", icon: Shield, desc: "Jumlah karakter minimal password" },
-];
-
-function TabJamKerja() {
-  const [saving, setSaving] = useState(false);
-  const [dbReady, setDbReady] = useState(true);
-  const [settings, setSettings] = useState(() => {
-    try {
-      const saved = localStorage.getItem("siap_jam_kerja");
-      return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
-    } catch { return DEFAULT_SETTINGS; }
-  });
-
-  const saveToLocal = (vals) => {
-    try { localStorage.setItem("siap_jam_kerja", JSON.stringify(vals)); } catch {}
-  };
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const { data, error } = await supabase
-          .from("system_settings")
-          .select("*")
-          .in("setting_key", SETTING_KEYS.map(s => s.key));
-        if (!error && data) {
-          const map = {};
-          data.forEach(s => { map[s.setting_key] = s.value; });
-          if (Object.keys(map).length > 0) {
-            setSettings(prev => ({ ...prev, ...map }));
-            saveToLocal({ ...DEFAULT_SETTINGS, ...map });
-          }
-        }
-      } catch (e) {
-        console.warn("Jam kerja DB not available, using local defaults:", e);
-        setDbReady(false);
-      }
-    })();
-  }, []);
-
-  const handleSave = async () => {
-    saveToLocal(settings);
-    setSaving(true);
-    try {
-      if (dbReady) {
-        for (const item of SETTING_KEYS) {
-          const value = settings[item.key];
-          if (value === undefined || value === "") continue;
-          await supabase.rpc("set_system_setting", {
-            p_setting_key: item.key,
-            p_value: String(value),
-            p_category: item.category,
-          });
-        }
-        toast.success("Semua settings berhasil disimpan");
-      } else {
-        toast.success("Disimpan secara lokal (DB tidak tersedia)");
-      }
-    } catch (err) {
-      console.error("Save error:", err);
-      toast.warn("Disimpan lokal, gagal sync ke DB: " + err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const categories = [...new Set(SETTING_KEYS.map(s => s.category))];
-  const categoryLabels = {
-    attendance: "Pengaturan Absensi",
-    security: "Keamanan",
-  };
-  const categoryIcons = {
-    attendance: Clock,
-    security: Shield,
-  };
-
-  return (
-    <div className="space-y-5 pb-20 md:pb-0">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div>
-          <h2 className={sectionTitle}>Jam Kerja & Konfigurasi</h2>
-          <p className={sectionSub}>Atur jam kerja, radius, dll</p>
-        </div>
-        <button
-          onClick={handleSave} disabled={saving}
-          className="flex items-center gap-2.5 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40"
-        >
-          {saving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
-          Simpan Semua
-        </button>
-      </div>
-
-      {!dbReady && (
-        <div className="flex items-center gap-2 p-3 rounded-3xl bg-green-yellow/10 border border-green-yellow/20 text-xs text-green-yellow">
-          <AlertTriangle size={13} className="shrink-0" />
-          Database belum siap. Pengaturan disimpan lokal. Jalankan <code className="px-1 py-0.5 bg-black/30 rounded font-mono">scripts/create-system-settings.sql</code> di Supabase.
-        </div>
-      )}
-
-      {categories.map(cat => {
-        const CatIcon = categoryIcons[cat];
-        return (
-          <div key={cat} className={`${cardBase} p-5 md:p-6`}>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="p-2 rounded-3xl bg-electric-violet/15">
-                <CatIcon size={16} className="text-pure-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-pure-white">
-                {categoryLabels[cat]}
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {SETTING_KEYS.filter(s => s.category === cat).map(item => {
-                const Icon = item.icon;
-                return (
-                  <div key={item.key} className="p-3 rounded-3xl bg-white/5 border border-white/[0.06]">
-                    <label className="flex items-center gap-2 text-xs font-medium text-pure-white/70 mb-1 uppercase tracking-wider">
-                      <Icon size={12} className="text-periwinkle-glow" />
-                      {item.label}
-                    </label>
-                    <p className="text-xs text-slate-mist mb-2">{item.desc}</p>
-                    <input
-                      type={item.type}
-                      value={(settings[item.key] ?? DEFAULT_SETTINGS[item.key]) || ""}
-                      onChange={(e) => setSettings({ ...settings, [item.key]: e.target.value })}
-                      className={inputBase + (item.type === "time" || item.type === "date" ? " [color-scheme:dark]" : "")}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
-
-      {/* Sticky save button (mobile bottom) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-white/90 backdrop-blur-md border-t border-slate-200/70">
-        <button
-          onClick={handleSave} disabled={saving}
-          className="w-full flex items-center justify-center gap-2.5 py-3 bg-electric-violet text-pure-white rounded-full text-sm font-semibold hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40"
-        >
-          {saving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
-          Simpan Semua Perubahan
-        </button>
-      </div>
-
-    </div>
-  );
-}
-
-/* ============================================================
    TAB 3: MANAJEMEN USER
    ============================================================ */
 function TabManajemenUser() {
@@ -1568,7 +1401,6 @@ if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
 
   const tabs = [
     { id: "profil", label: "Profil & Lokasi", icon: MapPin },
-    { id: "jam-kerja", label: "Jam Kerja & Settings", icon: Clock },
     { id: "shift", label: "Kelola Shift", icon: Sun },
     { id: "user", label: "Manajemen User", icon: Users },
     { id: "approval", label: "Approval Device", icon: Smartphone },
@@ -1583,7 +1415,6 @@ if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
   const renderTab = () => {
     switch (activeTab) {
       case "profil": return <TabProfilPuskesmas />;
-      case "jam-kerja": return <TabJamKerja />;
       case "user": return <TabManajemenUser />;
       case "approval": return <TabApprovalDevice />;
       case "audit": return <TabAuditLog />;
@@ -1617,7 +1448,6 @@ if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
 
       <div>
         {activeTab === "profil" && <TabProfilPuskesmas />}
-        {activeTab === "jam-kerja" && <TabJamKerja />}
       {activeTab === "shift" && <TabShift />}
       {activeTab === "master-data" && user?.role === "super_admin" && <MasterDataManagementPage />}
       {activeTab === "user" && <TabManajemenUser />}
