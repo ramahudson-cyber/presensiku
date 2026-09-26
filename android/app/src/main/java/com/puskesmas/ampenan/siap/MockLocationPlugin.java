@@ -152,9 +152,14 @@ public class MockLocationPlugin extends Plugin {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 return ops.unsafeCheckOpNoThrow("android:mock_location", uid, packageName);
             }
+            // Di bawah Android 10, versi int dari checkOpNoThrow adalah API @hide —
+            // diakses lewat refleksi.
             int opCode = mockOpCodeLegacy();
             if (opCode < 0) return AppOpsManager.MODE_DEFAULT;
-            return ops.checkOpNoThrow(opCode, uid, packageName);
+            Object mode = AppOpsManager.class
+                .getMethod("checkOpNoThrow", int.class, int.class, String.class)
+                .invoke(ops, opCode, uid, packageName);
+            return (Integer) mode;
         } catch (Exception e) {
             return AppOpsManager.MODE_DEFAULT;
         }
