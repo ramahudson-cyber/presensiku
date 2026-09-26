@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Crosshair, Check, Search, Loader2, AlertTriangle } from "lucide-react";
-import { getCurrentPosition } from "../services/geoService";
+import { Crosshair, Check, Search, Loader2, AlertTriangle, Lock } from "lucide-react";
+import { getCurrentPosition, watchPosition } from "../services/geoService";
 
 // Light-mode tokens — per DESIGN.md
 const T = {
@@ -42,6 +42,12 @@ export default function LocationPicker({
   const [locationError, setLocationError] = useState("");
   const [manualLat, setManualLat] = useState(initialLat.toString());
   const [manualLng, setManualLng] = useState(initialLng.toString());
+  // Auto-locate (lokasi baru): GPS di-watch kontinu sampai terkunci ≤20 m,
+  // tanpa admin perlu menyentuh peta.
+  const [autoLocking, setAutoLocking] = useState(!initialSelected);
+  const [gpsLocked, setGpsLocked] = useState(false);
+  const watchStopRef = useRef(null);
+  const GPS_LOCK_ACCURACY = 20;
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -174,6 +180,10 @@ export default function LocationPicker({
   };
 
   const handleLocateMe = async () => {
+    // Manual re-fix: hentikan auto-watch agar tidak menimpa pilihan user
+    watchStopRef.current?.();
+    watchStopRef.current = null;
+    setAutoLocking(false);
     setLocating(true);
     setLocationError("");
     try {
@@ -228,11 +238,48 @@ export default function LocationPicker({
 
   const canConfirm = hasSelection && isValidCoordinate(lat, lng);
 
+  // Auto-locate: watch GPS saat menambah lokasi baru. Setiap fix menggerakkan
+  // marker live; begitu akurasi ≤20 m, watch berhenti & Konfirmasi terbuka.
+  useEffect(() => {
+    if (initialSelected) return undefined; // edit lokasi lama: tidak auto-watch
+    let stopped = false;
+
+    watchPosition(
+      { timeout: 20000 },
+      (pos) => {
+        if (stopped) return;
+        updateMapPosition(pos.latitude, pos.longitude, pos.accuracy);
+        if (pos.accuracy <= GPS_LOCK_ACCURACY) {
+          // Kunci fix terbaik — berhenti memindahkan titik
+          stopped = true;
+          watchStopRef.current?.();
+          setAutoLocking(false);
+          setGpsLocked(true);
+          setHasSelection(true);
+        }
+      },
+      (err) => {
+        if (!stopped) setLocationError(err?.message || "GPS tidak dapat diakses");
+      }
+    ).then((stop) => {
+      if (stopped) stop();
+      else watchStopRef.current = stop;
+    });
+
+    return () => {
+      stopped = true;
+      watchStopRef.current?.();
+      watchStopRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSelected]);
+
   const handleConfirm = () => {
-    if (!isValidCoordinate(lat, lng)) {
-      setLocationError("Koordinat lokasi belum valid");
+    if (!canConfirm) {
+      setLocationError("Lokasi belum terpilih — tunggu GPS terkunci atau pilih manual");
       return;
     }
+    watchStopRef.current?.();
     onConfirm(lat, lng);
     onCancel();
   };
@@ -272,6 +319,23 @@ export default function LocationPicker({
           </div>
         )}
       </div>
+
+      {autoLocking && (
+        <div className="flex items-center gap-2.5 rounded-xl border border-[#BF00FF]/25 bg-[#BF00FF]/[0.06] px-3 py-2.5 text-xs text-gray-700">
+          <Loader2 size={15} className="animate-spin text-[#BF00FF] shrink-0" />
+          <span>
+            <b>Mengunci GPS presisi…</b> Berdiri tetap di titik lokasi,
+            {gpsAccuracy != null ? ` saat ini ±${gpsAccuracy} m` : " mencari sinyal…"} —
+            titik akan terisi otomatis saat akurasi ≤20 m.
+          </span>
+        </div>
+      )}
+      {gpsLocked && (
+        <div className="flex items-center gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs text-emerald-700">
+          <Lock size={14} className="shrink-0" />
+          <span><b>GPS terkunci ±{gpsAccuracy} m</b> — titik terisi otomatis. Periksa peta lalu konfirmasi.</span>
+        </div>
+      )}
 
       {locationError && (
         <div className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
