@@ -3,7 +3,7 @@ const CURRENT_VERSION = "1.6.11";
 const CURRENT_VERSION_CODE = 23;
 // Channel update khusus web/PWA — terpisah dari versionCode (milik alur update APK).
 // Bump field `webVersionCode` di public/version.json pada deploy web berisi perubahan UI.
-const CURRENT_WEB_VERSION_CODE = 4;
+const CURRENT_WEB_VERSION_CODE = 5;
 
 export async function checkUpdate() {
   try {

@@ -72,10 +72,12 @@ function TabProfilPuskesmas() {
     longitude: "",
     radius_meter: 200,
     is_active: true,
+    organization_id: "",
   });
 
   const [confirmDeleteLoc, setConfirmDeleteLoc] = useState(null);
   const [formView, setFormView] = useState("form");
+  const [organizations, setOrganizations] = useState([]);
 
   const fetchLocations = async () => {
     setLoading(true);
@@ -98,6 +100,15 @@ function TabProfilPuskesmas() {
 
   useEffect(() => { fetchLocations(); }, []);
 
+  useEffect(() => {
+    if (!isSuperAdmin) return;
+    supabase
+      .from("organizations")
+      .select("id, name")
+      .order("name")
+      .then(({ data }) => setOrganizations(data || []));
+  }, [isSuperAdmin]);
+
   const resetForm = () => {
     setFormData({
       name: "",
@@ -106,6 +117,7 @@ function TabProfilPuskesmas() {
       longitude: "",
       radius_meter: 200,
       is_active: true,
+      organization_id: "",
     });
     setEditingId(null);
     setShowForm(false);
@@ -120,6 +132,7 @@ function TabProfilPuskesmas() {
       longitude: loc.longitude,
       radius_meter: loc.radius_meter,
       is_active: loc.is_active,
+      organization_id: loc.organization_id || "",
     });
     setEditingId(loc.id);
     setShowForm(true);
@@ -143,10 +156,17 @@ function TabProfilPuskesmas() {
       toast.error("Radius harus berupa bilangan bulat antara 10 dan 2000 meter");
       return;
     }
+    if (isSuperAdmin && !formData.organization_id) {
+      toast.error("Pilih organisasi untuk lokasi ini");
+      return;
+    }
 
     setSaving(true);
 
     try {
+      const orgScope = isSuperAdmin && formData.organization_id
+        ? { organization_id: formData.organization_id }
+        : {};
       if (editingId) {
         const { error } = await supabase
           .from("attendance_locations")
@@ -157,6 +177,7 @@ function TabProfilPuskesmas() {
             longitude,
             radius_meter: radius,
             is_active: formData.is_active,
+            ...orgScope,
             updated_at: new Date().toISOString(),
           })
           .eq("id", editingId);
@@ -180,6 +201,7 @@ function TabProfilPuskesmas() {
             longitude,
             radius_meter: radius,
             is_active: formData.is_active,
+            ...orgScope,
           })
           .select()
           .single();
@@ -334,6 +356,23 @@ function TabProfilPuskesmas() {
                 className={inputBase}
               />
             </div>
+
+            {isSuperAdmin && (
+              <div>
+                <label className={labelBase}>Organisasi *</label>
+                <select
+                  value={formData.organization_id}
+                  onChange={(e) => setFormData({ ...formData, organization_id: e.target.value })}
+                  required
+                  className={inputBase}
+                >
+                  <option value="">Pilih organisasi…</option>
+                  {organizations.map((org) => (
+                    <option key={org.id} value={org.id}>{org.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div>
               <label className={labelBase}>
