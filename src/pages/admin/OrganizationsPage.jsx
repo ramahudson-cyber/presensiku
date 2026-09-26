@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import Swal from "sweetalert2";
-import { Building2, Plus, Loader2, CheckCircle2, XCircle, AlertCircle, Trash2 } from "lucide-react";
+import { Building2, Plus, Loader2, CheckCircle2, XCircle, AlertCircle, Trash2, LogIn } from "lucide-react";
 
 const T = {
   text: "#0F172A",
@@ -12,7 +13,8 @@ const T = {
 };
 
 function OrganizationsPage() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
+  const navigate = useNavigate();
   const [orgs, setOrgs] = useState([]);
   const [loading, setLoading] = useState(user?.role === "super_admin");
   const [creating, setCreating] = useState(false);
@@ -124,8 +126,22 @@ function OrganizationsPage() {
     }
   };
 
-  const toggleActive = async (org) => {
+  const handleSwitch = async (org) => {
     setError("");
+    try {
+      const { data, error } = await supabase.rpc("platform_switch_to_org", {
+        p_org_id: org.id,
+      });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Gagal masuk ke instansi");
+      await refreshUser();
+      navigate("/admin");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const toggleActive = async (org) => {    setError("");
     const { error } = await supabase
       .from("organizations")
       .update({ is_active: !org.is_active })
@@ -330,6 +346,13 @@ function OrganizationsPage() {
                     {org.is_active ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
                     {org.is_active ? "Aktif" : "Nonaktif"}
                   </span>
+                  <button
+                    onClick={() => handleSwitch(org)}
+                    className="inline-flex items-center gap-1.5 text-xs px-4 py-1.5 rounded-full bg-electric-violet text-white hover:brightness-110 active:scale-[0.98] transition-all"
+                    title={`Akses penuh sebagai admin ${org.name}`}
+                  >
+                    <LogIn size={12} /> Masuk
+                  </button>
                   <button
                     onClick={() => toggleActive(org)}
                     className="text-xs px-4 py-1.5 rounded-full border hover:bg-slate-50 transition-colors"

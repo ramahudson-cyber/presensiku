@@ -2,7 +2,43 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import BottomNav from "../components/BottomNav";
 import { getCurrentVersion } from "../services/updateService";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import { LogOut } from "lucide-react";
+
+function OrgSwitchBanner({ isAttendancePath }) {
+  const { switchedOrg, switchBack } = useAuth();
+  const navigate = useNavigate();
+  if (!switchedOrg || isAttendancePath) return null;
+
+  const handleBack = async () => {
+    try {
+      const result = await switchBack();
+      toast.success(result?.message || "Kembali ke akses platform");
+      navigate("/admin/organizations");
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 py-2 bg-[#0F0214] text-[11px] sm:text-xs text-purple-200">
+      <span className="inline-flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+        <b className="text-white">Mode Akses Instansi:</b> {switchedOrg.name}
+      </span>
+      <span className="text-purple-300/50">—</span>
+      <span>semua data yang tampil & tersimpan mengarah ke instansi ini</span>
+      <button
+        onClick={handleBack}
+        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold transition-colors"
+      >
+        <LogOut size={11} /> Kembali ke Platform
+      </button>
+    </div>
+  );
+}
 
 function AdminLayout() {
   const location = useLocation();
@@ -26,6 +62,8 @@ function AdminLayout() {
       <div className="fixed inset-0 professional-grid-bg opacity-45 pointer-events-none hidden-only-employee"></div>
 
       <Sidebar menuOpen={false} />
+
+      <OrgSwitchBanner isAttendancePath={isAttendancePath} />
 
       <div className="relative z-10 w-full xl:w-[calc(100%-260px)] xl:ml-[260px] min-h-screen flex flex-col min-w-0">
         {!(isDashboard || isEmployeePath) && <Header />}

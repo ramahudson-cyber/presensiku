@@ -35,7 +35,9 @@ export function AuthProvider({ children }) {
         try {
           const { data: profile, error } = await withTimeout(
             supabase.from("profiles")
-              .select("*, organization:organizations(id,name,slug)")
+              .select(`*,
+                organization:organizations!profiles_org_fk(id,name,slug),
+                override_org:organizations!profiles_active_org_override_fkey(id,name,slug)`)
               .eq("id", nextSession.user.id)
               .maybeSingle(),
             PROFILE_TIMEOUT_MS
@@ -68,7 +70,9 @@ export function AuthProvider({ children }) {
         // Return userData gabungan biar caller bisa baca role/instansi langsung
         const { data: profile, error } = await supabase
           .from("profiles")
-          .select("*, organization:organizations(id,name,slug)")
+          .select(`*,
+            organization:organizations!profiles_org_fk(id,name,slug),
+            override_org:organizations!profiles_active_org_override_fkey(id,name,slug)`)
           .eq("id", session.user.id)
           .maybeSingle();
         if (error) throw error;
@@ -121,12 +125,25 @@ export function AuthProvider({ children }) {
 
   const isAuthenticated = !!session;
 
+  // Mode akses instansi (platform switch): org target + helper kembali
+  const switchedOrg = user?.override_org ?? null;
+
+  const switchBack = useCallback(async () => {
+    const { data, error } = await supabase.rpc("platform_switch_back");
+    if (error) throw error;
+    if (data?.success === false) throw new Error(data.error);
+    await refreshUser();
+    return data;
+  }, [refreshUser]);
+
   const value = {
     user,
     session,
     loading,
     profileError,
     isAuthenticated,
+    switchedOrg,
+    switchBack,
     refreshUser,
     setUser,
     setSession,

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
-  const { user } = useAuth();
+  const { user, switchedOrg } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -73,6 +73,12 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate text-pure-white">{user?.full_name || user?.username || "User"}</p>
               <p className="text-[10px] text-slate-mist capitalize">{userRole === "admin_puskesmas" ? "admin" : userRole.replace("_", " ")}</p>
+              {switchedOrg && (
+                <p className="mt-1 inline-flex items-center gap-1 text-[9px] font-bold text-green-300 bg-green-400/10 border border-green-400/30 rounded-full px-2 py-0.5 max-w-full">
+                  <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse shrink-0" />
+                  <span className="truncate">MODE: {switchedOrg.name}</span>
+                </p>
+              )}
             </div>
           </div>
         </div>
