@@ -14,6 +14,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
   const { user, switchedOrg } = useAuth();
   const navigate = useNavigate();
   const [payrollOn, setPayrollOn] = useState(false);
+  const userRole = user?.role || "pegawai";
 
   // Modul Gaji (opsional per instansi) — menu admin hanya bila aktif
   useEffect(() => {
@@ -28,8 +29,6 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
     await supabase.auth.signOut();
     navigate("/");
   };
-
-  const userRole = user?.role || "pegawai";
 
   const pegawaiMenus = [
     { path: "/employee", label: "Dashboard", icon: LayoutDashboard, end: true },
