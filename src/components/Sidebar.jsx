@@ -2,15 +2,27 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { getCurrentVersion } from "../services/updateService";
+import { getSetting } from "../lib/settings";
 import {
   LayoutDashboard, Users, CalendarCheck, CalendarDays,
   FileText, Megaphone, Settings, LogOut,
-  History, X, ClipboardList, Building2
+  History, X, ClipboardList, Building2, Wallet
 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
   const { user, switchedOrg } = useAuth();
   const navigate = useNavigate();
+  const [payrollOn, setPayrollOn] = useState(false);
+
+  // Modul Gaji (opsional per instansi) — menu admin hanya bila aktif
+  useEffect(() => {
+    (async () => {
+      try {
+        setPayrollOn((await getSetting("payroll_enabled", "false")) === "true");
+      } catch { /* default off */ }
+    })();
+  }, [userRole]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -38,6 +50,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
     { path: "/admin/attendance-history", label: "Riwayat Absensi", icon: History },
     { path: "/admin/schedules", label: "Jadwal Kerja", icon: CalendarDays },
     { path: "/admin/leave", label: "Cuti & Izin", icon: FileText },
+    ...(payrollOn ? [{ path: "/admin/payroll", label: "Gaji", icon: Wallet }] : []),
     { path: "/admin/announcements", label: "Pengumuman", icon: Megaphone },
     ...(userRole === "super_admin" ? superAdminMenus : []),
     { path: "/admin/settings", label: "Pengaturan", icon: Settings },

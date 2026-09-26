@@ -16,6 +16,8 @@ import SchedulingPage from "../pages/admin/SchedulingPage";
 import LeaveManagementPage from "../pages/admin/LeaveManagementPage";
 import LeaveRequestPage from "../pages/employee/LeaveRequestPage";
 import ComingSoonPage from "../pages/admin/ComingSoonPage";
+import PayrollPage from "../pages/admin/PayrollPage";
+import EmployeeSalary from "../pages/employee/EmployeeSalary";
 import OrganizationsPage from "../pages/admin/OrganizationsPage";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
 import BlockPage from "../pages/BlockPage";
@@ -70,6 +72,7 @@ function AppRoutes() {
           </ProtectedRoute>
         } />
         <Route path="leave" element={<LeaveManagementPage />} />
+        <Route path="payroll" element={<PayrollPage />} />
         <Route path="announcements" element={<ComingSoonPage />} />
         <Route path="organizations" element={
           <ProtectedRoute allowedRoles={["super_admin"]}>
@@ -112,6 +115,7 @@ function AppRoutes() {
         <Route path="profile/edit" element={<EmployeeEditProfile />} />
         <Route path="history" element={<EmployeeHistory />} />
         <Route path="leave" element={<LeaveRequestPage />} />
+        <Route path="salary" element={<EmployeeSalary />} />
       </Route>
 
       {/* UBAH PASSWORD (wajib untuk first login) */}

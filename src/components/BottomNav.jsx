@@ -3,15 +3,26 @@ import { useAuth } from "../context/AuthContext";
 import {
   LayoutDashboard, CalendarDays,
   Users, History, FileText, Megaphone, Settings, MoreHorizontal,
-  FingerprintPattern, User, ClipboardList,
+  FingerprintPattern, User, ClipboardList, Wallet,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BottomSheet from "./BottomSheet";
+import { getSetting } from "../lib/settings";
 
 export default function BottomNav({ hidden = false }) {
   const { user } = useAuth();
   const [moreOpen, setMoreOpen] = useState(false);
+  const [payrollOn, setPayrollOn] = useState(false);
   const userRole = user?.role || "pegawai";
+
+  // Modul Gaji (opsional per instansi) — menu Slip Gaji hanya bila aktif
+  useEffect(() => {
+    (async () => {
+      try {
+        setPayrollOn((await getSetting("payroll_enabled", "false")) === "true");
+      } catch { /* default off */ }
+    })();
+  }, []);
 
   if (hidden) return null;
 
@@ -25,6 +36,9 @@ export default function BottomNav({ hidden = false }) {
   const pegawaiMore = [
     { path: "/employee/profile", label: "Profil", icon: User },
     { path: "/employee/history", label: "Riwayat Kehadiran", icon: History },
+    ...(payrollOn
+      ? [{ path: "/employee/salary", label: "Slip Gaji", icon: Wallet }]
+      : []),
   ];
 
   const adminMain = [
