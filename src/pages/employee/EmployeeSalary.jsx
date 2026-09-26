@@ -36,12 +36,22 @@ function EmployeeSalaryPage() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
-      const on = await isPayrollEnabled();
-      setEnabledState(on);
-      if (on) await load();
-      else setLoading(false);
+      try {
+        const on = await isPayrollEnabled();
+        if (cancelled) return;
+        setEnabledState(on);
+        if (on) await load();
+        else setLoading(false);
+      } catch {
+        if (!cancelled) {
+          setEnabledState(false);
+          setLoading(false);
+        }
+      }
     })();
+    return () => { cancelled = true; };
   }, [load]);
 
   const { pullDistance, isRefreshing } = usePullToRefresh(load);

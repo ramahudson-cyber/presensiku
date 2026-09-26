@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import {
-  setPayrollEnabled, getPayrollConfig, savePayrollConfig,
+  isPayrollEnabled, setPayrollEnabled, getPayrollConfig, savePayrollConfig,
   getEmployeeConfigs, saveEmployeeConfigs, recalculatePayroll, getPayrollLines,
 } from "../../services/payrollService";
 import { toast } from "react-toastify";
@@ -35,6 +35,21 @@ export default function PayrollPage() {
   const [lines, setLines] = useState([]);
   const [loading, setLoading] = useState(false);
   const [recalcing, setRecalcing] = useState(false);
+  // Saat super_admin switch instansi, flag dibaca ulang untuk org target
+  const override = user?.active_org_override;
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const on = await isPayrollEnabled();
+        if (!cancelled) setEnabledState(on);
+      } catch {
+        if (!cancelled) setEnabledState(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [override]);
 
   // Aktifkan modul
   const handleEnable = async () => {
@@ -378,7 +393,16 @@ function TabAturan() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    (async () => setConfig(await getPayrollConfig()))();
+    let cancelled = false;
+    (async () => {
+      try {
+        const cfg = await getPayrollConfig();
+        if (!cancelled) setConfig(cfg);
+      } catch {
+        if (!cancelled) setConfig({ late_tiers: [], alpha_nominal_per_day: 0 });
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
   if (!config) {
