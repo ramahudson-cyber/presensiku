@@ -9,6 +9,7 @@ import LocationMap from "../../components/LocationMap";
 import AttendanceResultSheet from "../../components/AttendanceResultSheet";
 import BottomNav from "../../components/BottomNav";
 import { getCurrentPosition } from "../../services/geoService";
+import { detectMockLocation, mockBlockMessage } from "../../services/mockLocationService";
 import { getPuskesmasLocation, calculateDistance, verifyLocationServer } from "../../services/attendanceService";
 import { getMondayFirstDayOfWeek, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
 
@@ -267,6 +268,14 @@ export default function AttendancePage() {
     }
     setSaving(true);
     try {
+      const mockCheck = await detectMockLocation();
+      if (mockCheck.isMock) {
+        setIsFakeGPS(true);
+        setError(mockBlockMessage(mockCheck));
+        setSaving(false);
+        return;
+      }
+
       const freshLoc = await getCurrentPosition();
       const isFake = (freshLoc.accuracy < 3) && (freshLoc.altitude === null || freshLoc.altitude === 0);
       if (isFake) {
@@ -399,6 +408,14 @@ export default function AttendancePage() {
     setSuccessMsg("");
     setSaving(true);
     try {
+      const mockCheck = await detectMockLocation();
+      if (mockCheck.isMock) {
+        setIsFakeGPS(true);
+        setError(mockBlockMessage(mockCheck));
+        setSaving(false);
+        return;
+      }
+
       const freshLoc = await getCurrentPosition();
       const isFake = (freshLoc.accuracy < 3) && (freshLoc.altitude === null || freshLoc.altitude === 0);
       if (isFake) {

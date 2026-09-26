@@ -1,9 +1,9 @@
 const VERSION_URL = (typeof window !== 'undefined' ? window.location.origin : 'https://presensiku-beige.vercel.app') + '/version.json';
-const CURRENT_VERSION = "1.6.11";
-const CURRENT_VERSION_CODE = 23;
+const CURRENT_VERSION = "1.6.12";
+const CURRENT_VERSION_CODE = 24;
 // Channel update khusus web/PWA — terpisah dari versionCode (milik alur update APK).
 // Bump field `webVersionCode` di public/version.json pada deploy web berisi perubahan UI.
-const CURRENT_WEB_VERSION_CODE = 5;
+const CURRENT_WEB_VERSION_CODE = 6;
 
 export async function checkUpdate() {
   try {

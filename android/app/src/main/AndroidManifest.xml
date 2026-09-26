@@ -44,4 +44,6 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_PRECISE_PHONE_STATE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Query daftar aplikasi terpasang untuk mendeteksi app mock location (Android 11+ package visibility). -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 </manifest>

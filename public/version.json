@@ -1,10 +1,10 @@
 {
-  "version": "1.6.11",
-  "versionCode": 22,
-  "webVersionCode": 5,
-  "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.6.10/app-debug.apk",
+  "version": "1.6.12",
+  "versionCode": 24,
+  "webVersionCode": 6,
+  "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.6.12/app-debug.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-debug.apk",
-  "changelog": "Fix: PWA update mechanism, stats header alignment and responsiveness.",
+  "changelog": "Keamanan: deteksi Fake GPS/mock location saat absen + check-out wajib kirim lokasi.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }

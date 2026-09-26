@@ -9,5 +9,6 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
         registerPlugin(ImeiPlugin.class);
         registerPlugin(ApkDownloadPlugin.class);
+        registerPlugin(MockLocationPlugin.class);
     }
 }
