@@ -5,6 +5,8 @@ import { useAuth } from "../../context/AuthContext";
 import { signOut } from "../../services/authService";
 import { getCurrentVersion } from "../../services/updateService";
 import { PremiumStatCard } from "./PremiumStatCard";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import {
   TrendingUp, Bell, RefreshCw, BellOff, LogOut,
 } from "lucide-react";
@@ -96,6 +98,8 @@ export default function DashboardPage() {
 
   useEffect(() => { fetchDashboardData(); }, []);
 
+  const { pullDistance, isRefreshing } = usePullToRefresh(fetchDashboardData);
+
   const maxWeekly = Math.max(...weeklyData, 1);
   const witaTime = () => new Date(serverNow.getTime() + (8 * 60 * 60 * 1000)).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false });
   const witaDate = () => {
@@ -107,6 +111,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex-1">
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* Hero Section — violet gradient, one-row compact, in-flow with margin (Variant B) */}
       <div className="hero-card-bg mx-3 mt-3 sm:mx-4 sm:mt-4 md:mx-5 md:mt-5 lg:mx-6 lg:mt-6 xl:mx-8 xl:mt-8 bg-gradient-to-r from-[#C44DFF] via-[#BF00FF] to-[#8A00CC] rounded-[24px] shadow-xl ring-1 ring-violet-300/40">
         <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">

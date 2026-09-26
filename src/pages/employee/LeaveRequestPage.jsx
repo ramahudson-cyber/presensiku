@@ -8,6 +8,8 @@ import {
   cancelLeaveRequest,
   countLeaveDays,
 } from "../../services/leaveService";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 
 // Light-mode tokens — per DESIGN.md
 const T = {
@@ -117,6 +119,8 @@ export default function LeaveRequestPage() {
     if (user?.id) loadRequests();
   }, [user?.id]);
 
+  const { pullDistance, isRefreshing } = usePullToRefresh(loadRequests);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError("");
@@ -192,6 +196,7 @@ export default function LeaveRequestPage() {
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg, color: T.text }}>
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* ── HEADER — simple elegant (sama dengan Riwayat) ── */}
       <div className="pt-14 px-6">
         <div className="flex items-center justify-between">

@@ -152,8 +152,8 @@ function TabProfilPuskesmas() {
       toast.error("Longitude harus berada di antara -180 dan 180");
       return;
     }
-    if (!Number.isInteger(radius) || radius < 10 || radius > 2000) {
-      toast.error("Radius harus berupa bilangan bulat antara 10 dan 2000 meter");
+    if (!Number.isInteger(radius) || radius < 50 || radius > 2000) {
+      toast.error("Radius harus berupa bilangan bulat antara 50 dan 2000 meter (min. 50 m menoleransi error GPS)");
       return;
     }
     if (isSuperAdmin && !formData.organization_id) {
@@ -336,6 +336,9 @@ function TabProfilPuskesmas() {
             onCancel={() => setFormView("form")}
             initialLat={parseFloat(formData.latitude) || -8.5697}
             initialLng={parseFloat(formData.longitude) || 116.0821}
+            // Edit lokasi lama: koordinat awal sudah valid. Tambah baru:
+            // kunci Konfirmasi sampai admin benar-benar memilih titik.
+            initialSelected={Boolean(editingId) || (formData.latitude !== "" && formData.longitude !== "")}
             onConfirm={(lat, lng) => {
               setFormData(prev => ({ ...prev, latitude: String(lat), longitude: String(lng) }));
               setFormView("form");
@@ -425,7 +428,7 @@ function TabProfilPuskesmas() {
                 Radius Absensi (meter) *
               </label>
               <input
-                type="number" required min="10" max="2000"
+                type="number" required min="50" max="2000"
                 value={formData.radius_meter}
                 onChange={(e) => setFormData({ ...formData, radius_meter: e.target.value })}
                 className={inputBase}

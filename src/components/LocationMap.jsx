@@ -29,9 +29,9 @@ export default function LocationMap({ userLocation, puskesmasLocation, distance,
     const puskesmas = [puskesmasLocation.latitude, puskesmasLocation.longitude];
     const user = [userLocation.latitude, userLocation.longitude];
 
-    // Radius circle
+    // Radius circle — pakai radius_meter lokasi dari DB (bukan hardcoded)
     L.circle(puskesmas, {
-      radius: 200,
+      radius: puskesmasLocation.radius_meter || 200,
       color: "#ADFF2F",
       fillColor: "rgba(173,255,47,0.04)",
       weight: 1.5,

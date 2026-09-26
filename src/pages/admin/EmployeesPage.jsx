@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase'; // ✅ FIX: path yang benar
 import { MasterService } from '../../services/masterService';
 import { useAuth } from '../../context/AuthContext';
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import { getSetting } from '../../lib/settings';
 import { toast } from 'react-toastify';
 import {
@@ -88,6 +90,8 @@ const EmployeesPage = () => {
   useEffect(() => {
     fetchEmployees();
   }, []);
+
+  const { pullDistance, isRefreshing } = usePullToRefresh(fetchEmployees);
 
   const resetForm = () => {
     setFormData({
@@ -264,6 +268,7 @@ const EmployeesPage = () => {
 
   return (
     <>
+    <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
     <div className="space-y-5 animate-fade-in pb-10">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">

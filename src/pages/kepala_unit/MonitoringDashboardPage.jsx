@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { signOut } from "../../services/authService";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import {
   Users, UserCheck, UserMinus, UserX,
   TrendingUp, Calendar, Bell, RefreshCw, BellOff, Inbox,
@@ -196,6 +198,8 @@ export default function KepalaUnitDashboard() {
     fetchDashboardData();
   }, []);
 
+  const { pullDistance, isRefreshing } = usePullToRefresh(fetchDashboardData);
+
   const maxWeekly = Math.max(...weeklyData, 1);
 
   const fmtTime = (iso) =>
@@ -222,6 +226,7 @@ export default function KepalaUnitDashboard() {
 
   return (
     <div className="flex-1">
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* ===== HERO — violet gradient, DESIGN.md ===== */}
       <div className="hero-card-bg bg-gradient-to-r from-[#C44DFF] via-[#BF00FF] to-[#8A00CC] px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-5 rounded-b-[32px]">
         {/* Top Row: Clock + Date + Shift Badge | Action Icons */}

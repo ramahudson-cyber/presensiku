@@ -1,6 +1,8 @@
 // src/pages/admin/AttendanceHistoryPage.jsx
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import {
   Search, Filter, Download, Calendar,
   ChevronLeft, ChevronRight, Loader2,
@@ -178,6 +180,8 @@ export default function AttendanceHistoryPage() {
   useEffect(() => { fetchRecords(); }, [page]);
   useEffect(() => { fetchRecords(true); }, [dateFrom, dateTo, statusFilter]);
 
+  const { pullDistance, isRefreshing } = usePullToRefresh(() => fetchRecords(true));
+
   // ── Export CSV ────────────────────────────────────────────────────────────
   const exportCSV = async () => {
     const { data, error } = await supabase
@@ -215,6 +219,7 @@ export default function AttendanceHistoryPage() {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-5 animate-fade-in">
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
       {/* Header */}
       <div className="flex items-center justify-end gap-3">

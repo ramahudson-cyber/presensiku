@@ -4,6 +4,8 @@ import { useAuth } from "../../context/AuthContext";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { supabase } from "../../lib/supabase";
 import { getShiftDefinition, getWitaParts, isShiftEnded } from "../../lib/shiftTime";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 
 const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 
@@ -121,6 +123,8 @@ export default function EmployeeHistory() {
       setLoading(false);
     }
   };
+
+  const { pullDistance, isRefreshing } = usePullToRefresh(fetchData);
 
   useEffect(() => {
     let cancelled = false;
@@ -242,6 +246,7 @@ export default function EmployeeHistory() {
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg, color: T.text }}>
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* ── HEADER — simple elegant ── */}
       <div className="pt-14 px-6">
         <div className="flex items-center justify-between">

@@ -14,12 +14,25 @@ const T = {
   rowBg: 'rgba(15,23,42,0.02)',
 };
 
-export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.5697, initialLng = 116.0821 }) {
+export default function LocationPicker({
+  onCancel,
+  onConfirm,
+  initialLat = -8.5697,
+  initialLng = 116.0821,
+  // false saat menambah lokasi baru: tombol Konfirmasi terkunci sampai admin
+  // benar-benar memilih titik (klik peta / drag marker / GPS / manual),
+  // mencegah tersimpannya koordinat default.
+  initialSelected = true,
+}) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
+  const accuracyCircleRef = useRef(null);
+  const resizeObserverRef = useRef(null);
   const [lat, setLat] = useState(initialLat);
   const [lng, setLng] = useState(initialLng);
+  const [hasSelection, setHasSelection] = useState(initialSelected);
+  const [gpsAccuracy, setGpsAccuracy] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -64,24 +77,41 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
         const pos = markerRef.current.getLatLng();
         setLat(parseFloat(pos.lat.toFixed(6)));
         setLng(parseFloat(pos.lng.toFixed(6)));
+        setHasSelection(true);
       });
 
       map.on("click", (e) => {
         if (markerRef.current) markerRef.current.setLatLng(e.latlng);
         setLat(parseFloat(e.latlng.lat.toFixed(6)));
         setLng(parseFloat(e.latlng.lng.toFixed(6)));
+        setHasSelection(true);
       });
 
       map.invalidateSize();
       mapInstanceRef.current = map;
+
+      // Layout sheet bisa berubah setelah 350ms (animasi, scroll) — tanpa
+      // invalidateSize ulang, SEMUA klik e.latlng bergeser seragam.
+      if (typeof ResizeObserver !== "undefined") {
+        const ro = new ResizeObserver(() => {
+          requestAnimationFrame(() => mapInstanceRef.current?.invalidateSize());
+        });
+        ro.observe(mapRef.current);
+        resizeObserverRef.current = ro;
+      }
     }, 350);
 
     return () => {
       clearTimeout(timer);
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
+      }
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
         markerRef.current = null;
+        accuracyCircleRef.current = null;
       }
     };
   }, []);
@@ -123,10 +153,11 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
     && Number.isFinite(longitude) && longitude >= -180 && longitude <= 180
   );
 
-  const updateMapPosition = (newLat, newLng) => {
+  const updateMapPosition = (newLat, newLng, accuracy = null) => {
     if (!isValidCoordinate(newLat, newLng)) return false;
     setLat(parseFloat(newLat.toFixed(6)));
     setLng(parseFloat(newLng.toFixed(6)));
+    setGpsAccuracy(accuracy != null ? Math.round(accuracy) : null);
     if (mapInstanceRef.current) {
       mapInstanceRef.current.setView([newLat, newLng], 17);
       if (markerRef.current) markerRef.current.setLatLng([newLat, newLng]);
@@ -147,8 +178,15 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
     setLocationError("");
     try {
       const position = await getCurrentPosition({ timeout: 15000 });
-      if (!updateMapPosition(position.latitude, position.longitude)) {
+      if (!updateMapPosition(position.latitude, position.longitude, position.accuracy)) {
         throw new Error("Koordinat GPS tidak valid");
+      }
+      setHasSelection(true);
+      if (position.accuracy > 20) {
+        setLocationError(
+          `Akurasi GPS ±${Math.round(position.accuracy)} m — kurang akurat. ` +
+          "Ulangi di area terbuka / aktifkan GPS presisi agar titik tidak meleset puluhan meter."
+        );
       }
     } catch (error) {
       setLocationError(error?.message || "Lokasi saat ini tidak dapat dibaca");
@@ -164,8 +202,31 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
       setLocationError("Latitude harus -90 sampai 90 dan longitude -180 sampai 180");
       return;
     }
+    setHasSelection(true);
     setLocationError("");
   };
+
+  // Lingkaran akurasi GPS di sekitar titik terpilih — visualisasi seberapa
+  // besar kemungkinan titik tersimpan meleset dari posisi sebenarnya.
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    if (accuracyCircleRef.current) {
+      accuracyCircleRef.current.remove();
+      accuracyCircleRef.current = null;
+    }
+    if (gpsAccuracy != null && gpsAccuracy > 0) {
+      accuracyCircleRef.current = L.circle([lat, lng], {
+        radius: gpsAccuracy,
+        color: gpsAccuracy > 20 ? "#f59e0b" : "#10b981",
+        weight: 1,
+        fillColor: gpsAccuracy > 20 ? "#f59e0b" : "#10b981",
+        fillOpacity: 0.12,
+      }).addTo(map);
+    }
+  }, [lat, lng, gpsAccuracy]);
+
+  const canConfirm = hasSelection && isValidCoordinate(lat, lng);
 
   const handleConfirm = () => {
     if (!isValidCoordinate(lat, lng)) {
@@ -283,6 +344,17 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
         </div>
       </div>
 
+      {gpsAccuracy != null && (
+        <div className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs ${
+          gpsAccuracy > 20
+            ? "border-amber-200 bg-amber-50 text-amber-700"
+            : "border-emerald-200 bg-emerald-50 text-emerald-700"
+        }`}>
+          <span className="w-2 h-2 rounded-full" style={{ background: gpsAccuracy > 20 ? "#f59e0b" : "#10b981" }} />
+          Akurasi GPS ±{gpsAccuracy} m{gpsAccuracy > 20 ? " — kurang presisi, pertimbangkan ulangi" : " — bagus"}
+        </div>
+      )}
+
       <div className="flex gap-3">
         <button
           type="button"
@@ -294,7 +366,9 @@ export default function LocationPicker({ onCancel, onConfirm, initialLat = -8.56
         <button
           type="button"
           onClick={handleConfirm}
-          className="flex-1 py-2.5 bg-[#BF00FF] hover:bg-[#a000e6] text-white rounded-full text-sm font-medium transition-all flex items-center justify-center gap-2"
+          disabled={!canConfirm}
+          title={!canConfirm ? "Pilih titik dulu: klik peta, seret marker, atau pakai GPS" : undefined}
+          className="flex-1 py-2.5 bg-[#BF00FF] hover:bg-[#a000e6] text-white rounded-full text-sm font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:hover:bg-[#BF00FF]"
         >
           <Check size={14} /> Konfirmasi
         </button>

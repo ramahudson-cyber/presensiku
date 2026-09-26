@@ -5,6 +5,8 @@ import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
 import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, ArrowRight } from "lucide-react";
 import { addCalendarDays, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 
 function withTimeout(promise, ms, label) {
   return Promise.race([
@@ -140,6 +142,8 @@ export default function EmployeeDashboard() {
     } finally { setLoading(false); }
   };
 
+  const { pullDistance, isRefreshing } = usePullToRefresh(fetchData);
+
   // Light-mode helpers
   const T = {
     bg: '#F4F2FB',
@@ -195,6 +199,7 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 pb-24" style={{ background: T.bg, color: T.text }}>
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* HERO — vibrant violet gradient. hero-card-bg dipakai karena rule global
           index.css `.text-white !important` memaksa teks gelap di light mode;
           rule proteksi hero-card-bg mengembalikan teks jadi putih. */}
