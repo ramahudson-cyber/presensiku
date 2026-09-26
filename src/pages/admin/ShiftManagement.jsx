@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
+import TimeSelect from "../../components/TimeSelect";
 import {
   Clock, Save, RefreshCw, Sun, Moon, CloudSun,
   Sunset, CheckCircle2, XCircle, Info, ArrowRightLeft, Plus
@@ -122,6 +123,16 @@ export default function TabShift() {
   };
 
   const saveAll = async () => {
+    // Pre-save guard: hari kerja wajib punya jam mulai & selesai
+    const invalid = schedules.find(s =>
+      s.is_working_day && (!s.start_time || !s.end_time)
+    );
+    if (invalid) {
+      toast.error(
+        `Hari ${DAY_NAMES[invalid.day_of_week]} pada shift "${invalid.shift_code}" belum lengkap jamnya`
+      );
+      return;
+    }
     setSaving(true);
     try {
       const { error } = await supabase.from("shift_schedules").upsert(
@@ -214,13 +225,11 @@ export default function TabShift() {
                       <span className="w-14 text-[10px] font-semibold text-slate-mist shrink-0">{name}</span>
                       {working ? (
                         <>
-                          <input type="time" value={sched?.start_time || ""}
-                            onChange={e => update(shift.code, i, "start_time", e.target.value)}
-                            className="flex-1 text-[11px] bg-onyx border border-white/[0.06] rounded-2xl px-2 py-1.5 text-pure-white focus:outline-none focus:ring-2 focus:ring-electric-violet/50" />
+                          <TimeSelect value={sched?.start_time || ""}
+                            onChange={val => update(shift.code, i, "start_time", val)} />
                           <span className="text-[10px] text-slate-mist shrink-0">—</span>
-                          <input type="time" value={sched?.end_time || ""}
-                            onChange={e => update(shift.code, i, "end_time", e.target.value)}
-                            className="flex-1 text-[11px] bg-onyx border border-white/[0.06] rounded-2xl px-2 py-1.5 text-pure-white focus:outline-none focus:ring-2 focus:ring-electric-violet/50" />
+                          <TimeSelect value={sched?.end_time || ""}
+                            onChange={val => update(shift.code, i, "end_time", val)} />
                           <button onClick={() => update(shift.code, i, "crosses_midnight", !sched?.crosses_midnight)}
                             className={`p-1.5 rounded-full transition-all shrink-0 ${
                               sched?.crosses_midnight
