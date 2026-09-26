@@ -260,6 +260,29 @@ function TabProfilPuskesmas() {
     }
   };
 
+  const handleSetInactive = async (id, name) => {
+    try {
+      const { error } = await supabase
+        .from("attendance_locations")
+        .update({ is_active: false, updated_at: new Date().toISOString() })
+        .eq("id", id);
+
+      if (error) throw error;
+      toast.success(`⛔ ${name} dinonaktifkan`);
+
+      await supabase.rpc("log_audit", {
+        p_action: "SET_INACTIVE_LOCATION",
+        p_description: `Nonaktifkan lokasi: ${name}`,
+        p_entity_type: "attendance_locations",
+        p_entity_id: id,
+      });
+
+      fetchLocations();
+    } catch (err) {
+      toast.error("Gagal: " + err.message);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -445,6 +468,15 @@ function TabProfilPuskesmas() {
 
                   {canManageLocation(loc) && (
                     <div className="flex items-center gap-1 shrink-0 justify-end sm:justify-start">
+                      {loc.is_active && (
+                        <button
+                          onClick={() => handleSetInactive(loc.id, loc.name)}
+                          title="Nonaktifkan"
+                          className="p-2 text-amber-300 hover:bg-amber-500/15 rounded-full transition-all hover:scale-110"
+                        >
+                          <XCircle size={16} />
+                        </button>
+                      )}
                       {!loc.is_active && (
                         <button
                           onClick={() => handleSetActive(loc.id, loc.name)}
