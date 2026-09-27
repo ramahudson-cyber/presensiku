@@ -1,13 +1,15 @@
 // src/pages/admin/AttendanceHistoryPage.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../context/AuthContext";
+import { exportExcelWorkbook, DATE_FMT } from "../../services/excelExport";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import {
   Search, Filter, Download, Calendar,
   ChevronLeft, ChevronRight, Loader2,
   CheckCircle2, XCircle, Clock, AlertTriangle,
-  Users, RefreshCw, Inbox,
+  RefreshCw, Inbox,
 } from "lucide-react";
 
 // ── Konstanta ────────────────────────────────────────────────────────────────
@@ -100,76 +102,97 @@ function SummaryCard({ label, value, accent, icon: Icon }) {
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function AttendanceHistoryPage() {
-  const [records, setRecords]     = useState([]);
+  const { user } = useAuth();
   const [loading, setLoading]     = useState(true);
-  const [total, setTotal]         = useState(0);
+  const [mergedRows, setMergedRows] = useState([]);
   const [page, setPage]           = useState(1);
-  const [summary, setSummary]     = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0 });
 
   // Filter state
   const [search, setSearch]       = useState("");
   const [statusFilter, setStatus] = useState("");
   const [dateFrom, setDateFrom]   = useState(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 6);
-    return getWitaDateString(d);
+    const now = new Date();
+    return getWitaDateString(new Date(now.getFullYear(), now.getMonth(), 1)); // tanggal 1 bulan berjalan
   });
   const [dateTo, setDateTo]       = useState(getWitaDateString());
+  const [exporting, setExporting] = useState(false);
+  const organizationId = user?.active_org_override || user?.organization_id;
 
-  // ── Fetch ─────────────────────────────────────────────────────────────────
-  const fetchRecords = async (resetPage = false) => {
+  // ── Fetch: attendance + alpha turunan (jadwal tanpa absen) ────────────────
+  const fetchRecords = async () => {
     setLoading(true);
-    const currentPage = resetPage ? 1 : page;
-    if (resetPage) setPage(1);
-
     try {
-      // Base query dengan join profiles
-      let query = supabase
+      const witaToday = getWitaDateString();
+
+      // 1. Baris attendance asli (cap besar; dataset per org-bulan kecil)
+      const { data: attRows, error: attErr } = await supabase
         .from("attendance")
-        .select("*, profiles(full_name, position, avatar_url)", { count: "exact" })
+        .select("*, profiles(full_name, position, avatar_url)")
         .gte("date", dateFrom)
         .lte("date", dateTo)
         .order("date", { ascending: false })
-        .order("clock_in_time", { ascending: false });
+        .order("clock_in_time", { ascending: false })
+        .range(0, 999);
+      if (attErr) throw attErr;
 
-      if (statusFilter) query = query.eq("attendance_status", statusFilter);
+      // 2. Anggota org (untuk nama baris turunan)
+      const { data: members } = await supabase
+        .from("profiles")
+        .select("id, full_name, username, position, avatar_url")
+        .eq("organization_id", organizationId);
+      const memberMap = Object.fromEntries((members || []).map((m) => [m.id, m]));
 
-      // Pagination
-      const from = (currentPage - 1) * PAGE_SIZE;
-      query = query.range(from, from + PAGE_SIZE - 1);
-
-      const { data, count, error } = await query;
-      if (error) throw error;
-
-      // Filter search di client (nama pegawai / jabatan)
-      const filtered = search.trim()
-        ? (data || []).filter(r =>
-            r.profiles?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-            (r.profiles?.position || '').toLowerCase().includes(search.toLowerCase())
-          )
-        : (data || []);
-
-      setRecords(filtered);
-      setTotal(count || 0);
-
-      // Summary: ambil count per status di rentang tanggal
-      const statuses = ["hadir", "izin", "sakit", "alpha"];
-      const counts = await Promise.all(
-        statuses.map(s => {
-          let query = supabase
-            .from("attendance")
-            .select("*", { count: "exact", head: true })
-            .gte("date", dateFrom)
-            .lte("date", dateTo);
-
-          query = s === "hadir"
-            ? query.in("attendance_status", ["hadir", "terlambat"])
-            : query.eq("attendance_status", s);
-
-          return query.then(({ count }) => count || 0);
-        })
+      // 3. Jadwal pegawai + aturan shift (untuk alpha turunan)
+      const [{ data: schedRows }, { data: shiftRules }] = await Promise.all([
+        supabase
+          .from("employee_schedules")
+          .select("user_id, date, shift_code")
+          .eq("organization_id", organizationId)
+          .gte("date", dateFrom)
+          .lte("date", dateTo),
+        supabase
+          .from("shift_schedules")
+          .select("shift_code, day_of_week, is_working_day")
+          .eq("organization_id", organizationId),
+      ]);
+      const workingDaySet = new Set(
+        (shiftRules || []).filter((s) => s.is_working_day).map((s) => `${s.shift_code}|${s.day_of_week}`)
       );
-      setSummary({ hadir: counts[0], izin: counts[1], sakit: counts[2], alpha: counts[3] });
+
+      // 4. Baris attendance yang ADA: key "user_id|date"
+      const attended = new Set((attRows || []).map((r) => `${r.user_id}|${r.date}`));
+
+      // 5. Alpha turunan: jadwal kerja (tanggal ≤ hari ini) tanpa attendance
+      const derived = (schedRows || [])
+        .filter((s) =>
+          s.date <= witaToday
+          && workingDaySet.has(`${s.shift_code}|${(new Date(s.date + "T00:00:00").getDay() + 6) % 7}`)
+          && !attended.has(`${s.user_id}|${s.date}`)
+        )
+        .map((s) => ({
+          id: `derived-${s.user_id}-${s.date}`,
+          user_id: s.user_id,
+          date: s.date,
+          attendance_status: "alpha",
+          is_late: false,
+          late_minutes: 0,
+          clock_in_time: null,
+          clock_out_time: null,
+          derived: true,
+          profiles: {
+            full_name: memberMap[s.user_id]?.full_name,
+            position: memberMap[s.user_id]?.position,
+            avatar_url: memberMap[s.user_id]?.avatar_url,
+          },
+        }));
+
+      // 6. Gabungkan & urutkan
+      const merged = [...(attRows || []), ...derived].sort((a, b) => {
+        if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+        return (b.clock_in_time || "").localeCompare(a.clock_in_time || "");
+      });
+
+      setMergedRows(merged);
     } catch (err) {
       console.error("❌ fetchRecords:", err.message);
     } finally {
@@ -177,44 +200,87 @@ export default function AttendanceHistoryPage() {
     }
   };
 
-  useEffect(() => { fetchRecords(); }, [page]);
-  useEffect(() => { fetchRecords(true); }, [dateFrom, dateTo, statusFilter]);
+  useEffect(() => { fetchRecords(); }, [dateFrom, dateTo, organizationId]);
 
-  const { pullDistance, isRefreshing } = usePullToRefresh(() => fetchRecords(true));
+  const { pullDistance, isRefreshing } = usePullToRefresh(() => fetchRecords());
 
-  // ── Export CSV ────────────────────────────────────────────────────────────
-  const exportCSV = async () => {
-    const { data, error } = await supabase
-      .from("attendance")
-      .select("*, profiles(full_name, position)")
-      .gte("date", dateFrom)
-      .lte("date", dateTo)
-      .order("date", { ascending: false });
+  // ── Filter + pagination client-side atas dataset gabungan ────────────────
+  const filteredRows = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return mergedRows.filter((r) => {
+      if (statusFilter && r.attendance_status !== statusFilter) return false;
+      if (q) {
+        const hay = `${r.profiles?.full_name || ""} ${r.profiles?.position || ""} ${r.profiles?.username || ""}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [mergedRows, statusFilter, search]);
 
-    if (error || !data) return;
+  const total = filteredRows.length;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const records = useMemo(
+    () => filteredRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filteredRows, page]
+  );
 
-    const header = ["Tanggal", "Nama", "Jabatan", "Absen Masuk", "Absen Pulang", "Status", "Terlambat (menit)"];
-    const rows = data.map(r => [
-      r.date,
-      r.profiles?.full_name ?? "-",
-      r.profiles?.position ?? "-",
-      fmtTime(r.clock_in_time),
-      fmtTime(r.clock_out_time),
-      r.attendance_status ?? "-",
-      r.late_minutes ?? 0,
-    ]);
+  useEffect(() => {
+    if (page > totalPages) setPage(1);
+  }, [totalPages, page]);
 
-    const csv = [header, ...rows].map(r => r.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement("a");
-    a.href     = url;
-    a.download = `riwayat-absensi-${dateFrom}-sd-${dateTo}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const summary = useMemo(() => {
+    const acc = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
+    filteredRows.forEach((r) => {
+      if (r.attendance_status === "hadir" || r.attendance_status === "terlambat") acc.hadir++;
+      else if (r.attendance_status === "izin") acc.izin++;
+      else if (r.attendance_status === "sakit") acc.sakit++;
+      else if (r.attendance_status === "alpha") acc.alpha++;
+    });
+    return acc;
+  }, [filteredRows]);
+
+  // ── Export Excel ──────────────────────────────────────────────────────────
+  const exportExcel = async () => {
+    setExporting(true);
+    try {
+      const { data, error } = await supabase
+        .from("attendance")
+        .select("*, profiles(full_name, position)")
+        .gte("date", dateFrom)
+        .lte("date", dateTo)
+        .order("date", { ascending: false });
+
+      if (error || !data) return;
+
+      const fmtDay = (d) =>
+        new Date(d + "T00:00:00").toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
+      const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "-");
+
+      await exportExcelWorkbook({
+        filename: `riwayat-absensi-${dateFrom}-sd-${dateTo}.xlsx`,
+        sheetName: "Riwayat Absensi",
+        orgName: user?.override_org?.name || user?.organization?.name,
+        docTitle: `Riwayat Absensi — ${fmtDay(dateFrom)} s.d. ${fmtDay(dateTo)}`,
+        header: ["Tanggal", "Nama", "Jabatan", "Absen Masuk", "Absen Pulang", "Status", "Terlambat (menit)"],
+        columnMeta: [
+          { align: "center", numFmt: DATE_FMT }, { align: "left" }, { align: "left" },
+          { align: "center" }, { align: "center" }, { align: "center" }, { align: "right" },
+        ],
+        rows: data.map((r) => [
+          new Date(r.date + "T00:00:00"),
+          r.profiles?.full_name ?? "-",
+          r.profiles?.position ?? "-",
+          fmtTime(r.clock_in_time),
+          fmtTime(r.clock_out_time),
+          cap(r.attendance_status),
+          Number(r.late_minutes ?? 0),
+        ]),
+      });
+    } finally {
+      setExporting(false);
+    }
   };
 
-  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -224,11 +290,12 @@ export default function AttendanceHistoryPage() {
       {/* Header */}
       <div className="flex items-center justify-end gap-3">
         <button
-          onClick={exportCSV}
-          className="flex items-center gap-2.5 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium hover:brightness-110 active:brightness-90 transition-all duration-200 shrink-0"
+          onClick={exportExcel}
+          disabled={exporting}
+          className="flex items-center gap-2.5 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium hover:brightness-110 active:brightness-90 disabled:opacity-50 transition-all duration-200 shrink-0"
         >
           <Download size={15} />
-          <span className="hidden sm:inline">Export CSV</span>
+          <span className="hidden sm:inline">Export Excel</span>
           <span className="sm:hidden">Export</span>
         </button>
       </div>
@@ -251,7 +318,7 @@ export default function AttendanceHistoryPage() {
               type="text"
               placeholder="Cari nama..."
               value={search}
-              onChange={e => { setSearch(e.target.value); fetchRecords(true); }}
+              onChange={e => setSearch(e.target.value)}
               className={`w-full pl-10 pr-4 py-2 ${inputBase}`}
             />
           </div>
