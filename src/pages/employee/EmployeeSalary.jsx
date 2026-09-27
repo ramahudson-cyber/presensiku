@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { isPayrollEnabled, getMyPayrollLines } from "../../services/payrollService";
+import { isPayrollEnabled, getMyPayrollLines, ensureMyPayrollLine } from "../../services/payrollService";
 import { getCurrentVersion } from "../../services/updateService";
-import { Wallet, Loader2, Download, Info } from "lucide-react";
+import { Wallet, Loader2, Download, Info, CalendarSearch } from "lucide-react";
+import { toast } from "react-toastify";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 
 const rupiah = (n) => "Rp" + Number(n || 0).toLocaleString("id-ID");
+const currentPeriod = () => new Date().toISOString().slice(0, 7) + "-01";
 const monthLabel = (period) => {
   const d = new Date(period + "T00:00:00");
   return d.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
@@ -23,6 +25,8 @@ function EmployeeSalaryPage() {
   const [enabled, setEnabledState] = useState(null);
   const [lines, setLines] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pickPeriod, setPickPeriod] = useState(currentPeriod());
+  const [ensuring, setEnsuring] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -55,6 +59,28 @@ function EmployeeSalaryPage() {
   }, [load]);
 
   const { pullDistance, isRefreshing } = usePullToRefresh(load);
+
+  // Slip bulan pilihan: pakai yang sudah ada, atau buat via RPC self-service
+  const openPickedSlip = async () => {
+    setEnsuring(true);
+    try {
+      const res = await ensureMyPayrollLine(pickPeriod);
+      if (res?.success) {
+        if (res.existed) {
+          toast.info(`Slip ${monthLabel(pickPeriod)} sudah ada di daftar`);
+        } else {
+          toast.success(`Slip ${monthLabel(pickPeriod)} berhasil dibuat`);
+          await load();
+        }
+      } else {
+        toast.error(res?.error || "Gagal membuat slip");
+      }
+    } catch (err) {
+      toast.error(err.message || "Gagal membuat slip");
+    } finally {
+      setEnsuring(false);
+    }
+  };
 
   const downloadSlip = (line) => {
     const orgName = user?.organization?.name || "Presensiku";
@@ -137,11 +163,36 @@ function EmployeeSalaryPage() {
           <p className="text-xs text-slate-500 mt-0.5">Riwayat gaji berbasis kehadiran</p>
         </div>
 
+        {/* Pilih bulan — bulan lampau dibuat otomatis dari data absensi */}
+        <div className="bg-white rounded-3xl border p-4 flex items-end gap-2" style={{ borderColor: T_BORDER }}>
+          <div className="flex-1">
+            <label className="block text-[10px] font-semibold uppercase tracking-wider mb-1 text-slate-400">
+              Buka slip bulan tertentu
+            </label>
+            <input
+              type="month"
+              value={pickPeriod.slice(0, 7)}
+              max={currentPeriod().slice(0, 7)}
+              onChange={(e) => e.target.value && setPickPeriod(e.target.value + "-01")}
+              className="w-full px-3 py-2 rounded-2xl border text-sm text-slate-800 focus:outline-none focus:border-electric-violet"
+              style={{ borderColor: T_BORDER }}
+            />
+          </div>
+          <button
+            onClick={openPickedSlip}
+            disabled={ensuring}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-electric-violet text-white text-xs font-semibold hover:brightness-110 disabled:opacity-50 transition-all shrink-0"
+          >
+            {ensuring ? <Loader2 size={13} className="animate-spin" /> : <CalendarSearch size={13} />}
+            Buka
+          </button>
+        </div>
+
         {lines.length === 0 ? (
           <div className="bg-white rounded-3xl border p-10 text-center space-y-2" style={{ borderColor: T_BORDER }}>
             <Wallet size={26} className="mx-auto text-slate-300" />
             <p className="text-sm text-slate-500">Belum ada data gaji.</p>
-            <p className="text-[11px] text-slate-400">Slip muncul setelah admin menghitung rekap bulanan.</p>
+            <p className="text-[11px] text-slate-400">Pilih bulan di atas lalu tekan Buka — slip dibuat otomatis dari data absensi.</p>
           </div>
         ) : (
           lines.map((line) => (

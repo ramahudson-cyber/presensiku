@@ -89,3 +89,12 @@ export async function getMyPayrollLines() {
   if (error) throw error;
   return data || [];
 }
+
+// Pegawai memicu perhitungan slip untuk periode tertentu (idempoten:
+// baris yang sudah ada tidak ditimpa). Menjalankan RPC self-service
+// ensure_my_payroll_line — see migrations/20260927120000.
+export async function ensureMyPayrollLine(period) {
+  const { data, error } = await supabase.rpc("ensure_my_payroll_line", { p_period: period });
+  if (error) throw error;
+  return data;
+}
