@@ -15,7 +15,7 @@ import EmployeeEditProfile from "../pages/employee/EmployeeEditProfile";
 import SchedulingPage from "../pages/admin/SchedulingPage";
 import LeaveManagementPage from "../pages/admin/LeaveManagementPage";
 import LeaveRequestPage from "../pages/employee/LeaveRequestPage";
-import ComingSoonPage from "../pages/admin/ComingSoonPage";
+import AnnouncementsPage from "../pages/admin/AnnouncementsPage";
 import PayrollPage from "../pages/admin/PayrollPage";
 import EmployeeSalary from "../pages/employee/EmployeeSalary";
 import OrganizationsPage from "../pages/admin/OrganizationsPage";
@@ -73,7 +73,7 @@ function AppRoutes() {
         } />
         <Route path="leave" element={<LeaveManagementPage />} />
         <Route path="payroll" element={<PayrollPage />} />
-        <Route path="announcements" element={<ComingSoonPage />} />
+        <Route path="announcements" element={<AnnouncementsPage />} />
         <Route path="organizations" element={
           <ProtectedRoute allowedRoles={["super_admin"]}>
             <OrganizationsPage />

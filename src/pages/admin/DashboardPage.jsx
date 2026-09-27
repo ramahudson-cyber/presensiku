@@ -52,7 +52,9 @@ export default function DashboardPage() {
       const [profilesRes, attendanceTodayRes, announceRes] = await Promise.all([
         supabase.from("profiles").select("id, full_name, avatar_url"),
         supabase.from("attendance").select("user_id, attendance_status").eq("date", today),
-        supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3),
+        supabase.from("announcements").select("*").eq("is_active", true)
+          .or(`expires_at.is.null,expires_at.gte.${new Date().toISOString()}`)
+          .order("created_at", { ascending: false }).limit(3),
       ]);
 
       const allProfiles = profilesRes.data || [];

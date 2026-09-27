@@ -7,6 +7,7 @@ import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset
 import { addCalendarDays, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import ProfileAvatarButton from "../../components/ProfileAvatarButton";
 
 function withTimeout(promise, ms, label) {
   return Promise.race([
@@ -69,7 +70,9 @@ export default function EmployeeDashboard() {
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("attendance").select("date, attendance_status").eq("user_id", user.id).gte("date", monthStartStr).lte("date", today),
-        supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3),
+        supabase.from("announcements").select("*").eq("is_active", true)
+          .or(`expires_at.is.null,expires_at.gte.${new Date().toISOString()}`)
+          .order("created_at", { ascending: false }).limit(3),
         getAttendanceHistory(user.id),
         supabase.from("employee_schedules").select("date, shift_code").eq("user_id", user.id).gte("date", monthStartStr).lte("date", monthEndStr),
         supabase.from("shift_schedules").select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
@@ -207,13 +210,7 @@ export default function EmployeeDashboard() {
         style={{ background: 'linear-gradient(160deg, #C44DFF 0%, #BF00FF 30%, #8A00CC 60%, #4A0099 100%)' }}>
         <div className="max-w-md mx-auto">
           <div className="flex items-center gap-4 mb-8">
-            {user?.avatar_url ? (
-              <img src={user.avatar_url} alt="" className="w-16 h-16 rounded-2xl object-cover border border-white/30 shadow-md" />
-            ) : (
-              <div className="w-16 h-16 rounded-2xl bg-white/15 border border-white/30 flex items-center justify-center font-bold text-2xl text-white shadow-inner">
-                {user?.full_name?.charAt(0)?.toUpperCase() || "R"}
-              </div>
-            )}
+            <ProfileAvatarButton user={user} initials={user?.full_name?.charAt(0)?.toUpperCase() || "R"} variant="hero" />
             <div className="flex-1">
               <div className="text-[11px] uppercase tracking-[0.2em] opacity-80 text-white">{getGreeting(serverTime.getHours())},</div>
               <div className="text-2xl font-bold text-white">{user?.full_name || "Rama Hudson"}</div>

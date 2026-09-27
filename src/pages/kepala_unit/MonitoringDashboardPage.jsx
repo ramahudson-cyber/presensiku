@@ -111,7 +111,9 @@ export default function KepalaUnitDashboard() {
           .eq("date", today)
           .order("clock_in_time", { ascending: false })
           .limit(8),
-        supabase.from("announcements").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3),
+        supabase.from("announcements").select("*").eq("is_active", true)
+          .or(`expires_at.is.null,expires_at.gte.${new Date().toISOString()}`)
+          .order("created_at", { ascending: false }).limit(3),
       ]);
 
       const totalPegawai = totalPegawaiRes.count || 0;
