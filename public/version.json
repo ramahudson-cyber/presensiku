@@ -1,7 +1,7 @@
 {
   "version": "1.6.12",
   "versionCode": 24,
-  "webVersionCode": 6,
+  "webVersionCode": 7,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.6.12/app-debug.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-debug.apk",
   "changelog": "Keamanan: deteksi Fake GPS/mock location saat absen + check-out wajib kirim lokasi.",

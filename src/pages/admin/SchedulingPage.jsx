@@ -63,7 +63,9 @@ export default function SchedulingPage() {
       try {
         const { data, error } = await supabase.from("shifts").select("code, name").order("code");
         if (error) throw error;
-        if (!cancelled) setShifts(data || []);
+        // Baris DB hanya code+name — visual (icon/badge/color) di-merge di sini
+        // supaya legend, shift picker, dan bulk dialog punya komponen ikon yang valid.
+        if (!cancelled) setShifts((data || []).map(s => ({ ...s, ...shiftVisual(s.code) })));
       } catch {
         if (!cancelled) setShifts([]);
       } finally {
