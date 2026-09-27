@@ -36,7 +36,6 @@ export default function PayrollPage() {
   const [lines, setLines] = useState([]);
   const [loading, setLoading] = useState(false);
   const [recalcing, setRecalcing] = useState(false);
-  const [exporting, setExporting] = useState(false);
   // Saat super_admin switch instansi, flag dibaca ulang untuk org target
   const override = user?.active_org_override;
 
@@ -139,7 +138,7 @@ export default function PayrollPage() {
         ))}
       </div>
 
-      {tab === "rekap" && <TabRekap period={period} setPeriod={setPeriod} lines={lines} setLines={setLines} loading={loading} setLoading={setLoading} recalcing={recalcing} setRecalcing={setRecalcing} />}
+      {tab === "rekap" && <TabRekap period={period} setPeriod={setPeriod} lines={lines} setLines={setLines} loading={loading} setLoading={setLoading} recalcing={recalcing} setRecalcing={setRecalcing} orgName={override ? user?.override_org?.name : user?.organization?.name} />}
       {tab === "gaji" && <TabGaji user={user} period={period} />}
       {tab === "aturan" && <TabAturan period={period} />}
     </div>
@@ -147,7 +146,8 @@ export default function PayrollPage() {
 }
 
 /* ================= TAB REKAP ================= */
-function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, recalcing, setRecalcing }) {
+function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, recalcing, setRecalcing, orgName }) {
+  const [exporting, setExporting] = useState(false);
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -190,7 +190,7 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
       await exportExcelWorkbook({
         filename: `gaji-${period}.xlsx`,
         sheetName: "Rekap Gaji",
-        orgName: override ? user?.override_org?.name : user?.organization?.name,
+        orgName,
         docTitle: `Rekap Gaji — ${monthLabel(period)}`,
         header: [
           "Nama", "Username", "Hari Kerja", "Hadir", "Terlambat", "Menit Telat",
