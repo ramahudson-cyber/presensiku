@@ -286,8 +286,19 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
           <table className="w-full text-[11px] min-w-[860px]">
             <thead>
               <tr className="text-left text-slate-500 border-b" style={{ borderColor: T.border }}>
-                {["Pegawai", "Hadir", "Telat", "Menit", "Alpha", "Izin/Sakit", "Harian", "Pot. Telat", "Pot. Alpha", "Diterima"].map((h) => (
-                  <th key={h} className="px-3 py-2.5 font-semibold whitespace-nowrap">{h}</th>
+                {[
+                  { h: "Pegawai", align: "text-left" },
+                  { h: "Hadir", align: "text-center" },
+                  { h: "Telat", align: "text-center" },
+                  { h: "Menit", align: "text-center" },
+                  { h: "Alpha", align: "text-center" },
+                  { h: "Izin/Sakit", align: "text-center" },
+                  { h: "Harian", align: "text-right" },
+                  { h: "Pot. Telat", align: "text-right" },
+                  { h: "Pot. Alpha", align: "text-right" },
+                  { h: "Diterima", align: "text-right" },
+                ].map(({ h, align }) => (
+                  <th key={h} className={`px-3 py-2.5 font-semibold whitespace-nowrap ${align}`}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -303,10 +314,10 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
                   <td className="px-3 py-2.5 text-center">{l.late_minutes_total} mnt</td>
                   <td className="px-3 py-2.5 text-center text-red-500 font-semibold">{l.alpha_days}</td>
                   <td className="px-3 py-2.5 text-center">{l.izin_days}/{l.sakit_days}</td>
-                  <td className="px-3 py-2.5 whitespace-nowrap">{rupiah(l.daily_rate)}</td>
-                  <td className="px-3 py-2.5 whitespace-nowrap text-red-500">{rupiah(l.late_deduction)}</td>
-                  <td className="px-3 py-2.5 whitespace-nowrap text-red-500">{rupiah(l.alpha_deduction)}</td>
-                  <td className="px-3 py-2.5 whitespace-nowrap font-extrabold text-emerald-600">{rupiah(l.total_received)}</td>
+                  <td className="px-3 py-2.5 whitespace-nowrap text-right">{rupiah(l.daily_rate)}</td>
+                  <td className="px-3 py-2.5 whitespace-nowrap text-right text-red-500">{rupiah(l.late_deduction)}</td>
+                  <td className="px-3 py-2.5 whitespace-nowrap text-right text-red-500">{rupiah(l.alpha_deduction)}</td>
+                  <td className="px-3 py-2.5 whitespace-nowrap text-right font-extrabold text-emerald-600">{rupiah(l.total_received)}</td>
                 </tr>
               ))}
             </tbody>
