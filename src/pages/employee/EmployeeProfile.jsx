@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
 import BottomSheet from "../../components/BottomSheet";
+import ProfileAvatarButton from "../../components/ProfileAvatarButton";
 import {
   Info, MapPin, FileText, Users, Database, Eye,
   Pencil, MessageCircle, Smartphone,
@@ -181,14 +182,7 @@ export default function EmployeeProfile() {
             <span className="text-[17px] font-bold tracking-tight" style={{ color: T.text }}>Profil Saya</span>
           </div>
           <div className="flex flex-col items-center gap-1">
-            {user?.avatar_url ? (
-              <img src={user.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover border" style={{ borderColor: 'rgba(191,0,255,0.15)' }} />
-            ) : (
-              <div className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold"
-                style={{ background: T.iconBg, color: '#BF00FF', border: '1px solid rgba(191,0,255,0.15)' }}>
-                {initial?.charAt(0) || 'P'}
-              </div>
-            )}
+            <ProfileAvatarButton user={user} initials={initial?.charAt(0) || 'P'} />
             <span className="text-[9px] font-medium leading-none max-w-[72px] truncate text-center" style={{ color: T.sub }}>
               {user?.position || user?.role || "Pegawai"}
             </span>

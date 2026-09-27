@@ -9,11 +9,13 @@ import {
   History, X, ClipboardList, Building2, Wallet
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import ProfileSheet from "./ProfileSheet";
 
 export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
   const { user, switchedOrg } = useAuth();
   const navigate = useNavigate();
   const [payrollOn, setPayrollOn] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const userRole = user?.role || "pegawai";
 
   // Modul Gaji (opsional per instansi) — menu admin hanya bila aktif
@@ -75,13 +77,16 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
         {/* User Info */}
         <div className="px-5 py-4 border-b border-white/10 bg-white/[0.03]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-electric-violet to-deep-indigo flex items-center justify-center text-xs font-bold shrink-0 text-pure-white overflow-hidden">
-              {user?.avatar_url || user?.user_metadata?.avatar_url ? (
-                <img src={user?.avatar_url || user?.user_metadata?.avatar_url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                user?.full_name?.charAt(0) || user?.username?.charAt(0) || "U"
-              )}
-            </div>
+            <button type="button" onClick={() => setProfileOpen(true)} aria-label="Menu foto profil"
+              className="shrink-0 cursor-pointer rounded-full outline-none transition-all duration-200 active:scale-95 hover:ring-2 hover:ring-white/30 focus-visible:ring-2 focus-visible:ring-white/40">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-electric-violet to-deep-indigo flex items-center justify-center text-xs font-bold shrink-0 text-pure-white overflow-hidden">
+                {user?.avatar_url || user?.user_metadata?.avatar_url ? (
+                  <img src={user?.avatar_url || user?.user_metadata?.avatar_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  user?.full_name?.charAt(0) || user?.username?.charAt(0) || "U"
+                )}
+              </div>
+            </button>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate text-pure-white">{user?.full_name || user?.username || "User"}</p>
               <p className="text-[10px] text-slate-mist capitalize">{userRole === "admin_puskesmas" ? "admin" : userRole.replace("_", " ")}</p>
@@ -133,6 +138,9 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
             <p className="text-[9px] text-slate-mist/40 text-center mt-2 select-none">v{getCurrentVersion().version}</p>
         </div>
       </aside>
+
+      {/* Foto profil diklik → sheet profil + keluar */}
+      <ProfileSheet open={profileOpen} onClose={() => setProfileOpen(false)} />
     </>
   );
 }
