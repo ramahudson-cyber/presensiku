@@ -193,8 +193,10 @@ export default function AttendanceHistoryPage() {
       });
 
       setMergedRows(merged);
+      return merged;
     } catch (err) {
       console.error("❌ fetchRecords:", err.message);
+      return [];
     } finally {
       setLoading(false);
     }
@@ -243,14 +245,18 @@ export default function AttendanceHistoryPage() {
   const exportExcel = async () => {
     setExporting(true);
     try {
-      const { data, error } = await supabase
-        .from("attendance")
-        .select("*, profiles(full_name, position)")
-        .gte("date", dateFrom)
-        .lte("date", dateTo)
-        .order("date", { ascending: false });
-
-      if (error || !data) return;
+      // Ambil ulang dataset gabungan (attendance asli + alpha turunan dari
+      // jadwal) saat tombol diklik, lalu terapkan filter yang sama dengan UI.
+      const merged = await fetchRecords();
+      const q = search.trim().toLowerCase();
+      const rows = merged.filter((r) => {
+        if (statusFilter && r.attendance_status !== statusFilter) return false;
+        if (q) {
+          const hay = `${r.profiles?.full_name || ""} ${r.profiles?.position || ""} ${r.profiles?.username || ""}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
 
       const fmtDay = (d) =>
         new Date(d + "T00:00:00").toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
@@ -266,7 +272,7 @@ export default function AttendanceHistoryPage() {
           { align: "center", numFmt: DATE_FMT }, { align: "left" }, { align: "left" },
           { align: "center" }, { align: "center" }, { align: "center" }, { align: "right" },
         ],
-        rows: data.map((r) => [
+        rows: rows.map((r) => [
           new Date(r.date + "T00:00:00"),
           r.profiles?.full_name ?? "-",
           r.profiles?.position ?? "-",
