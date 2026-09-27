@@ -66,6 +66,7 @@ export default function PayrollPage() {
     try {
       await setPayrollEnabled(true);
       setEnabledState(true);
+      try { await recalculatePayroll(period); } catch { /* kosong saat belum ada config */ }
       toast.success("Modul Gaji diaktifkan");
     } catch (err) {
       toast.error(err.message);
@@ -137,8 +138,8 @@ export default function PayrollPage() {
       </div>
 
       {tab === "rekap" && <TabRekap period={period} setPeriod={setPeriod} lines={lines} setLines={setLines} loading={loading} setLoading={setLoading} recalcing={recalcing} setRecalcing={setRecalcing} />}
-      {tab === "gaji" && <TabGaji user={user} />}
-      {tab === "aturan" && <TabAturan />}
+      {tab === "gaji" && <TabGaji user={user} period={period} />}
+      {tab === "aturan" && <TabAturan period={period} />}
     </div>
   );
 }
@@ -292,7 +293,7 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
 }
 
 /* ================= TAB GAJI PEGAWAI ================= */
-function TabGaji({ user }) {
+function TabGaji({ user, period }) {
   const [employees, setEmployees] = useState([]);
   const [values, setValues] = useState({}); // user_id -> string nominal
   const [loading, setLoading] = useState(true);
@@ -328,7 +329,14 @@ function TabGaji({ user }) {
         .filter((e) => values[e.id] !== undefined && values[e.id] !== "")
         .map((e) => ({ user_id: e.id, base_component: Number(values[e.id]) || 0 }));
       await saveEmployeeConfigs(organizationId, rows);
-      toast.success("Gaji pegawai disimpan");
+      let recalcMsg = "";
+      try {
+        const r = await recalculatePayroll(period);
+        recalcMsg = r?.message || "Rekap dihitung ulang";
+      } catch (recalcErr) {
+        toast.warning("Gaji tersimpan, tapi gagal hitung ulang rekap: " + recalcErr.message);
+      }
+      toast.success(recalcMsg ? "Gaji pegawai disimpan — " + recalcMsg : "Gaji pegawai disimpan");
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -388,7 +396,7 @@ function TabGaji({ user }) {
 }
 
 /* ================= TAB ATURAN POTONGAN ================= */
-function TabAturan() {
+function TabAturan({ period }) {
   const [config, setConfig] = useState(null);
   const [saving, setSaving] = useState(false);
 
@@ -424,7 +432,12 @@ function TabAturan() {
     setSaving(true);
     try {
       await savePayrollConfig(config);
-      toast.success("Aturan potongan disimpan — berlaku untuk perhitungan berikutnya");
+      try {
+        const r = await recalculatePayroll(period);
+        toast.success("Aturan disimpan — " + (r?.message || "rekap dihitung ulang"));
+      } catch (recalcErr) {
+        toast.warning("Aturan tersimpan, tapi gagal hitung ulang rekap: " + recalcErr.message);
+      }
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -504,7 +517,7 @@ function TabAturan() {
 
       <div className="flex items-start gap-2 rounded-2xl border border-sky-200 bg-sky-50 p-3 text-[11px] text-sky-700">
         <CheckCircle2 size={14} className="mt-0.5 shrink-0" />
-        <span>Perubahan berlaku untuk perhitungan berikutnya. Rekap yang sudah tersimpan memakai snapshot aturan saat dihitung.</span>
+        <span>Perubahan langsung dihitung ulang untuk bulan yang dipilih di tab Rekap Bulanan.</span>
       </div>
     </div>
   );
