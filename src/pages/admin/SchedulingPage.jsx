@@ -7,19 +7,23 @@ import {
   ChevronLeft, ChevronRight, RefreshCw, Upload,
   Download, Calendar, Users, Sun, Moon, Sunset, CloudSun,
   Loader2, X, CheckCircle2, Layers, Trash2, Copy,
-  Search, CalendarRange, Clock, UserCheck
+  Search, CalendarRange, Clock, UserCheck, AlertTriangle
 } from "lucide-react";
 import BottomSheet from "../../components/BottomSheet";
 import ConfirmSheet from "../../components/ConfirmSheet";
 
-const SHIFTS = [
-  { code: "PG", name: "Pagi", icon: Sun, premiumClass: "cal-premium-pg", badgeClass: "cal-badge-pg" },
-  { code: "SR", name: "Sore", icon: Sunset, premiumClass: "cal-premium-sr", badgeClass: "cal-badge-sr" },
-  { code: "SI", name: "Siang", icon: CloudSun, premiumClass: "cal-premium-si", badgeClass: "cal-badge-si" },
-  { code: "ML", name: "Malam", icon: Moon, premiumClass: "cal-premium-ml", badgeClass: "cal-badge-ml" },
-];
-
-const SHIFT_MAP = Object.fromEntries(SHIFTS.map(s => [s.code, s]));
+// Visual per kode shift ikut master DB (instansi bebas membuat kode sendiri:
+// PG/SG/MLM, dsb). Kode tak dikenal dapat visual netral.
+const SHIFT_VISUALS = {
+  PG: { icon: Sun, premiumClass: "cal-premium-pg", badgeClass: "cal-badge-pg", color: "text-amber-500" },
+  SR: { icon: Sunset, premiumClass: "cal-premium-sr", badgeClass: "cal-badge-sr", color: "text-orange-500" },
+  SI: { icon: CloudSun, premiumClass: "cal-premium-si", badgeClass: "cal-badge-si", color: "text-sky-500" },
+  SG: { icon: CloudSun, premiumClass: "cal-premium-si", badgeClass: "cal-badge-si", color: "text-sky-500" },
+  ML: { icon: Moon, premiumClass: "cal-premium-ml", badgeClass: "cal-badge-ml", color: "text-indigo-400" },
+  MLM: { icon: Moon, premiumClass: "cal-premium-ml", badgeClass: "cal-badge-ml", color: "text-indigo-400" },
+};
+const shiftVisual = (code) => SHIFT_VISUALS[code] ||
+  { icon: Clock, premiumClass: "cal-premium-si", badgeClass: "cal-badge-si", color: "text-slate-500" };
 
 const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 const DAY_NAMES = ["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"];
@@ -48,7 +52,30 @@ export default function SchedulingPage() {
   const [showBulkAssign, setShowBulkAssign] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [confirmClear, setConfirmClear] = useState(null);
+  const [shifts, setShifts] = useState([]);
+  const [shiftsLoading, setShiftsLoading] = useState(true);
   const fileInputRef = useRef(null);
+
+  // Master shift instansi — dari DB (RLS org-scoped; ikut switch super_admin)
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase.from("shifts").select("code, name").order("code");
+        if (error) throw error;
+        if (!cancelled) setShifts(data || []);
+      } catch {
+        if (!cancelled) setShifts([]);
+      } finally {
+        if (!cancelled) setShiftsLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const SHIFT_MAP = Object.fromEntries(
+    shifts.map(s => [s.code, { code: s.code, name: s.name, ...shiftVisual(s.code) }])
+  );
 
   const days = getDaysInMonth(year, month);
   const lastDay = new Date(year, month + 1, 0).getDate();
@@ -173,10 +200,24 @@ export default function SchedulingPage() {
         </div>
       )}
 
+      {/* PERINGATAN: instansi belum punya master shift */}
+      {!shiftsLoading && shifts.length === 0 && (
+        <div className="flex items-start gap-3 rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+          <div>
+            <p className="font-bold">Belum ada master shift</p>
+            <p className="text-xs mt-0.5">
+              Buat dulu shift instansi di <b>Pengaturan → Kelola Shift</b> (mis. Pagi, Siang, Malam),
+              lalu kembali ke sini untuk mengisi jadwal pegawai.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* LEGEND */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-[9px] font-semibold text-slate-mist uppercase tracking-wider mr-1">Shift</span>
-        {SHIFTS.map(s => {
+        {shifts.map(s => {
           const Icon = s.icon;
           return (
             <span key={s.code} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium ${s.badgeClass}`}>
@@ -250,7 +291,7 @@ export default function SchedulingPage() {
       <BottomSheet open={!!showShiftPicker} onClose={() => setShowShiftPicker(null)}
         title="Atur Shift" subtitle={showShiftPicker}>
         <div className="space-y-1.5">
-          {SHIFTS.map(s => {
+          {shifts.map(s => {
             const Icon = s.icon;
             const isActive = schedules[showShiftPicker]?.shift_code === s.code;
             return (
@@ -278,6 +319,7 @@ export default function SchedulingPage() {
       {showBulkAssign && (
         <BulkAssignDialog
           employees={employees}
+          shifts={shifts}
           year={year} month={month} lastDay={lastDay}
           onClose={() => setShowBulkAssign(false)}
           onDone={() => { setShowBulkAssign(false); if (selectedUser) loadSchedules(); }}
@@ -341,7 +383,7 @@ export default function SchedulingPage() {
         );
         if (error) throw error;
         setSchedules(prev => ({ ...prev, [key]: { date: key, shift_code: shiftCode } }));
-        toast.success(`Shift ${SHIFTS.find(s => s.code === shiftCode)?.name} ditetapkan`);
+        toast.success(`Shift ${shifts.find(s => s.code === shiftCode)?.name || shiftCode} ditetapkan`);
       }
     } catch (err) { toast.error("Gagal: " + err.message); }
     setShowShiftPicker(null);
@@ -464,12 +506,12 @@ function EmployeeSearchContent({ employees, value, onSelect }) {
 /* ============================================================
    BULK ASSIGN DIALOG
    ============================================================ */
-function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) {
+function BulkAssignDialog({ employees, year, month, lastDay, shifts = [], onClose, onDone }) {
   const [selectedIds, setSelectedIds] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [range, setRange] = useState({ start: 1, end: lastDay });
   const [days, setDays] = useState([0,1,2,3,4,5]);
-  const [shiftCode, setShiftCode] = useState("PG");
+  const [shiftCode, setShiftCode] = useState(shifts[0]?.code || "");
   const [saving, setSaving] = useState(false);
 
   const toggle = (id) => setSelectedIds(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
@@ -520,7 +562,7 @@ function BulkAssignDialog({ employees, year, month, lastDay, onClose, onDone }) 
           <div>
             <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Shift</label>
             <div className="grid grid-cols-2 gap-2">
-              {SHIFTS.map(s => {
+              {shifts.map(s => {
                 const Icon = s.icon;
                 return (
                   <button key={s.code} onClick={() => setShiftCode(s.code)}
