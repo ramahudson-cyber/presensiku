@@ -5,6 +5,7 @@ import {
   isPayrollEnabled, setPayrollEnabled, getPayrollConfig, savePayrollConfig,
   getEmployeeConfigs, saveEmployeeConfigs, recalculatePayroll, getPayrollLines,
 } from "../../services/payrollService";
+import { exportExcelWorkbook, RUPIAH } from "../../services/excelExport";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import {
@@ -35,6 +36,7 @@ export default function PayrollPage() {
   const [lines, setLines] = useState([]);
   const [loading, setLoading] = useState(false);
   const [recalcing, setRecalcing] = useState(false);
+  const [exporting, setExporting] = useState(false);
   // Saat super_admin switch instansi, flag dibaca ulang untuk org target
   const override = user?.active_org_override;
 
@@ -181,22 +183,44 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
     { base: 0, cut: 0, received: 0 }
   );
 
-  const exportCSV = () => {
-    const header = "Nama,Username,Hari Kerja,Hadir,Terlambat,Menit Telat,Alpha,Izin,Sakit,Pot. Terlambat,Pot. Alpha,Total Potongan,Diterima";
-    const rows = lines.map((l) =>
-      [
-        l.user?.full_name, l.user?.username, l.work_days, l.hadir, l.terlambat,
-        l.late_minutes_total, l.alpha_days, l.izin_days, l.sakit_days,
-        l.late_deduction, l.alpha_deduction, l.total_deduction, l.total_received,
-      ].join(",")
-    );
-    const blob = new Blob(["\uFEFF" + [header, ...rows].join("\n")], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `gaji-${period}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const exportExcel = async () => {
+    setExporting(true);
+    try {
+      const sum = (k) => lines.reduce((a, l) => a + Number(l[k] || 0), 0);
+      await exportExcelWorkbook({
+        filename: `gaji-${period}.xlsx`,
+        sheetName: "Rekap Gaji",
+        orgName: override ? user?.override_org?.name : user?.organization?.name,
+        docTitle: `Rekap Gaji — ${monthLabel(period)}`,
+        header: [
+          "Nama", "Username", "Hari Kerja", "Hadir", "Terlambat", "Menit Telat",
+          "Alpha", "Izin", "Sakit", "Pot. Terlambat", "Pot. Alpha", "Total Potongan", "Diterima",
+        ],
+        columnMeta: [
+          { align: "left" }, { align: "left" },
+          ...Array.from({ length: 7 }, () => ({ align: "right" })),
+          ...Array.from({ length: 4 }, () => ({ align: "right", numFmt: RUPIAH })),
+        ],
+        rows: lines.map((l) => [
+          l.user?.full_name || "-", l.user?.username || "-",
+          Number(l.work_days || 0), Number(l.hadir || 0), Number(l.terlambat || 0),
+          Number(l.late_minutes_total || 0), Number(l.alpha_days || 0),
+          Number(l.izin_days || 0), Number(l.sakit_days || 0),
+          Number(l.late_deduction || 0), Number(l.alpha_deduction || 0),
+          Number(l.total_deduction || 0), Number(l.total_received || 0),
+        ]),
+        totalRow: [
+          "TOTAL", "", sum("work_days"), sum("hadir"), sum("terlambat"),
+          sum("late_minutes_total"), sum("alpha_days"), sum("izin_days"), sum("sakit_days"),
+          sum("late_deduction"), sum("alpha_deduction"), sum("total_deduction"), sum("total_received"),
+        ],
+      });
+    } catch (e) {
+      console.error(e);
+      toast.error("Gagal mengekspor Excel");
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (
@@ -220,11 +244,12 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
         </button>
         {lines.length > 0 && (
           <button
-            onClick={exportCSV}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border text-sm font-semibold hover:bg-gray-50 transition-all"
+            onClick={exportExcel}
+            disabled={exporting}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border text-sm font-semibold hover:bg-gray-50 disabled:opacity-50 transition-all"
             style={{ borderColor: T.border, color: T.textSec }}
           >
-            <Download size={15} /> CSV
+            <Download size={15} /> Excel
           </button>
         )}
       </div>
