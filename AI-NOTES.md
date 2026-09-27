@@ -2,6 +2,15 @@
 
 > File ini di-update otomatis. Setiap selesai tugas → bilang **"catat progress"** untuk update.
 
+## 🩹 FIX Approval Cuti/Izin 400 (27 Sep 2026) — ✅ LIVE DI DB + pushed
+**Gejala:** klik Setuju di Cuti & Izin → 400 `column "attendance_status" is of type attendance_status but expression is of type leave_type`.
+**Akar masalah:** `approve_leave_request_impl` meng-insert `v_request.leave_type` (enum `leave_type`) langsung ke kolom `attendance.attendance_status` (enum `attendance_status`) — dua enum berbeda, Postgres tidak cast implisit.
+**Fix:** migration `supabase/migrations/20260927130000_fix_approve_leave_request_enum_cast.sql` — hanya replace `approve_leave_request_impl`; mapping `izin→izin, sakit→sakit, lainnya(tahunan/bersalin/alasan_penting)→cuti`. Wrapper `approve_leave_request` (guard per org) tidak diubah.
+- Sudah dieksekusi ke DB live via Management API (token dari keyring CLI, script `.tmp/sb_query.ps1`)
+- Uji end-to-end dalam transaksi ROLLBACK: RPC sukses, 2 record attendance `izin` dibuat utk permohonan dani (0f1ea318), data produksi tetap utuh
+- ⚠️ Migration history remote tertinggal: 11 migration lokal (20260926000003–20260927120000, payroll dll) tidak tercatat di `schema_migrations` — diterapkan manual via SQL editor. JANGAN asal `supabase db push` (akan re-run 11 migration itu). Kalau mau sinkron: `supabase migration repair --status applied` dulu.
+- Nilai enum live: `attendance_status` = hadir/terlambat/izin/sakit/alpha/cuti; `leave_type` = izin/sakit/tahunan/bersalin/alasan_penting
+
 ## 🏢 MULTI-TENANT (Fase 1, Sept 2026) — ✅ SUDAH LIVE DI DB + frontend siap deploy
 Aplikasi multi-tenant SaaS. **Semua migration SUDAH dieksekusi ke DB live** (`muhxylbcgvwxjzrbkgdc`) + terverifikasi uji isolasi end-to-end (admin instansi uji TIDAK bisa melihat data instansi lain). File migration (urutan eksekusi historis):
 1. `supabase/migrations/20260913000001_multi_tenant_organizations.sql`
@@ -35,8 +44,9 @@ Yang berubah:
 ✅ Enum migration: `20260731000002_add_izin_to_leave_type_enum.sql`
 ✅ Code commit & push ke GitHub
 
-❌ **ENUM `leave_type` belum ditambah `'izin'`** — table hanya punya `'sakit'`
-❌ **Service role key sudah expired** — butuh key baru untuk run SQL otomatis
+✅ **ENUM `leave_type` SUDAH ada `izin`** — live DB: izin/sakit/tahunan/bersalin/alasan_penting
+✅ **RPC approve/reject berfungsi** — fix enum cast 27 Sep 2026 (lihat bagian atas)
+❌ **Service role key sudah expired** — run SQL via Management API pakai token CLI (lihat `.tmp/sb_query.ps1`)
 
 📝 **SQL untuk dijalankan di Supabase Dashboard → SQL Editor:**
 ```sql
