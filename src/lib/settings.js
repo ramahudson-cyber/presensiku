@@ -1,6 +1,13 @@
 import { supabase } from './supabase';
 
 export async function getSetting(key, fallback = '') {
+  // Baca via RPC: nilai selalu dari instansi aktif (ikut switch super_admin) —
+  // memperbaiki nilai "acak" saat platform admin melihat settings semua org.
+  try {
+    const { data: viaRpc, error: rpcError } = await supabase
+      .rpc('get_org_setting', { p_key: key });
+    if (!rpcError) return viaRpc ?? fallback;
+  } catch { /* fallback ke query langsung */ }
   try {
     const { data } = await supabase
       .from('system_settings')

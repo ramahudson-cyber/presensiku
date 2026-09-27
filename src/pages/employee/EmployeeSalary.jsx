@@ -100,7 +100,7 @@ function EmployeeSalaryPage() {
       </table>
       <div class="ttd">
         <div class="box"><div>Pegawai Ybs.</div><div class="line">${line.user?.full_name || ""}</div></div>
-        <div class="box"><div>Admin Instansi</div><div class="line">&nbsp;</div></div>
+        <div class="box"><div>Kepala Unit ${orgName}</div><div class="line">&nbsp;</div></div>
       </div>
       <script>window.onload = () => setTimeout(() => window.print(), 300);</script>
       </body></html>`);
