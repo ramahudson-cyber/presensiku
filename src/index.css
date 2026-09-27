@@ -368,6 +368,22 @@ html, body, #root {
 .hero-card-bg .border-white\/20 { border-color: rgba(255,255,255,0.1) !important; }
 .hero-card-bg .backdrop-blur-md { backdrop-filter: blur(12px); }
 
+/* Putihkan teks eksplisit text-white pada tombol/link — tombol memakai
+   text-white hanya di atas background gelap/berwarna, jadi hijack
+   light-mode di atas tidak boleh berlaku untuk mereka (audit 2026-09-27). */
+button.text-white,
+a.text-white { color: #ffffff !important; }
+
+/* --- Exception: background tombol di-override jadi terang oleh light mode --- */
+/* 1. NavLink aktif di sidebar putih */
+.sidebar-gradient a.text-white { color: #475569 !important; }
+/* 2. Pill "Kembali ke Platform" — bg-white/10 dipaksa putih oleh admin-light */
+.admin-light button.bg-white\/10.text-white { color: #0f172a !important; }
+/* 3. Ghost reset button — bg-white/5 dipaksa #f8fafc oleh admin-light */
+.admin-light button.bg-white\/5.text-white { color: #0f172a !important; }
+/* 4. Pagination transparan (border-gradient) */
+.admin-light button.border-gradient.text-white { color: #475569 !important; }
+
 .text-slate-100 { color: var(--text-primary); }
 .text-slate-200 { color: var(--text-secondary); }
 .text-slate-300 { color: var(--text-muted); }
