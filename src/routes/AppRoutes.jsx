@@ -8,6 +8,7 @@ import AttendancePage from "../pages/attendance/AttendancePage";
 import AttendanceHistoryPage from "../pages/admin/AttendanceHistoryPage";
 import PengaturanPage from "../pages/admin/PengaturanPage";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
+import EmployeeNotificationsPage from "../pages/employee/EmployeeNotificationsPage";
 import EmployeeSchedule from "../pages/employee/EmployeeSchedule";
 import EmployeeProfile from "../pages/employee/EmployeeProfile";
 import EmployeeHistory from "../pages/employee/EmployeeHistory";
@@ -110,6 +111,7 @@ function AppRoutes() {
       >
         <Route index element={<EmployeeDashboard />} />
         <Route path="attendance" element={<AttendancePage />} />
+        <Route path="notifications" element={<EmployeeNotificationsPage />} />
         <Route path="schedule" element={<EmployeeSchedule />} />
         <Route path="profile" element={<EmployeeProfile />} />
         <Route path="profile/edit" element={<EmployeeEditProfile />} />

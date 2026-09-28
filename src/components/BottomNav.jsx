@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import {
   LayoutDashboard, CalendarDays,
   Users, History, FileText, Megaphone, Settings, MoreHorizontal,
-  FingerprintPattern, User, ClipboardList, Wallet,
+  FingerprintPattern, User, ClipboardList, Wallet, Bell,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import BottomSheet from "./BottomSheet";
@@ -24,11 +24,37 @@ export default function BottomNav({ hidden = false }) {
     })();
   }, []);
 
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (user?.role !== "pegawai") return;
+    let cancelled = false;
+    const fetchUnread = async () => {
+      try {
+        const iso = new Date().toISOString();
+        const { count: annCount } = await supabase
+          .from("announcements")
+          .select("*", { count: "exact", head: true })
+          .eq("is_active", true)
+          .or(`expires_at.is.null,expires_at.gte.${iso}`);
+        const { count: ackCount } = await supabase
+          .from("announcement_acks")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", user.id);
+        if (!cancelled) setUnreadCount(Math.max(0, (annCount || 0) - (ackCount || 0)));
+      } catch (e) { /* silent */ }
+    };
+    fetchUnread();
+    const id = setInterval(fetchUnread, 60000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [user?.id, user?.role]);
+
   if (hidden) return null;
 
-  // Pegawai: Izin/Sakit di bar (slot bekas Profil); Profil masuk Bottom Sheet "Menu"
+  // Pegawai: Home, Notifikasi, Izin/Sakit, Jadwal di bar utama
   const pegawaiMenus = [
     { path: "/employee", label: "Home", icon: LayoutDashboard, end: true },
+    { path: "/employee/notifications", label: "Notifikasi", icon: Bell },
     { path: "/employee/leave", label: "Izin/Sakit", icon: ClipboardList },
     { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
   ];
@@ -105,8 +131,11 @@ export default function BottomNav({ hidden = false }) {
       >
         {({ isActive }) => (
           <>
-            <span className={`rounded-xl p-1 transition-all ${isActive ? "bg-electric-violet/15 scale-110" : ""}`}>
+            <span className={`rounded-xl p-1 transition-all relative ${isActive ? "bg-electric-violet/15 scale-110" : ""}`}>
               <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+              {item.label === "Notifikasi" && unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-400 rounded-full ring-2 ring-white" />
+              )}
             </span>
             <span
               className={`max-w-full px-0.5 text-center text-[10px] leading-[1.1] break-words ${

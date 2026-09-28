@@ -6,7 +6,7 @@ import { getSetting } from "../lib/settings";
 import {
   LayoutDashboard, Users, CalendarCheck, CalendarDays,
   FileText, Megaphone, Settings, LogOut,
-  History, X, ClipboardList, Building2, Wallet
+  History, X, ClipboardList, Building2, Wallet, Bell
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import ProfileSheet from "./ProfileSheet";
@@ -33,6 +33,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
   };
 
   const pegawaiMenus = [
+    { path: "/employee/notifications", label: "Notifikasi", icon: Bell },
     { path: "/employee", label: "Dashboard", icon: LayoutDashboard, end: true },
     { path: "/employee/attendance", label: "Absensi", icon: CalendarCheck },
     { path: "/employee/schedule", label: "Jadwal Shift", icon: CalendarDays },
@@ -59,6 +60,31 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
   ];
 
   const menus = userRole === "pegawai" ? pegawaiMenus : adminMenus;
+
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (user?.role !== "pegawai") return;
+    let cancelled = false;
+    const fetchUnread = async () => {
+      try {
+        const iso = new Date().toISOString();
+        const { count: annCount } = await supabase
+          .from("announcements")
+          .select("*", { count: "exact", head: true })
+          .eq("is_active", true)
+          .or(`expires_at.is.null,expires_at.gte.${iso}`);
+        const { count: ackCount } = await supabase
+          .from("announcement_acks")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", user.id);
+        if (!cancelled) setUnreadCount(Math.max(0, (annCount || 0) - (ackCount || 0)));
+      } catch (e) { /* silent */ }
+    };
+    fetchUnread();
+    const id = setInterval(fetchUnread, 60000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [user?.id, user?.role]);
 
   return (
     <>
@@ -121,6 +147,11 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
               >
                 <Icon size={18} className="shrink-0" />
                 <span className="flex-1">{item.label}</span>
+                {item.label === "Notifikasi" && unreadCount > 0 && (
+                  <span className="text-[9px] font-bold bg-rose-400 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center leading-tight">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
               </NavLink>
             );
           })}

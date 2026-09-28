@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
-import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, ArrowRight } from "lucide-react";
+import { toast } from "react-toastify";
+import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, ArrowRight, Bell, ChevronRight } from "lucide-react";
 import { addCalendarDays, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
+import { getShiftReminderInfo, reminderToastKey } from "../../lib/notificationReminder";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
@@ -30,7 +32,9 @@ export default function EmployeeDashboard() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [shift, setShift] = useState(null);
-	const [serverTime, setServerTime] = useState(new Date());
+  const [shiftDefinitions, setShiftDefinitions] = useState([]);
+  const [todaySched, setTodaySched] = useState(null);
+  const [serverTime, setServerTime] = useState(new Date());
 	const getGreeting = (h) => {
 	  if (h >= 3 && h < 12) return "Selamat Pagi";
 	  if (h >= 12 && h < 15) return "Selamat Siang";
@@ -52,6 +56,24 @@ export default function EmployeeDashboard() {
     }, 1000);
     return () => clearInterval(id);
   }, []);
+
+  // Shift reminder: muncul toast sekali per shift (localStorage)
+  useEffect(() => {
+    const showReminder = () => {
+      if (!todaySched || !shiftDefinitions.length) return;
+      const r = getShiftReminderInfo(serverTime, todaySched, shiftDefinitions);
+      if (r.show) {
+        const key = reminderToastKey(getWitaDateKey(serverTime), todaySched.shift_code);
+        if (!localStorage.getItem(key)) {
+          toast.info(r.message, { autoClose: 15000, toastId: key });
+          localStorage.setItem(key, "1");
+        }
+      }
+    };
+    showReminder();
+    const id = setInterval(showReminder, 60000);
+    return () => clearInterval(id);
+  }, [serverTime, todaySched, shiftDefinitions]);
 
   const fetchData = async () => {
     try {
@@ -78,6 +100,7 @@ export default function EmployeeDashboard() {
         supabase.from("shift_schedules").select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
       ]), 20000, "fetchAll");
       const shiftDefinitions = shiftSchedulesRes.data || [];
+      setShiftDefinitions(shiftDefinitions);
 
       if (serverTimeData) setServerTime(serverNow);
 
@@ -85,6 +108,7 @@ export default function EmployeeDashboard() {
 
       // null (BUKAN string "N/A") agar badge merender "Tidak ada jadwal hari ini"
       setShift(shiftRes.data?.shift_code ? getShiftName(shiftRes.data.shift_code) : null);
+      setTodaySched(shiftRes.data || null);
 
       const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
       monthAttRes.data?.forEach(a => {
@@ -307,6 +331,29 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
+        {/* Shift Reminder Banner */}
+        {(() => {
+          const r = getShiftReminderInfo(serverTime, todaySched, shiftDefinitions);
+          if (!r.show) return null;
+          return (
+            <div className="rounded-3xl p-4 relative overflow-hidden border"
+              style={{ background: "linear-gradient(135deg, #ECFDF5, #D1FAE5)", borderColor: "rgba(16,185,129,0.2)" }}>
+              <div className="flex gap-3 items-start">
+                <div className="w-9 h-9 rounded-2xl bg-emerald-100 flex items-center justify-center shrink-0">
+                  <Bell size={16} className="text-emerald-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-emerald-800">{r.message}</p>
+                  <Link to="/employee/attendance"
+                    className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full text-[10px] font-semibold transition-all active:scale-95">
+                    Absen Sekarang <ChevronRight size={11} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* STATS CARD — DONUT + RINGKASAN */}
         <div className="rounded-3xl p-5 relative overflow-hidden"
           style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
@@ -499,26 +546,30 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* PENGUMUMAN CARD */}
+        {/* NOTIFIKASI CARD — link ke halaman notifikasi */}
         <div className="rounded-3xl p-5 relative overflow-hidden"
           style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
-              <h3 className="text-xs font-bold tracking-wide" style={{ color: T.text }}>Pengumuman</h3>
+              <h3 className="text-xs font-bold tracking-wide" style={{ color: T.text }}>Notifikasi</h3>
             </div>
-            <Megaphone size={16} style={{ color: T.textMuted }} />
+            <Bell size={16} style={{ color: T.textMuted }} />
           </div>
 
           <div className="space-y-2">
-            {announcements.length > 0 ? announcements.map(a => (
-              <div key={a.id}
-                className="rounded-xl px-4 py-3 transition-all duration-200 hover:translate-x-1"
-                style={{ background: T.rowBg, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-                <div className="text-xs font-semibold" style={{ color: T.text }}>{a.title}</div>
-                <div className="text-[10px] mt-0.5" style={{ color: T.textSec }}>{a.content}</div>
-              </div>
-            )) : (
+            {announcements.length > 0 ? (
+              <>
+                <div className="text-xs py-1" style={{ color: T.textSec }}>
+                  {announcements.length} pengumuman aktif
+                </div>
+                <Link to="/employee/notifications"
+                  className="flex items-center gap-2 rounded-xl px-4 py-3 transition-all hover:translate-x-1 text-xs font-medium"
+                  style={{ background: T.rowBg, color: T.text }}>
+                  Lihat Semua <ChevronRight size={12} />
+                </Link>
+              </>
+            ) : (
               <div className="text-xs py-6 text-center" style={{ color: T.textMuted }}>
                 Tidak ada pengumuman.
               </div>
