@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "../lib/supabase";
-import { registerWebPush } from "../services/pushNotificationService";
+import { registerWebPush, attachWebPushGestureListener } from "../services/pushNotificationService";
 
 const PROFILE_TIMEOUT_MS = 12000;
 
@@ -22,14 +22,31 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [profileError, setProfileError] = useState(null);
   const applyingSession = useRef(false);
-  const webPushUserRef = useRef(null);
 
   // Web push (PWA browser): daftarkan token browser sekali per user.
-  // Di APK native fungsi ini no-op (APK memakai FCM langsung via dashboard).
+  // Chrome mobile menolak prompt izin tanpa user gesture — kalau permission
+  // belum granted, registrasi ditunda ke sentuhan pertama user (listener).
+  // Di APK native registerWebPush no-op (APK memakai FCM langsung).
+  const webPushCleanupRef = useRef(null);
   useEffect(() => {
-    if (!user?.id || webPushUserRef.current === user.id) return;
-    webPushUserRef.current = user.id;
-    registerWebPush(user.id).catch(() => {});
+    if (webPushCleanupRef.current) {
+      webPushCleanupRef.current();
+      webPushCleanupRef.current = null;
+    }
+    if (!user?.id) return;
+    if (typeof Notification === "undefined") return;
+    if (Notification.permission === "granted") {
+      registerWebPush(user.id).catch(() => {});
+      return;
+    }
+    if (Notification.permission === "denied") return;
+    webPushCleanupRef.current = attachWebPushGestureListener(user.id);
+    return () => {
+      if (webPushCleanupRef.current) {
+        webPushCleanupRef.current();
+        webPushCleanupRef.current = null;
+      }
+    };
   }, [user?.id]);
 
   // Satu-satunya penulis sesi: semua path bikin loading sinkron di sini,

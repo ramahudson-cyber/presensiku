@@ -30,9 +30,13 @@ export function getDeviceType() {
 /**
  * Only regular employees are platform-bound. Admin and supervisory roles
  * remain usable from web or native clients as required by operations.
+ *
+ * Sejak web push PWA: Android web (Chrome maupun PWA ter-install) DIIZINKAN
+ * agar pegawai tetap menerima push notification; desktop web tetap diblokir
+ * karena absen dari PC adalah celah fake GPS yang paling mudah.
  */
 export function isPegawaiWebBlocked(role, deviceType = getDeviceType()) {
-  return role === 'pegawai' && (deviceType === 'android' || deviceType === 'desktop');
+  return role === 'pegawai' && deviceType === 'desktop';
 }
 
 export function getBlockDeviceType(deviceType = getDeviceType()) {

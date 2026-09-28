@@ -282,6 +282,12 @@ export async function sendPushForAnnouncement(announcementId) {
  * Registrasi web push (PWA di browser/laptop) via Firebase Cloud Messaging.
  * Token browser disimpan ke device_tokens dengan platform "web".
  * APK native memakai jalur FCM langsung (registerPushNotifications).
+ *
+ * PENTING Chrome Android: Notification.requestPermission() HARUS berjalan
+ * dalam user gesture (sentuhan) — kalau dipanggil otomatis dari useEffect,
+ * prompt tidak muncul dan permission ditolak diam-diam. Karena itu izin
+ * diminta SEBELUM await import() apa pun, dan AuthContext memanggil fungsi
+ * ini lewat listener gesture pertama (attachWebPushGestureListener).
  */
 export async function registerWebPush(userId) {
   if (isNative() || !userId) return false;
@@ -289,6 +295,20 @@ export async function registerWebPush(userId) {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) return false;
   if (typeof Notification === "undefined") return false;
   if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") return false;
+
+  // Izin dulu — sebelum await apa pun — agar masih dalam transient
+  // activation dari gesture user yang memicu pemanggilan ini.
+  if (Notification.permission === "denied") {
+    console.warn("⚠️ Izin notifikasi web sudah ditolak (atur manual di Settings browser)");
+    return false;
+  }
+  if (Notification.permission !== "granted") {
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      console.warn("⚠️ Izin notifikasi web ditolak");
+      return false;
+    }
+  }
 
   try {
     const { FIREBASE_VAPID_KEY, getFirebaseApp } = await import("../lib/firebase");
@@ -300,12 +320,6 @@ export async function registerWebPush(userId) {
     const { getMessaging, getToken, isSupported } = await import("firebase/messaging");
     if (isSupported && !(await isSupported())) {
       console.warn("⚠️ Browser tidak mendukung Firebase Messaging");
-      return false;
-    }
-
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") {
-      console.warn("⚠️ Izin notifikasi web ditolak");
       return false;
     }
 
@@ -330,4 +344,25 @@ export async function registerWebPush(userId) {
     console.warn("⚠️ Registrasi web push gagal:", e);
     return false;
   }
+}
+
+/**
+ * Pasang listener gesture pertama (sentuhan/keyboard) setelah login, lalu
+ * jalankan registerWebPush dari dalam gesture itu — satu-satunya cara
+ * prompt izin notifikasi bisa muncul di Chrome Android.
+ * Return fungsi cleanup.
+ */
+export function attachWebPushGestureListener(userId) {
+  if (isNative() || !userId || typeof window === "undefined") return () => {};
+  const onGesture = () => {
+    detach();
+    registerWebPush(userId).catch(() => {});
+  };
+  const detach = () => {
+    window.removeEventListener("pointerdown", onGesture);
+    window.removeEventListener("keydown", onGesture);
+  };
+  window.addEventListener("pointerdown", onGesture);
+  window.addEventListener("keydown", onGesture);
+  return detach;
 }
