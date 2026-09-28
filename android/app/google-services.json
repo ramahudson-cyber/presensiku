@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1515707309",
+    "project_id": "presensiku-5bc08",
+    "storage_bucket": "presensiku-5bc08.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1515707309:android:08ac005b91a5d29e615f24",
+        "android_client_info": {
+          "package_name": "com.presensiku.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_XO7pWJwoTVzAaQSZa4kFrbcBM8QAx6I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
