@@ -6,6 +6,7 @@ import { getWitaDateKey } from "../../lib/shiftTime";
 import { getShiftReminderInfo, getShiftEndReminderInfo, getUnreadCount, reminderToastKey, reminderToastEndKey } from "../../lib/notificationReminder";
 import { Bell, CalendarCheck, ArrowLeft, Check, CheckCheck, Clock, Megaphone, ChevronRight } from "lucide-react";
 import { toast } from "react-toastify";
+import { scheduleShiftReminders, subscribeAnnouncementRealtime, notifyNewAnnouncement } from "../../services/pushNotificationService";
 
 export default function EmployeeNotificationsPage() {
   const { user } = useAuth();
@@ -22,6 +23,15 @@ export default function EmployeeNotificationsPage() {
     fetchData();
     const tick = setInterval(() => setServerTime((p) => new Date(p.getTime() + 1000)), 1000);
     return () => clearInterval(tick);
+  }, []);
+
+  // Pengumuman baru masuk detik itu juga (realtime)
+  useEffect(() => {
+    const unsubscribe = subscribeAnnouncementRealtime((ann) => {
+      notifyNewAnnouncement(ann);
+      setAnnouncements((prev) => [ann, ...prev]);
+    });
+    return unsubscribe;
   }, []);
 
   const fetchData = async () => {
@@ -43,6 +53,11 @@ export default function EmployeeNotificationsPage() {
       setAckedIds(new Set((ackRes.data || []).map((r) => r.announcement_id)));
       setTodaySchedule(schedRes.data || null);
       setShiftDefinitions(shiftRes.data || []);
+      scheduleShiftReminders(
+        timeRes.data ? new Date(timeRes.data) : new Date(),
+        schedRes.data || null,
+        shiftRes.data || []
+      );
     } catch (err) {
       console.error("❌ Gagal memuat notifikasi:", err);
       toast.error("Gagal memuat data");

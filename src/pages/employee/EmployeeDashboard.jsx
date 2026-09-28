@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, ArrowRight, Bell, ChevronRight } from "lucide-react";
 import { addCalendarDays, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
 import { getShiftReminderInfo, getShiftEndReminderInfo, reminderToastKey, reminderToastEndKey } from "../../lib/notificationReminder";
+import { registerPushNotifications, requestNotificationPermission, scheduleShiftReminders, subscribeAnnouncementRealtime, notifyNewAnnouncement } from "../../services/pushNotificationService";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
@@ -43,6 +44,19 @@ export default function EmployeeDashboard() {
 	};
 
   useEffect(() => { fetchData(); }, []);
+
+  // Push notification FCM + reminder shift terjadwal + realtime pengumuman
+  useEffect(() => {
+    if (!user?.id) return;
+    requestNotificationPermission().then((granted) => {
+      if (granted) registerPushNotifications(user.id);
+    });
+    const unsubscribe = subscribeAnnouncementRealtime((ann) => {
+      notifyNewAnnouncement(ann);
+      setAnnouncements((prev) => [ann, ...prev].slice(0, 3));
+    });
+    return unsubscribe;
+  }, [user?.id]);
 
   const retryFetchData = () => {
     setFetchError(null);
@@ -118,6 +132,8 @@ export default function EmployeeDashboard() {
       // null (BUKAN string "N/A") agar badge merender "Tidak ada jadwal hari ini"
       setShift(shiftRes.data?.shift_code ? getShiftName(shiftRes.data.shift_code) : null);
       setTodaySched(shiftRes.data || null);
+
+      scheduleShiftReminders(serverNow, shiftRes.data || null, shiftDefinitions);
 
       const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
       monthAttRes.data?.forEach(a => {

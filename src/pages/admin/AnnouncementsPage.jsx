@@ -3,6 +3,7 @@ import { supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import BottomSheet from "../../components/BottomSheet";
+import { sendPushForAnnouncement } from "../../services/pushNotificationService";
 import {
   Megaphone, Plus, Loader2, Pencil, Trash2, Power,
   CheckCircle2, XCircle, AlertTriangle,
@@ -88,13 +89,17 @@ export default function AnnouncementsPage() {
         expires_at: form.expires_at ? new Date(form.expires_at + "T23:59:59+08:00").toISOString() : null,
       };
       let error;
+      let inserted = null;
       if (editingId) {
         ({ error } = await supabase.from("announcements").update(payload).eq("id", editingId));
       } else {
-        ({ error } = await supabase.from("announcements").insert(payload));
+        ({ data: inserted, error } = await supabase.from("announcements").insert(payload).select("id").single());
       }
       if (error) throw error;
       toast.success(editingId ? "Pengumuman diperbarui" : "Pengumuman dipublikasikan");
+      if (!editingId && inserted?.id && payload.is_active) {
+        sendPushForAnnouncement(inserted.id);
+      }
       setShowForm(false);
       await load();
     } catch (err) {
