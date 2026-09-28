@@ -146,7 +146,7 @@ export default function UpdateDialog() {
       }
     }
     const a = document.createElement("a");
-    a.href = "package:com.puskesmas.ampenan.siap";
+    a.href = "package:com.presensiku.app";
     a.target = "_blank";
     document.body.appendChild(a);
     a.click();

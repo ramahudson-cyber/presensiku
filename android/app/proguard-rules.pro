@@ -1,5 +1,5 @@
 -keep class com.getcapacitor.** { *; }
--keep class com.puskesmas.ampenan.siap.** { *; }
+-keep class com.presensiku.app.** { *; }
 -keep class * extends com.getcapacitor.Plugin { *; }
 -keepclassmembers class * {
     @android.webkit.JavascriptInterface <methods>;
