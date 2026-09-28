@@ -85,6 +85,10 @@ async function sendFcm(
         notification: { title, body },
         data,
         android: { priority: 'HIGH' },
+        webpush: {
+          // Notifikasi web bisa diklik → buka aplikasi
+          fcmOptions: { link: Deno.env.get('WEB_APP_URL') || 'https://presensiku-beige.vercel.app' },
+        },
       },
     }),
   })

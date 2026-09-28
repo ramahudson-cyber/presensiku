@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "../lib/supabase";
+import { registerWebPush } from "../services/pushNotificationService";
 
 const PROFILE_TIMEOUT_MS = 12000;
 
@@ -21,6 +22,15 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [profileError, setProfileError] = useState(null);
   const applyingSession = useRef(false);
+  const webPushUserRef = useRef(null);
+
+  // Web push (PWA browser): daftarkan token browser sekali per user.
+  // Di APK native fungsi ini no-op (APK memakai FCM langsung via dashboard).
+  useEffect(() => {
+    if (!user?.id || webPushUserRef.current === user.id) return;
+    webPushUserRef.current = user.id;
+    registerWebPush(user.id).catch(() => {});
+  }, [user?.id]);
 
   // Satu-satunya penulis sesi: semua path bikin loading sinkron di sini,
   // jadi handler onAuthStateChange & refreshUser tidak saling menimpa / meninggalkan spinner.

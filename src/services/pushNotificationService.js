@@ -277,3 +277,57 @@ export async function sendPushForAnnouncement(announcementId) {
     return false;
   }
 }
+
+/**
+ * Registrasi web push (PWA di browser/laptop) via Firebase Cloud Messaging.
+ * Token browser disimpan ke device_tokens dengan platform "web".
+ * APK native memakai jalur FCM langsung (registerPushNotifications).
+ */
+export async function registerWebPush(userId) {
+  if (isNative() || !userId) return false;
+  if (typeof window === "undefined") return false;
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) return false;
+  if (typeof Notification === "undefined") return false;
+  if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") return false;
+
+  try {
+    const { FIREBASE_VAPID_KEY, getFirebaseApp } = await import("../lib/firebase");
+    if (!FIREBASE_VAPID_KEY) {
+      console.warn("⚠️ Web push dilewati: VAPID key belum diisi di src/lib/firebase.js");
+      return false;
+    }
+
+    const { getMessaging, getToken, isSupported } = await import("firebase/messaging");
+    if (isSupported && !(await isSupported())) {
+      console.warn("⚠️ Browser tidak mendukung Firebase Messaging");
+      return false;
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      console.warn("⚠️ Izin notifikasi web ditolak");
+      return false;
+    }
+
+    const swRegistration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+    const messaging = getMessaging(getFirebaseApp());
+    const token = await getToken(messaging, {
+      vapidKey: FIREBASE_VAPID_KEY,
+      serviceWorkerRegistration: swRegistration,
+    });
+    if (!token) {
+      console.warn("⚠️ Token web push kosong");
+      return false;
+    }
+
+    await supabase.from("device_tokens").upsert(
+      { user_id: userId, token, platform: "web" },
+      { onConflict: "user_id,token" }
+    );
+    console.log("✅ Web push token terdaftar");
+    return true;
+  } catch (e) {
+    console.warn("⚠️ Registrasi web push gagal:", e);
+    return false;
+  }
+}
