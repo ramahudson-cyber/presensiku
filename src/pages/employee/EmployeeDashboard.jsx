@@ -8,6 +8,7 @@ import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset
 import { addCalendarDays, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
 import { getShiftReminderInfo, getShiftEndReminderInfo, reminderToastKey, reminderToastEndKey } from "../../lib/notificationReminder";
 import { registerPushNotifications, requestNotificationPermission, scheduleShiftReminders, subscribeAnnouncementRealtime, notifyNewAnnouncement } from "../../services/pushNotificationService";
+import NotificationPermissionBanner from "../../components/NotificationPermissionBanner";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
@@ -595,6 +596,9 @@ export default function EmployeeDashboard() {
             )}
           </div>
         </div>
+
+        {/* BANNER IZIN NOTIFIKASI — iOS menuntut tap nyata untuk prompt */}
+        <NotificationPermissionBanner />
 
         {/* NOTIFIKASI CARD — link ke halaman notifikasi */}
         <div className="rounded-3xl p-5 relative overflow-hidden"

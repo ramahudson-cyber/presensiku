@@ -289,11 +289,31 @@ export async function sendPushForAnnouncement(announcementId) {
  * diminta SEBELUM await import() apa pun, dan AuthContext memanggil fungsi
  * ini lewat listener gesture pertama (attachWebPushGestureListener).
  */
+/**
+ * Deteksi PWA Home Screen di iPhone/iPad (bukan Safari tab biasa).
+ * Web push iOS hanya tersedia dalam mode standalone ini (iOS 16.4+).
+ */
+export function isIOSStandalone() {
+  if (typeof window === "undefined") return false;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const standalone =
+    window.navigator.standalone === true ||
+    window.matchMedia?.("(display-mode: standalone)")?.matches === true;
+  return isIOS && standalone;
+}
+
 export async function registerWebPush(userId) {
   if (isNative() || !userId) return false;
   if (typeof window === "undefined") return false;
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) return false;
-  if (typeof Notification === "undefined") return false;
+  if (typeof Notification === "undefined") {
+    // iOS Safari tab biasa / iOS < 16.4: API hanya ada di PWA Home Screen.
+    // UX dijelaskan lewat banner di dashboard, bukan prompt yang mustahil muncul.
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      console.info("ℹ️ Notifikasi web iOS hanya tersedia di PWA Home Screen (iOS 16.4+)");
+    }
+    return false;
+  }
   if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") return false;
 
   // Izin dulu — sebelum await apa pun — agar masih dalam transient
@@ -359,15 +379,32 @@ export async function registerWebPush(userId) {
  */
 export function attachWebPushGestureListener(userId) {
   if (isNative() || !userId || typeof window === "undefined") return () => {};
-  const onGesture = () => {
-    detach();
-    registerWebPush(userId).catch(() => {});
+  let busy = false;
+  const onGesture = async () => {
+    if (busy) return;
+    busy = true;
+    try {
+      await registerWebPush(userId);
+    } catch { /* diabaikan — banner di dashboard yang memandu user */ }
+    busy = false;
+    // Hanya berhenti memicu bila izin sudah jelas (granted/denied).
+    // Masih 'default' (mis. iOS menutup prompt tanpa jawaban) → tetap
+    // mendengarkan gesture berikutnya, jangan sia-siakan kesempatan.
+    if (typeof Notification !== "undefined" && Notification.permission !== "default") {
+      detach();
+    }
   };
   const detach = () => {
     window.removeEventListener("pointerdown", onGesture);
+    window.removeEventListener("click", onGesture);
+    window.removeEventListener("touchend", onGesture);
     window.removeEventListener("keydown", onGesture);
   };
+  // 'click'/'touchend' adalah gesture yang diakui WebKit/iOS untuk
+  // Notification.requestPermission(); 'pointerdown' cukup untuk Chrome.
   window.addEventListener("pointerdown", onGesture);
+  window.addEventListener("click", onGesture);
+  window.addEventListener("touchend", onGesture);
   window.addEventListener("keydown", onGesture);
   return detach;
 }
