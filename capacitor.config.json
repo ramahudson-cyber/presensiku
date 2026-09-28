@@ -2,8 +2,8 @@
   "appId": "com.presensiku.app",
   "appName": "Presensiku",
   "webDir": "dist",
-  "version": "1.6.10",
-  "versionCode": 22,
+  "version": "1.7.0",
+  "versionCode": 25,
   "plugins": {
     "Geolocation": {
       "permissions": {

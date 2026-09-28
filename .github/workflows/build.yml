@@ -73,11 +73,14 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: npx vercel --prod --token $VERCEL_TOKEN --yes
 
+      - name: Tentukan versi rilis (dari public/version.json)
+        run: echo "RELEASE_TAG=v$(jq -r .version public/version.json)" >> "$GITHUB_ENV"
+
       - name: Upload APK ke GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          tag: "v1.6.5"
-          name: "SIAP Puskesmas v1.6.5"
+          tag: ${{ env.RELEASE_TAG }}
+          name: "Presensiku ${{ env.RELEASE_TAG }}"
           bodyFile: public/release-notes.txt
           artifacts: "android/app/build/outputs/apk/release/app-release.apk"
           token: ${{ secrets.GITHUB_TOKEN }}
