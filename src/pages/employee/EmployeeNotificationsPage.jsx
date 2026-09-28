@@ -131,7 +131,7 @@ export default function EmployeeNotificationsPage() {
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold">Notifikasi</h1>
+              <h1 className="text-xl font-bold">Pengumuman</h1>
               <p className="text-sm text-white/70 mt-0.5">
                 {unreadCount > 0 ? `${unreadCount} belum dibaca` : "Semua sudah dibaca"}
               </p>

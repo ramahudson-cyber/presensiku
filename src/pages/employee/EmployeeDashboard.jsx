@@ -602,7 +602,7 @@ export default function EmployeeDashboard() {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
-              <h3 className="text-xs font-bold tracking-wide" style={{ color: T.text }}>Notifikasi</h3>
+              <h3 className="text-xs font-bold tracking-wide" style={{ color: T.text }}>Pengumuman</h3>
             </div>
             <Bell size={16} style={{ color: T.textMuted }} />
           </div>

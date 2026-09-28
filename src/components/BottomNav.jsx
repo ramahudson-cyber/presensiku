@@ -8,6 +8,7 @@ import {
 import { useState, useEffect } from "react";
 import BottomSheet from "./BottomSheet";
 import { getSetting } from "../lib/settings";
+import { supabase } from "../lib/supabase";
 
 export default function BottomNav({ hidden = false }) {
   const { user } = useAuth();
@@ -51,15 +52,15 @@ export default function BottomNav({ hidden = false }) {
 
   if (hidden) return null;
 
-  // Pegawai: Home, Notifikasi, Izin/Sakit, Jadwal di bar utama
+  // Pegawai: Home, Izin/Sakit, Jadwal di bar utama; Pengumuman masuk Menu (titik 3)
   const pegawaiMenus = [
     { path: "/employee", label: "Home", icon: LayoutDashboard, end: true },
-    { path: "/employee/notifications", label: "Notifikasi", icon: Bell },
     { path: "/employee/leave", label: "Izin/Sakit", icon: ClipboardList },
     { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
   ];
 
   const pegawaiMore = [
+    { path: "/employee/notifications", label: "Pengumuman", icon: Bell },
     { path: "/employee/profile", label: "Profil", icon: User },
     { path: "/employee/history", label: "Riwayat Kehadiran", icon: History },
     ...(payrollOn
@@ -133,7 +134,7 @@ export default function BottomNav({ hidden = false }) {
           <>
             <span className={`rounded-xl p-1 transition-all relative ${isActive ? "bg-electric-violet/15 scale-110" : ""}`}>
               <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-              {item.label === "Notifikasi" && unreadCount > 0 && (
+              {item.path === "/employee/notifications" && unreadCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-400 rounded-full ring-2 ring-white" />
               )}
             </span>
@@ -215,7 +216,12 @@ export default function BottomNav({ hidden = false }) {
                   }`
                 }
               >
-                <Icon size={24} />
+                <span className="relative">
+                  <Icon size={24} />
+                  {item.path === "/employee/notifications" && unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-400 rounded-full ring-2 ring-white" />
+                  )}
+                </span>
                 <span className="text-[10px] font-medium leading-tight">{item.label}</span>
               </NavLink>
             );

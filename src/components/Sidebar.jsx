@@ -33,7 +33,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
   };
 
   const pegawaiMenus = [
-    { path: "/employee/notifications", label: "Notifikasi", icon: Bell },
+    { path: "/employee/notifications", label: "Pengumuman", icon: Bell },
     { path: "/employee", label: "Dashboard", icon: LayoutDashboard, end: true },
     { path: "/employee/attendance", label: "Absensi", icon: CalendarCheck },
     { path: "/employee/schedule", label: "Jadwal Shift", icon: CalendarDays },
@@ -147,7 +147,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
               >
                 <Icon size={18} className="shrink-0" />
                 <span className="flex-1">{item.label}</span>
-                {item.label === "Notifikasi" && unreadCount > 0 && (
+                {item.label === "Pengumuman" && unreadCount > 0 && (
                   <span className="text-[9px] font-bold bg-rose-400 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center leading-tight">
                     {unreadCount > 99 ? "99+" : unreadCount}
                   </span>
