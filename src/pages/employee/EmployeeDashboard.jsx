@@ -6,7 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, ArrowRight, Bell, ChevronRight } from "lucide-react";
 import { addCalendarDays, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
-import { getShiftReminderInfo, reminderToastKey } from "../../lib/notificationReminder";
+import { getShiftReminderInfo, getShiftEndReminderInfo, reminderToastKey, reminderToastEndKey } from "../../lib/notificationReminder";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
@@ -61,11 +61,20 @@ export default function EmployeeDashboard() {
   useEffect(() => {
     const showReminder = () => {
       if (!todaySched || !shiftDefinitions.length) return;
+      const today = getWitaDateKey(serverTime);
       const r = getShiftReminderInfo(serverTime, todaySched, shiftDefinitions);
       if (r.show) {
-        const key = reminderToastKey(getWitaDateKey(serverTime), todaySched.shift_code);
+        const key = reminderToastKey(today, todaySched.shift_code);
         if (!localStorage.getItem(key)) {
           toast.info(r.message, { autoClose: 15000, toastId: key });
+          localStorage.setItem(key, "1");
+        }
+      }
+      const endR = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions);
+      if (endR.show) {
+        const key = reminderToastEndKey(today, todaySched.shift_code);
+        if (!localStorage.getItem(key)) {
+          toast.warn(endR.message, { autoClose: 15000, toastId: key });
           localStorage.setItem(key, "1");
         }
       }
@@ -331,7 +340,7 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* Shift Reminder Banner */}
+        {/* Shift Reminder Banner — check-in */}
         {(() => {
           const r = getShiftReminderInfo(serverTime, todaySched, shiftDefinitions);
           if (!r.show) return null;
@@ -353,6 +362,31 @@ export default function EmployeeDashboard() {
             </div>
           );
         })()}
+
+        {/* Shift Reminder Banner — check-out */}
+        {(() => {
+          const rEnd = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions);
+          if (!rEnd.show) return null;
+          return (
+            <div className="rounded-3xl p-4 relative overflow-hidden border"
+              style={{ background: "linear-gradient(135deg, #FEF3C7, #FDE68A)", borderColor: "rgba(245,158,11,0.2)" }}>
+              <div className="flex gap-3 items-start">
+                <div className="w-9 h-9 rounded-2xl bg-amber-100 flex items-center justify-center shrink-0">
+                  <Sunset size={16} className="text-amber-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-amber-800">{rEnd.message}</p>
+                  <Link to="/employee/attendance"
+                    className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-full text-[10px] font-semibold transition-all active:scale-95">
+                    Absen Pulang <ChevronRight size={11} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+        
+        {/* STATS CARD — DONUT + RINGKASAN */}
 
         {/* STATS CARD — DONUT + RINGKASAN */}
         <div className="rounded-3xl p-5 relative overflow-hidden"

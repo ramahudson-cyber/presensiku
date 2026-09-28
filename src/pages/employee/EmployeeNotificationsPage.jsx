@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { getWitaDateKey } from "../../lib/shiftTime";
-import { getShiftReminderInfo, getUnreadCount, reminderToastKey } from "../../lib/notificationReminder";
+import { getShiftReminderInfo, getShiftEndReminderInfo, getUnreadCount, reminderToastKey, reminderToastEndKey } from "../../lib/notificationReminder";
 import { Bell, CalendarCheck, ArrowLeft, Check, CheckCheck, Clock, Megaphone, ChevronRight } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -52,6 +52,7 @@ export default function EmployeeNotificationsPage() {
   };
 
   const reminder = getShiftReminderInfo(serverTime, todaySchedule, shiftDefinitions);
+  const endReminder = getShiftEndReminderInfo(serverTime, todaySchedule, shiftDefinitions);
   const unreadCount = getUnreadCount(announcements, ackedIds);
   const today = getWitaDateKey(serverTime);
 
@@ -131,7 +132,7 @@ export default function EmployeeNotificationsPage() {
       </div>
 
       <div className="max-w-md mx-auto px-4 -mt-4 space-y-4">
-        {/* Reminder Card */}
+        {/* Reminder Card — check-in */}
         {reminder.show && (
           <div className="rounded-3xl p-5 relative overflow-hidden border"
             style={{
@@ -143,11 +144,34 @@ export default function EmployeeNotificationsPage() {
                 <CalendarCheck size={18} className="text-emerald-600" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-emerald-800 text-sm">Pengingat Absen</h3>
+                <h3 className="font-semibold text-emerald-800 text-sm">Pengingat Absen Masuk</h3>
                 <p className="text-emerald-700 text-xs mt-1 leading-relaxed">{reminder.message}</p>
                 <button onClick={() => navigate("/employee/attendance")}
                   className="mt-3 inline-flex items-center gap-1.5 px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full text-xs font-medium transition-all active:scale-95">
                   Absen Sekarang <ChevronRight size={12} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reminder Card — check-out */}
+        {endReminder.show && (
+          <div className="rounded-3xl p-5 relative overflow-hidden border"
+            style={{
+              background: "linear-gradient(135deg, #FEF3C7, #FDE68A)",
+              borderColor: "rgba(245,158,11,0.2)",
+            }}>
+            <div className="flex gap-3 items-start">
+              <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center shrink-0">
+                <Sunset size={18} className="text-amber-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-amber-800 text-sm">Pengingat Absen Pulang</h3>
+                <p className="text-amber-700 text-xs mt-1 leading-relaxed">{endReminder.message}</p>
+                <button onClick={() => navigate("/employee/attendance")}
+                  className="mt-3 inline-flex items-center gap-1.5 px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-full text-xs font-medium transition-all active:scale-95">
+                  Absen Pulang <ChevronRight size={12} />
                 </button>
               </div>
             </div>
