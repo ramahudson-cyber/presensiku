@@ -323,7 +323,12 @@ export async function registerWebPush(userId) {
       return false;
     }
 
-    const swRegistration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+    // Scope terpisah "/fcm-push/" agar SW ini TIDAK tertimpa registrasi sw.js
+    // (workbox PWA, scope "/") di setiap load — sebelumnya push jatuh ke sw.js
+    // yang tidak punya handler push saat PWA tertutup.
+    const swRegistration = await navigator.serviceWorker.register("/firebase-messaging-sw.js", {
+      scope: "/fcm-push/",
+    });
     const messaging = getMessaging(getFirebaseApp());
     const token = await getToken(messaging, {
       vapidKey: FIREBASE_VAPID_KEY,
