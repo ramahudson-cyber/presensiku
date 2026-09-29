@@ -1,4 +1,4 @@
-package com.puskesmas.ampenan.siap;
+package com.presensiku.app;
 
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
