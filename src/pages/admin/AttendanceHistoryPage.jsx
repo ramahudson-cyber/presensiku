@@ -47,6 +47,10 @@ const inputBase = "design-input";
 const fmtTime = (iso) =>
   iso ? new Date(iso).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "–";
 
+// Izin/sakit tidak absen — sisa jam lama pada record tidak ditampilkan
+const clockDisplay = (iso, status) =>
+  status === "izin" || status === "sakit" ? "–" : fmtTime(iso);
+
 const fmtDate = (dateStr) =>
   dateStr
     ? new Date(dateStr).toLocaleDateString("id-ID", {
@@ -432,10 +436,10 @@ export default function AttendanceHistoryPage() {
                         </div>
                       </td>
                       <td className="py-3 px-4 font-mono text-emerald-300 tabular-nums">
-                        {fmtTime(r.clock_in_time)}
+                        {clockDisplay(r.clock_in_time, r.attendance_status)}
                       </td>
                       <td className="py-3 px-4 font-mono text-rose-300 tabular-nums">
-                        {fmtTime(r.clock_out_time)}
+                        {clockDisplay(r.clock_out_time, r.attendance_status)}
                       </td>
                       <td className="py-3 px-4">
                         <StatusBadge status={r.attendance_status} />
@@ -485,11 +489,11 @@ export default function AttendanceHistoryPage() {
                       <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
                         <div className="bg-onyx rounded-2xl p-2">
                           <p className="text-slate-mist uppercase tracking-wider text-[10px]">Masuk</p>
-                          <p className="text-emerald-300 font-mono tabular-nums mt-0.5">{fmtTime(r.clock_in_time)}</p>
+                          <p className="text-emerald-300 font-mono tabular-nums mt-0.5">{clockDisplay(r.clock_in_time, r.attendance_status)}</p>
                         </div>
                         <div className="bg-onyx rounded-2xl p-2">
                           <p className="text-slate-mist uppercase tracking-wider text-[10px]">Pulang</p>
-                          <p className="text-rose-300 font-mono tabular-nums mt-0.5">{fmtTime(r.clock_out_time)}</p>
+                          <p className="text-rose-300 font-mono tabular-nums mt-0.5">{clockDisplay(r.clock_out_time, r.attendance_status)}</p>
                         </div>
                       </div>
                       {r.is_late && (

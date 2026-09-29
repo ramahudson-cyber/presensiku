@@ -583,8 +583,10 @@ export default function EmployeeDashboard() {
               const isHadir = att.attendance_status === 'hadir';
               const isAlpha = att.attendance_status === 'alpha';
               const isBelum = att.attendance_status === 'belum';
-              const fmtIn = formatTime(att.clock_in_time);
-              const fmtOut = att.clock_out_time ? formatTime(att.clock_out_time) : '-';
+              const isLeave = att.attendance_status === 'izin' || att.attendance_status === 'sakit';
+              // Izin/sakit tidak absen — sisa jam lama pada record tidak ditampilkan
+              const fmtIn = isLeave ? '-' : formatTime(att.clock_in_time);
+              const fmtOut = isLeave || !att.clock_out_time ? '-' : formatTime(att.clock_out_time);
               const dateObj = new Date(att.date + 'T00:00:00');
               const dateLabel = dateObj.toLocaleDateString("id-ID", { day: 'numeric', month: 'short' });
               const dayLabel = dateObj.toLocaleDateString("id-ID", { weekday: 'short' });

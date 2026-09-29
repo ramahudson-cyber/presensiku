@@ -207,6 +207,10 @@ export default function KepalaUnitDashboard() {
   const fmtTime = (iso) =>
     iso ? new Date(iso).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "-";
 
+  // Izin/sakit tidak absen — sisa jam lama pada record tidak ditampilkan
+  const clockDisplay = (iso, status) =>
+    status === "izin" || status === "sakit" ? "-" : fmtTime(iso);
+
   const witaTime = () => {
     const d = new Date(serverNow.getTime() + (8 * 60 * 60 * 1000));
     return d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false });
@@ -432,9 +436,11 @@ export default function KepalaUnitDashboard() {
                           <p className="font-medium text-slate-900 text-xs sm:text-sm">{a.profiles?.full_name || "-"}</p>
                         </div>
                       </td>
-                      <td className="py-2.5 px-3 text-emerald-600 font-mono tabular-nums text-[11px] sm:text-sm">{fmtTime(a.clock_in_time)}</td>
+                      <td className="py-2.5 px-3 text-emerald-600 font-mono tabular-nums text-[11px] sm:text-sm">{clockDisplay(a.clock_in_time, a.attendance_status)}</td>
                       <td className="py-2.5 px-3">
-                        {a.clock_out_time ? (
+                        {a.attendance_status === "izin" || a.attendance_status === "sakit" ? (
+                          <span className="font-mono tabular-nums text-[11px] sm:text-sm text-slate-400">-</span>
+                        ) : a.clock_out_time ? (
                           <span className="text-rose-600 font-mono tabular-nums text-[11px] sm:text-sm">{fmtTime(a.clock_out_time)}</span>
                         ) : (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-500">Belum</span>
