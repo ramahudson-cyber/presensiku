@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { getWitaDateKey } from "../../lib/shiftTime";
 import { getShiftReminderInfo, getShiftEndReminderInfo, getUnreadCount, reminderToastKey, reminderToastEndKey } from "../../lib/notificationReminder";
-import { Bell, CalendarCheck, ArrowLeft, Check, CheckCheck, Clock, Megaphone, ChevronRight } from "lucide-react";
+import { Bell, CalendarCheck, ArrowLeft, Check, CheckCheck, Clock, Megaphone, ChevronRight, Sunset } from "lucide-react";
 import { toast } from "react-toastify";
 import { scheduleShiftReminders, subscribeAnnouncementRealtime, notifyNewAnnouncement } from "../../services/pushNotificationService";
 
@@ -118,35 +118,34 @@ export default function EmployeeNotificationsPage() {
   };
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: T.bg }}>
-      {/* Hero Header */}
-      <div className="w-full p-6 pt-12 shadow-lg rounded-b-[32px] text-white hero-card-bg"
-        style={{ background: "linear-gradient(160deg, #C44DFF 0%, #BF00FF 30%, #8A00CC 60%, #4A0099 100%)" }}>
-        <div className="max-w-md mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25 active:scale-95 transition-all">
-              <ArrowLeft size={16} />
+    <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg }}>
+      {/* HEADER — pola Profil / Izin & Sakit */}
+      <div className="pt-14 px-6">
+        <div className="flex items-center justify-between mb-5">
+          <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-white flex items-center justify-center shadow-sm border hover:bg-gray-50 active:scale-95 transition-all" style={{ borderColor: T.border }}>
+            <ArrowLeft size={16} style={{ color: T.text }} />
+          </button>
+          <div className="w-9 h-9 rounded-full bg-electric-violet/10 flex items-center justify-center">
+            <Bell size={16} className="text-electric-violet" />
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-[17px] font-bold tracking-tight" style={{ color: T.text }}>Notifikasi</h1>
+            <p className="text-xs mt-0.5" style={{ color: T.textMuted }}>
+              {unreadCount > 0 ? `${unreadCount} belum dibaca` : "Semua sudah dibaca"}
+            </p>
+          </div>
+          {unreadCount > 0 && (
+            <button onClick={handleMarkAllRead}
+              className="text-xs bg-electric-violet/10 hover:bg-electric-violet/20 text-electric-violet rounded-full px-3 py-1.5 transition-all flex items-center gap-1 font-semibold">
+              <CheckCheck size={12} /> Baca Semua
             </button>
-            <Bell size={20} />
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold">Pengumuman</h1>
-              <p className="text-sm text-white/70 mt-0.5">
-                {unreadCount > 0 ? `${unreadCount} belum dibaca` : "Semua sudah dibaca"}
-              </p>
-            </div>
-            {unreadCount > 0 && (
-              <button onClick={handleMarkAllRead}
-                className="text-xs bg-white/20 hover:bg-white/30 rounded-full px-3 py-1.5 transition-all flex items-center gap-1">
-                <CheckCheck size={12} /> Baca Semua
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-4 -mt-4 space-y-4">
+      <div className="max-w-md mx-auto px-4 mt-6 space-y-4">
         {/* Reminder Card — check-in */}
         {reminder.show && (
           <div className="rounded-3xl p-5 relative overflow-hidden border"
