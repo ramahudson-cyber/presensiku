@@ -589,23 +589,49 @@ export default function AttendancePage() {
             {/* Attendance Status */}
             {todayAttendance && (
               <div className="flex items-center gap-2 mt-2 pt-2 border-t border-black/[0.06]">
-                <div className={`w-2 h-2 rounded-full ${todayAttendance.is_late ? "bg-green-yellow" : "bg-green-yellow"}`}></div>
+                <div className={`w-2 h-2 rounded-full ${
+                  todayAttendance.attendance_status === "izin" || todayAttendance.attendance_status === "sakit"
+                    ? "bg-electric-violet" : "bg-green-yellow"
+                }`}></div>
                 <span className="text-[9px] font-semibold text-black">
-                  {todayAttendance.clock_out_time
-                    ? "Selesai"
-                    : todayAttendance.is_late
-                      ? `Terlambat ${todayAttendance.late_minutes}m`
-                      : "Belum absen pulang"}
+                  {todayAttendance.attendance_status === "izin"
+                    ? "Izin disetujui — tidak perlu absen hari ini"
+                    : todayAttendance.attendance_status === "sakit"
+                      ? "Sakit — tidak perlu absen hari ini"
+                      : todayAttendance.clock_out_time
+                        ? "Selesai"
+                        : todayAttendance.is_late
+                          ? `Terlambat ${todayAttendance.late_minutes}m`
+                          : "Belum absen pulang"}
                 </span>
-                <div className="ml-auto flex gap-2">
-                  <span className="text-[8px] text-black">Masuk {formatTimeSimple(todayAttendance.clock_in_time)}</span>
-                  {todayAttendance.clock_out_time && (
-                    <span className="text-[8px] text-black">Pulang {formatTimeSimple(todayAttendance.clock_out_time)}</span>
-                  )}
-                </div>
+                {todayAttendance.attendance_status !== "izin" && todayAttendance.attendance_status !== "sakit" && (
+                  <div className="ml-auto flex gap-2">
+                    <span className="text-[8px] text-black">Masuk {formatTimeSimple(todayAttendance.clock_in_time)}</span>
+                    {todayAttendance.clock_out_time && (
+                      <span className="text-[8px] text-black">Pulang {formatTimeSimple(todayAttendance.clock_out_time)}</span>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
+
+          {/* Status IZIN/SAKIT — pengganti fingerprint saat cuti khusus */}
+          {todayAttendance && (todayAttendance.attendance_status === "izin" || todayAttendance.attendance_status === "sakit") && (
+            <div className="pointer-events-auto flex flex-col items-center gap-3 mt-auto pb-16">
+              <div className="w-[120px] h-[120px] rounded-full bg-gradient-to-br from-electric-violet via-[#8B00CC] to-[#6600CC] flex flex-col items-center justify-center shadow-[0_0_40px_rgba(191,0,255,0.35)]">
+                <span className="text-[22px] font-extrabold tracking-wide text-white hero-card-bg">
+                  {todayAttendance.attendance_status === "izin" ? "IZIN" : "SAKIT"}
+                </span>
+                <span className="text-[9px] text-white/70 mt-0.5">Disetujui</span>
+              </div>
+              <span className="text-[12px] font-semibold text-black text-center">
+                {todayAttendance.attendance_status === "izin"
+                  ? "Anda dalam status izin hari ini"
+                  : "Anda dalam status sakit hari ini"} — tidak perlu absen
+              </span>
+            </div>
+          )}
 
           {/* Error banner */}
           {error && (
@@ -627,7 +653,7 @@ export default function AttendancePage() {
           )}
 	        </div>
 
-		        {todayAttendance && todayAttendance.clock_out_time ? null : (
+		        {todayAttendance && (todayAttendance.attendance_status === "izin" || todayAttendance.attendance_status === "sakit" || todayAttendance.clock_out_time) ? null : (
               <div className="pointer-events-auto flex flex-col items-center gap-3 mt-auto pb-16">
                 {isAlphaLocked && (
                   <p className="text-[11px] font-semibold text-red-600 text-center max-w-[240px]">

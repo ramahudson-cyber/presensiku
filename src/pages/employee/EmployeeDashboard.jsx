@@ -299,6 +299,41 @@ export default function EmployeeDashboard() {
 
         {/* 2 CARDS: MASUK & PULANG */}
         <div className="grid grid-cols-2 gap-3">
+          {/* Status non-hadir (izin/sakit) → tampil status besar, bukan jam */}
+          {(() => {
+            const st = todayAttendance?.attendance_status;
+            if (st !== "izin" && st !== "sakit") return null;
+            const word = st === "izin" ? "IZIN" : "SAKIT";
+            const badge = st === "izin" ? "Izin Disetujui" : "Sakit (Tidak Dipotong)";
+            return (
+              <>
+                <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white hero-card-bg"
+                  style={{ background: 'linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)', boxShadow: '0 6px 20px rgba(191,0,255,0.25)' }}>
+                  <div className="text-[9px] uppercase tracking-[0.2em] opacity-75 font-semibold mb-3 flex items-center gap-1.5">
+                    <Sun size={13} /> Masuk
+                  </div>
+                  <div className="text-[28px] font-extrabold leading-none tracking-tight mb-2">{word}</div>
+                  <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full" style={{ border: '1px solid rgba(255,255,255,0.25)' }}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-300" />
+                    <span className="opacity-90">{badge}</span>
+                  </div>
+                </div>
+                <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-black/20"
+                  style={{ background: '#000000', color: '#FFFFFF', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
+                  <div className="text-[9px] uppercase tracking-[0.2em] opacity-65 font-semibold mb-3 flex items-center gap-1.5">
+                    <Sunset size={13} /> Pulang
+                  </div>
+                  <div className="text-[28px] font-extrabold leading-none tracking-tight mb-2">{word}</div>
+                  <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/10 px-2.5 py-1 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    Tidak perlu absen
+                  </div>
+                </div>
+              </>
+            );
+          })()}
+          {!(todayAttendance?.attendance_status === "izin" || todayAttendance?.attendance_status === "sakit") && (
+          <>
           {/* MASUK — Purple Gradient */}
           <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white hero-card-bg"
             style={{ background: 'linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)', boxShadow: '0 6px 20px rgba(191,0,255,0.25)' }}>
@@ -355,6 +390,8 @@ export default function EmployeeDashboard() {
               </>
             )}
           </div>
+          </>
+          )}
         </div>
 
         {/* Shift Reminder Banner — check-in */}
