@@ -46,6 +46,11 @@ html, body, #root {
   color: #0f172a;
   font-family: 'Inter', sans-serif;
   transition: background 0.4s, color 0.4s;
+  /* Cegah font boosting Android Chrome — teks halaman padat (mis. dashboard
+     pegawai) tanpa ini ikut membesar sehingga jarak label ikon BottomNav
+     berbeda antar halaman/role. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* --- DESIGN.md — COMPONENT UTILITY CLASSES (light) --- */
