@@ -451,8 +451,8 @@ export default function SignInPage() {
                 <h2 className="text-lg font-semibold text-pure-white mb-5">Masuk</h2>
                 {error && (
                   <div className="mb-4 p-3 bg-electric-violet/10 rounded-[16px] flex items-start gap-2.5">
-                    <AlertCircle size="15" className="text-periwinkle-glow shrink-0 mt-0.5" />
-                    <p className="text-xs sm:text-sm text-periwinkle-glow/90">{error}</p>
+                    <AlertCircle size="15" className="text-white shrink-0 mt-0.5" />
+                    <p className="text-xs sm:text-sm text-white">{error}</p>
                   </div>
                 )}
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -595,8 +595,8 @@ export default function SignInPage() {
                 </div>
                 {error && (
                   <div className="mb-4 p-3 bg-electric-violet/10 rounded-[16px] flex items-start gap-2.5">
-                    <AlertCircle size="15" className="text-periwinkle-glow shrink-0 mt-0.5" />
-                    <p className="text-xs sm:text-sm text-periwinkle-glow/90">{error}</p>
+                    <AlertCircle size="15" className="text-white shrink-0 mt-0.5" />
+                    <p className="text-xs sm:text-sm text-white">{error}</p>
                   </div>
                 )}
                 <form onSubmit={handleVerifyOtp} className="space-y-4">
@@ -665,8 +665,8 @@ export default function SignInPage() {
                 </div>
                 {error && (
                   <div className="mb-4 p-3 bg-electric-violet/10 rounded-[16px] flex items-start gap-2.5">
-                    <AlertCircle size="15" className="text-periwinkle-glow shrink-0 mt-0.5" />
-                    <p className="text-xs sm:text-sm text-periwinkle-glow/90">{error}</p>
+                    <AlertCircle size="15" className="text-white shrink-0 mt-0.5" />
+                    <p className="text-xs sm:text-sm text-white">{error}</p>
                   </div>
                 )}
                 <div className="space-y-3">
