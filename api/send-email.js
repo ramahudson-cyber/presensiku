@@ -51,41 +51,48 @@ export default async function handler(req, res) {
     },
   });
 
-  const html = `
-    <div style="font-family: Inter, Arial, sans-serif; max-width: 480px; margin: 0 auto; background: #0f0214; border-radius: 16px; overflow: hidden; border: 1px solid rgba(139,92,246,0.2);">
-      <div style="padding: 32px 24px; text-align: center; background: linear-gradient(135deg, #0f0214, #1a0533);">
-        <h1 style="color: #fff; font-size: 22px; margin: 0 0 4px;">${ORG_LABEL}</h1>
-        <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0;">Sistem Informasi Administrasi & Presensi</p>
+  // Dark-mode-proof email HTML: meta color-scheme mencegah "smart invert"
+  // aplikasi email membalik teks putih jadi gelap; background-color solid
+  // (bukan hanya gradient) menjamin banner & tombol tetap berlatar di client
+  // yang tidak mendukung gradient; semua warna teks hex solid tanpa alpha.
+  const html = `<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark"></head>
+<body style="margin:0; padding:0; background-color:#0f0214;">
+    <div style="font-family: Inter, Arial, sans-serif; max-width: 480px; margin: 0 auto; background-color: #0f0214; border-radius: 16px; overflow: hidden; border: 1px solid #2a1747;">
+      <div bgcolor="#0f0214" style="padding: 32px 24px; text-align: center; background-color: #0f0214; background-image: linear-gradient(135deg, #0f0214, #1a0533);">
+        <h1 style="color: #ffffff; font-size: 22px; margin: 0 0 4px;">${ORG_LABEL}</h1>
+        <p style="color: #b9b3c7; font-size: 13px; margin: 0;">Sistem Informasi Administrasi & Presensi</p>
       </div>
-      <div style="padding: 24px; background: #1a0a35;">
-        <p style="color: #fff; font-size: 14px; margin: 0 0 16px;">Yth. <strong>${safeFullName}</strong>,</p>
-        <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin: 0 0 20px; line-height: 1.6;">
+      <div bgcolor="#1a0a35" style="padding: 24px; background-color: #1a0a35;">
+        <p style="color: #ffffff; font-size: 14px; margin: 0 0 16px;">Yth. <strong>${safeFullName}</strong>,</p>
+        <p style="color: #cfc9dd; font-size: 13px; margin: 0 0 20px; line-height: 1.6;">
           Akun Presensiku Anda telah dibuat. Silakan login dengan kredensial berikut:
         </p>
-        <div style="background: #2d0a4e; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+        <div bgcolor="#2d0a4e" style="background-color: #2d0a4e; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
-              <td style="color: rgba(255,255,255,0.4); font-size: 12px; padding: 6px 0;">Username</td>
-              <td style="color: #fff; font-size: 14px; padding: 6px 0; text-align: right; font-weight: 600;">${safeUsername}</td>
+              <td style="color: #a49db8; font-size: 12px; padding: 6px 0;">Username</td>
+              <td style="color: #ffffff; font-size: 14px; padding: 6px 0; text-align: right; font-weight: 600;">${safeUsername}</td>
             </tr>
             <tr>
-              <td style="color: rgba(255,255,255,0.4); font-size: 12px; padding: 6px 0;">Password</td>
+              <td style="color: #a49db8; font-size: 12px; padding: 6px 0;">Password</td>
               <td style="color: #a78bfa; font-size: 14px; padding: 6px 0; text-align: right; font-weight: 600;">${safePassword || 'Puskesmas@123'}</td>
             </tr>
           </table>
         </div>
-        <a href="${APP_URL}" style="display: block; text-align: center; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: #fff; text-decoration: none; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; margin-bottom: 16px;">
+        <a href="${APP_URL}" bgcolor="#8b5cf6" style="display: block; text-align: center; background-color: #8b5cf6; color: #ffffff; text-decoration: none; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; margin-bottom: 16px;">
           Buka ${ORG_LABEL}
         </a>
-        <p style="color: rgba(255,255,255,0.4); font-size: 11px; margin: 0; line-height: 1.5;">
+        <p style="color: #a49db8; font-size: 11px; margin: 0; line-height: 1.5;">
           Setelah login, Anda akan diminta mengganti password untuk keamanan akun Anda.
         </p>
       </div>
-      <div style="padding: 16px 24px; text-align: center; background: #0f0214;">
-        <p style="color: rgba(255,255,255,0.2); font-size: 10px; margin: 0;">${ORG_LABEL} &copy; ${new Date().getFullYear()}</p>
+      <div bgcolor="#0f0214" style="padding: 16px 24px; text-align: center; background-color: #0f0214;">
+        <p style="color: #6b6480; font-size: 10px; margin: 0;">${ORG_LABEL} &copy; ${new Date().getFullYear()}</p>
       </div>
     </div>
-  `;
+</body>
+</html>`;
 
   try {
     const info = await transporter.sendMail({
