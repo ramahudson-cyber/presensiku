@@ -15,10 +15,18 @@ const MAX_PULL = 80;
 const DIVISOR = 2.5;
 
 // Cari scrollable ancestor dari titik sentuh; fallback scrollingElement.
+// HANYA elemen dengan computed overflow-y auto/scroll yang valid — elemen
+// pembungkus biasa (overflow visible) juga punya scrollHeight > clientHeight
+// tapi scrollTop-nya selalu 0 (tidak bisa di-scroll). Kalau sampai terpilih,
+// hook mengira user selalu di puncak halaman: sentuhan diblokir (nyangkut)
+// dan refresh terpicu di tengah konten.
 function findScroller(target) {
   let el = target instanceof Element ? target : null;
   while (el && el !== document.body && el !== document.documentElement) {
-    if (el.scrollHeight > el.clientHeight + 1) return el;
+    const overflowY = window.getComputedStyle(el).overflowY;
+    if ((overflowY === "auto" || overflowY === "scroll") && el.scrollHeight > el.clientHeight + 1) {
+      return el;
+    }
     el = el.parentElement;
   }
   return document.scrollingElement || document.documentElement;
