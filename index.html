@@ -35,6 +35,10 @@
           if (!src || String(src).indexOf("/assets/") === -1) return;
           if (reloaded) return;
           sessionStorage.setItem("boot-recovered", "1");
+          // Set juga guard bersama "app-reloaded" supaya jalur auto-reload
+          // lain (controllerchange / webVersionCode) tidak menambah reload
+          // kedua setelah recovery ini.
+          sessionStorage.setItem("app-reloaded", "1");
           if (window.caches && caches.keys) {
             caches.keys().then(function (keys) {
               return Promise.all(keys.map(function (k) { return caches.delete(k); }));

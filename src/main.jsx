@@ -10,13 +10,19 @@ document.documentElement.classList.remove("dark");
 localStorage.removeItem("theme");
 
 // App berhasil boot — reset flag recovery white screen (lihat index.html).
-sessionStorage.removeItem("boot-recovered");
-// Reset guard auto-reload supaya cold-start berikutnya boleh reload lagi.
-// Aman dari dobel-reload: inline script index.html membaca flag SAAT PARSE
-// (sebelum file ini jalan), jadi reload hasil sesi ini tetap ter-guard.
-sessionStorage.removeItem("sw-reloaded");    // kunci lama (sisa sesi)
-sessionStorage.removeItem("web-autoreload"); // kunci lama (sisa sesi)
-sessionStorage.removeItem("app-reloaded");   // kunci baru bersama
+// Guard auto-reload (app-reloaded & kawan-kawan) SENGAJA tidak dihapus saat
+// boot: kalau dihapus di sini, rantai reload lintas load (boot-recovery ->
+// webVersionCode -> controllerchange) bisa beruntun dan welcome page
+// terlihat reload 2x saat buka pertama setelah deploy. Guard direset hanya
+// setelah app stabil beberapa detik, supaya cold-start berikutnya tetap
+// boleh reload.
+const RESET_RELOAD_GUARDS_MS = 15000;
+setTimeout(() => {
+  sessionStorage.removeItem("boot-recovered");
+  sessionStorage.removeItem("sw-reloaded");    // kunci lama (sisa sesi)
+  sessionStorage.removeItem("web-autoreload"); // kunci lama (sisa sesi)
+  sessionStorage.removeItem("app-reloaded");   // kunci baru bersama
+}, RESET_RELOAD_GUARDS_MS);
 
 // Registrasi service worker manual (vite-plugin-pwa injectRegister: null).
 // updateViaCache: "none" memastikan cek /sw.js tidak kena HTTP cache browser,

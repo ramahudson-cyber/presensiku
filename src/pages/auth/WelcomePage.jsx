@@ -82,6 +82,11 @@ const PREMIUM_STYLES = `
   .premium-frame {
     position: relative;
     box-sizing: border-box;
+    /* 100vh fallback WAJIB: svh/dvh mengecil saat ada inset sistem (URL bar,
+       gesture nav) sehingga frame berhenti lebih awal dan background putih
+       body terlihat sebagai gap di bawah. 100vh = large viewport, selalu
+       menutup; kelebihan tinggi ditampung overflow: hidden. */
+    min-height: 100vh;
     min-height: 100svh;
     min-height: 100dvh;
     overflow: hidden;

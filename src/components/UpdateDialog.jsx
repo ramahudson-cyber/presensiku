@@ -42,6 +42,11 @@ export default function UpdateDialog() {
     let cancelled = false;
     const check = async () => {
       if (cancelled) return;
+      // Halaman baru saja dimuat — jangan reload di dalam window boot.
+      // Ini mencegah reload kedua menempel setelah boot-recovery (index.html)
+      // yang baru saja me-reload halaman; cek berikutnya (interval 30 dtk)
+      // tetap menangkap update yang sama.
+      if (performance.now() < 5000) return;
       const webUpdate = await checkWebUpdate();
       if (!webUpdate) {
         // Versi running = versi live → re-arm guard untuk update berikutnya.
