@@ -7,6 +7,8 @@ import { getShiftReminderInfo, getShiftEndReminderInfo, getUnreadCount, reminder
 import { Bell, CalendarCheck, ArrowLeft, Check, CheckCheck, Clock, Megaphone, ChevronRight, Sunset } from "lucide-react";
 import { toast } from "react-toastify";
 import { scheduleShiftReminders, subscribeAnnouncementRealtime, notifyNewAnnouncement } from "../../services/pushNotificationService";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 
 export default function EmployeeNotificationsPage() {
   const { user } = useAuth();
@@ -71,6 +73,8 @@ export default function EmployeeNotificationsPage() {
   const unreadCount = getUnreadCount(announcements, ackedIds);
   const today = getWitaDateKey(serverTime);
 
+  const { pullDistance, isRefreshing } = usePullToRefresh(fetchData);
+
   const handleMarkRead = async (announcementId) => {
     if (ackedIds.has(announcementId)) return;
     setAcking(announcementId);
@@ -119,6 +123,7 @@ export default function EmployeeNotificationsPage() {
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg }}>
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* HEADER — pola Profil / Izin & Sakit */}
       <div className="pt-14 px-6">
         <div className="flex items-center justify-between mb-5">

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { getLeaveRequests, approveLeaveRequest, rejectLeaveRequest, countLeaveDays } from "../../services/leaveService";
 import { toast } from "react-toastify";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 
 /* ═══ Premium badge config — light tokens ═══ */
 const STATUS = {
@@ -191,6 +193,8 @@ export default function LeaveManagementPage() {
 
   useEffect(() => { load(); }, [activeTab]);
 
+  const { pullDistance, isRefreshing } = usePullToRefresh(load);
+
   const pendingCount = items.filter(i => i.status === "pending").length;
   const approvedCount = items.filter(i => i.status === "approved").length;
   const rejectedCount = items.filter(i => i.status === "rejected").length;
@@ -237,6 +241,7 @@ export default function LeaveManagementPage() {
         width: "100%", padding: "16px 0 60px", position: "relative",
       }}
     >
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
       {/* ═══ Header — ringkasan; judul tampil di header violet ═══ */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">

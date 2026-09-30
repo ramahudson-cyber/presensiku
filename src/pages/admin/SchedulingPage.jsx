@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import BottomSheet from "../../components/BottomSheet";
 import ConfirmSheet from "../../components/ConfirmSheet";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 
 // Visual per kode shift ikut master DB (instansi bebas membuat kode sendiri:
 // PG/SG/MLM, dsb). Kode tak dikenal dapat visual netral.
@@ -123,6 +125,8 @@ export default function SchedulingPage() {
 
   useEffect(() => { loadSchedules(); }, [loadSchedules]);
 
+  const { pullDistance, isRefreshing } = usePullToRefresh(() => loadSchedules());
+
   const nav = (dir) => {
     let m = month + dir;
     let y = year;
@@ -133,6 +137,7 @@ export default function SchedulingPage() {
 
   return (
     <div className="space-y-5 animate-fade-in min-w-0 pb-24 md:pb-6">
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
       {/* HEADER */}
       <div className="relative design-card p-5 md:p-6 overflow-hidden">

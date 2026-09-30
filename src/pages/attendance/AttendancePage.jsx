@@ -12,6 +12,8 @@ import { getCurrentPosition } from "../../services/geoService";
 import { detectMockLocation, mockBlockMessage } from "../../services/mockLocationService";
 import { getPuskesmasLocation, calculateDistance, verifyLocationServer } from "../../services/attendanceService";
 import { getMondayFirstDayOfWeek, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 
 const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
 
@@ -179,6 +181,12 @@ export default function AttendancePage() {
       }
     } catch (e) { console.error(e); }
   };
+
+  // Tarik ke bawah di halaman absen = segarkan status absensi & jadwal hari ini
+  const refreshAttendanceData = async () => {
+    await Promise.all([fetchTodayAttendance(), fetchTodaySchedule()]);
+  };
+  const { pullDistance, isRefreshing } = usePullToRefresh(refreshAttendanceData);
 
   const getLocation = async () => {
     setLocationStatus("checking");
@@ -485,6 +493,7 @@ export default function AttendancePage() {
 
   return (
     <div className="fixed inset-0 z-10 top-[var(--header-h,0px)] lg:ml-[280px] overflow-hidden bg-slate-50">
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* Ambient Glow Orbs */}
       <div className="absolute top-[-120px] right-[-80px] w-[300px] h-[300px] bg-[radial-gradient(circle,rgba(191,0,255,0.08)_0%,transparent_70%)] rounded-full pointer-events-none z-[1]"></div>
       <div className="absolute bottom-[-100px] left-[-60px] w-[250px] h-[250px] bg-[radial-gradient(circle,rgba(74,222,128,0.05)_0%,transparent_70%)] rounded-full pointer-events-none z-[1]"></div>

@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import BottomSheet from "../../components/BottomSheet";
 import { sendPushForAnnouncement } from "../../services/pushNotificationService";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import {
   Megaphone, Plus, Loader2, Pencil, Trash2, Power,
   CheckCircle2, XCircle, AlertTriangle,
@@ -54,6 +56,8 @@ export default function AnnouncementsPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  const { pullDistance, isRefreshing } = usePullToRefresh(load);
 
   const openCreate = () => {
     setEditingId(null);
@@ -149,6 +153,7 @@ export default function AnnouncementsPage() {
 
   return (
     <div className="space-y-5">
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: T.text }}>Pengumuman</h1>

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { getSetting } from "../../lib/settings";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import {
@@ -1459,6 +1461,9 @@ function TabAuditLog() {
 export default function PengaturanPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("profil");
+  // Pull-to-refresh: naikkan refreshKey untuk me-remount tab aktif (re-fetch saat mount)
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { pullDistance, isRefreshing } = usePullToRefresh(() => setRefreshKey((k) => k + 1));
 
 // Cek role (double safety)
 if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
@@ -1498,6 +1503,7 @@ if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
 
   return (
     <div className="space-y-6 pb-20 animate-fade-in min-w-0">
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* Tab nav — horizontal scroll on mobile, grid on desktop */}
       <div className="flex md:grid md:grid-cols-7 gap-2 overflow-x-auto pb-2 md:overflow-visible md:pb-0">
         {tabs.map(tab => {
@@ -1521,13 +1527,13 @@ if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
       </div>
 
       <div>
-        {activeTab === "profil" && <TabProfilPuskesmas />}
-      {activeTab === "shift" && <TabShift />}
-      {activeTab === "master-data" && user?.role === "super_admin" && <MasterDataManagementPage />}
-      {activeTab === "user" && <TabManajemenUser />}
+        {activeTab === "profil" && <TabProfilPuskesmas key={refreshKey} />}
+      {activeTab === "shift" && <TabShift key={refreshKey} />}
+      {activeTab === "master-data" && user?.role === "super_admin" && <MasterDataManagementPage key={refreshKey} />}
+      {activeTab === "user" && <TabManajemenUser key={refreshKey} />}
 
-        {activeTab === "approval" && <TabApprovalDevice />}
-        {activeTab === "audit" && <TabAuditLog />}
+        {activeTab === "approval" && <TabApprovalDevice key={refreshKey} />}
+        {activeTab === "audit" && <TabAuditLog key={refreshKey} />}
       </div>
     </div>
   );

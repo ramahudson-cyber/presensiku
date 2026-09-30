@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import BottomSheet from "../../components/BottomSheet";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import {
   ChevronLeft, ChevronRight, ChevronDown, Calendar, Sun, Moon, Sunset, CloudSun,
   Loader2, Info
@@ -54,12 +56,8 @@ export default function EmployeeSchedule() {
   const [schedules, setSchedules] = useState({});
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, PG: 0, SR: 0, SI: 0, ML: 0 });
-  const [pullDistance, setPullDistance] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [pickerYear, setPickerYear] = useState(new Date().getFullYear());
-  const touchStartY = useRef(0);
-  const isPulling = useRef(false);
 
   const days = getDaysInMonth(year, month);
   const lastDay = new Date(year, month + 1, 0).getDate();
@@ -125,7 +123,6 @@ export default function EmployeeSchedule() {
   // Pull-to-refresh (page scroll)
   const handleRefresh = useCallback(async () => {
     if (!user?.id) return;
-    setIsRefreshing(true);
     try {
       const s = `${year}-${String(month + 1).padStart(2, "0")}-01`;
       const e = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
@@ -146,43 +143,18 @@ export default function EmployeeSchedule() {
       setStats(count);
     } catch (e) {
       console.error("Gagal refresh jadwal", e);
-    } finally {
-      setIsRefreshing(false);
     }
   }, [user?.id, year, month, lastDay]);
 
-  const handleTouchStart = (e) => {
-    if (window.scrollY <= 0 && !isRefreshing) {
-      touchStartY.current = e.touches[0].clientY;
-      isPulling.current = true;
-    }
-  };
-
-  const handleTouchMove = (e) => {
-    if (!isPulling.current || isRefreshing) return;
-    const diff = e.touches[0].clientY - touchStartY.current;
-    if (diff > 0) {
-      setPullDistance(Math.min(diff / 2.5, 80));
-    } else {
-      if (pullDistance > 0) setPullDistance(0);
-      isPulling.current = false;
-    }
-  };
-
-  const handleTouchEnd = () => {
-    if (pullDistance >= 55) {
-      handleRefresh();
-    }
-    setPullDistance(0);
-    isPulling.current = false;
-  };
+  const { pullDistance, isRefreshing } = usePullToRefresh(handleRefresh);
 
   const initials = user?.full_name?.charAt(0)?.toUpperCase() || "R";
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24"
-      style={{ background: T.bg, color: T.text }}
-      onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+      style={{ background: T.bg, color: T.text }}>
+
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
       {/* ── HEADER — simple elegant (sama dengan Riwayat) ── */}
       <div className="pt-14 px-6">
@@ -200,16 +172,6 @@ export default function EmployeeSchedule() {
       </div>
 
       <div className="max-w-md mx-auto px-4 mt-6 space-y-4">
-        {/* Pull to refresh indicator */}
-        <div className="flex items-center justify-center overflow-hidden transition-all duration-300"
-          style={{ height: pullDistance > 0 ? `${pullDistance}px` : '0px', opacity: Math.min(pullDistance / 55, 1) }}>
-          {isRefreshing ? (
-            <Loader2 size={20} className="animate-spin" style={{ color: '#BF00FF' }} />
-          ) : (
-            <ChevronDown size={20} className="transition-transform duration-300" style={{ color: '#BF00FF', transform: pullDistance >= 55 ? 'rotate(180deg)' : 'none' }} />
-          )}
-        </div>
-
         {/* NAV + STATS */}
         <div className="flex flex-col sm:flex-row gap-3">
           <button onClick={openMonthPicker}

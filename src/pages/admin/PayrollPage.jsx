@@ -8,6 +8,8 @@ import {
 import { exportExcelWorkbook, RUPIAH } from "../../services/excelExport";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import {
   Wallet, Calculator, Users, SlidersHorizontal, Loader2,
   Save, Download, Power, CheckCircle2, Info,
@@ -32,6 +34,9 @@ export default function PayrollPage() {
   const { user } = useAuth();
   const [enabled, setEnabledState] = useState(null); // null = memuat
   const [tab, setTab] = useState("rekap");
+  // Pull-to-refresh: naikkan refreshKey untuk me-remount tab aktif (re-fetch saat mount)
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { pullDistance, isRefreshing } = usePullToRefresh(() => setRefreshKey((k) => k + 1));
   const [period, setPeriod] = useState(currentPeriod());
   const [lines, setLines] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -111,6 +116,7 @@ export default function PayrollPage() {
 
   return (
     <div className="space-y-5">
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: T.text }}>Gaji</h1>
         <p className="text-sm mt-0.5" style={{ color: T.textSec }}>
@@ -138,9 +144,9 @@ export default function PayrollPage() {
         ))}
       </div>
 
-      {tab === "rekap" && <TabRekap period={period} setPeriod={setPeriod} lines={lines} setLines={setLines} loading={loading} setLoading={setLoading} recalcing={recalcing} setRecalcing={setRecalcing} orgName={override ? user?.override_org?.name : user?.organization?.name} />}
-      {tab === "gaji" && <TabGaji user={user} period={period} />}
-      {tab === "aturan" && <TabAturan period={period} />}
+      {tab === "rekap" && <TabRekap key={refreshKey} period={period} setPeriod={setPeriod} lines={lines} setLines={setLines} loading={loading} setLoading={setLoading} recalcing={recalcing} setRecalcing={setRecalcing} orgName={override ? user?.override_org?.name : user?.organization?.name} />}
+      {tab === "gaji" && <TabGaji key={refreshKey} user={user} period={period} />}
+      {tab === "aturan" && <TabAturan key={refreshKey} period={period} />}
     </div>
   );
 }

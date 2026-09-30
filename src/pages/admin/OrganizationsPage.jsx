@@ -4,6 +4,8 @@ import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import Swal from "sweetalert2";
 import { Building2, Plus, Loader2, CheckCircle2, XCircle, AlertCircle, Trash2, LogIn } from "lucide-react";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 
 const T = {
   text: "#0F172A",
@@ -42,6 +44,8 @@ function OrganizationsPage() {
       setLoading(false);
     }
   }, []);
+
+  const { pullDistance, isRefreshing } = usePullToRefresh(loadOrgs);
 
   useEffect(() => {
     if (!isPlatformAdmin) return;
@@ -205,6 +209,7 @@ function OrganizationsPage() {
 
   return (
     <div className="space-y-6">
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* Header */}
       <div className="flex flex-wrap items-center justify-end gap-3">
         <button

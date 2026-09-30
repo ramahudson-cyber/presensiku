@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Capacitor } from "@capacitor/core";
 
 // Pull-to-Refresh untuk APK (Android WebView tidak punya native PTR).
 // Di PWA/browser, native Chrome PTR yang bekerja — hook ini sengaja
@@ -26,8 +25,9 @@ function findScroller(target) {
 }
 
 export default function usePullToRefresh(onRefresh, { enabled } = {}) {
-  // Default: hanya APK native. Di web, native browser PTR yang mengambil peran.
-  const active = enabled ?? Capacitor.isNativePlatform();
+  // Default: aktif di semua platform (APK & web/PWA di HP). Di desktop tanpa
+  // layar sentuh hook ini no-op — listener-nya hanya touch events.
+  const active = enabled ?? true;
 
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
