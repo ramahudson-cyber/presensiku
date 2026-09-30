@@ -1,4 +1,4 @@
-import { ArrowUp, ArrowDown, UsersRound, CircleCheckBig, HeartPulse, CalendarDays } from "lucide-react";
+import { ArrowUp, ArrowDown, UsersRound, CircleCheckBig, HeartPulse, UserX } from "lucide-react";
 
 const PhotoStack = ({ users = [], max = 4 }) => {
   if (!users || users.length === 0) {
@@ -36,7 +36,7 @@ export function PremiumStatCard({ title, sub, value, users, trendValue, trendDir
     "Total Pegawai": { icon: UsersRound, accent: "from-[#BF00FF] to-[#8A00CC]", note: `${value || 0} akun terdaftar` },
     "Hadir Hari Ini": { icon: CircleCheckBig, accent: "from-emerald-500 to-teal-600", note: value > 0 ? `${value} sudah check-in` : "Menunggu presensi pertama" },
     "Izin / Sakit": { icon: HeartPulse, accent: "from-amber-500 to-orange-600", note: value > 0 ? `${value} perlu dipantau` : "Semua aman" },
-    "Cuti": { icon: CalendarDays, accent: "from-sky-500 to-blue-600", note: value > 0 ? `${value} cuti aktif` : "Tidak ada cuti aktif" },
+    "Alpha": { icon: UserX, accent: "from-rose-500 to-red-600", note: value > 0 ? `${value} tanpa keterangan` : "Tidak ada alpha" },
   }[title] || { icon: UsersRound, accent: "from-[#BF00FF] to-[#8A00CC]", note: sub };
   const Icon = meta.icon;
   let trendIcon = null;

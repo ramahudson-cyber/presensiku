@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { signOut } from "../../services/authService";
 import { getCurrentVersion } from "../../services/updateService";
 import { PremiumStatCard } from "./PremiumStatCard";
+import { isShiftEnded, getMondayFirstDayOfWeek } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import {
@@ -23,8 +24,8 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ totalPegawai: 0, hadirHariIni: 0, izinSakit: 0, cuti: 0 });
-  const [userGroups, setUserGroups] = useState({ all: [], present: [], absent: [], on_leave: [] });
+  const [stats, setStats] = useState({ totalPegawai: 0, hadirHariIni: 0, izinSakit: 0, alpha: 0 });
+  const [userGroups, setUserGroups] = useState({ all: [], present: [], absent: [], alpha: [] });
   const [weeklyData, setWeeklyData] = useState([0, 0, 0, 0, 0, 0, 0]);
   const [announcements, setAnnouncements] = useState([]);
   const [serverNow, setServerNow] = useState(new Date());
@@ -47,34 +48,58 @@ export default function DashboardPage() {
     try {
       const serverDate = new Date();
       const today = getWitaDateString(serverDate);
+      const yesterday = getWitaDateString(new Date(serverDate.getTime() - 24 * 60 * 60 * 1000));
 
-      // Parallel: all profiles, today's attendance, announcements
-      const [profilesRes, attendanceTodayRes, announceRes] = await Promise.all([
+      // Parallel: all profiles, attendance (kemarin+hari ini untuk alpha shift malam), announcements, jadwal & aturan shift
+      const [profilesRes, attendanceRes, announceRes, schedRes, shiftRulesRes] = await Promise.all([
         supabase.from("profiles").select("id, full_name, avatar_url"),
-        supabase.from("attendance").select("user_id, attendance_status").eq("date", today),
+        supabase.from("attendance").select("user_id, attendance_status, date").in("date", [yesterday, today]),
         supabase.from("announcements").select("*").eq("is_active", true)
           .or(`expires_at.is.null,expires_at.gte.${new Date().toISOString()}`)
           .order("created_at", { ascending: false }).limit(3),
+        supabase.from("employee_schedules").select("user_id, date, shift_code").in("date", [yesterday, today]),
+        supabase.from("shift_schedules").select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day")
+          .in("day_of_week", [getMondayFirstDayOfWeek(today), getMondayFirstDayOfWeek(yesterday)]),
       ]);
 
       const allProfiles = profilesRes.data || [];
-      const attendanceToday = attendanceTodayRes.data || [];
+      const attendanceRows = attendanceRes.data || [];
       const announceData = announceRes.data || [];
+      const attendanceToday = attendanceRows.filter(a => a.date === today);
 
       const presentIds = new Set(attendanceToday.filter(a => a.attendance_status === "hadir" || a.attendance_status === "terlambat").map(a => a.user_id));
       const absentIds = new Set(attendanceToday.filter(a => a.attendance_status === "izin" || a.attendance_status === "sakit").map(a => a.user_id));
-      const onLeaveIds = new Set(attendanceToday.filter(a => a.attendance_status === "cuti").map(a => a.user_id));
+
+      // Alpha: jadwal kerja yang shift-nya sudah berakhir tanpa record absen apa pun.
+      // Jadwal kemarin dihitung hanya untuk shift Malam lintas tengah malam yang berakhir hari ini.
+      const attendedKeys = new Set(attendanceRows.map(a => `${a.user_id}|${a.date}`));
+      const profileIds = new Set(allProfiles.map(p => p.id));
+      const shiftRuleMap = new Map((shiftRulesRes.data || []).map(s => [`${s.shift_code}|${s.day_of_week}`, s]));
+      const now = new Date();
+      const alphaIds = new Set();
+      (schedRes.data || []).forEach(s => {
+        const isToday = s.date === today;
+        const isYesterday = s.date === yesterday;
+        if (!isToday && !isYesterday) return;
+        const def = shiftRuleMap.get(`${s.shift_code}|${getMondayFirstDayOfWeek(s.date)}`);
+        if (!def) return;
+        if (isYesterday && !def.crosses_midnight) return;
+        if (attendedKeys.has(`${s.user_id}|${s.date}`)) return;
+        if (!isShiftEnded(s.date, def, now)) return;
+        if (!profileIds.has(s.user_id)) return;
+        alphaIds.add(s.user_id);
+      });
 
       setUserGroups({
         all: allProfiles,
         present: allProfiles.filter(p => presentIds.has(p.id)),
         absent: allProfiles.filter(p => absentIds.has(p.id)),
-        on_leave: allProfiles.filter(p => onLeaveIds.has(p.id)),
+        alpha: allProfiles.filter(p => alphaIds.has(p.id)),
       });
 
       const hadir = presentIds.size;
       const izinSakit = absentIds.size;
-      const cuti = onLeaveIds.size;
+      const alpha = alphaIds.size;
 
       const weekDates = Array.from({ length: 7 }, (_, i) => {
         const d = new Date(serverDate);
@@ -91,7 +116,7 @@ export default function DashboardPage() {
         totalPegawai: allProfiles.length,
         hadirHariIni: hadir,
         izinSakit,
-        cuti,
+        alpha,
       });
       setWeeklyData(weekly);
       setAnnouncements(announceData);
@@ -166,7 +191,7 @@ export default function DashboardPage() {
           <PremiumStatCard title="Total Pegawai" sub="Seluruh status" value={stats.totalPegawai} users={userGroups.all} loading={loading} />
           <PremiumStatCard title="Hadir Hari Ini" sub="Sudah check-in" value={stats.hadirHariIni} users={userGroups.present} loading={loading} />
           <PremiumStatCard title="Izin / Sakit" sub="Hari ini" value={stats.izinSakit} users={userGroups.absent} loading={loading} />
-          <PremiumStatCard title="Cuti" sub="Hari ini" value={stats.cuti} users={userGroups.on_leave} loading={loading} />
+          <PremiumStatCard title="Alpha" sub="Hari ini" value={stats.alpha} users={userGroups.alpha} loading={loading} />
         </div>
 
         {/* Grafik + Pengumuman */}

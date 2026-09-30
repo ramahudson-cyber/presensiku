@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { signOut } from "../../services/authService";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import { isShiftEnded, getMondayFirstDayOfWeek } from "../../lib/shiftTime";
 import {
   Users, UserCheck, UserMinus, UserX,
   TrendingUp, Calendar, Bell, RefreshCw, BellOff, Inbox,
@@ -69,7 +70,7 @@ export default function KepalaUnitDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ totalPegawai: 0, hadirHariIni: 0, izinSakit: 0, cuti: 0 });
+  const [stats, setStats] = useState({ totalPegawai: 0, hadirHariIni: 0, izinSakit: 0, alpha: 0 });
   const [recentAttendance, setRecentAttendance] = useState([]);
   const [weeklyData, setWeeklyData] = useState([0, 0, 0, 0, 0, 0, 0]);
   const [announcements, setAnnouncements] = useState([]);
@@ -101,9 +102,10 @@ export default function KepalaUnitDashboard() {
     try {
       const serverDate = new Date();
       const today = getWitaDateString(serverDate);
+      const yesterday = getWitaDateString(new Date(serverDate.getTime() - 24 * 60 * 60 * 1000));
 
-      // Parallel: totalPegawai, attendanceToday (limited), announcements
-      const [totalPegawaiRes, attendanceTodayRes, announceRes] = await Promise.all([
+      // Parallel: totalPegawai, attendanceToday (limited, untuk tabel), attendance penuh (untuk statistik), announcements, jadwal & aturan shift
+      const [totalPegawaiRes, attendanceTodayRes, statsAttRes, announceRes, schedRes, shiftRulesRes] = await Promise.all([
         supabase.from("profiles").select("id", { count: "exact" }),
         supabase
           .from("attendance")
@@ -111,22 +113,46 @@ export default function KepalaUnitDashboard() {
           .eq("date", today)
           .order("clock_in_time", { ascending: false })
           .limit(8),
+        supabase.from("attendance").select("user_id, attendance_status, date").in("date", [yesterday, today]),
         supabase.from("announcements").select("*").eq("is_active", true)
           .or(`expires_at.is.null,expires_at.gte.${new Date().toISOString()}`)
           .order("created_at", { ascending: false }).limit(3),
+        supabase.from("employee_schedules").select("user_id, date, shift_code").in("date", [yesterday, today]),
+        supabase.from("shift_schedules").select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day")
+          .in("day_of_week", [getMondayFirstDayOfWeek(today), getMondayFirstDayOfWeek(yesterday)]),
       ]);
 
       const totalPegawai = totalPegawaiRes.count || 0;
       const attendanceToday = attendanceTodayRes.data || [];
       const announceData = announceRes.data || [];
 
-      const hadir = attendanceToday.filter(a =>
+      // Statistik dari query penuh (bukan yang dibatasi limit 8), baris hari ini saja
+      const statsAttendance = (statsAttRes.data || []).filter(a => a.date === today);
+      const hadir = statsAttendance.filter(a =>
         a.attendance_status === "hadir" || a.attendance_status === "terlambat"
       ).length;
-      const izinSakit = attendanceToday.filter(a =>
+      const izinSakit = statsAttendance.filter(a =>
         a.attendance_status === "izin" || a.attendance_status === "sakit"
       ).length;
-      const cuti = attendanceToday.filter(a => a.attendance_status === "cuti").length;
+
+      // Alpha: jadwal kerja yang shift-nya sudah berakhir tanpa record absen apa pun.
+      // Jadwal kemarin dihitung hanya untuk shift Malam lintas tengah malam yang berakhir hari ini.
+      const attendedKeys = new Set((statsAttRes.data || []).map(a => `${a.user_id}|${a.date}`));
+      const shiftRuleMap = new Map((shiftRulesRes.data || []).map(s => [`${s.shift_code}|${s.day_of_week}`, s]));
+      const now = new Date();
+      const alphaIds = new Set();
+      (schedRes.data || []).forEach(s => {
+        const isToday = s.date === today;
+        const isYesterday = s.date === yesterday;
+        if (!isToday && !isYesterday) return;
+        const def = shiftRuleMap.get(`${s.shift_code}|${getMondayFirstDayOfWeek(s.date)}`);
+        if (!def) return;
+        if (isYesterday && !def.crosses_midnight) return;
+        if (attendedKeys.has(`${s.user_id}|${s.date}`)) return;
+        if (!isShiftEnded(s.date, def, now)) return;
+        alphaIds.add(s.user_id);
+      });
+      const alpha = alphaIds.size;
 
       // Weekly chart: 1 query instead of 7
       const weekDates = [];
@@ -183,7 +209,7 @@ export default function KepalaUnitDashboard() {
         totalPegawai,
         hadirHariIni: hadir,
         izinSakit,
-        cuti,
+        alpha,
       });
       setRecentAttendance(attendanceToday);
       setWeeklyData(weekly);
@@ -323,7 +349,7 @@ export default function KepalaUnitDashboard() {
           <StatCard title="Total Pegawai" value={stats.totalPegawai} subtitle="Seluruh status kepegawaian" icon={Users} loading={loading} />
           <StatCard title="Hadir Hari Ini" value={stats.hadirHariIni} subtitle="Sudah check-in" icon={UserCheck} accent="from-emerald-500 to-teal-600" loading={loading} />
           <StatCard title="Izin / Sakit" value={stats.izinSakit} subtitle="Hari ini" icon={UserMinus} accent="from-amber-500 to-orange-600" loading={loading} />
-          <StatCard title="Cuti" value={stats.cuti} subtitle="Hari ini" icon={UserX} accent="from-sky-500 to-blue-600" loading={loading} />
+          <StatCard title="Alpha" value={stats.alpha} subtitle="Tanpa keterangan" icon={UserX} accent="from-rose-500 to-red-600" loading={loading} />
         </div>
 
         {/* Grafik + Pengumuman */}
