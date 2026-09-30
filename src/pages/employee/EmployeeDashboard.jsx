@@ -318,7 +318,7 @@ export default function EmployeeDashboard() {
                     <span className="opacity-90">{badge}</span>
                   </div>
                 </div>
-                <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-black/20"
+                <div className="hero-card-bg rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-black/20"
                   style={{ background: '#000000', color: '#FFFFFF', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
                   <div className="text-[9px] uppercase tracking-[0.2em] opacity-65 font-semibold mb-3 flex items-center gap-1.5">
                     <Sunset size={13} /> Pulang
