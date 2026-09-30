@@ -29,6 +29,7 @@ export default function EmployeeDashboard() {
   const { user } = useAuth();
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
+  const [ackedIds, setAckedIds] = useState(new Set());
   const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0, jadwalCount: 0 });
   const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,13 +113,14 @@ export default function EmployeeDashboard() {
       const lastDay = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
       const monthEndStr = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
 
-      const [attRes, shiftRes, monthAttRes, annRes, histRes, schedRes, shiftSchedulesRes] = await withTimeout(Promise.all([
+      const [attRes, shiftRes, monthAttRes, annRes, ackRes, histRes, schedRes, shiftSchedulesRes] = await withTimeout(Promise.all([
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("attendance").select("date, attendance_status").eq("user_id", user.id).gte("date", monthStartStr).lte("date", today),
         supabase.from("announcements").select("*").eq("is_active", true)
           .or(`expires_at.is.null,expires_at.gte.${new Date().toISOString()}`)
           .order("created_at", { ascending: false }).limit(3),
+        supabase.from("announcement_acks").select("announcement_id").eq("user_id", user.id),
         getAttendanceHistory(user.id),
         supabase.from("employee_schedules").select("date, shift_code").eq("user_id", user.id).gte("date", monthStartStr).lte("date", monthEndStr),
         supabase.from("shift_schedules").select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
@@ -156,6 +158,7 @@ export default function EmployeeDashboard() {
 
       setStats({ ...s, alpha: alphaCount, jadwalCount });
       setAnnouncements(annRes.data || []);
+      setAckedIds(new Set((ackRes.data || []).map((r) => r.announcement_id)));
 
       const weekAgo = addCalendarDays(today, -7);
       const recentSchedules = schedRes.data
@@ -653,9 +656,31 @@ export default function EmployeeDashboard() {
           <div className="space-y-2">
             {announcements.length > 0 ? (
               <>
-                <div className="text-xs py-1" style={{ color: T.textSec }}>
-                  {announcements.length} pengumuman aktif
-                </div>
+                {announcements.map((a) => {
+                  const isUnread = !ackedIds.has(a.id);
+                  const dateLabel = new Date(a.published_at || a.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+                  return (
+                    <Link key={a.id} to="/employee/notifications"
+                      className="flex items-start gap-2.5 rounded-xl px-3 py-2.5 transition-all hover:translate-x-1"
+                      style={{ background: T.rowBg }}>
+                      <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${isUnread ? "bg-[#BF00FF]" : "bg-transparent"}`} />
+                      <span className="flex-1 min-w-0">
+                        <span className="flex items-center gap-1.5 min-w-0">
+                          {a.priority === "urgent" && (
+                            <span className="shrink-0 text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700">URGENT</span>
+                          )}
+                          {a.priority === "penting" && (
+                            <span className="shrink-0 text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">PENTING</span>
+                          )}
+                          <span className="text-xs font-semibold truncate" style={{ color: isUnread ? "#BF00FF" : T.text }}>{a.title}</span>
+                        </span>
+                        <span className="block text-[11px] mt-0.5 line-clamp-1" style={{ color: T.textSec }}>{a.content}</span>
+                        <span className="block text-[9px] mt-0.5" style={{ color: T.textMuted }}>{dateLabel}</span>
+                      </span>
+                      <ChevronRight size={12} className="shrink-0 mt-1.5" style={{ color: T.textMuted }} />
+                    </Link>
+                  );
+                })}
                 <Link to="/employee/notifications"
                   className="flex items-center gap-2 rounded-xl px-4 py-3 transition-all hover:translate-x-1 text-xs font-medium"
                   style={{ background: T.rowBg, color: T.text }}>
