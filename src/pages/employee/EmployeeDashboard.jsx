@@ -325,15 +325,10 @@ export default function EmployeeDashboard() {
       </div>
 
       <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
-        {/* SECTION TITLE: Status hari ini */}
-        <div className="px-4 flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 flex items-center justify-center shrink-0 bg-purple-50 rounded-full">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-          </div>
-          <div className="pt-0.5">
+        {/* SECTION TITLE: Status hari ini — bar + judul, pola sama dengan header "Menu" */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-1 h-4 rounded-full shrink-0" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+          <div>
             <div className="text-lg font-extrabold tracking-tight" style={{ color: T.text }}>Status hari ini</div>
             <div className="text-[10px] mt-0.5 font-normal" style={{ color: T.textMuted }}>Pantau waktu kehadiran anda</div>
           </div>
