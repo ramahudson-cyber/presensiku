@@ -469,27 +469,31 @@ export default function EmployeeDashboard() {
           )}
         </div>
 
-        {/* MENU UTAMA — grid premium (pindahan dari bottom nav) */}
-        <div className="grid gap-1 mt-5" style={{ gridTemplateColumns: `repeat(${payrollOn ? 6 : 5}, minmax(0, 1fr))` }}>
+        {/* MENU UTAMA — judul + grid 3 kolom (Slip Gaji & Profil turun ke baris 2) */}
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+          <h3 className="text-sm font-bold tracking-wide" style={{ color: T.text }}>Menu</h3>
+        </div>
+        <div className="grid grid-cols-3 gap-x-2 gap-y-4">
           {[
-            { to: "/employee/leave", icon: ClipboardList, label: ["Izin", "Sakit"], tile: "linear-gradient(135deg, #EDE9FE, #DDD6FE)", color: "text-violet-600" },
-            { to: "/employee/history", icon: History, label: ["Riwayat", "Kehadiran"], tile: "linear-gradient(135deg, #DBEAFE, #BFDBFE)", color: "text-blue-600" },
-            { to: "/employee/notifications", icon: Bell, label: ["Noti", "fikasi"], tile: "linear-gradient(135deg, #FEF3C7, #FDE68A)", color: "text-amber-600", badge: true },
-            ...(payrollOn ? [{ to: "/employee/salary", icon: Wallet, label: ["Slip", "Gaji"], tile: "linear-gradient(135deg, #D1FAE5, #A7F3D0)", color: "text-emerald-600" }] : []),
-            { to: "/employee/profile", icon: User, label: ["Profil"], tile: "linear-gradient(135deg, #FCE7F3, #FBCFE8)", color: "text-pink-600" },
+            { to: "/employee/leave", icon: ClipboardList, label: "Izin/Sakit", tile: "linear-gradient(135deg, #EDE9FE, #DDD6FE)", color: "text-violet-600" },
+            { to: "/employee/history", icon: History, label: "Riwayat Kehadiran", tile: "linear-gradient(135deg, #DBEAFE, #BFDBFE)", color: "text-blue-600" },
+            { to: "/employee/notifications", icon: Bell, label: "Notifikasi", tile: "linear-gradient(135deg, #FEF3C7, #FDE68A)", color: "text-amber-600", badge: true },
+            ...(payrollOn ? [{ to: "/employee/salary", icon: Wallet, label: "Slip Gaji", tile: "linear-gradient(135deg, #D1FAE5, #A7F3D0)", color: "text-emerald-600" }] : []),
+            { to: "/employee/profile", icon: User, label: "Profil", tile: "linear-gradient(135deg, #FCE7F3, #FBCFE8)", color: "text-pink-600" },
           ].map((item) => (
-            <Link key={item.to} to={item.to} className="flex flex-col items-center gap-2 py-1 group">
-              <span className="relative w-[52px] h-[52px] rounded-[18px] flex items-center justify-center shadow-[0_4px_14px_rgba(15,23,42,0.10)] transition-transform group-hover:-translate-y-0.5 group-active:scale-95"
+            <Link key={item.to} to={item.to} className="flex flex-col items-center gap-2.5 py-1 group">
+              <span className="relative w-16 h-16 rounded-[22px] flex items-center justify-center shadow-[0_6px_16px_rgba(15,23,42,0.12)] transition-transform group-hover:-translate-y-0.5 group-active:scale-95"
                 style={{ background: item.tile }}>
-                <item.icon size={22} className={item.color} />
+                <item.icon size={30} strokeWidth={2} className={item.color} />
                 {item.badge && unreadNotif > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white text-[8.5px] font-bold grid place-items-center shadow">
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold grid place-items-center shadow">
                     {unreadNotif}
                   </span>
                 )}
               </span>
-              <span className="text-[10px] font-bold text-slate-600 text-center leading-[1.15]">
-                {item.label.map((w, i) => (<span key={i}>{w}{i < item.label.length - 1 && <br />}</span>))}
+              <span className="text-[10.5px] font-bold text-slate-600 text-center leading-tight px-1">
+                {item.label}
               </span>
             </Link>
           ))}
