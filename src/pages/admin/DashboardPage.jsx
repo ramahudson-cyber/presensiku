@@ -133,6 +133,12 @@ export default function DashboardPage() {
     const d = new Date(serverNow.getTime() + (8 * 60 * 60 * 1000));
     return `${DAYS_FULL[d.getUTCDay()]}, ${d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`;
   };
+  // Tanggal pendek untuk mobile — tanggal panjang mempersempit kolom nama
+  const witaDateShort = () => {
+    const d = new Date(serverNow.getTime() + (8 * 60 * 60 * 1000));
+    const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+    return `${days[d.getUTCDay()]}, ${d.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}`;
+  };
   const handleLogout = async () => { await signOut(); navigate("/"); };
   const userInitial = user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "S";
 
@@ -141,11 +147,14 @@ export default function DashboardPage() {
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* Hero Section — violet gradient, one-row compact, in-flow with margin (Variant B) */}
       <div className="hero-card-bg mx-3 mt-3 sm:mx-4 sm:mt-4 md:mx-5 md:mt-5 lg:mx-6 lg:mt-6 xl:mx-8 xl:mt-8 bg-gradient-to-r from-[#C44DFF] via-[#BF00FF] to-[#8A00CC] rounded-[24px] shadow-xl ring-1 ring-violet-300/40">
-        <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
-          {/* Time block */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-3 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
+          {/* Time block — tanggal pendek di mobile agar nama tidak terdesak */}
           <div className="shrink-0">
             <div className="text-xl sm:text-2xl font-bold text-white tabular-nums leading-none tracking-tight">{witaTime()}</div>
-            <div className="text-[10px] sm:text-[11px] text-white/70 font-medium mt-1 tabular-nums">{witaDate()}</div>
+            <div className="text-[10px] sm:text-[11px] text-white/70 font-medium mt-1 tabular-nums">
+              <span className="sm:hidden">{witaDateShort()}</span>
+              <span className="hidden sm:inline">{witaDate()}</span>
+            </div>
           </div>
           {/* Divider */}
           <div className="w-px h-10 bg-white/25 shrink-0 hidden sm:block" aria-hidden="true" />

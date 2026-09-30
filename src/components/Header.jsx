@@ -41,7 +41,7 @@ function Header() {
           <div className="min-w-0 flex-1">
             <div className="text-base sm:text-lg font-bold text-white truncate tracking-tight">{page.title}</div>
             {page.desc && (
-              <div className="text-[10px] sm:text-[11px] text-white/70 truncate font-medium uppercase tracking-wider">{page.desc}</div>
+              <div className="hidden sm:block text-[10px] sm:text-[11px] text-white/70 truncate font-medium uppercase tracking-wider">{page.desc}</div>
             )}
           </div>
           {/* Actions */}
