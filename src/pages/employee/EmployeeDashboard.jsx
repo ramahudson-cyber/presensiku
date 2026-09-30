@@ -4,9 +4,9 @@ import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
-import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, ArrowRight, Bell, ChevronRight, LogOut, ClipboardList, User, Wallet } from "lucide-react";
+import { History, Sun, Sunset, ArrowRight, Bell, ChevronRight, LogOut, ClipboardList, User, Wallet } from "lucide-react";
 import { signOut } from "../../services/authService";
-import { addCalendarDays, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
+import { getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
 import { getShiftReminderInfo, getShiftEndReminderInfo, reminderToastKey, reminderToastEndKey } from "../../lib/notificationReminder";
 import { getSetting } from "../../lib/settings";
 import { registerPushNotifications, requestNotificationPermission, scheduleShiftReminders, subscribeAnnouncementRealtime, notifyNewAnnouncement } from "../../services/pushNotificationService";
@@ -46,7 +46,6 @@ export default function EmployeeDashboard() {
   const [announcements, setAnnouncements] = useState([]);
   const [ackedIds, setAckedIds] = useState(new Set());
   const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0, jadwalCount: 0 });
-  const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [shift, setShift] = useState(null);
@@ -163,7 +162,7 @@ export default function EmployeeDashboard() {
       const lastDay = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
       const monthEndStr = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
 
-      const [attRes, shiftRes, monthAttRes, annRes, ackRes, histRes, schedRes, shiftSchedulesRes] = await withTimeout(Promise.all([
+      const [attRes, shiftRes, monthAttRes, annRes, ackRes, schedRes, shiftSchedulesRes] = await withTimeout(Promise.all([
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("attendance").select("date, attendance_status").eq("user_id", user.id).gte("date", monthStartStr).lte("date", today),
@@ -210,38 +209,6 @@ export default function EmployeeDashboard() {
       setAnnouncements(annRes.data || []);
       setAckedIds(new Set((ackRes.data || []).map((r) => r.announcement_id)));
 
-      const weekAgo = addCalendarDays(today, -7);
-      const recentSchedules = schedRes.data
-        ? schedRes.data.filter(sch => sch.date >= weekAgo)
-          .sort((a, b) => b.date.localeCompare(a.date))
-        : [];
-
-      const attMap = {};
-      (histRes || []).forEach(a => { attMap[a.date] = a; });
-
-      const mergedHistory = recentSchedules.map(sch => {
-        const att = attMap[sch.date] || null;
-        const isPast = isEnded(sch);
-        return {
-          ...sch,
-          shift_code: sch.shift_code,
-          ...(att ? {
-            attendance_status: att.attendance_status,
-            clock_in_time: att.clock_in_time,
-            clock_out_time: att.clock_out_time,
-            late_minutes: att.late_minutes,
-            id: att.id,
-          } : {
-            attendance_status: isPast ? 'alpha' : 'belum',
-            clock_in_time: null,
-            clock_out_time: null,
-            late_minutes: 0,
-            id: sch.date + '-merged',
-          }),
-        };
-      });
-
-      setAttendanceHistory(mergedHistory.filter(h => h.attendance_status !== 'belum'));
     } catch (e) {
       console.error(e);
       setFetchError(e.message?.includes('Timeout') ? 'Koneksi lambat. Coba lagi.' : 'Gagal memuat data. Periksa koneksi.');
@@ -659,143 +626,8 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* HISTORY CARD */}
-        <div className="rounded-3xl p-5 relative overflow-hidden"
-          style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
-              <h3 className="text-sm font-bold tracking-wide" style={{ color: T.text }}>Riwayat Absensi</h3>
-            </div>
-            <Link to="/employee/history" className="flex items-center gap-1 text-[10px] font-semibold text-[#BF00FF] hover:underline">
-              Lihat Semua <History size={14} />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-[1fr_44px_44px_70px] gap-3 px-3.5 mb-1 text-[9px] uppercase tracking-[0.15em] font-bold">
-            <div style={{ color: T.textMuted }}>Tanggal</div>
-            <div className="text-center" style={{ color: T.textMuted }}>Masuk</div>
-            <div className="text-center" style={{ color: T.textMuted }}>Pulang</div>
-            <div className="text-right" style={{ color: T.textMuted }}>Status</div>
-          </div>
-
-          <div className="space-y-1">
-            {attendanceHistory.length > 0 ? (() => {
-              const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
-              return attendanceHistory.filter(att => new Date(att.date) >= weekAgo);
-            })().map(att => {
-              const isLate = att.attendance_status === 'terlambat';
-              const isHadir = att.attendance_status === 'hadir';
-              const isAlpha = att.attendance_status === 'alpha';
-              const isBelum = att.attendance_status === 'belum';
-              const isLeave = att.attendance_status === 'izin' || att.attendance_status === 'sakit';
-              // Izin/sakit tidak absen — sisa jam lama pada record tidak ditampilkan
-              const fmtIn = isLeave ? '-' : formatTime(att.clock_in_time);
-              const fmtOut = isLeave || !att.clock_out_time ? '-' : formatTime(att.clock_out_time);
-              const dateObj = new Date(att.date + 'T00:00:00');
-              const dateLabel = dateObj.toLocaleDateString("id-ID", { day: 'numeric', month: 'short' });
-              const dayLabel = dateObj.toLocaleDateString("id-ID", { weekday: 'short' });
-              return (
-                <div key={att.id}
-                  className="grid grid-cols-[1fr_44px_44px_70px] gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200"
-                  style={{
-                    background: T.rowBg,
-                    borderLeft: isLate ? "2px solid rgba(249,115,22,0.4)" : isAlpha ? "2px solid rgba(239,68,68,0.4)" : isBelum ? "2px solid rgba(59,130,246,0.3)" : "2px solid transparent",
-                  }}>
-                  <div className="min-w-0">
-                    <div className="text-[11px] font-bold" style={{ color: T.text }}>
-                      {dateLabel}
-                    </div>
-                    <div className="text-[9px] uppercase tracking-wider" style={{ color: T.textMuted }}>
-                      {dayLabel}
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[11px] font-semibold tabular-nums" style={{ color: T.textSec }}>{fmtIn}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[11px] font-semibold tabular-nums" style={{ color: T.textSec }}>{fmtOut}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-[10px] font-bold" style={{
-                      color: isLate ? '#F59E0B' :
-                      isHadir ? '#10B981' :
-                      isAlpha ? '#EF4444' :
-                      isBelum ? '#3B82F6' :
-                      T.textMuted
-                    }}>
-                      {isHadir ? 'Tepat Waktu' : isLate ? 'Terlambat' : isAlpha ? 'Alpha' : isBelum ? 'Belum' :
-                       att.attendance_status ? att.attendance_status.charAt(0).toUpperCase() + att.attendance_status.slice(1) : '-'}
-                    </div>
-                    {isLate && att.late_minutes > 0 && (
-                      <div className="text-[9px] font-medium" style={{ color: T.textMuted }}>
-                        {att.late_minutes} menit
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            }) : (
-              <div className="text-xs text-center py-6" style={{ color: T.textMuted }}>Belum ada riwayat absensi.</div>
-            )}
-          </div>
-        </div>
-
         {/* BANNER IZIN NOTIFIKASI — iOS menuntut tap nyata untuk prompt */}
         <NotificationPermissionBanner />
-
-        {/* NOTIFIKASI CARD — link ke halaman notifikasi */}
-        <div className="rounded-3xl p-5 relative overflow-hidden"
-          style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
-              <h3 className="text-xs font-bold tracking-wide" style={{ color: T.text }}>Pengumuman</h3>
-            </div>
-            <Bell size={16} style={{ color: T.textMuted }} />
-          </div>
-
-          <div className="space-y-2">
-            {announcements.length > 0 ? (
-              <>
-                {announcements.map((a) => {
-                  const isUnread = !ackedIds.has(a.id);
-                  const dateLabel = new Date(a.published_at || a.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short" });
-                  return (
-                    <Link key={a.id} to="/employee/notifications"
-                      className="flex items-start gap-2.5 rounded-xl px-3 py-2.5 transition-all hover:translate-x-1"
-                      style={{ background: T.rowBg }}>
-                      <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${isUnread ? "bg-[#BF00FF]" : "bg-transparent"}`} />
-                      <span className="flex-1 min-w-0">
-                        <span className="flex items-center gap-1.5 min-w-0">
-                          {a.priority === "urgent" && (
-                            <span className="shrink-0 text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700">URGENT</span>
-                          )}
-                          {a.priority === "penting" && (
-                            <span className="shrink-0 text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">PENTING</span>
-                          )}
-                          <span className="text-xs font-semibold truncate" style={{ color: isUnread ? "#BF00FF" : T.text }}>{a.title}</span>
-                        </span>
-                        <span className="block text-[11px] mt-0.5 line-clamp-1" style={{ color: T.textSec }}>{a.content}</span>
-                        <span className="block text-[9px] mt-0.5" style={{ color: T.textMuted }}>{dateLabel}</span>
-                      </span>
-                      <ChevronRight size={12} className="shrink-0 mt-1.5" style={{ color: T.textMuted }} />
-                    </Link>
-                  );
-                })}
-                <Link to="/employee/notifications"
-                  className="flex items-center gap-2 rounded-xl px-4 py-3 transition-all hover:translate-x-1 text-xs font-medium"
-                  style={{ background: T.rowBg, color: T.text }}>
-                  Lihat Semua <ChevronRight size={12} />
-                </Link>
-              </>
-            ) : (
-              <div className="text-xs py-6 text-center" style={{ color: T.textMuted }}>
-                Tidak ada pengumuman.
-              </div>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );
