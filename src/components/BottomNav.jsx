@@ -3,70 +3,27 @@ import { useAuth } from "../context/AuthContext";
 import {
   LayoutDashboard, CalendarDays,
   Users, History, FileText, Megaphone, Settings, MoreHorizontal,
-  FingerprintPattern, User, ClipboardList, Wallet, Bell,
+  FingerprintPattern,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import BottomSheet from "./BottomSheet";
-import { getSetting } from "../lib/settings";
-import { supabase } from "../lib/supabase";
 
 export default function BottomNav({ hidden = false }) {
   const { user } = useAuth();
   const [moreOpen, setMoreOpen] = useState(false);
-  const [payrollOn, setPayrollOn] = useState(false);
   const userRole = user?.role || "pegawai";
-
-  // Modul Gaji (opsional per instansi) — menu Slip Gaji hanya bila aktif
-  useEffect(() => {
-    (async () => {
-      try {
-        setPayrollOn((await getSetting("payroll_enabled", "false")) === "true");
-      } catch { /* default off */ }
-    })();
-  }, []);
-
-  const [unreadCount, setUnreadCount] = useState(0);
-
-  useEffect(() => {
-    if (user?.role !== "pegawai") return;
-    let cancelled = false;
-    const fetchUnread = async () => {
-      try {
-        const iso = new Date().toISOString();
-        const { count: annCount } = await supabase
-          .from("announcements")
-          .select("*", { count: "exact", head: true })
-          .eq("is_active", true)
-          .or(`expires_at.is.null,expires_at.gte.${iso}`);
-        const { count: ackCount } = await supabase
-          .from("announcement_acks")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", user.id);
-        if (!cancelled) setUnreadCount(Math.max(0, (annCount || 0) - (ackCount || 0)));
-      } catch (e) { /* silent */ }
-    };
-    fetchUnread();
-    const id = setInterval(fetchUnread, 60000);
-    return () => { cancelled = true; clearInterval(id); };
-  }, [user?.id, user?.role]);
 
   if (hidden) return null;
 
-  // Pegawai: Home, Izin/Sakit, Jadwal di bar utama; Pengumuman masuk Menu (titik 3)
+  // Pegawai: bar sederhana — Home · [Presensi FAB] · Jadwal.
+  // Izin/Sakit, Riwayat, Profil, Slip Gaji, Notifikasi pindah ke grid menu
+  // premium di EmployeeDashboard (di bawah card "Status hari ini").
   const pegawaiMenus = [
     { path: "/employee", label: "Home", icon: LayoutDashboard, end: true },
-    { path: "/employee/leave", label: "Izin/Sakit", icon: ClipboardList },
     { path: "/employee/schedule", label: "Jadwal", icon: CalendarDays },
   ];
 
-  const pegawaiMore = [
-    { path: "/employee/notifications", label: "Pengumuman", icon: Bell },
-    { path: "/employee/profile", label: "Profil", icon: User },
-    { path: "/employee/history", label: "Riwayat Kehadiran", icon: History },
-    ...(payrollOn
-      ? [{ path: "/employee/salary", label: "Slip Gaji", icon: Wallet }]
-      : []),
-  ];
+  const pegawaiMore = [];
 
   const adminMain = [
     { path: "/admin", label: "Home", icon: LayoutDashboard, end: true },
@@ -134,9 +91,6 @@ export default function BottomNav({ hidden = false }) {
           <>
             <span className={`rounded-xl p-1 transition-all relative ${isActive ? "bg-electric-violet/15 scale-110" : ""}`}>
               <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-              {item.path === "/employee/notifications" && unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-400 rounded-full ring-2 ring-white" />
-              )}
             </span>
             <span
               className={`max-w-full px-0.5 text-center text-[10px] leading-[1.1] break-words ${
@@ -218,9 +172,6 @@ export default function BottomNav({ hidden = false }) {
               >
                 <span className="relative">
                   <Icon size={24} />
-                  {item.path === "/employee/notifications" && unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-400 rounded-full ring-2 ring-white" />
-                  )}
                 </span>
                 <span className="text-[10px] font-medium leading-tight">{item.label}</span>
               </NavLink>

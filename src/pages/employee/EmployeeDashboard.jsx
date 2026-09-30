@@ -4,10 +4,11 @@ import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
-import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, ArrowRight, Bell, ChevronRight, LogOut } from "lucide-react";
+import { CheckCircle, Calendar, PieChart, History, Megaphone, Clock, Sun, Sunset, ArrowRight, Bell, ChevronRight, LogOut, ClipboardList, User, Wallet } from "lucide-react";
 import { signOut } from "../../services/authService";
 import { addCalendarDays, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
 import { getShiftReminderInfo, getShiftEndReminderInfo, reminderToastKey, reminderToastEndKey } from "../../lib/notificationReminder";
+import { getSetting } from "../../lib/settings";
 import { registerPushNotifications, requestNotificationPermission, scheduleShiftReminders, subscribeAnnouncementRealtime, notifyNewAnnouncement } from "../../services/pushNotificationService";
 import NotificationPermissionBanner from "../../components/NotificationPermissionBanner";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
@@ -52,6 +53,9 @@ export default function EmployeeDashboard() {
   const [shiftDefinitions, setShiftDefinitions] = useState([]);
   const [todaySched, setTodaySched] = useState(null);
   const [serverTime, setServerTime] = useState(new Date());
+  // Grid menu premium
+  const [payrollOn, setPayrollOn] = useState(false);
+  const [unreadNotif, setUnreadNotif] = useState(0);
 	const getGreeting = (h) => {
 	  if (h >= 3 && h < 12) return "Selamat Pagi";
 	  if (h >= 12 && h < 15) return "Selamat Siang";
@@ -86,6 +90,38 @@ export default function EmployeeDashboard() {
     }, 1000);
     return () => clearInterval(id);
   }, []);
+
+  // Grid menu: flag modul gaji + badge notifikasi belum dibaca
+  useEffect(() => {
+    (async () => {
+      try {
+        setPayrollOn((await getSetting("payroll_enabled", "false")) === "true");
+      } catch { /* default off */ }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    const fetchUnread = async () => {
+      try {
+        const iso = new Date().toISOString();
+        const { count: annCount } = await supabase
+          .from("announcements")
+          .select("*", { count: "exact", head: true })
+          .eq("is_active", true)
+          .or(`expires_at.is.null,expires_at.gte.${iso}`);
+        const { count: ackCount } = await supabase
+          .from("announcement_acks")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", user.id);
+        if (!cancelled) setUnreadNotif(Math.max(0, (annCount || 0) - (ackCount || 0)));
+      } catch { /* silent */ }
+    };
+    fetchUnread();
+    const id = setInterval(fetchUnread, 60000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [user?.id]);
 
   // Shift reminder: muncul toast sekali per shift (localStorage)
   useEffect(() => {
@@ -431,6 +467,32 @@ export default function EmployeeDashboard() {
           </div>
           </>
           )}
+        </div>
+
+        {/* MENU UTAMA — grid premium (pindahan dari bottom nav) */}
+        <div className="grid gap-1 mt-5" style={{ gridTemplateColumns: `repeat(${payrollOn ? 6 : 5}, minmax(0, 1fr))` }}>
+          {[
+            { to: "/employee/leave", icon: ClipboardList, label: ["Izin", "Sakit"], tile: "linear-gradient(135deg, #EDE9FE, #DDD6FE)", color: "text-violet-600" },
+            { to: "/employee/history", icon: History, label: ["Riwayat", "Kehadiran"], tile: "linear-gradient(135deg, #DBEAFE, #BFDBFE)", color: "text-blue-600" },
+            { to: "/employee/notifications", icon: Bell, label: ["Noti", "fikasi"], tile: "linear-gradient(135deg, #FEF3C7, #FDE68A)", color: "text-amber-600", badge: true },
+            ...(payrollOn ? [{ to: "/employee/salary", icon: Wallet, label: ["Slip", "Gaji"], tile: "linear-gradient(135deg, #D1FAE5, #A7F3D0)", color: "text-emerald-600" }] : []),
+            { to: "/employee/profile", icon: User, label: ["Profil"], tile: "linear-gradient(135deg, #FCE7F3, #FBCFE8)", color: "text-pink-600" },
+          ].map((item) => (
+            <Link key={item.to} to={item.to} className="flex flex-col items-center gap-2 py-1 group">
+              <span className="relative w-[52px] h-[52px] rounded-[18px] flex items-center justify-center shadow-[0_4px_14px_rgba(15,23,42,0.10)] transition-transform group-hover:-translate-y-0.5 group-active:scale-95"
+                style={{ background: item.tile }}>
+                <item.icon size={22} className={item.color} />
+                {item.badge && unreadNotif > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white text-[8.5px] font-bold grid place-items-center shadow">
+                    {unreadNotif}
+                  </span>
+                )}
+              </span>
+              <span className="text-[10px] font-bold text-slate-600 text-center leading-[1.15]">
+                {item.label.map((w, i) => (<span key={i}>{w}{i < item.label.length - 1 && <br />}</span>))}
+              </span>
+            </Link>
+          ))}
         </div>
 
         {/* Shift Reminder Banner — check-in */}
