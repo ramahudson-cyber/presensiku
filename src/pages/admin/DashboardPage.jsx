@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { signOut } from "../../services/authService";
-import { getCurrentVersion } from "../../services/updateService";
 import { PremiumStatCard } from "./PremiumStatCard";
 import { isShiftEnded, getMondayFirstDayOfWeek } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
@@ -40,7 +39,9 @@ export default function DashboardPage() {
     };
     syncServer();
     const t = setInterval(syncServer, 60000);
-    return () => clearInterval(t);
+    // Tick per detik antara sync — jam hero berjalan real-time
+    const tick = setInterval(() => setServerNow(prev => new Date(prev.getTime() + 1000)), 1000);
+    return () => { clearInterval(t); clearInterval(tick); };
   }, []);
 
   const fetchDashboardData = async () => {
@@ -228,7 +229,6 @@ export default function DashboardPage() {
             : <div className="space-y-3">{announcements.map((a) => <div key={a.id} className="p-3 bg-slate-50/80 border border-slate-100 rounded-2xl hover:scale-[1.02] transition-all"><p className="text-sm font-semibold text-slate-900 line-clamp-1">{a.title}</p><p className="text-xs text-slate-600 mt-1 line-clamp-2">{a.content}</p><p className="text-xs text-[#7032c4] mt-1.5 font-medium">{new Date(a.created_at).toLocaleDateString("id-ID")}</p></div>)}</div>}
           </div>
         </div>
-        <footer className="text-center text-[10px] text-slate-400 pb-2 select-none mt-6">v{getCurrentVersion().version} &mdash; Presensiku</footer>
       </div>
     </div>
   );

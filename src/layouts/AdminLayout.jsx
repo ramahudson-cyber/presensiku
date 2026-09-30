@@ -1,7 +1,6 @@
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import BottomNav from "../components/BottomNav";
-import { getCurrentVersion } from "../services/updateService";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
@@ -70,11 +69,6 @@ function AdminLayout() {
         <main className={`flex-1 w-full min-w-0 overflow-x-hidden p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8 pb-[calc(101px_+_env(safe-area-inset-bottom,0px)_+_16px)] md:pb-24 flex flex-col`}>
           <div className="mx-auto max-w-[2000px] w-full flex-1 flex flex-col">
             <Outlet />
-            {!isDashboard && (
-              <footer className={`text-center text-[10px] pb-2 select-none mt-2 ${isAdminPath ? "text-slate-400" : "text-slate-400"}`}>
-                v{getCurrentVersion().version} &mdash; Presensiku
-              </footer>
-            )}
           </div>
         </main>
       </div>
