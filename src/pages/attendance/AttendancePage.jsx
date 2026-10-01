@@ -486,9 +486,9 @@ export default function AttendancePage() {
 
   const timeStr = displayTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   const dateStr = displayTime.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-  // Jam server WITA (konversi +8 jam, pola sama dengan hero dashboard)
-  const witaClockStr = new Date(displayTime.getTime() + (8 * 60 * 60 * 1000)).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
-  const syncTimeStr = serverTime ? new Date(serverTime.getTime() + (8 * 60 * 60 * 1000)).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false }) : null;
+  // Jam server WITA (format langsung pakai timezone Asia/Makassar, bukan hack +8 jam)
+  const witaClockStr = displayTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZone: "Asia/Makassar" });
+  const syncTimeStr = serverTime ? serverTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Makassar" }) : null;
 
   const radiusBg = currentCoords
     ? { latitude: currentCoords.latitude, longitude: currentCoords.longitude }
