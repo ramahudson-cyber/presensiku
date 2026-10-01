@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import {
-  CheckCircle2, Loader2, ShieldAlert, Plus, Minus, FingerprintPattern, ArrowLeft
+  CheckCircle2, Loader2, ShieldAlert, Plus, Minus, FingerprintPattern, ArrowLeft, Sunset
 } from "lucide-react";
 import LocationMap from "../../components/LocationMap";
 import AttendanceResultSheet from "../../components/AttendanceResultSheet";
+import BottomSheet from "../../components/BottomSheet";
 import BottomNav from "../../components/BottomNav";
 import { getCurrentPosition } from "../../services/geoService";
 import { detectMockLocation, mockBlockMessage } from "../../services/mockLocationService";
@@ -62,6 +63,7 @@ export default function AttendancePage() {
   const [currentCoords, setCurrentCoords] = useState(null);
 
   const [serverTime, setServerTime] = useState(null);
+  const [showCheckoutConfirm, setShowCheckoutConfirm] = useState(false);
   const [serverOffset, setServerOffset] = useState(0);
   const [displayTime, setDisplayTime] = useState(new Date());
 
@@ -652,7 +654,7 @@ export default function AttendancePage() {
               <div className="absolute -inset-[20px] rounded-full border border-white/[0.08] border-dashed animate-spin z-0" style={{ animationDuration: '12s' }}></div>
               {/* Main button */}
               <button
-                onClick={todayAttendance ? handleCheckOut : handleCheckIn}
+                onClick={todayAttendance ? () => setShowCheckoutConfirm(true) : handleCheckIn}
                 disabled={isAlphaLocked || locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
                 className="hero-card-bg relative w-[120px] h-[120px] rounded-full bg-gradient-to-br from-electric-violet via-[#8B00CC] to-[#6600CC] flex items-center justify-center
                   transition-all duration-300 hover:scale-105 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed
@@ -710,6 +712,55 @@ export default function AttendancePage() {
           shiftName={todaySchedule?.name}
         />
       </div>
+
+      {/* ── KONFIRMASI ABSEN PULANG — modal premium, cegah salah ketuk ── */}
+      <BottomSheet
+        open={showCheckoutConfirm}
+        onClose={() => { if (!saving) setShowCheckoutConfirm(false); }}
+        dismissible={!saving}
+      >
+        <div className="pb-2">
+          <div className="flex flex-col items-center text-center gap-3 mb-4">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-white"
+              style={{ background: 'linear-gradient(145deg, #FF0099 0%, #BF00FF 50%, #7B00E0 100%)', boxShadow: '0 10px 30px rgba(191,0,255,0.35)' }}>
+              <Sunset size={28} />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900">Absen Pulang Sekarang?</h3>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed max-w-[280px]">
+                Pastikan pekerjaan Anda sudah selesai. Absen pulang tidak dapat diubah setelah disimpan.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2.5 mb-5">
+            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-center">
+              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Waktu WITA</p>
+              <p className="text-sm font-bold text-slate-900 mt-0.5 tabular-nums">{syncTimeStr || "--:--"}</p>
+            </div>
+            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-center">
+              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Lokasi</p>
+              <p className={`text-sm font-bold mt-0.5 ${isFakeGPS ? "text-red-500" : locationStatus === "valid" ? "text-emerald-600" : "text-amber-600"}`}>
+                {isFakeGPS ? "Fake GPS!" : locationStatus === "valid" ? "Dalam Radius" : "Periksa Lokasi"}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowCheckoutConfirm(false)}
+              disabled={saving}
+              className="flex-1 py-3 rounded-full border border-gray-300 text-gray-600 text-sm font-semibold transition-all active:scale-95 hover:bg-gray-50 disabled:opacity-50"
+            >Batal</button>
+            <button
+              onClick={() => { setShowCheckoutConfirm(false); handleCheckOut(); }}
+              disabled={saving}
+              className="flex-1 py-3 rounded-full text-white text-sm font-bold transition-all active:scale-95 disabled:opacity-50"
+              style={{ background: 'linear-gradient(145deg, #FF0099 0%, #BF00FF 50%, #7B00E0 100%)', boxShadow: '0 8px 24px rgba(191,0,255,0.35)' }}
+            >
+              {saving ? "Menyimpan..." : "Ya, Absen Pulang"}
+            </button>
+          </div>
+        </div>
+      </BottomSheet>
 	      <BottomNav hidden={true} />
 
 {/* Premium Schedule Alert */}

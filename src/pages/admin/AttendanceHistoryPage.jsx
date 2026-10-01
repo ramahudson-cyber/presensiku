@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { toast } from "react-toastify";
 import { exportExcelWorkbook, DATE_FMT } from "../../services/excelExport";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
@@ -261,6 +262,11 @@ export default function AttendanceHistoryPage() {
         }
         return true;
       });
+      if (rows.length === 0) {
+        toast.info("Tidak ada data untuk diekspor pada rentang/filter ini");
+        setExporting(false);
+        return;
+      }
 
       const fmtDay = (d) =>
         new Date(d + "T00:00:00").toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
@@ -286,6 +292,12 @@ export default function AttendanceHistoryPage() {
           Number(r.late_minutes ?? 0),
         ]),
       });
+      toast.success(`${rows.length} baris berhasil diekspor`);
+    } catch (err) {
+      // Sebelumnya error ditelan total (try/finally tanpa catch) — klik tombol
+      // terlihat "diam saja" tanpa file maupun pesan.
+      console.error("Export Excel gagal:", err);
+      toast.error("Gagal mengekspor Excel" + (err?.message ? `: ${err.message}` : ""));
     } finally {
       setExporting(false);
     }
@@ -304,9 +316,10 @@ export default function AttendanceHistoryPage() {
           disabled={exporting}
           className="flex items-center gap-2.5 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium hover:brightness-110 active:brightness-90 disabled:opacity-50 transition-all duration-200 shrink-0"
         >
-          <Download size={15} />
-          <span className="hidden sm:inline">Export Excel</span>
-          <span className="sm:hidden">Export</span>
+          <Download size={15} className={exporting ? "hidden" : ""} />
+          <Loader2 size={15} className={exporting ? "animate-spin" : "hidden"} />
+          <span className="hidden sm:inline">{exporting ? "Mengekspor..." : "Export Excel"}</span>
+          <span className="sm:hidden">{exporting ? "..." : "Export"}</span>
         </button>
       </div>
 
