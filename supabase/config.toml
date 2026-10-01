@@ -1,1 +1,8 @@
 project_id = "muhxylbcgvwxjzrbkgdc"
+
+# Reminder shift dipanggil pg_cron dengan header Authorization Bearer
+# <service_role key dari Vault> (transport) + x-cron-secret (otentikasi
+# aktual yang dicek di dalam function). verify_jwt dibiarkan default (true)
+# karena path verify_jwt=false terbukti menggantung di runtime ini.
+[functions.send-shift-reminder]
+verify_jwt = true
