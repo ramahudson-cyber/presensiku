@@ -5,9 +5,11 @@
 ## 🔔 Push Reminder Shift Server-Side (2 Okt 2026) — ✅ LIVE
 Reminder shift kini dikirim dari SERVER → muncul saat aplikasi PWA/APK **tertutup** (bukan hanya saat dibuka). Infrastruktur yang sudah ada sebelumnya (device_tokens, token Android+web, firebase-messaging-sw.js, send-push utk pengumuman) tidak diubah.
 - **Alur**: pg_cron `shift-reminder-push` (*/5 menit) → POST Edge Function `send-shift-reminder` (header `Authorization: Bearer <service_role dari Vault>` + `x-cron-secret`) → hitung jadwal mulai/berakhir ≤20 menit (WITA, dukung malam lintas tengah malam via jadwal kemarin) → dedupe `shift_notification_log` (unique user+shift+date+kind) → FCM HTTP v1 ke semua token user.
-- **Secrets**: `CRON_SECRET` (supabase secrets) = `shift_cron_secret` (Vault); `service_role_key` (Vault) utk header transport cron. `FIREBASE_SERVICE_ACCOUNT` (lama) dipakai ulang.
-- **⚠️ GOTCHA Edge Function**: deploy baru WAJIB `Deno.serve(handler)` eksplisit + JANGAN `verify_jwt=false` (keduanya terbukti bikin function menggantung → IDLE_TIMEOUT/WORKER_RESOURCE_LIMIT). Deploy tanpa Docker perlu flag `--use-api`. Function lama (send-push, dibuat sebelum perubahan runtime) masih jalan — kalau **redeploy** send-push, tambahkan `Deno.serve(handler)` juga.
-- **Verifikasi**: `SELECT * FROM net._http_response ORDER BY id DESC;` (cron tiap 5 menit, harus 200), `SELECT * FROM shift_notification_log;` (baris muncul saat ada shift ±20 menit), log function di Dashboard.
+- **Pengumuman juga server-side**: trigger `trg_announcement_push` (pg_net) memanggil `send-push` pada INSERT aktif & aktivasi draft (false→true). Dedupe atomik `announcements.push_sent_at` — trigger + invoke browser admin (dipertahankan sbg safety net) tidak akan dobel push. Edit konten pengumuman aktif = tidak push ulang.
+- **Secrets**: `CRON_SECRET` (supabase secrets) = `shift_cron_secret` (Vault); `service_role_key` (Vault) utk header transport cron/trigger. `FIREBASE_SERVICE_ACCOUNT` (lama) dipakai ulang.
+- **⚠️ GOTCHA Edge Function**: deploy baru WAJIB `Deno.serve(handler)` eksplisit + JANGAN `verify_jwt=false` (keduanya terbukti bikin function menggantung → IDLE_TIMEOUT/WORKER_RESOURCE_LIMIT). Deploy tanpa Docker perlu flag `--use-api`. Send-push SUDAH di-redeploy dengan pattern baru (2 Okt) — aman.
+- **⚠️ GOTCHA supabase-js di Edge**: builder `.isNull()` tidak ada di versi bundled — pakai `.filter('kolom','is',null)`.
+- **Verifikasi**: `SELECT * FROM net._http_response ORDER BY id DESC;` (cron tiap 5 menit, harus 200), `SELECT * FROM shift_notification_log;` (baris muncul saat ada shift ±20 menit), `SELECT push_sent_at FROM announcements;`, log function di Dashboard. Uji end-to-end 2 Okt: pengumuman tes terkirim `{"sent":4,"stale_removed":2,"targets":6}` ke org f868ea5a.
 - Tidak ada perubahan client bundle (webVersionCode tidak dinaikkan).
 
 ## 🩹 FIX Approval Cuti/Izin 400 (27 Sep 2026) — ✅ LIVE DI DB + pushed
