@@ -434,7 +434,7 @@ export default function EmployeeDashboard() {
         {/* MENU UTAMA — judul + grid 3 kolom (Slip Gaji & Profil turun ke baris 2) */}
         <div className="flex items-center gap-3 mb-3">
           <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
-          <h3 className="text-sm font-bold tracking-wide" style={{ color: T.text }}>Menu</h3>
+          <h3 className="text-lg font-extrabold tracking-tight" style={{ color: T.text }}>Menu</h3>
         </div>
         <div className="grid grid-cols-3 gap-x-2 gap-y-4">
           {[

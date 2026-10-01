@@ -140,7 +140,6 @@ export default function DashboardPage() {
     const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
     return `${days[d.getUTCDay()]}, ${d.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}`;
   };
-  const handleLogout = async () => { await signOut(); navigate("/"); };
   const userInitial = user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "S";
 
   return (
@@ -176,9 +175,6 @@ export default function DashboardPage() {
             <button onClick={() => navigate("/admin/announcements")} className="relative w-9 h-9 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25 active:scale-95 transition-all" aria-label="Pengumuman">
               <Bell size={15} className="text-white" />
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-400 rounded-full ring-2 ring-[#8A00CC]" />
-            </button>
-            <button onClick={handleLogout} className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25 active:scale-95 transition-all" aria-label="Logout">
-              <LogOut size={15} className="text-white" />
             </button>
           </div>
         </div>
