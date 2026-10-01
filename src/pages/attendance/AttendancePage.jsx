@@ -704,6 +704,7 @@ export default function AttendancePage() {
           }}
           data={resultData}
           type={resultType}
+          shiftName={todaySchedule?.name}
         />
       </div>
 	      <BottomNav hidden={true} />

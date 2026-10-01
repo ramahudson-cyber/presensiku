@@ -91,7 +91,7 @@ function IconBox({ children }) {
   );
 }
 
-export default function AttendanceResultSheet({ open, onClose, data, type }) {
+export default function AttendanceResultSheet({ open, onClose, data, type, shiftName: shiftNameProp }) {
   const navigate = useNavigate();
   const uid = useRef(Math.random().toString(36).slice(2, 8)).current;
   if (!data) return null;
@@ -101,9 +101,12 @@ export default function AttendanceResultSheet({ open, onClose, data, type }) {
   const clockIn = formatTime(data.clock_in_time);
   const clockOut = formatTime(data.clock_out_time);
   const dateStr = formatDate(data.clock_in_time);
-  const shiftName = SHIFT_NAMES[data.shift_code] || data.shift_code;
   const duration = calcDuration(data.clock_in_time, data.clock_out_time);
-  const shiftLabel = data.shift_code ? `${shiftName} (${data.shift_code})` : "-";
+  // Nama shift dari DB (prop) → map legacy → fallback generik, agar kode
+  // kustom org (mis. MLM) tetap menghasilkan label manusiawi.
+  const shiftLabel = data.shift_code
+    ? (shiftNameProp || SHIFT_NAMES[data.shift_code] || `Shift ${data.shift_code}`)
+    : "-";
   const statusText = isLate ? `Terlambat ${data.late_minutes} menit` : "Tepat Waktu";
   const distance = data.location_in?.distance_from_puskesmas || null;
   const statusColor = isLate ? "#FBBF24" : "#ADFF2F";

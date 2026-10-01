@@ -24,8 +24,10 @@ function withTimeout(promise, ms, label) {
   ]);
 }
 
-const SHIFT_NAMES = { PG:'PAGI', SR:'SORE', SI:'SIANG', ML:'MALAM' };
-const getShiftName = (code) => SHIFT_NAMES[code] || (code || 'Shift').toUpperCase();
+// Fallback nama shift bila master DB tidak tersedia — nama resmi selalu
+// diutamakan dari tabel shifts (mendukung kode kustom org, mis. MLM).
+const SHIFT_NAMES = { PG:'Pagi', SR:'Sore', SI:'Siang', ML:'Malam' };
+const getShiftName = (code) => SHIFT_NAMES[code] || (code || 'Shift');
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
@@ -162,7 +164,7 @@ export default function EmployeeDashboard() {
       const lastDay = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
       const monthEndStr = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
 
-      const [attRes, shiftRes, monthAttRes, annRes, ackRes, schedRes, shiftSchedulesRes] = await withTimeout(Promise.all([
+      const [attRes, shiftRes, monthAttRes, annRes, ackRes, schedRes, shiftSchedulesRes, shiftsMasterRes] = await withTimeout(Promise.all([
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("attendance").select("date, attendance_status").eq("user_id", user.id).gte("date", monthStartStr).lte("date", today),
@@ -173,7 +175,9 @@ export default function EmployeeDashboard() {
         getAttendanceHistory(user.id),
         supabase.from("employee_schedules").select("date, shift_code").eq("user_id", user.id).gte("date", monthStartStr).lte("date", monthEndStr),
         supabase.from("shift_schedules").select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
+        supabase.from("shifts").select("code, name"),
       ]), 20000, "fetchAll");
+      const shiftNameMap = Object.fromEntries((shiftsMasterRes.data || []).map(s => [s.code, s.name]));
       const shiftDefinitions = shiftSchedulesRes.data || [];
       setShiftDefinitions(shiftDefinitions);
 
@@ -181,8 +185,9 @@ export default function EmployeeDashboard() {
 
       setTodayAttendance(attRes.data);
 
-      // null (BUKAN string "N/A") agar badge merender "Tidak ada jadwal hari ini"
-      setShift(shiftRes.data?.shift_code ? getShiftName(shiftRes.data.shift_code) : null);
+      // null (BUKAN string "N/A") agar badge merender "Tidak ada jadwal hari ini".
+      // Nama shift diutamakan dari master DB (mis. "Shift Malam"), bukan kode.
+      setShift(shiftRes.data?.shift_code ? (shiftNameMap[shiftRes.data.shift_code] || getShiftName(shiftRes.data.shift_code)) : null);
       setTodaySched(shiftRes.data || null);
 
       scheduleShiftReminders(serverNow, shiftRes.data || null, shiftDefinitions);
@@ -314,7 +319,7 @@ export default function EmployeeDashboard() {
               <div className="text-4xl font-bold text-white">{serverTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</div>
               <div className="text-xs opacity-70 mt-1 text-white">{serverTime.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
               <div className="text-[10px] mt-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full inline-block font-semibold" style={{ border: '1px solid rgba(255,255,255,0.25)' }}>
-                {shift ? `SHIFT: ${shift.toUpperCase()}` : "Tidak ada jadwal hari ini"}
+                {shift ? shift : "Tidak ada jadwal hari ini"}
               </div>
             </div>
             <Link to="/employee/attendance" className="bg-white text-[#8A00CC] px-8 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200">
