@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 
 const DAYS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
-const DAYS_FULL = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
 const getWitaDateString = (date = new Date()) => {
   const witaMs = date.getTime() + (8 * 60 * 60 * 1000);
@@ -129,17 +128,10 @@ export default function DashboardPage() {
   const { pullDistance, isRefreshing } = usePullToRefresh(fetchDashboardData);
 
   const maxWeekly = Math.max(...weeklyData, 1);
-  const witaTime = () => new Date(serverNow.getTime() + (8 * 60 * 60 * 1000)).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false });
-  const witaDate = () => {
-    const d = new Date(serverNow.getTime() + (8 * 60 * 60 * 1000));
-    return `${DAYS_FULL[d.getUTCDay()]}, ${d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`;
-  };
+  const witaTime = () => serverNow.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Makassar" });
+  const witaDate = () => serverNow.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Makassar" });
   // Tanggal pendek untuk mobile — tanggal panjang mempersempit kolom nama
-  const witaDateShort = () => {
-    const d = new Date(serverNow.getTime() + (8 * 60 * 60 * 1000));
-    const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
-    return `${days[d.getUTCDay()]}, ${d.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}`;
-  };
+  const witaDateShort = () => serverNow.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Makassar" });
   const userInitial = user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "S";
 
   return (
