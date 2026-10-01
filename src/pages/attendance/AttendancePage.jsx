@@ -484,8 +484,6 @@ export default function AttendancePage() {
     }
   };
 
-  const timeStr = displayTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-  const dateStr = displayTime.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   // Jam server WITA (format langsung pakai timezone Asia/Makassar, bukan hack +8 jam)
   const witaClockStr = displayTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZone: "Asia/Makassar" });
   const syncTimeStr = serverTime ? serverTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Makassar" }) : null;
@@ -531,18 +529,6 @@ export default function AttendancePage() {
           <h1 className="text-xl font-bold text-black">Presensi</h1>
         </div>
         <div className="pointer-events-auto space-y-2">
-          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl rounded-full px-3.5 py-2 border border-black/10 shadow-sm">
-            <div>
-              <p className="text-[8px] text-black uppercase tracking-[0.6px]">{dateStr}</p>
-              <p className="text-sm font-bold font-mono tabular-nums tracking-tight text-black">{timeStr}</p>
-            </div>
-            {serverTime ? (
-              <span className="w-1.5 h-1.5 rounded-full bg-green-yellow shadow-[0_0_6px_rgba(173,255,47,0.6)] animate-breathe shrink-0"></span>
-            ) : (
-              <Loader2 size={12} className="animate-spin text-periwinkle-glow shrink-0" />
-            )}
-          </div>
-
           {/* Location Card — ungu + jam server */}
           <div className="hero-card-bg rounded-[18px] p-3.5 border border-white/20 shadow-[0_8px_24px_rgba(138,0,204,0.35)] text-white"
             style={{ background: "linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)" }}>
