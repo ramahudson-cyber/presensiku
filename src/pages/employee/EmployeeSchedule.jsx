@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
@@ -8,7 +8,7 @@ import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import {
   ChevronLeft, ChevronRight, ChevronDown, Calendar, Sun, Moon, Sunset, CloudSun,
-  Loader2, Info
+  Loader2, Info, Clock
 } from "lucide-react";
 
 // Light-mode tokens — per DESIGN.md
@@ -34,6 +34,16 @@ const SHIFTS = [
 ];
 
 const SHIFT_MAP = Object.fromEntries(SHIFTS.map(s => [s.code, s]));
+const STATIC_BY_CODE = SHIFT_MAP;
+
+// Varian kode umum dipetakan ke visual shift yang setara; kode kustom lain
+// memakai visual netral (abu-abu) — master nama tetap dari tabel shifts.
+const CODE_ALIASES = { SG: "SI", MLM: "ML" };
+const NEUTRAL_VISUAL = { icon: Clock, badgeClass: "cal-badge-neutral" };
+const visualFor = (code) =>
+  STATIC_BY_CODE[code] || STATIC_BY_CODE[CODE_ALIASES[code]] || NEUTRAL_VISUAL;
+
+const cap = (s) => (s ? s.trim().charAt(0).toUpperCase() + s.trim().slice(1) : s);
 
 const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 const DAY_SHORT = ["Sen","Sel","Rab","Kam","Jum","Sab","Min"];
@@ -56,8 +66,37 @@ export default function EmployeeSchedule() {
   const [schedules, setSchedules] = useState({});
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, PG: 0, SR: 0, SI: 0, ML: 0 });
+  const [shiftsMaster, setShiftsMaster] = useState(null);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [pickerYear, setPickerYear] = useState(new Date().getFullYear());
+
+  // Master shift instansi (RLS org-scoped) — agar kode kustom seperti MLM
+  // ikut mewarnai kalender & dihitung. Gagal/kosong → fallback array statis.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await supabase.from("shifts").select("code, name").order("code");
+        if (!cancelled && data && data.length) setShiftsMaster(data);
+      } catch { /* fallback statis */ }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const shiftsList = useMemo(() => {
+    if (!shiftsMaster || shiftsMaster.length === 0) return SHIFTS;
+    // Dedupe per kode — tabel shifts bisa punya baris duplikat (dibuat ulang admin).
+    const seen = new Set();
+    const out = [];
+    shiftsMaster.forEach(s => {
+      if (!s.code || seen.has(s.code)) return;
+      seen.add(s.code);
+      const v = visualFor(s.code);
+      out.push({ code: s.code, name: cap(s.name) || s.code, icon: v.icon, badgeClass: v.badgeClass });
+    });
+    return out.length ? out : SHIFTS;
+  }, [shiftsMaster]);
+  const shiftMap = useMemo(() => Object.fromEntries(shiftsList.map(s => [s.code, s])), [shiftsList]);
 
   const days = getDaysInMonth(year, month);
   const lastDay = new Date(year, month + 1, 0).getDate();
@@ -76,11 +115,11 @@ export default function EmployeeSchedule() {
         .gte("date", s)
         .lte("date", e);
       const m = {};
-      const count = { total: 0, PG: 0, SR: 0, SI: 0, ML: 0 };
+      const count = { total: 0 };
       (data || []).forEach(x => {
         m[x.date] = x;
         count.total++;
-        if (count[x.shift_code] !== undefined) count[x.shift_code]++;
+        count[x.shift_code] = (count[x.shift_code] || 0) + 1;
       });
       setSchedules(m);
       setStats(count);
@@ -133,11 +172,11 @@ export default function EmployeeSchedule() {
         .gte("date", s)
         .lte("date", e);
       const m = {};
-      const count = { total: 0, PG: 0, SR: 0, SI: 0, ML: 0 };
+      const count = { total: 0 };
       (data || []).forEach(x => {
         m[x.date] = x;
         count.total++;
-        if (count[x.shift_code] !== undefined) count[x.shift_code]++;
+        count[x.shift_code] = (count[x.shift_code] || 0) + 1;
       });
       setSchedules(m);
       setStats(count);
@@ -197,7 +236,7 @@ export default function EmployeeSchedule() {
         {/* LEGEND */}
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-[8px] font-semibold uppercase tracking-wider mr-0.5" style={{ color: T.textSec }}>Shift</span>
-          {SHIFTS.map(s => {
+          {shiftsList.map(s => {
             const Icon = s.icon;
             return (
               <span key={s.code} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold ${s.badgeClass}`}>
@@ -229,7 +268,7 @@ export default function EmployeeSchedule() {
               {days.map((day, i) => {
                 const key = dateStr(day);
                 const sched = key ? schedules[key] : undefined;
-                const shiftInfo = sched ? SHIFT_MAP[sched.shift_code] : null;
+                const shiftInfo = sched ? shiftMap[sched.shift_code] : null;
                 const isToday = day && year === now.getFullYear() && month === now.getMonth() && day === now.getDate();
                 const dayOfWeek = day ? (new Date(year, month, day).getDay() + 6) % 7 : -1;
                 const isWeekend = dayOfWeek >= 5;
@@ -267,7 +306,7 @@ export default function EmployeeSchedule() {
           const nowD = new Date();
           const todayStr = `${nowD.getFullYear()}-${String(nowD.getMonth() + 1).padStart(2, "0")}-${String(nowD.getDate()).padStart(2, "0")}`;
           const todaySched = schedules[todayStr];
-          const shiftInfo = todaySched ? SHIFT_MAP[todaySched.shift_code] : null;
+          const shiftInfo = todaySched ? shiftMap[todaySched.shift_code] : null;
           if (!todaySched || !shiftInfo) return null;
           return (
             <div className="rounded-xl p-3 text-center"
@@ -286,7 +325,7 @@ export default function EmployeeSchedule() {
         {/* SUMMARY CARDS */}
         {!loading && stats.total > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SHIFTS.map(s => {
+            {shiftsList.map(s => {
               const Icon = s.icon;
               const count = stats[s.code] || 0;
               if (count === 0) return null;
