@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { signOut } from "../../services/authService";
+import { PremiumStatCard } from "./PremiumStatCard";
 import { isShiftEnded, getMondayFirstDayOfWeek } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
@@ -22,6 +23,7 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalPegawai: 0, hadirHariIni: 0, izinSakit: 0, alpha: 0 });
+  const [userGroups, setUserGroups] = useState({ all: [], present: [], absent: [], alpha: [] });
   const [weeklyData, setWeeklyData] = useState([0, 0, 0, 0, 0, 0, 0]);
   const [announcements, setAnnouncements] = useState([]);
   const [serverNow, setServerNow] = useState(new Date());
@@ -86,6 +88,13 @@ export default function DashboardPage() {
         if (!isShiftEnded(s.date, def, now)) return;
         if (!profileIds.has(s.user_id)) return;
         alphaIds.add(s.user_id);
+      });
+
+      setUserGroups({
+        all: allProfiles,
+        present: allProfiles.filter(p => presentIds.has(p.id)),
+        absent: allProfiles.filter(p => absentIds.has(p.id)),
+        alpha: allProfiles.filter(p => alphaIds.has(p.id)),
       });
 
       const hadir = presentIds.size;
@@ -173,6 +182,14 @@ export default function DashboardPage() {
           <button onClick={fetchDashboardData} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200/80 text-slate-600 rounded-full text-xs shadow-sm hover:bg-slate-50 transition-all duration-200">
             <RefreshCw size={13} className={loading ? "animate-spin" : ""} />Refresh
           </button>
+        </div>
+
+        {/* Premium Stat Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
+          <PremiumStatCard title="Total Pegawai" sub="Seluruh status" value={stats.totalPegawai} users={userGroups.all} loading={loading} />
+          <PremiumStatCard title="Hadir Hari Ini" sub="Sudah check-in" value={stats.hadirHariIni} users={userGroups.present} loading={loading} />
+          <PremiumStatCard title="Izin / Sakit" sub="Hari ini" value={stats.izinSakit} users={userGroups.absent} loading={loading} />
+          <PremiumStatCard title="Alpha" sub="Hari ini" value={stats.alpha} users={userGroups.alpha} loading={loading} />
         </div>
 
         {/* Grafik + Pengumuman */}
