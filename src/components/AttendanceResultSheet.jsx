@@ -103,9 +103,11 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
   const dateStr = formatDate(data.clock_in_time);
   const duration = calcDuration(data.clock_in_time, data.clock_out_time);
   // Nama shift dari DB (prop) → map legacy → fallback generik, agar kode
-  // kustom org (mis. MLM) tetap menghasilkan label manusiawi.
+  // kustom org (mis. MLM) tetap menghasilkan label manusiawi. Nama dari DB
+  // bisa huruf kecil ("malam") → dikapitalisasi.
+  const cap = (s) => (s ? s.trim().charAt(0).toUpperCase() + s.trim().slice(1) : s);
   const shiftLabel = data.shift_code
-    ? (shiftNameProp || SHIFT_NAMES[data.shift_code] || `Shift ${data.shift_code}`)
+    ? (cap(shiftNameProp) || SHIFT_NAMES[data.shift_code] || `Shift ${data.shift_code}`)
     : "-";
   const statusText = isLate ? `Terlambat ${data.late_minutes} menit` : "Tepat Waktu";
   const distance = data.location_in?.distance_from_puskesmas || null;

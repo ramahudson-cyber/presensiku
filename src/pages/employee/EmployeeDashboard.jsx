@@ -26,8 +26,16 @@ function withTimeout(promise, ms, label) {
 
 // Fallback nama shift bila master DB tidak tersedia — nama resmi selalu
 // diutamakan dari tabel shifts (mendukung kode kustom org, mis. MLM).
-const SHIFT_NAMES = { PG:'Pagi', SR:'Sore', SI:'Siang', ML:'Malam' };
+const SHIFT_NAMES = { PG:'Pagi', SR:'Sore', SI:'Siang', SG:'Siang', ML:'Malam', MLM:'Malam', LB:'Libur' };
 const getShiftName = (code) => SHIFT_NAMES[code] || (code || 'Shift');
+// Badge hero: "Shift : Malam". Nama dari master DB dikapitalisasi; nama yang
+// sudah diawali "Shift" tidak diberi awalan ganda.
+const formatShiftBadge = (name) => {
+  if (!name) return null;
+  const trimmed = name.trim();
+  const cap = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+  return /^shift\b/i.test(cap) ? cap : `Shift : ${cap}`;
+};
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
@@ -164,7 +172,10 @@ export default function EmployeeDashboard() {
       const lastDay = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
       const monthEndStr = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
 
-      const [attRes, shiftRes, monthAttRes, annRes, ackRes, schedRes, shiftSchedulesRes, shiftsMasterRes] = await withTimeout(Promise.all([
+      // PENTING: urutan nama WAJIB sama dengan urutan query di bawah.
+      // (Dulu tidak sejajar — shiftsMasterRes menunjuk ke hasil shift_schedules,
+      // sehingga peta nama shift kosong dan badge menampilkan kode mentah "MLM".)
+      const [attRes, shiftRes, monthAttRes, annRes, ackRes, historyRes, schedRes, shiftSchedulesRes, shiftsMasterRes] = await withTimeout(Promise.all([
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("attendance").select("date, attendance_status").eq("user_id", user.id).gte("date", monthStartStr).lte("date", today),
@@ -186,8 +197,8 @@ export default function EmployeeDashboard() {
       setTodayAttendance(attRes.data);
 
       // null (BUKAN string "N/A") agar badge merender "Tidak ada jadwal hari ini".
-      // Nama shift diutamakan dari master DB (mis. "Shift Malam"), bukan kode.
-      setShift(shiftRes.data?.shift_code ? (shiftNameMap[shiftRes.data.shift_code] || getShiftName(shiftRes.data.shift_code)) : null);
+      // Nama shift diutamakan dari master DB (mis. "malam" → "Shift : Malam"), bukan kode.
+      setShift(shiftRes.data?.shift_code ? formatShiftBadge(shiftNameMap[shiftRes.data.shift_code] || getShiftName(shiftRes.data.shift_code)) : null);
       setTodaySched(shiftRes.data || null);
 
       scheduleShiftReminders(serverNow, shiftRes.data || null, shiftDefinitions);

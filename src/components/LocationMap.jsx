@@ -21,8 +21,9 @@ export default function LocationMap({ userLocation, puskesmasLocation, distance,
       zoom: 16,
     });
 
-    // CartoDB dark tiles
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    // Tile OSM gratis — CARTO basemaps kini mewajibkan API key
+    // (peta tampil watermark "API KEY REQUIRED" bila tanpa kunci).
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
     }).addTo(map);
 

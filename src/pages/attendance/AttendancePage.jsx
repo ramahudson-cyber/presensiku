@@ -162,11 +162,14 @@ export default function AttendancePage() {
         .maybeSingle();
 
       if (sched) {
+        // limit(1): tabel shifts boleh punya baris duplikat per kode —
+        // .single() akan error "multiple rows" dan nama jatuh ke kode mentah.
         const { data: shiftInfo } = await supabase
           .from("shifts")
           .select("name")
           .eq("code", sched.shift_code)
-          .single();
+          .limit(1)
+          .maybeSingle();
         const dayOfWeek = getMondayFirstDayOfWeek(today);
         const { data: definition } = await supabase
           .from("shift_schedules")
