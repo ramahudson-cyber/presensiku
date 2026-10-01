@@ -255,13 +255,13 @@ export default function SchedulingPage() {
         </div>
       ) : (
         <div className="design-card p-3 md:p-5 overflow-x-auto">
-          <div className="min-w-[620px]">
-            <div className="grid grid-cols-7 gap-2 mb-2">
+          <div className="min-w-0">
+            <div className="grid grid-cols-7 gap-1.5 md:gap-2 mb-2">
               {DAY_SHORT.map(d => (
                 <div key={d} className="text-center text-[10px] font-bold text-slate-mist uppercase tracking-widest py-1">{d}</div>
               ))}
             </div>
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-7 gap-1.5 md:gap-2">
               {days.map((day, i) => {
                 const key = dateStr(day);
                 const sched = key ? schedules[key] : undefined;
@@ -270,7 +270,7 @@ export default function SchedulingPage() {
                 const isToday = day && year === now.getFullYear() && month === now.getMonth() && day === now.getDate();
                 return (
                   <button key={i} onClick={() => handleDayClick(day)} disabled={!day}
-                    className={`group relative aspect-[4/3] rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 text-xs
+                    className={`group relative aspect-square md:aspect-[4/3] rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 text-xs
                       ${!day ? "invisible" : "cursor-pointer active:scale-95"}
                       ${isToday ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-white" : ""}
                       ${!shiftInfo
