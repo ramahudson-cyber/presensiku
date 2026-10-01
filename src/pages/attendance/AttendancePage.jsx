@@ -486,6 +486,9 @@ export default function AttendancePage() {
 
   const timeStr = displayTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   const dateStr = displayTime.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  // Jam server WITA (konversi +8 jam, pola sama dengan hero dashboard)
+  const witaClockStr = new Date(displayTime.getTime() + (8 * 60 * 60 * 1000)).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+  const syncTimeStr = serverTime ? new Date(serverTime.getTime() + (8 * 60 * 60 * 1000)).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false }) : null;
 
   const radiusBg = currentCoords
     ? { latitude: currentCoords.latitude, longitude: currentCoords.longitude }
@@ -540,37 +543,38 @@ export default function AttendancePage() {
             )}
           </div>
 
-          {/* Location Card */}
-          <div className="bg-white/85 backdrop-blur-2xl rounded-[18px] p-3.5 border border-black/10 shadow-sm">
+          {/* Location Card — ungu + jam server */}
+          <div className="hero-card-bg rounded-[18px] p-3.5 border border-white/20 shadow-[0_8px_24px_rgba(138,0,204,0.35)] text-white"
+            style={{ background: "linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)" }}>
             {/* Row 1: Location + Status Pill */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-[10px] bg-electric-violet/15 border border-electric-violet/6 flex items-center justify-center shrink-0">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#BF00FF" strokeWidth="2" strokeLinecap="round">
+                <div className="w-8 h-8 rounded-[10px] bg-white/15 border border-white/25 flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round">
                     <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
                     <circle cx="12" cy="10" r="3"/>
                   </svg>
                 </div>
                 <div>
-                  <p className="text-[13px] font-extrabold text-black tracking-tight leading-tight">{puskesmasLocation.name || "Lokasi Presensi"}</p>
-                  <p className="text-[8px] font-semibold text-black uppercase tracking-[0.5px]">Lokasi Presensi</p>
+                  <p className="text-[13px] font-extrabold text-white tracking-tight leading-tight">{puskesmasLocation.name || "Lokasi Presensi"}</p>
+                  <p className="text-[8px] font-semibold text-white/70 uppercase tracking-[0.5px]">Lokasi Presensi</p>
                 </div>
               </div>
               <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${
                 locationStatus === "valid"
-                  ? "bg-black border border-black"
+                  ? "bg-white border border-white"
                   : locationStatus === "invalid"
-                  ? "bg-red-500/10 border border-red-500/20"
-                  : "bg-black/5 border border-black/10"
+                  ? "bg-red-500/25 border border-red-300/50"
+                  : "bg-white/15 border border-white/25"
               }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${
-                  locationStatus === "valid" ? "bg-pure-white shadow-[0_0_6px_rgba(255,255,255,0.5)] animate-breathe" :
-                  locationStatus === "invalid" ? "bg-red-400" : "bg-black/30"
+                  locationStatus === "valid" ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)] animate-breathe" :
+                  locationStatus === "invalid" ? "bg-red-300" : "bg-white/50"
                 }`}></span>
                 <span className={`text-[8px] font-bold uppercase tracking-[0.3px] ${
-                  locationStatus === "valid" ? "text-pure-white" :
-                  locationStatus === "invalid" ? "text-red-400" :
-                  "text-black/50"
+                  locationStatus === "valid" ? "text-[#8A00CC]" :
+                  locationStatus === "invalid" ? "text-red-100" :
+                  "text-white/70"
                 }`}>
                   {locationStatus === "valid" ? "Dalam Radius" :
                    locationStatus === "invalid" ? "Luar Radius" :
@@ -580,49 +584,28 @@ export default function AttendancePage() {
               </div>
             </div>
 
-            {/* Row 2: Distance + Shift */}
-            <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-black/[0.06]">
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full">
-                <span className="text-[9px] text-black">📍</span>
-                <span className="text-[9px] font-medium text-black">
-                  <strong className="text-black font-bold">{formatDistance(distance)}</strong> dari {puskesmasLocation.name || "puskesmas"}
-                </span>
-              </div>
-              <div className="ml-auto px-2 py-1 rounded-full border border-electric-violet/4">
-                <span className="text-[8px] font-bold text-black uppercase tracking-[1px]">
-                  {"Shift " + (todaySchedule?.name || (todayAttendance?.shift_code ? SHIFT_NAMES[todayAttendance.shift_code] : "Tidak Ada"))}
-                </span>
+            {/* Jam Server — WITA, tick per detik */}
+            <div className="mt-3 pt-3 border-t border-white/20">
+              <div className="text-center">
+                <div className="text-[44px] leading-none font-extrabold font-mono tabular-nums tracking-tight text-white">
+                  {witaClockStr}
+                </div>
+                <div className="flex items-center justify-center gap-1.5 mt-2">
+                  <span className="text-[9px] font-bold text-white/70 uppercase tracking-[0.5px]">WITA</span>
+                  {serverTime ? (
+                    <>
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-yellow shadow-[0_0_6px_rgba(173,255,47,0.6)] animate-breathe"></span>
+                      <span className="text-[9px] font-semibold text-white/70">Tersinkron {syncTimeStr}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Loader2 size={10} className="animate-spin text-white/70" />
+                      <span className="text-[9px] font-semibold text-white/70">Sinkronisasi...</span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
-
-            {/* Attendance Status */}
-            {todayAttendance && (
-              <div className="flex items-center gap-2 mt-2 pt-2 border-t border-black/[0.06]">
-                <div className={`w-2 h-2 rounded-full ${
-                  todayAttendance.attendance_status === "izin" || todayAttendance.attendance_status === "sakit"
-                    ? "bg-electric-violet" : "bg-green-yellow"
-                }`}></div>
-                <span className="text-[9px] font-semibold text-black">
-                  {todayAttendance.attendance_status === "izin"
-                    ? "Izin disetujui — tidak perlu absen hari ini"
-                    : todayAttendance.attendance_status === "sakit"
-                      ? "Sakit — tidak perlu absen hari ini"
-                      : todayAttendance.clock_out_time
-                        ? "Selesai"
-                        : todayAttendance.is_late
-                          ? `Terlambat ${todayAttendance.late_minutes}m`
-                          : "Belum absen pulang"}
-                </span>
-                {todayAttendance.attendance_status !== "izin" && todayAttendance.attendance_status !== "sakit" && (
-                  <div className="ml-auto flex gap-2">
-                    <span className="text-[8px] text-black">Masuk {formatTimeSimple(todayAttendance.clock_in_time)}</span>
-                    {todayAttendance.clock_out_time && (
-                      <span className="text-[8px] text-black">Pulang {formatTimeSimple(todayAttendance.clock_out_time)}</span>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
           {/* Status IZIN/SAKIT — pengganti fingerprint saat cuti khusus */}
