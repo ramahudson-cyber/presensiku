@@ -112,20 +112,29 @@ export default async function handler(req: Request) {
       )
     }
 
-    // Hanya admin instansi / super admin yang boleh memicu push
-    const authHeader = req.headers.get('Authorization') || ''
-    const jwt = authHeader.replace(/^Bearer\s+/i, '')
-    const { data: userData, error: authErr } = await supabase.auth.getUser(jwt)
-    if (authErr || !userData?.user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
-    }
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userData.user.id)
-      .maybeSingle()
-    if (!['super_admin', 'admin_puskesmas'].includes(profile?.role || '')) {
-      return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403 })
+    // Dua jalur otorisasi:
+    // 1. JWT admin instansi / super admin (dipanggil dari browser admin);
+    // 2. header x-cron-secret (dipanggil trigger DB via pg_net — tidak ada
+    //    JWT user pada panggilan server-side).
+    const cronSecret = Deno.env.get('CRON_SECRET') || ''
+    const isTrustedCaller =
+      cronSecret !== '' && (req.headers.get('x-cron-secret') || '') === cronSecret
+
+    if (!isTrustedCaller) {
+      const authHeader = req.headers.get('Authorization') || ''
+      const jwt = authHeader.replace(/^Bearer\s+/i, '')
+      const { data: userData, error: authErr } = await supabase.auth.getUser(jwt)
+      if (authErr || !userData?.user) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+      }
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userData.user.id)
+        .maybeSingle()
+      if (!['super_admin', 'admin_puskesmas'].includes(profile?.role || '')) {
+        return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403 })
+      }
     }
 
     const body = await req.json().catch(() => ({}))
@@ -144,6 +153,22 @@ export default async function handler(req: Request) {
       }
       title = title || ann.title
       message = message || ann.content
+
+      // Klaim atomik: trigger DB dan invoke browser admin bisa datang
+      // bersamaan — hanya panggilan pertama yang mengirim push.
+      // (.filter bukan .isNull: builder versi bundled tidak punya isNull)
+      const { data: claimed } = await supabase
+        .from('announcements')
+        .update({ push_sent_at: new Date().toISOString() })
+        .eq('id', ann.id)
+        .filter('push_sent_at', 'is', null)
+        .select('id')
+      if (!claimed || claimed.length === 0) {
+        return new Response(JSON.stringify({ sent: 0, reason: 'already_sent' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
 
       let q = supabase.from('profiles').select('id')
       if (ann.organization_id) q = q.eq('organization_id', ann.organization_id)
@@ -193,3 +218,7 @@ export default async function handler(req: Request) {
     return new Response(JSON.stringify({ error: String(e) }), { status: 500 })
   }
 }
+
+// Runtime Edge Supabase kini mewajibkan wiring eksplisit — function dengan
+// default export saja terbukti menggantung (idle timeout) pada deploy baru.
+Deno.serve(handler)
