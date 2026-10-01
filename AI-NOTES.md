@@ -2,6 +2,14 @@
 
 > File ini di-update otomatis. Setiap selesai tugas → bilang **"catat progress"** untuk update.
 
+## 🔔 Push Reminder Shift Server-Side (2 Okt 2026) — ✅ LIVE
+Reminder shift kini dikirim dari SERVER → muncul saat aplikasi PWA/APK **tertutup** (bukan hanya saat dibuka). Infrastruktur yang sudah ada sebelumnya (device_tokens, token Android+web, firebase-messaging-sw.js, send-push utk pengumuman) tidak diubah.
+- **Alur**: pg_cron `shift-reminder-push` (*/5 menit) → POST Edge Function `send-shift-reminder` (header `Authorization: Bearer <service_role dari Vault>` + `x-cron-secret`) → hitung jadwal mulai/berakhir ≤20 menit (WITA, dukung malam lintas tengah malam via jadwal kemarin) → dedupe `shift_notification_log` (unique user+shift+date+kind) → FCM HTTP v1 ke semua token user.
+- **Secrets**: `CRON_SECRET` (supabase secrets) = `shift_cron_secret` (Vault); `service_role_key` (Vault) utk header transport cron. `FIREBASE_SERVICE_ACCOUNT` (lama) dipakai ulang.
+- **⚠️ GOTCHA Edge Function**: deploy baru WAJIB `Deno.serve(handler)` eksplisit + JANGAN `verify_jwt=false` (keduanya terbukti bikin function menggantung → IDLE_TIMEOUT/WORKER_RESOURCE_LIMIT). Deploy tanpa Docker perlu flag `--use-api`. Function lama (send-push, dibuat sebelum perubahan runtime) masih jalan — kalau **redeploy** send-push, tambahkan `Deno.serve(handler)` juga.
+- **Verifikasi**: `SELECT * FROM net._http_response ORDER BY id DESC;` (cron tiap 5 menit, harus 200), `SELECT * FROM shift_notification_log;` (baris muncul saat ada shift ±20 menit), log function di Dashboard.
+- Tidak ada perubahan client bundle (webVersionCode tidak dinaikkan).
+
 ## 🩹 FIX Approval Cuti/Izin 400 (27 Sep 2026) — ✅ LIVE DI DB + pushed
 **Gejala:** klik Setuju di Cuti & Izin → 400 `column "attendance_status" is of type attendance_status but expression is of type leave_type`.
 **Akar masalah:** `approve_leave_request_impl` meng-insert `v_request.leave_type` (enum `leave_type`) langsung ke kolom `attendance.attendance_status` (enum `attendance_status`) — dua enum berbeda, Postgres tidak cast implisit.
