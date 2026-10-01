@@ -414,6 +414,11 @@ export default function EmployeeHistory() {
                             <div className="text-[9px] uppercase tracking-wider" style={{ color: T.textMuted }}>
                               {dayLabel}
                             </div>
+                            {item.location_in?.matched_location_name && (
+                              <div className="text-[9px] font-medium" style={{ color: T.textMuted }}>
+                                Lokasi : {item.location_in.matched_location_name}
+                              </div>
+                            )}
                           </div>
                           <div className="text-center">
                             <div className="text-[11px] font-semibold tabular-nums" style={{ color: T.textSec }}>{fmtIn}</div>
