@@ -16,6 +16,8 @@ import EmployeeEditProfile from "../pages/employee/EmployeeEditProfile";
 import SchedulingPage from "../pages/admin/SchedulingPage";
 import LeaveManagementPage from "../pages/admin/LeaveManagementPage";
 import LeaveRequestPage from "../pages/employee/LeaveRequestPage";
+import SanggahanPage from "../pages/admin/SanggahanPage";
+import SanggahPage from "../pages/employee/SanggahPage";
 import AnnouncementsPage from "../pages/admin/AnnouncementsPage";
 import PayrollPage from "../pages/admin/PayrollPage";
 import EmployeeSalary from "../pages/employee/EmployeeSalary";
@@ -73,6 +75,11 @@ function AppRoutes() {
           </ProtectedRoute>
         } />
         <Route path="leave" element={<LeaveManagementPage />} />
+        <Route path="sanggahan" element={
+          <ProtectedRoute allowedRoles={["super_admin", "admin", "admin_puskesmas"]}>
+            <SanggahanPage />
+          </ProtectedRoute>
+        } />
         <Route path="payroll" element={<PayrollPage />} />
         <Route path="announcements" element={<AnnouncementsPage />} />
         <Route path="organizations" element={
@@ -117,6 +124,7 @@ function AppRoutes() {
         <Route path="profile/edit" element={<EmployeeEditProfile />} />
         <Route path="history" element={<EmployeeHistory />} />
         <Route path="leave" element={<LeaveRequestPage />} />
+        <Route path="sanggah" element={<SanggahPage />} />
         <Route path="salary" element={<EmployeeSalary />} />
       </Route>
 

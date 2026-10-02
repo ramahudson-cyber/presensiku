@@ -1,7 +1,7 @@
 {
   "version": "1.7.1",
   "versionCode": 26,
-  "webVersionCode": 18,
+  "webVersionCode": 19,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.7.1/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
   "changelog": "Perbaikan penting: APK v1.7.0 tidak bisa dibuka. Update ke v1.7.1. Web: banner izin notifikasi + akses PWA Android untuk pegawai.",

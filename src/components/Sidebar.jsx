@@ -38,6 +38,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
     { path: "/employee/attendance", label: "Absensi", icon: CalendarCheck },
     { path: "/employee/schedule", label: "Jadwal Shift", icon: CalendarDays },
     { path: "/employee/leave", label: "Izin / Sakit", icon: ClipboardList },
+    { path: "/employee/sanggah", label: "Sanggahan", icon: MessageSquareWarning },
   ];
 
   // Menu khusus platform super_admin (Kelola Instansi)
@@ -52,6 +53,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
     { path: "/admin/attendance-history", label: "Riwayat Absensi", icon: History },
     { path: "/admin/schedules", label: "Jadwal Kerja", icon: CalendarDays },
     { path: "/admin/leave", label: "Cuti & Izin", icon: FileText },
+    { path: "/admin/sanggahan", label: "Sanggahan", icon: MessageSquareWarning },
     ...(payrollOn ? [{ path: "/admin/payroll", label: "Gaji", icon: Wallet }] : []),
     { path: "/admin/announcements", label: "Pengumuman", icon: Megaphone },
     ...(userRole === "super_admin" ? superAdminMenus : []),

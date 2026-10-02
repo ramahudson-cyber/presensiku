@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import {
   LayoutDashboard, CalendarDays,
   Users, History, FileText, Megaphone, Settings, MoreHorizontal,
+  MessageSquareWarning,
   FingerprintPattern,
 } from "lucide-react";
 import { useState } from "react";
@@ -34,6 +35,7 @@ export default function BottomNav({ hidden = false }) {
   const adminMore = [
     { path: "/admin/schedules", label: "Jadwal Kerja", icon: CalendarDays },
     { path: "/admin/leave", label: "Cuti & Izin", icon: FileText },
+    { path: "/admin/sanggahan", label: "Sanggahan", icon: MessageSquareWarning },
     { path: "/admin/announcements", label: "Pengumuman", icon: Megaphone },
     { path: "/admin/settings", label: "Pengaturan", icon: Settings },
   ];
