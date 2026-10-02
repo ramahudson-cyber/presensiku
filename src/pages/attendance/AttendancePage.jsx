@@ -73,6 +73,10 @@ export default function AttendancePage() {
   const [saving, setSaving] = useState(false);
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
   const [puskesmasLocation, setPuskesmasLocation] = useState({ latitude: -8.5697, longitude: 116.0821, radius_meter: 200, name: "Lokasi Absensi" });
+  // Lokasi hasil pencocokan server (lokasi aktif terdekat dari posisi user)
+  // — sumber nama card ungu & pin peta agar selalu mengikuti lokasi yang
+  // benar-benar diverifikasi, bukan baris pertama alfabetis.
+  const [matchedLocation, setMatchedLocation] = useState(null);
   const prevDistanceRef = useRef(null);
 	  const zoomMapRef = useRef(null);
 	  const DISTANCE_THRESHOLD = 5;
@@ -212,6 +216,17 @@ export default function AttendancePage() {
 
       const serverResult = await verifyLocationServer(loc.latitude, loc.longitude, loc.accuracy);
       if (serverResult) {
+        // Nama & titik lokasi dari server = lokasi aktif terdekat dari posisi
+        // user (bukan baris pertama alfabetis) — card ungu & pin peta ikut ini.
+        if (serverResult.location_id) {
+          setMatchedLocation(prev => prev?.id === serverResult.location_id ? prev : {
+            id: serverResult.location_id,
+            name: serverResult.location_name,
+            latitude: parseFloat(serverResult.location_latitude),
+            longitude: parseFloat(serverResult.location_longitude),
+            radius_meter: serverResult.radius_meter,
+          });
+        }
         if (!serverResult.valid) {
           if (serverResult.suspicious_accuracy) setIsFakeGPS(true);
           setLocationStatus("invalid");
@@ -509,7 +524,11 @@ export default function AttendancePage() {
           {currentCoords ? (
             <LocationMap
               userLocation={{ latitude: currentCoords.latitude, longitude: currentCoords.longitude }}
-              puskesmasLocation={{ latitude: puskesmasLocation.latitude, longitude: puskesmasLocation.longitude }}
+              puskesmasLocation={{
+                latitude: matchedLocation?.latitude ?? puskesmasLocation.latitude,
+                longitude: matchedLocation?.longitude ?? puskesmasLocation.longitude,
+                radius_meter: matchedLocation?.radius_meter ?? puskesmasLocation.radius_meter,
+              }}
               distance={distance}
               status={locationStatus}
               fullscreen={true}
@@ -547,7 +566,7 @@ export default function AttendancePage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-[13px] font-extrabold text-white tracking-tight leading-tight">{puskesmasLocation.name || "Lokasi Presensi"}</p>
+                  <p className="text-[13px] font-extrabold text-white tracking-tight leading-tight">{matchedLocation?.name || puskesmasLocation.name || "Lokasi Presensi"}</p>
                   <p className="text-[8px] font-semibold text-white/70 uppercase tracking-[0.5px]">Lokasi Presensi</p>
                 </div>
               </div>
