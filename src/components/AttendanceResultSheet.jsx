@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import thumbsUpImg from "../assets/thumbs-up-success.png";
 
 const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
 
@@ -43,15 +44,6 @@ function MapPinIcon() {
   );
 }
 
-function CheckIcon({ color = "#ADFF2F" }) {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" fill={color} opacity="0.2" stroke={color} strokeWidth="1.5" />
-      <path d="M16 8l-6 8-3-3" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 // ── Confetti ──
 function Confetti({ id }) {
   const ref = useRef(null);
@@ -91,7 +83,7 @@ function IconBox({ children }) {
   );
 }
 
-export default function AttendanceResultSheet({ open, onClose, data, type, shiftName: shiftNameProp }) {
+export default function AttendanceResultSheet({ open, onClose, data, type, shiftName: shiftNameProp, locationName }) {
   const navigate = useNavigate();
   const uid = useRef(Math.random().toString(36).slice(2, 8)).current;
   if (!data) return null;
@@ -109,7 +101,6 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
   const shiftLabel = data.shift_code
     ? (cap(shiftNameProp) || SHIFT_NAMES[data.shift_code] || `Shift ${data.shift_code}`)
     : "-";
-  const statusText = isLate ? `Terlambat ${data.late_minutes} menit` : "Tepat Waktu";
   const distance = data.location_in?.distance_from_puskesmas || null;
   const statusColor = isLate ? "#FBBF24" : "#ADFF2F";
   const badgeGrad = isLate
@@ -127,6 +118,16 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
           0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
           70% { opacity: 1; }
           100% { transform: translateY(820px) rotate(720deg); opacity: 0; }
+        }
+        @keyframes pop-${uid} {
+          0% { transform: scale(0) rotate(-8deg); opacity: 0; }
+          60% { transform: scale(1.12) rotate(3deg); opacity: 1; }
+          80% { transform: scale(0.96) rotate(-1deg); }
+          100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes bob-${uid} {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-7px) rotate(-2.5deg); }
         }
       `}</style>
 
@@ -181,9 +182,14 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
 
               {/* Title */}
               <h2 style={{ fontSize: 22, fontWeight: 800, color: "white", textAlign: "center", marginBottom: 4 }}>
-                {isCheckIn ? "Absen Masuk!" : "Absen Pulang!"}
+                {isCheckIn ? "Absen Masuk Berhasil!" : "Absen Pulang!"}
               </h2>
-              <p style={{ fontSize: 11, color: "white", textAlign: "center", marginBottom: isLate ? 10 : 18 }}>{dateStr}</p>
+              <p style={{ fontSize: 11, color: "white", textAlign: "center", marginBottom: 4 }}>{dateStr}</p>
+              {isCheckIn && (
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#ADFF2F", textAlign: "center", marginBottom: isLate ? 10 : 14 }}>
+                  Selamat bekerja, semangat ya !
+                </p>
+              )}
 
               {/* Late badge */}
               {isLate && (
@@ -194,6 +200,20 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
                 }}>
                   ⚠ Keterlambatan tercatat
                 </span>
+              )}
+
+              {/* Ilustrasi jempol — hanya absen masuk; pop-in sekali lalu bob halus; gradasi memudarkan potongan bawah gambar */}
+              {isCheckIn && (
+                <div style={{ animation: `pop-${uid} 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both`, marginBottom: 10 }}>
+                  <img src={thumbsUpImg} alt="Semangat!"
+                    style={{
+                      width: 180, height: "auto",
+                      filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.35))",
+                      animation: `bob-${uid} 2s ease-in-out 0.7s infinite`,
+                      WebkitMaskImage: "linear-gradient(to bottom, black 68%, transparent 100%)",
+                      maskImage: "linear-gradient(to bottom, black 68%, transparent 100%)",
+                    }} />
+                </div>
               )}
 
               {/* Stats Row */}
@@ -228,6 +248,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
                     <IconBox><MapPinIcon /></IconBox>
                     <div>
                       <span style={{ fontSize: 10, fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: 0.5 }}>Lokasi</span>
+                      {locationName && <span style={{ fontSize: 10, fontWeight: 700, color: "white", display: "block", marginTop: 1 }}>{cap(locationName)}</span>}
                       {distance && <span style={{ fontSize: 10, fontWeight: 400, color: "white", display: "block", marginTop: 1 }}>{distance}m dari Lokasi</span>}
                     </div>
                   </div>
@@ -240,16 +261,6 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
                       {Number(distance) <= 100 ? "Valid" : "Di Luar Jarak"}
                     </span>
                   )}
-                </div>
-                <Divider />
-
-                {/* Status */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <IconBox><CheckIcon color={statusColor} /></IconBox>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: 0.5 }}>Status</span>
-                  </div>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: statusColor }}>{statusText}</span>
                 </div>
               </div>
 
