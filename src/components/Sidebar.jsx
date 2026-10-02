@@ -6,7 +6,7 @@ import { getSetting } from "../lib/settings";
 import {
   LayoutDashboard, Users, CalendarCheck, CalendarDays,
   FileText, Megaphone, Settings, LogOut,
-  History, X, ClipboardList, Building2, Wallet, Bell
+  History, X, ClipboardList, Building2, Wallet, Bell, MessageSquareWarning
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import ProfileSheet from "./ProfileSheet";
