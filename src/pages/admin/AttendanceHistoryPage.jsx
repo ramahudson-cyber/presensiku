@@ -277,18 +277,21 @@ export default function AttendanceHistoryPage() {
         sheetName: "Riwayat Absensi",
         orgName: user?.override_org?.name || user?.organization?.name,
         docTitle: `Riwayat Absensi — ${fmtDay(dateFrom)} s.d. ${fmtDay(dateTo)}`,
-        header: ["Tanggal", "Nama", "Jabatan", "Absen Masuk", "Absen Pulang", "Status", "Terlambat (menit)"],
+        header: ["Tanggal", "Nama", "Jabatan", "Absen Masuk", "Absen Pulang", "Status", "Lokasi Absen", "Terlambat (menit)"],
         columnMeta: [
           { align: "center", numFmt: DATE_FMT }, { align: "left" }, { align: "left" },
-          { align: "center" }, { align: "center" }, { align: "center" }, { align: "right" },
+          { align: "center" }, { align: "center" }, { align: "center" }, { align: "left" }, { align: "right" },
         ],
         rows: rows.map((r) => [
-          new Date(r.date + "T00:00:00"),
+          // Suffix Z: parse UTC midnight — tanpa ini Date tengah malam lokal
+          // (UTC+8) jadi serial Excel pukul 16:00 hari sebelumnya (tanggal -1).
+          new Date(r.date + "T00:00:00Z"),
           r.profiles?.full_name ?? "-",
           r.profiles?.position ?? "-",
           fmtTime(r.clock_in_time),
           fmtTime(r.clock_out_time),
           cap(r.attendance_status),
+          r.location_in?.matched_location_name ?? "-",
           Number(r.late_minutes ?? 0),
         ]),
       });
