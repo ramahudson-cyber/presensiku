@@ -123,6 +123,7 @@ interface Candidate {
   kind: 'start' | 'end'
   timeStr: string
   diffMin: number
+  logId?: string
 }
 
 // ---------- Handler ----------
@@ -239,7 +240,7 @@ export default async function handler(req: Request) {
           { ignoreDuplicates: true }
         )
         .select('id')
-      if (inserted && inserted.length > 0) toSend.push(c)
+      if (inserted && inserted.length > 0) toSend.push({ ...c, logId: inserted[0].id })
     }
 
     const userIds = [...new Set(toSend.map((c) => c.userId))]
@@ -268,9 +269,17 @@ export default async function handler(req: Request) {
           date: c.date,
         })
         if (ok) sent++
-        else staleIds.push(row.id)
+        else {
+          staleIds.push(row.id)
+          // Token mati + klaim dibatalkan: token lain milik user sama (atau
+          // re-registrasi) boleh dicoba lagi menit berikutnya.
+          if (c.logId) await supabase.from('shift_notification_log').delete().eq('id', c.logId)
+        }
       } catch (e) {
         errors.push(String(e))
+        // Gagal sementara (jaringan/5xx): lepas klaim supaya cron menit
+        // berikutnya mencoba lagi — jendela 2 menit hanya punya 2 kesempatan.
+        if (c.logId) await supabase.from('shift_notification_log').delete().eq('id', c.logId)
       }
     }
 
