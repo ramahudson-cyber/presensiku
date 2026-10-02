@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js'
 
 // Cron-driven shift reminder push (PWA web-push + Android FCM).
-// Dipanggil pg_cron tiap 5 menit — otentikasi via header x-cron-secret
+// Dipanggil pg_cron tiap 1 menit — otentikasi via header x-cron-secret
 // (verify_jwt=false di config.toml), BUKAN JWT user.
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
@@ -122,6 +122,7 @@ interface Candidate {
   date: string
   kind: 'start' | 'end'
   timeStr: string
+  diffMin: number
 }
 
 // ---------- Handler ----------
@@ -185,7 +186,9 @@ export default async function handler(req: Request) {
       if (!nameMap.has(k) && s.name) nameMap.set(k, s.name)
     }
 
-    const WINDOW_MIN = 20
+    // Reminder dikirim saat sisa waktu 1-2 menit sebelum shift mulai/berakhir
+    // (cron tiap 1 menit; dedupe log mencegah dobel kirim dalam jendela ini)
+    const WINDOW_MIN = 2
     const candidates: Candidate[] = []
     for (const r of schedRows || []) {
       const def = defMap.get(`${r.organization_id}|${r.shift_code}`)
@@ -210,6 +213,7 @@ export default async function handler(req: Request) {
           userId: r.user_id, shiftCode: r.shift_code, shiftName: capName,
           date: r.date, kind: 'start',
           timeStr: String(Math.floor(startMin / 60)).padStart(2, '0') + ':' + String(startMin % 60).padStart(2, '0'),
+          diffMin: startAbs - nowMin,
         })
       }
       // Reminder pulang: berlaku juga untuk jadwal kemarin yang shift-nya
@@ -219,6 +223,7 @@ export default async function handler(req: Request) {
           userId: r.user_id, shiftCode: r.shift_code, shiftName: capName,
           date: r.date, kind: 'end',
           timeStr: String(Math.floor(endMin / 60)).padStart(2, '0') + ':' + String(endMin % 60).padStart(2, '0'),
+          diffMin: endAbs - nowMin,
         })
       }
     }
@@ -249,10 +254,12 @@ export default async function handler(req: Request) {
       const c = toSend.find((x) => x.userId === row.user_id)
       if (!c) continue
       const title = c.kind === 'start' ? 'Pengingat Absen Masuk' : 'Pengingat Absen Pulang'
+      // Sisa waktu nyata saat notifikasi dikirim (bukan angka hardcoded)
+      const lagText = c.diffMin >= 1 ? `${c.diffMin} menit lagi` : 'kurang dari 1 menit lagi'
       const body =
         c.kind === 'start'
-          ? `Shift ${c.shiftName} Anda dimulai ${c.timeStr} WITA (±15 menit lagi). Jangan lupa absen masuk.`
-          : `Shift ${c.shiftName} Anda berakhir ${c.timeStr} WITA (±15 menit lagi). Jangan lupa absen pulang.`
+          ? `Shift ${c.shiftName} Anda dimulai ${c.timeStr} WITA (${lagText}). Jangan lupa absen masuk.`
+          : `Shift ${c.shiftName} Anda berakhir ${c.timeStr} WITA (${lagText}). Jangan lupa absen pulang.`
       try {
         const ok = await sendFcm(row.token, title, body, {
           type: 'shift_reminder',
