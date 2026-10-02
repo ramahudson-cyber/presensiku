@@ -729,7 +729,7 @@ export default function AttendancePage() {
           data={resultData}
           type={resultType}
           shiftName={todaySchedule?.name}
-          locationName={puskesmasLocation.name}
+          locationName={matchedLocation?.name || puskesmasLocation.name}
         />
       </div>
 

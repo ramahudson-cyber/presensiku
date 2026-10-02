@@ -102,11 +102,17 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
   const shiftLabel = data.shift_code
     ? (cap(shiftNameProp) || SHIFT_NAMES[data.shift_code] || `Shift ${data.shift_code}`)
     : "-";
-  const distance = data.location_in?.distance_from_puskesmas || null;
   const statusColor = isLate ? "#FBBF24" : "#ADFF2F";
   const badgeGrad = isLate
     ? "linear-gradient(145deg, #FBBF24 0%, #F59E0B 50%, #D97706 100%)"
     : "linear-gradient(145deg, #FF0099 0%, #BF00FF 50%, #7B00E0 100%)";
+  // Lokasi sesuai jenis absen: masuk → location_in, pulang → location_out.
+  // Nama dari record (di-enrich trigger DB saat absen) agar selalu lokasi
+  // yang benar-benar dipakai, bukan lokasi alfabetis pertama.
+  const locJson = isCheckIn ? data.location_in : data.location_out;
+  const distance = locJson?.distance_from_location ?? locJson?.distance_from_puskesmas
+    ?? data.location_in?.distance_from_puskesmas ?? null;
+  const displayLocName = locJson?.matched_location_name || locationName;
 
   return (
     <>
@@ -255,7 +261,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
                     <IconBox><MapPinIcon /></IconBox>
                     <div>
                       <span style={{ fontSize: 10, fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: 0.5 }}>Lokasi</span>
-                      {locationName && <span style={{ fontSize: 10, fontWeight: 700, color: "white", display: "block", marginTop: 1 }}>{cap(locationName)}</span>}
+                      {displayLocName && <span style={{ fontSize: 10, fontWeight: 700, color: "white", display: "block", marginTop: 1 }}>{cap(displayLocName)}</span>}
                       {distance && <span style={{ fontSize: 10, fontWeight: 400, color: "white", display: "block", marginTop: 1 }}>{distance}m dari Lokasi</span>}
                     </div>
                   </div>
