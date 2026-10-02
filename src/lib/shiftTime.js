@@ -94,3 +94,41 @@ export function isShiftEnded(scheduleDate, shiftDefinition, now = new Date()) {
   const endSeconds = endHour * 3600 + endMinute * 60;
   return nowSeconds >= endSeconds;
 }
+
+/**
+ * Hitung menit lebih awal pegawai checkout dibanding jam selesai shift
+ * jadwalnya (WITA; shift lintas tengah malam selesai besok).
+ * Return { earlyMinutes } bila checkout ≥ minEarlyMinutes lebih awal,
+ * null bila data tidak lengkap atau tidak lebih awal dari ambang.
+ */
+export function getEarlyLeaveInfo(clockOutTime, scheduleDate, shiftDefinition, minEarlyMinutes = 15) {
+  if (!clockOutTime || !shiftDefinition?.end_time || shiftDefinition.is_working_day === false) return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(scheduleDate || "")) return null;
+  const match = String(shiftDefinition.end_time).match(/^(\d{1,2}):(\d{2})/);
+  if (!match) return null;
+  const endHour = Number(match[1]);
+  const endMinute = Number(match[2]);
+  if (endHour > 23 || endMinute > 59) return null;
+
+  const outMs = new Date(clockOutTime).getTime();
+  if (Number.isNaN(outMs)) return null;
+
+  const [year, month, day] = scheduleDate.split("-").map(Number);
+  // WITA = UTC+8 tetap (tanpa DST): absolut jam selesai shift dari tanggal jadwal
+  let endMs = Date.UTC(year, month - 1, day, endHour, endMinute) - 8 * 60 * 60 * 1000;
+  if (shiftDefinition.crosses_midnight) endMs += 24 * 60 * 60 * 1000;
+
+  const earlyMinutes = Math.round((endMs - outMs) / 60000);
+  if (earlyMinutes < minEarlyMinutes) return null;
+  return { earlyMinutes };
+}
+
+/** "90" → "1j 30m"; "45" → "45m". */
+export function formatDuration(minutes) {
+  const m = Math.max(0, Math.round(minutes));
+  const h = Math.floor(m / 60);
+  const rest = m % 60;
+  if (h > 0 && rest > 0) return `${h}j ${rest}m`;
+  if (h > 0) return `${h}j`;
+  return `${rest}m`;
+}

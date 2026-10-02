@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { supabase } from "../../lib/supabase";
-import { getShiftDefinition, getWitaParts, isShiftEnded } from "../../lib/shiftTime";
+import { getShiftDefinition, getWitaParts, isShiftEnded, getEarlyLeaveInfo, formatDuration } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
@@ -44,6 +44,9 @@ export default function EmployeeHistory() {
   const [workingDaysPassed, setWorkingDaysPassed] = useState(0);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
+  // Jadwal + definisi shift dipertahankan untuk derivasi "Pulang Cepat"
+  const [shiftDefs, setShiftDefs] = useState([]);
+  const [schedList, setSchedList] = useState([]);
 
   const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
 
@@ -85,10 +88,12 @@ export default function EmployeeHistory() {
       ]);
       const serverNow = new Date(serverTimeData || Date.now());
       const shiftDefinitions = shiftDefinitionsRes.data || [];
+      setShiftDefs(shiftDefinitions);
 
       setHistory(attData || []);
 
       const schedules = schedRes.data || [];
+      setSchedList(schedules);
       setTotalDays(schedules.filter((schedule) => schedule.date <= todayWita).length);
       setWorkingDaysPassed(
         schedules.filter((schedule) => isShiftEnded(
@@ -140,9 +145,11 @@ export default function EmployeeHistory() {
         if (cancelled) return;
         const serverNow = new Date(serverTimeData || Date.now());
         const shiftDefinitions = shiftDefinitionsRes.data || [];
+        setShiftDefs(shiftDefinitions);
         setHistory(attData || []);
 
         const schedules = schedRes.data || [];
+        setSchedList(schedules);
         setTotalDays(schedules.filter((schedule) => schedule.date <= todayWita).length);
         setWorkingDaysPassed(
           schedules.filter((schedule) => isShiftEnded(
@@ -400,12 +407,19 @@ export default function EmployeeHistory() {
                       const dateObj = new Date(item.date + "T00:00:00");
                       const dateLabel = dateObj.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
                       const dayLabel = dateObj.toLocaleDateString("id-ID", { weekday: "short" });
+                      // Derivasi "Pulang Cepat": checkout ≥15 menit sebelum jam
+                      // selesai shift (definisi dari master shift instansi).
+                      const earlyInfo = (st === "hadir" || st === "terlambat") ? (() => {
+                        const sched = schedList.find((s) => s.date === item.date);
+                        const def = getShiftDefinition(shiftDefs, { date: item.date, shift_code: item.shift_code || sched?.shift_code });
+                        return getEarlyLeaveInfo(item.clock_out_time, item.date, def);
+                      })() : null;
                       return (
                         <div key={item.id || i}
                           className="grid grid-cols-[1fr_44px_44px_70px] gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200"
                           style={{
                             background: T.rowBg,
-                            borderLeft: isLate ? "2px solid rgba(249,115,22,0.4)" : isAlpha ? "2px solid rgba(239,68,68,0.4)" : isBelum ? "2px solid rgba(59,130,246,0.3)" : "2px solid transparent",
+                            borderLeft: isLate ? "2px solid rgba(249,115,22,0.4)" : isAlpha ? "2px solid rgba(239,68,68,0.4)" : isBelum ? "2px solid rgba(59,130,246,0.3)" : earlyInfo ? "2px solid rgba(8,145,178,0.35)" : "2px solid transparent",
                           }}>
                           <div className="min-w-0">
                             <div className="text-[11px] font-bold" style={{ color: T.text }}>
@@ -440,6 +454,11 @@ export default function EmployeeHistory() {
                             {isLate && item.late_minutes > 0 && (
                               <div className="text-[9px] font-medium" style={{ color: T.textMuted }}>
                                 {item.late_minutes} menit
+                              </div>
+                            )}
+                            {earlyInfo && (
+                              <div className="text-[9px] font-semibold" style={{ color: "#0891B2" }}>
+                                Pulang Cepat {formatDuration(earlyInfo.earlyMinutes)}
                               </div>
                             )}
                           </div>

@@ -5,7 +5,7 @@ const CURRENT_VERSION_CODE = 26;
 // Bump field `webVersionCode` di public/version.json pada deploy web berisi perubahan UI.
 // PENTING: angka ini harus dibump BERSAMAAN dengan version.json — kalau tertinggal,
 // bundle lama me-reload otomatis setiap kali aplikasi dibuka dan memotong flow login/OTP.
-const CURRENT_WEB_VERSION_CODE = 17;
+const CURRENT_WEB_VERSION_CODE = 18;
 
 export async function checkUpdate() {
   try {

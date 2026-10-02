@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { exportExcelWorkbook, DATE_FMT } from "../../services/excelExport";
+import { getMondayFirstDayOfWeek, getEarlyLeaveInfo, formatDuration } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import {
@@ -157,11 +158,15 @@ export default function AttendanceHistoryPage() {
           .lte("date", dateTo),
         supabase
           .from("shift_schedules")
-          .select("shift_code, day_of_week, is_working_day")
+          .select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day")
           .eq("organization_id", organizationId),
       ]);
       const workingDaySet = new Set(
         (shiftRules || []).filter((s) => s.is_working_day).map((s) => `${s.shift_code}|${s.day_of_week}`)
+      );
+      // Definisi lengkap shift (untuk derivasi "Pulang Cepat")
+      const shiftRuleMap = new Map(
+        (shiftRules || []).map((s) => [`${s.shift_code}|${s.day_of_week}`, s])
       );
 
       // 4. Baris attendance yang ADA: key "user_id|date"
@@ -178,6 +183,7 @@ export default function AttendanceHistoryPage() {
           id: `derived-${s.user_id}-${s.date}`,
           user_id: s.user_id,
           date: s.date,
+          shift_code: s.shift_code,
           attendance_status: "alpha",
           is_late: false,
           late_minutes: 0,
@@ -191,14 +197,22 @@ export default function AttendanceHistoryPage() {
           },
         }));
 
-      // 6. Gabungkan & urutkan
+      // 6. Gabungkan, urutkan, lalu anotasi "Pulang Cepat" (checkout ≥15 menit
+      //    sebelum jam selesai shift — crosses_midnight dihitung oleh helper).
       const merged = [...(attRows || []), ...derived].sort((a, b) => {
         if (a.date !== b.date) return a.date < b.date ? 1 : -1;
         return (b.clock_in_time || "").localeCompare(a.clock_in_time || "");
       });
+      const annotated = merged.map((r) => {
+        if (r.attendance_status !== "hadir" && r.attendance_status !== "terlambat") return r;
+        const rule = shiftRuleMap.get(`${r.shift_code}|${getMondayFirstDayOfWeek(r.date)}`);
+        if (!rule) return r;
+        const early = getEarlyLeaveInfo(r.clock_out_time, r.date, rule);
+        return early ? { ...r, early_leave: early.earlyMinutes } : r;
+      });
 
-      setMergedRows(merged);
-      return merged;
+      setMergedRows(annotated);
+      return annotated;
     } catch (err) {
       console.error("❌ fetchRecords:", err.message);
       return [];
@@ -277,10 +291,10 @@ export default function AttendanceHistoryPage() {
         sheetName: "Riwayat Absensi",
         orgName: user?.override_org?.name || user?.organization?.name,
         docTitle: `Riwayat Absensi — ${fmtDay(dateFrom)} s.d. ${fmtDay(dateTo)}`,
-        header: ["Tanggal", "Nama", "Jabatan", "Absen Masuk", "Absen Pulang", "Status", "Lokasi Absen", "Terlambat (menit)"],
+        header: ["Tanggal", "Nama", "Jabatan", "Absen Masuk", "Absen Pulang", "Status", "Lokasi Absen", "Terlambat (menit)", "Pulang Cepat"],
         columnMeta: [
           { align: "center", numFmt: DATE_FMT }, { align: "left" }, { align: "left" },
-          { align: "center" }, { align: "center" }, { align: "center" }, { align: "left" }, { align: "right" },
+          { align: "center" }, { align: "center" }, { align: "center" }, { align: "left" }, { align: "right" }, { align: "center" },
         ],
         rows: rows.map((r) => [
           // Suffix Z: parse UTC midnight — tanpa ini Date tengah malam lokal
@@ -293,6 +307,7 @@ export default function AttendanceHistoryPage() {
           cap(r.attendance_status),
           r.location_in?.matched_location_name ?? "-",
           Number(r.late_minutes ?? 0),
+          r.early_leave ? formatDuration(r.early_leave) : "-",
         ]),
       });
       toast.success(`${rows.length} baris berhasil diekspor`);
@@ -459,6 +474,11 @@ export default function AttendanceHistoryPage() {
                       </td>
                       <td className="py-3 px-4">
                         <StatusBadge status={r.attendance_status} />
+                        {r.early_leave ? (
+                          <div className="text-[9px] font-semibold text-cyan-300 mt-1">
+                            ⚡ Pulang Cepat {formatDuration(r.early_leave)}
+                          </div>
+                        ) : null}
                       </td>
                       <td className="py-3 px-4">
                         {r.is_late ? (
@@ -517,6 +537,11 @@ export default function AttendanceHistoryPage() {
                           ⚠ Terlambat +{r.late_minutes} menit
                         </p>
                       )}
+                      {r.early_leave ? (
+                        <p className="text-xs text-cyan-300 mt-2 font-medium">
+                          ⚡ Pulang Cepat {formatDuration(r.early_leave)}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                 </div>
