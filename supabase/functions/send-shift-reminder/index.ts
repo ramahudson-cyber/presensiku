@@ -248,7 +248,7 @@ export default async function handler(req: Request) {
     for (const row of tokens || []) {
       const c = toSend.find((x) => x.userId === row.user_id)
       if (!c) continue
-      const title = c.kind === 'start' ? 'Presensiku — Pengingat Absen Masuk' : 'Presensiku — Pengingat Absen Pulang'
+      const title = c.kind === 'start' ? 'Pengingat Absen Masuk' : 'Pengingat Absen Pulang'
       const body =
         c.kind === 'start'
           ? `Shift ${c.shiftName} Anda dimulai ${c.timeStr} WITA (±15 menit lagi). Jangan lupa absen masuk.`

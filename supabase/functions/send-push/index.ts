@@ -151,8 +151,8 @@ export default async function handler(req: Request) {
       if (!ann) {
         return new Response(JSON.stringify({ error: 'Announcement tidak ditemukan' }), { status: 404 })
       }
-      title = title || ann.title
-      message = message || ann.content
+      title = title || 'Pengumuman'
+      message = message || (ann.title ? `${ann.title}\n${ann.content}` : ann.content)
 
       // Klaim atomik: trigger DB dan invoke browser admin bisa datang
       // bersamaan — hanya panggilan pertama yang mengirim push.

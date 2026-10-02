@@ -242,8 +242,10 @@ export async function notifyNewAnnouncement(announcement) {
       notifications: [
         {
           id: hashId(`ann_${announcement.id}`),
-          title: `📢 ${announcement.title}`,
-          body: String(announcement.content || "").slice(0, 100),
+          title: "📢 Pengumuman",
+          body: announcement.title
+            ? `${announcement.title}: ${String(announcement.content || "").slice(0, 90)}`
+            : String(announcement.content || "").slice(0, 100),
           schedule: { at: new Date() },
           channelId: ANNOUNCEMENT_CHANNEL_ID,
           sound: "default",
