@@ -6,3 +6,4 @@ project_id = "muhxylbcgvwxjzrbkgdc"
 # karena path verify_jwt=false terbukti menggantung di runtime ini.
 [functions.send-shift-reminder]
 verify_jwt = true
+
