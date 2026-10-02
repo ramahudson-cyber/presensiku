@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 const STUCK_TIMEOUT_MS = 15000;
 
 function ProtectedRoute({ children, allowedRoles }) {
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, loading, isAuthenticated, profileError, retryProfile } = useAuth();
   const location = useLocation();
   const [stuck, setStuck] = useState(false);
   const timer = useRef(null);
@@ -50,8 +50,35 @@ function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/login" replace />;
   }
 
+  // Sesi valid tapi profil gagal dimuat (jaringan lambat / timeout) —
+  // DULU langsung ditendang ke /login sehingga pegawai harus login + OTP
+  // ulang padahal sesinya masih ada. Tampilkan opsi muat ulang profil.
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+        <div className="text-center max-w-xs px-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Memuat profil...</p>
+          {profileError && (
+            <p className="mt-2 text-xs text-red-500">Gagal memuat profil — periksa koneksi Anda.</p>
+          )}
+          <div className="mt-4 flex flex-col gap-2 items-center">
+            <button
+              onClick={() => retryProfile()}
+              className="px-5 py-2 rounded-full bg-purple-600 text-white text-sm hover:bg-purple-700 transition-colors"
+            >
+              Coba Lagi
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-5 py-2 rounded-full border border-gray-300 text-gray-600 text-sm hover:bg-gray-50 transition-colors"
+            >
+              Muat Ulang Aplikasi
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Check role if allowedRoles is specified

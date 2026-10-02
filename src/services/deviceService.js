@@ -11,19 +11,37 @@ function withTimeout(promise, ms, label) {
   ]);
 }
 
-/**
- * Generate device info (platform-aware)
- * - Android (Capacitor) → prioritaskan IMEI, fallback Android ID
- * - iOS (Capacitor) → Device.getId()
- * - Web → FingerprintJS
- */
+// ── Identitas device yang stabil ────────────────────────────────────────────
+// visitorId WAJIB konstan per device/browser. Dulu: fallback acak
+// "device-<timestamp>" dipakai setiap kali deteksi gagal/timeout, sehingga
+// check_device_binding menganggap device baru → OTP + approval ulang
+// PADAHAL device sama. Sekarang: ID yang berhasil dideteksi disimpan dan
+// menang atas deteksi ulang selamanya.
+const DEVICE_ID_STORAGE_KEY = "presensiku_device_id";
+
+function getCachedDeviceId() {
+  try { return localStorage.getItem(DEVICE_ID_STORAGE_KEY) || null; } catch { return null; }
+}
+function cacheDeviceId(visitorId) {
+  try { localStorage.setItem(DEVICE_ID_STORAGE_KEY, visitorId); } catch { /* storage penuh/private mode */ }
+}
+function createStableFallbackId() {
+  const id = "device-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
+  cacheDeviceId(id);
+  return id;
+}
+
 export async function getDeviceInfo() {
+  const cachedId = getCachedDeviceId();
   try {
-    return await withTimeout(_getDeviceInfo(), 20000, "getDeviceInfo");
+    const info = await withTimeout(_getDeviceInfo(cachedId), 20000, "getDeviceInfo");
+    if (cachedId) info.visitorId = cachedId;
+    else if (info.visitorId) cacheDeviceId(info.visitorId);
+    return info;
   } catch (err) {
-    console.warn("⚠️ getDeviceInfo timeout, using fallback:", err.message);
-    const fallback = {
-      visitorId: "device-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+    console.warn("⚠️ getDeviceInfo timeout, memakai identitas tersimpan:", err.message);
+    return {
+      visitorId: cachedId || createStableFallbackId(),
       deviceName: "Unknown Device",
       deviceOs: "Unknown",
       deviceBrowser: "Unknown",
@@ -31,11 +49,10 @@ export async function getDeviceInfo() {
       imei: null,
       serial: null,
     };
-    return fallback;
   }
 }
 
-async function _getDeviceInfo() {
+async function _getDeviceInfo(cachedId) {
   let visitorId, deviceName = "Unknown Device", deviceOs = "Unknown", deviceBrowser = "Unknown", deviceType = "web";
   let imei = null, serial = null;
 
@@ -107,9 +124,10 @@ async function _getDeviceInfo() {
     }
   }
 
-  // FINAL FALLBACK: visitorId WAJIB ada
+  // FINAL FALLBACK: visitorId WAJIB ada — pakai ID tersimpan; bila belum ada
+  // (perangkat benar-benar baru), buat sekali lalu simpan agar stabil.
   if (!visitorId) {
-    visitorId = "device-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
+    visitorId = cachedId || "device-unknown-" + Math.random().toString(36).slice(2, 10);
     console.warn("⚠️ Final fallback visitorId:", visitorId);
   }
 

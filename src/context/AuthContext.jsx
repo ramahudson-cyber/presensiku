@@ -150,6 +150,14 @@ export function AuthProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // retryProfile — muat ulang profil TANPA memaksa login ulang. Dipakai
+  // ProtectedRoute ketika profil gagal dimuat (jaringan/timeout) padahal
+  // sesi masih valid; dulu kondisi ini menendang pegawai ke /login sehingga
+  // terasa seperti sesi hilang dan OTP diminta ulang.
+  const retryProfile = useCallback(() => {
+    if (session) return applySession(session, false);
+  }, [session, applySession]);
+
   const isAuthenticated = !!session;
 
   // Mode akses instansi (platform switch): org target + helper kembali
@@ -172,6 +180,7 @@ export function AuthProvider({ children }) {
     switchedOrg,
     switchBack,
     refreshUser,
+    retryProfile,
     setUser,
     setSession,
     setLoading,

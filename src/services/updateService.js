@@ -3,7 +3,9 @@ const CURRENT_VERSION = "1.7.1";
 const CURRENT_VERSION_CODE = 26;
 // Channel update khusus web/PWA — terpisah dari versionCode (milik alur update APK).
 // Bump field `webVersionCode` di public/version.json pada deploy web berisi perubahan UI.
-const CURRENT_WEB_VERSION_CODE = 10;
+// PENTING: angka ini harus dibump BERSAMAAN dengan version.json — kalau tertinggal,
+// bundle lama me-reload otomatis setiap kali aplikasi dibuka dan memotong flow login/OTP.
+const CURRENT_WEB_VERSION_CODE = 17;
 
 export async function checkUpdate() {
   try {
