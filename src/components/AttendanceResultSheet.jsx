@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import thumbsUpImg from "../assets/thumbs-up-success.png";
+import wavingGoodbyeImg from "../assets/waving-goodbye.png";
 
 const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
 
@@ -182,14 +183,12 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
 
               {/* Title */}
               <h2 style={{ fontSize: 22, fontWeight: 800, color: "white", textAlign: "center", marginBottom: 4 }}>
-                {isCheckIn ? "Absen Masuk Berhasil!" : "Absen Pulang!"}
+                {isCheckIn ? "Absen Masuk Berhasil!" : "Absen Pulang Berhasil!"}
               </h2>
               <p style={{ fontSize: 11, color: "white", textAlign: "center", marginBottom: 4 }}>{dateStr}</p>
-              {isCheckIn && (
-                <p style={{ fontSize: 13, fontWeight: 700, color: "#ADFF2F", textAlign: "center", marginBottom: isLate ? 10 : 14 }}>
-                  Selamat bekerja, semangat ya !
-                </p>
-              )}
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#ADFF2F", textAlign: "center", marginBottom: isLate ? 10 : 14 }}>
+                {isCheckIn ? "Selamat bekerja, semangat ya !" : "Selamat beristirahat !"}
+              </p>
 
               {/* Late badge */}
               {isLate && (
@@ -202,9 +201,9 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
                 </span>
               )}
 
-              {/* Ilustrasi jempol — hanya absen masuk; pop-in sekali lalu bob halus; gradasi memudarkan potongan bawah gambar */}
-              {isCheckIn && (
-                <div style={{ animation: `pop-${uid} 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both`, marginBottom: 10 }}>
+              {/* Ilustrasi — jempol (masuk, bob pelan) / karakter dadah (pulang, statis); pop-in sekali; gradasi memudarkan potongan bawah */}
+              <div style={{ animation: `pop-${uid} 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both`, marginBottom: 10 }}>
+                {isCheckIn ? (
                   <img src={thumbsUpImg} alt="Semangat!"
                     style={{
                       width: 180, height: "auto",
@@ -213,8 +212,16 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
                       WebkitMaskImage: "linear-gradient(to bottom, black 68%, transparent 100%)",
                       maskImage: "linear-gradient(to bottom, black 68%, transparent 100%)",
                     }} />
-                </div>
-              )}
+                ) : (
+                  <img src={wavingGoodbyeImg} alt="Dadah!"
+                    style={{
+                      width: 180, height: "auto",
+                      filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.35))",
+                      WebkitMaskImage: "linear-gradient(to bottom, black 80%, transparent 100%)",
+                      maskImage: "linear-gradient(to bottom, black 80%, transparent 100%)",
+                    }} />
+                )}
+              </div>
 
               {/* Stats Row */}
               <div style={{ display: "flex", gap: 8, width: "100%", marginBottom: 14 }}>
