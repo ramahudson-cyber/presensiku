@@ -423,20 +423,23 @@ export default function EmployeeHistory() {
                   <div className="space-y-1">
                     {history.map((item, i) => {
                       const st = item.attendance_status || "alpha";
-                      const isLate = st === "terlambat";
+                      // Baris hasil sanggahan disetujui (penanda notes dari RPC
+                      // review_sanggahan) → label "Sanggah", jam dikosongkan
+                      const isSanggah = (item.notes || "").toLowerCase().includes("dikoreksi via sanggahan");
+                      const isLate = st === "terlambat" && !isSanggah;
                       const isHadir = st === "hadir";
                       const isAlpha = st === "alpha";
                       const isBelum = st === "belum";
                       const isLeave = st === "izin" || st === "sakit";
-                      // Izin/sakit tidak absen — sisa jam lama pada record tidak ditampilkan
-                      const fmtIn = isLeave ? "-" : formatTime(item.clock_in_time);
-                      const fmtOut = isLeave || !item.clock_out_time ? "-" : formatTime(item.clock_out_time);
+                      // Izin/sakit & hasil sanggahan tidak menampilkan jam
+                      const fmtIn = isLeave || isSanggah ? "-" : formatTime(item.clock_in_time);
+                      const fmtOut = isLeave || isSanggah || !item.clock_out_time ? "-" : formatTime(item.clock_out_time);
                       const dateObj = new Date(item.date + "T00:00:00");
                       const dateLabel = dateObj.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
                       const dayLabel = dateObj.toLocaleDateString("id-ID", { weekday: "short" });
                       // Derivasi "Pulang Cepat": checkout ≥15 menit sebelum jam
                       // selesai shift (definisi dari master shift instansi).
-                      const earlyInfo = (st === "hadir" || st === "terlambat") ? (() => {
+                      const earlyInfo = (st === "hadir" || st === "terlambat") && !isSanggah ? (() => {
                         const sched = schedList.find((s) => s.date === item.date);
                         const def = getShiftDefinition(shiftDefs, { date: item.date, shift_code: item.shift_code || sched?.shift_code });
                         return getEarlyLeaveInfo(item.clock_out_time, item.date, def);
@@ -446,7 +449,7 @@ export default function EmployeeHistory() {
                           className="grid grid-cols-[1fr_44px_44px_70px] gap-3 items-center px-3 py-3 rounded-xl transition-all duration-200"
                           style={{
                             background: T.rowBg,
-                            borderLeft: isLate ? "2px solid rgba(249,115,22,0.4)" : isAlpha ? "2px solid rgba(239,68,68,0.4)" : isBelum ? "2px solid rgba(59,130,246,0.3)" : earlyInfo ? "2px solid rgba(8,145,178,0.35)" : "2px solid transparent",
+                            borderLeft: isSanggah ? "2px solid rgba(124,58,237,0.45)" : isLate ? "2px solid rgba(249,115,22,0.4)" : isAlpha ? "2px solid rgba(239,68,68,0.4)" : isBelum ? "2px solid rgba(59,130,246,0.3)" : earlyInfo ? "2px solid rgba(8,145,178,0.35)" : "2px solid transparent",
                           }}>
                           <div className="min-w-0">
                             <div className="text-[11px] font-bold" style={{ color: T.text }}>
@@ -469,13 +472,14 @@ export default function EmployeeHistory() {
                           </div>
                           <div className="text-right">
                             <div className="text-[10px] font-bold" style={{
-                              color: isLate ? "#F59E0B" :
+                              color: isSanggah ? "#7C3AED" :
+                              isLate ? "#F59E0B" :
                               isHadir ? "#10B981" :
                               isAlpha ? "#EF4444" :
                               isBelum ? "#3B82F6" :
                               T.textMuted
                             }}>
-                              {isHadir ? "Tepat Waktu" : isLate ? "Terlambat" : isAlpha ? "Alpha" : isBelum ? "Belum" :
+                              {isSanggah ? "Sanggah" : isHadir ? "Tepat Waktu" : isLate ? "Terlambat" : isAlpha ? "Alpha" : isBelum ? "Belum" :
                                st ? st.charAt(0).toUpperCase() + st.slice(1) : "-"}
                             </div>
                             {isLate && item.late_minutes > 0 && (
