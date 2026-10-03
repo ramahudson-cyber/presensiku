@@ -19,13 +19,18 @@ export async function getMySanggahan() {
 // Absensi milik user yang layak disanggah (Alpha/Terlambat, 60 hari terakhir)
 export async function getMyDisputableAttendance(userId) {
   const from = new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10);
-  const { data, error } = await supabase
-    .from("attendance")
-    .select("id, date, attendance_status, is_late, late_minutes, shift_code, clock_out_time")
-    .eq("user_id", userId)
-    .in("attendance_status", ["alpha", "terlambat"])
-    .gte("date", from)
-    .order("date", { ascending: false });
+  const [{ data, error }, { data: allDateRows }] = await Promise.all([
+    supabase
+      .from("attendance")
+      .select("id, date, attendance_status, is_late, late_minutes, shift_code, clock_out_time")
+      .eq("user_id", userId)
+      .in("attendance_status", ["alpha", "terlambat"])
+      .gte("date", from)
+      .order("date", { ascending: false }),
+    // Semua tanggal yang sudah punya baris attendance (status apa pun) —
+    // hari hadir/izin/sakit TIDAK boleh ter-derive sebagai alpha.
+    supabase.from("attendance").select("date").eq("user_id", userId).gte("date", from),
+  ]);
   if (error) throw error;
   const rows = data || [];
 
@@ -44,7 +49,7 @@ export async function getMyDisputableAttendance(userId) {
         .select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
     ]);
     const now = new Date();
-    const attended = new Set(rows.map((r) => r.date));
+    const attended = new Set((allDateRows || []).map((r) => r.date));
     const derived = (scheds || [])
       .filter((s) => !attended.has(s.date) && isShiftEnded(
         s.date,
