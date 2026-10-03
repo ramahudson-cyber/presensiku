@@ -375,11 +375,11 @@ const EmployeesPage = () => {
                 <div>
                   <label className={labelBase}>
                     <IdCard size={11} className="inline mr-1" />
-                    Status *
+                    Status{formData.id ? " *" : ""}
                   </label>
-                  <select name="employee_status" value={formData.employee_status} onChange={handleInputChange} required
+                  <select name="employee_status" value={formData.employee_status} onChange={handleInputChange} required={!!formData.id}
                     className={inputBase}>
-                    <option value="" className="bg-onyx">Pilih Status</option>
+                    <option value="" className="bg-onyx">Pilih Status (opsional)</option>
                     {masterData.statuses.map(s => (
                       <option key={s.id} value={s.name} className="bg-onyx">{s.name}</option>
                     ))}
@@ -390,11 +390,11 @@ const EmployeesPage = () => {
               <div>
                 <label className={labelBase}>
                   <Briefcase size={11} className="inline mr-1" />
-                  Jabatan *
+                  Jabatan{formData.id ? " *" : ""}
                 </label>
-                <select name="position" value={formData.position} onChange={handleInputChange} required
+                <select name="position" value={formData.position} onChange={handleInputChange} required={!!formData.id}
                   className={inputBase}>
-                  <option value="" className="bg-onyx">Pilih Jabatan</option>
+                  <option value="" className="bg-onyx">Pilih Jabatan (opsional)</option>
                   {masterData.positions.map(p => (
                     <option key={p.id} value={p.name} className="bg-onyx">{p.name}</option>
                   ))}

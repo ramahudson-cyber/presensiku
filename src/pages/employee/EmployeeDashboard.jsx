@@ -330,7 +330,9 @@ export default function EmployeeDashboard() {
             <div className="flex-1 min-w-0">
               <div className="text-[11px] uppercase tracking-[0.2em] opacity-80 text-white">{getGreeting(serverTime.getHours())},</div>
               <div className="text-2xl font-bold text-white">{user?.full_name || "Rama Hudson"}</div>
-              <div className="text-xs opacity-75 mt-0.5 text-white">{user?.role || "Pegawai"}</div>
+              <div className="text-xs opacity-75 mt-0.5 text-white">
+                {[user?.role, user?.position].filter(Boolean).join(" · ") || "Pegawai"}
+              </div>
             </div>
           </div>
           <div className="flex justify-between items-end">
