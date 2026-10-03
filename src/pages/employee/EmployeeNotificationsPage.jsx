@@ -9,6 +9,17 @@ import { toast } from "react-toastify";
 import { scheduleShiftReminders, subscribeAnnouncementRealtime, notifyNewAnnouncement } from "../../services/pushNotificationService";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import BottomSheet from "../../components/BottomSheet";
+
+// Badge prioritas — konsisten dengan halaman admin
+const PRIORITY_BADGE = {
+  normal:  { label: "Normal",  cls: "bg-slate-100 text-slate-600" },
+  penting: { label: "Penting", cls: "bg-amber-100 text-amber-700" },
+  urgent:  { label: "Urgent",  cls: "bg-rose-100 text-rose-700" },
+};
+const fmtAnnDate = (iso) => iso
+  ? new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
+  : "-";
 
 export default function EmployeeNotificationsPage() {
   const { user } = useAuth();
@@ -20,6 +31,7 @@ export default function EmployeeNotificationsPage() {
   const [announcements, setAnnouncements] = useState([]);
   const [ackedIds, setAckedIds] = useState(new Set());
   const [acking, setAcking] = useState(null);
+  const [detail, setDetail] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -217,7 +229,7 @@ export default function EmployeeNotificationsPage() {
                 return (
                   <div key={a.id}
                     className={`px-5 py-3.5 transition-all cursor-pointer ${isRead ? "" : "bg-[#F5F0FF]"} hover:bg-[#F0EDFF] active:bg-[#EBE5FF]`}
-                    onClick={() => handleMarkRead(a.id)}
+                    onClick={() => { handleMarkRead(a.id); setDetail(a); }}
                   >
                     <div className="flex gap-3 items-start">
                       <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${isRead ? "bg-transparent" : "bg-[#BF00FF]"}`} />
@@ -236,7 +248,10 @@ export default function EmployeeNotificationsPage() {
                             </button>
                           )}
                         </div>
-                        <p className="text-xs mt-0.5 line-clamp-2" style={{ color: T.textSec }}>{a.content}</p>
+                        <span className={`inline-block text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full mt-1 ${(PRIORITY_BADGE[a.priority] || PRIORITY_BADGE.normal).cls}`}>
+                          {(PRIORITY_BADGE[a.priority] || PRIORITY_BADGE.normal).label}
+                        </span>
+                        <p className="text-xs mt-1 line-clamp-2" style={{ color: T.textSec }}>{a.content}</p>
                       </div>
                     </div>
                   </div>
@@ -246,6 +261,24 @@ export default function EmployeeNotificationsPage() {
           )}
         </div>
       </div>
+
+      {/* Detail pengumuman — isi penuh + prioritas */}
+      <BottomSheet open={!!detail} onClose={() => setDetail(null)} title="Detail Pengumuman" snap="auto">
+        {detail && (
+          <div className="pb-2">
+            <div className="flex items-center gap-2 flex-wrap mb-2">
+              <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${(PRIORITY_BADGE[detail.priority] || PRIORITY_BADGE.normal).cls}`}>
+                {(PRIORITY_BADGE[detail.priority] || PRIORITY_BADGE.normal).label}
+              </span>
+              <span className="text-[10px] text-slate-400 inline-flex items-center gap-1">
+                <Clock size={10} /> {fmtAnnDate(detail.published_at || detail.created_at)}
+              </span>
+            </div>
+            <h3 className="text-sm font-bold leading-snug mb-3" style={{ color: T.text }}>{detail.title}</h3>
+            <p className="text-xs leading-relaxed whitespace-pre-wrap" style={{ color: T.textSec }}>{detail.content}</p>
+          </div>
+        )}
+      </BottomSheet>
     </div>
   );
 }
