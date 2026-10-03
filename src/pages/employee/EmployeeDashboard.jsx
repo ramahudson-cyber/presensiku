@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
@@ -252,7 +253,10 @@ export default function EmployeeDashboard() {
     donutSub: '#475563',
   };
 
-  if (loading) return (
+  // Portal ke <body>: loading screen harus mengalahkan BottomNav (z-30,
+  // sibling di root) — konten halaman terkurung stacking context z-10 milik
+  // AdminLayout, jadi z-50 di dalamnya kalah (pola sama dgn BottomSheet).
+  if (loading) return createPortal(
     <div className="fixed inset-0 flex items-center justify-center z-50" style={{ background: T.bg }}>
       <div className="flex flex-col items-center gap-3">
         {fetchError ? (
@@ -275,7 +279,8 @@ export default function EmployeeDashboard() {
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 
   const formatTime = (timeStr) => {
