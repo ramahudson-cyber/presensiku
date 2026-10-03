@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import {
-  MessageSquareWarning, Clock, XCircle, CheckCircle2, Hourglass,
+  MessageSquareWarning, Clock, XCircle, CheckCircle2, Hourglass, RotateCcw,
   Image as ImageIcon, Paperclip, Info, ChevronLeft, Loader2
 } from "lucide-react";
 import { getMyDisputableAttendance, getMySanggahan, createSanggahan, cancelMySanggahan, uploadSanggahanEvidence } from "../../services/sanggahService";
@@ -21,6 +21,7 @@ const STATUS_META = {
   pending:   { label: "Menunggu Review", color: "#F59E0B", icon: Hourglass },
   approved:  { label: "Disetujui",       color: "#10B981", icon: CheckCircle2 },
   rejected:  { label: "Ditolak",         color: "#EF4444", icon: XCircle },
+  cancelled: { label: "Dibatalkan",      color: "#64748B", icon: RotateCcw },
 };
 
 const OLD_STATUS_LABEL = { alpha: "Alpha", terlambat: "Terlambat", tanpa_pulang: "Tidak Absen Pulang" };
@@ -257,6 +258,11 @@ export default function SanggahPage() {
                     {s.status === "rejected" && s.rejection_reason && (
                       <div className="mt-2 rounded-lg px-3 py-2 text-[10px]" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)', color: '#EF4444' }}>
                         <b>Alasan ditolak:</b> {s.rejection_reason}
+                      </div>
+                    )}
+                    {s.status === "cancelled" && s.cancel_reason && (
+                      <div className="mt-2 rounded-lg px-3 py-2 text-[10px]" style={{ background: 'rgba(100,116,139,0.08)', border: '1px solid rgba(100,116,139,0.2)', color: '#475569' }}>
+                        <b>Persetujuan dibatalkan admin:</b> {s.cancel_reason}
                       </div>
                     )}
                     <div className="flex items-center justify-between mt-2.5">

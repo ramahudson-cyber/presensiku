@@ -166,6 +166,18 @@ export async function rejectSanggahan(id, rejectionReason) {
   return data;
 }
 
+// Batalkan persetujuan → absensi dikembalikan ke keadaan semula (alasan wajib)
+export async function cancelApprovedSanggahan(id, cancelReason) {
+  if (!cancelReason?.trim()) throw new Error("Alasan pembatalan wajib diisi");
+  const { data, error } = await supabase.rpc("cancel_sanggahan_approval", {
+    p_sanggahan_id: id,
+    p_reason: cancelReason.trim(),
+  });
+  if (error) throw error;
+  if (!data?.success) throw new Error(data?.error || "Gagal membatalkan persetujuan");
+  return data;
+}
+
 // Admin sanggahkan pegawai untuk rentang tanggal (langsung disetujui &
 // dikoreksi otomatis via review_sanggahan di dalam RPC). Hari tidak valid
 // dilewati dan dilaporkan di `skipped`.

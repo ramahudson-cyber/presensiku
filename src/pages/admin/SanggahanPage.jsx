@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import {
   MessageSquareWarning, Hourglass, CheckCircle2, XCircle, Search,
-  Image as ImageIcon, ChevronRight, Loader2, Inbox, UserPlus
+  Image as ImageIcon, ChevronRight, Loader2, Inbox, UserPlus, RotateCcw
 } from "lucide-react";
 import {
-  getSanggahan, approveSanggahan, rejectSanggahan,
+  getSanggahan, approveSanggahan, rejectSanggahan, cancelApprovedSanggahan,
   adminCreateSanggahan, uploadSanggahanEvidence,
 } from "../../services/sanggahService";
 import { supabase } from "../../lib/supabase";
@@ -43,6 +43,7 @@ function StatusPill({ status }) {
     pending:  { label: "MENUNGGU", cls: "bg-amber-500/15 text-amber-300 ring-amber-500/30", icon: Hourglass },
     approved: { label: "DISETUJUI", cls: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30", icon: CheckCircle2 },
     rejected: { label: "DITOLAK", cls: "bg-rose-500/15 text-rose-300 ring-rose-500/30", icon: XCircle },
+    cancelled:{ label: "DIBATALKAN", cls: "bg-slate-500/15 text-slate-300 ring-slate-500/30", icon: RotateCcw },
   }[status] || { label: status, cls: "bg-white/5 text-slate-mist ring-white/10", icon: null };
   const Icon = meta.icon;
   return (
@@ -52,7 +53,7 @@ function StatusPill({ status }) {
   );
 }
 
-function SanggahanCard({ item, onApprove, onRejectClick, processing }) {
+function SanggahanCard({ item, onApprove, onRejectClick, onCancelClick, processing }) {
   return (
     <div className="rounded-2xl bg-white/[0.04] border border-white/[0.06] p-4 hover:bg-white/[0.06] transition-all">
       <div className="flex items-start gap-3">
@@ -91,6 +92,12 @@ function SanggahanCard({ item, onApprove, onRejectClick, processing }) {
         </div>
       )}
 
+      {item.status === "cancelled" && item.cancel_reason && (
+        <div className="mt-2.5 rounded-xl px-3 py-2 border border-slate-500/20 bg-slate-500/[0.07]">
+          <p className="text-[10px] text-slate-300"><b>Alasan pembatalan:</b> {item.cancel_reason}</p>
+        </div>
+      )}
+
       {item.status === "pending" && (
         <div className="flex gap-3 mt-3.5">
           <button
@@ -109,8 +116,22 @@ function SanggahanCard({ item, onApprove, onRejectClick, processing }) {
         </div>
       )}
 
-      {item.status === "approved" && item.reviewed_at && (
-        <p className="text-[9px] text-slate-mist mt-2">Diproses: {new Date(item.reviewed_at).toLocaleString("id-ID")}</p>
+      {item.status === "approved" && (
+        <div className="mt-3.5">
+          <button
+            onClick={() => onCancelClick(item)} disabled={processing}
+            className="w-full py-2.5 rounded-full text-xs font-bold border border-white/15 text-slate-mist hover:bg-white/5 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1.5"
+          >
+            <RotateCcw size={12} /> Batalkan Persetujuan
+          </button>
+          {item.reviewed_at && (
+            <p className="text-[9px] text-slate-mist mt-2">Diproses: {new Date(item.reviewed_at).toLocaleString("id-ID")}</p>
+          )}
+        </div>
+      )}
+
+      {item.status === "cancelled" && item.cancelled_at && (
+        <p className="text-[9px] text-slate-mist mt-2">Dibatalkan: {new Date(item.cancelled_at).toLocaleString("id-ID")}</p>
       )}
     </div>
   );
@@ -124,6 +145,8 @@ export default function SanggahanPage() {
   const [processing, setProcessing] = useState(false);
   const [rejectModal, setRejectModal] = useState(null);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [cancelModal, setCancelModal] = useState(null);
+  const [cancelReason, setCancelReason] = useState("");
   const [search, setSearch] = useState("");
 
   // ── Admin sanggahkan pegawai (multi-hari, langsung disetujui) ──
@@ -235,6 +258,22 @@ export default function SanggahanPage() {
     }
   };
 
+  const handleCancelApproval = async () => {
+    if (!cancelModal?.id) return;
+    if (!cancelReason.trim()) { toast.warning("Alasan pembatalan wajib diisi"); return; }
+    setProcessing(true);
+    try {
+      const res = await cancelApprovedSanggahan(cancelModal.id, cancelReason);
+      toast.success(res.message || "Persetujuan dibatalkan — absensi dikembalikan");
+      setCancelModal(null); setCancelReason("");
+      await load();
+    } catch (err) {
+      toast.error(err.message || "Gagal membatalkan persetujuan");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const filtered = records.filter((r) => {
     const q = search.trim().toLowerCase();
     if (!q) return true;
@@ -300,6 +339,7 @@ export default function SanggahanPage() {
             <SanggahanCard
               key={item.id} item={item} processing={processing}
               onApprove={handleApprove} onRejectClick={(it) => { setRejectModal(it); setRejectionReason(""); }}
+              onCancelClick={(it) => { setCancelModal(it); setCancelReason(""); }}
             />
           ))}
         </div>
@@ -338,6 +378,51 @@ export default function SanggahanPage() {
                 className="flex-1 py-2.5 rounded-full bg-rose-500 text-white text-sm font-bold hover:bg-rose-600 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2">
                 {processing ? <Loader2 size={14} className="animate-spin" /> : null}
                 Tolak
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal batalkan persetujuan — tema terang sesuai layout admin */}
+      {cancelModal && (
+        <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center animate-fade-in" onClick={() => !processing && setCancelModal(null)}>
+          <div className="absolute inset-0 bg-black/50" />
+          <div onClick={(e) => e.stopPropagation()}
+            className="relative z-10 w-full max-w-md bg-white border border-slate-200 shadow-2xl rounded-t-[28px] md:rounded-3xl p-6 animate-slide-up md:animate-fade-in mt-auto md:mt-0">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-slate-500/10 flex items-center justify-center">
+                <RotateCcw size={18} className="text-slate-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Batalkan Persetujuan</h3>
+                <p className="text-[10px] text-slate-500">Absensi dikembalikan ke keadaan semula</p>
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-500 mb-2">
+              Pegawai: <b className="text-slate-900">{cancelModal.profiles?.full_name || "–"}</b> · {fmtDate(cancelModal.tanggal)}
+            </p>
+            <div className="rounded-xl px-3 py-2 border border-amber-200 bg-amber-50 mb-3">
+              <p className="text-[10px] text-amber-800 leading-relaxed">
+                Status absensi, jam masuk/pulang, dan catatan asli dipulihkan otomatis. Potongan gaji
+                yang sempat hilang akan dihitung kembali.
+              </p>
+            </div>
+            <textarea
+              value={cancelReason} onChange={(e) => setCancelReason(e.target.value)}
+              rows={3} maxLength={300} autoFocus
+              placeholder="Contoh: Persetujuan keliru — bukti ternyata tidak sesuai."
+              className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-slate-400 resize-none"
+            />
+            <div className="flex gap-3 mt-4">
+              <button onClick={() => setCancelModal(null)} disabled={processing}
+                className="flex-1 py-2.5 rounded-full border border-slate-200 text-slate-600 text-sm hover:bg-slate-50 transition-all disabled:opacity-50">
+                Kembali
+              </button>
+              <button onClick={handleCancelApproval} disabled={processing || !cancelReason.trim()}
+                className="flex-1 py-2.5 rounded-full bg-slate-700 text-white text-sm font-bold hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2">
+                {processing ? <Loader2 size={14} className="animate-spin" /> : <RotateCcw size={14} />}
+                Batalkan
               </button>
             </div>
           </div>
