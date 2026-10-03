@@ -2,9 +2,14 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import {
   MessageSquareWarning, Hourglass, CheckCircle2, XCircle, Search,
-  Image as ImageIcon, ChevronRight, Loader2, Inbox
+  Image as ImageIcon, ChevronRight, Loader2, Inbox, UserPlus
 } from "lucide-react";
-import { getSanggahan, approveSanggahan, rejectSanggahan } from "../../services/sanggahService";
+import {
+  getSanggahan, approveSanggahan, rejectSanggahan,
+  adminCreateSanggahan, uploadSanggahanEvidence,
+} from "../../services/sanggahService";
+import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../context/AuthContext";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 
@@ -112,6 +117,7 @@ function SanggahanCard({ item, onApprove, onRejectClick, processing }) {
 }
 
 export default function SanggahanPage() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("pending");
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -119,6 +125,69 @@ export default function SanggahanPage() {
   const [rejectModal, setRejectModal] = useState(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [search, setSearch] = useState("");
+
+  // ── Admin sanggahkan pegawai (multi-hari, langsung disetujui) ──
+  const [createModal, setCreateModal] = useState(false);
+  const [employees, setEmployees] = useState([]);
+  const [empId, setEmpId] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [createReason, setCreateReason] = useState("");
+  const [createFile, setCreateFile] = useState(null);
+  const [creating, setCreating] = useState(false);
+
+  const loadEmployees = async () => {
+    try {
+      // RLS yang membatasi per peran/organisasi (pola AttendanceHistoryPage)
+      let query = supabase.from("profiles").select("id, full_name, role").order("full_name");
+      if (user?.role !== "super_admin") query = query.neq("role", "super_admin");
+      const { data } = await query;
+      setEmployees(data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const openCreateModal = () => {
+    setEmpId(""); setDateFrom(""); setDateTo("");
+    setCreateReason(""); setCreateFile(null);
+    setCreateModal(true);
+    loadEmployees();
+  };
+
+  const handleCreateSanggahan = async () => {
+    if (!empId) { toast.warning("Pilih pegawai dulu"); return; }
+    if (!dateFrom || !dateTo) { toast.warning("Lengkapi rentang tanggal"); return; }
+    if (dateFrom > dateTo) { toast.warning("Tanggal mulai melebihi tanggal selesai"); return; }
+    if (!createReason.trim()) { toast.warning("Alasan wajib diisi"); return; }
+    setCreating(true);
+    try {
+      let attachmentUrl = null;
+      if (createFile) {
+        attachmentUrl = await uploadSanggahanEvidence(empId, createFile);
+      }
+      const res = await adminCreateSanggahan({
+        userId: empId, dateFrom, dateTo, reason: createReason, attachmentUrl,
+      });
+      const skipped = res.skipped || [];
+      if (skipped.length > 0) {
+        toast.info(
+          `${res.created_count} hari berhasil disanggahkan. Dilewati: ` +
+          skipped.map((s) => `${s.tanggal} (${s.alasan})`).join(", "),
+          { autoClose: false, closeOnClick: true }
+        );
+      } else {
+        toast.success(`${res.created_count} hari berhasil disanggahkan`);
+      }
+      setCreateModal(null); setCreateFile(null);
+      setActiveTab("all");
+      await load();
+    } catch (err) {
+      toast.error(err.message || "Gagal menyimpan sanggahan");
+    } finally {
+      setCreating(false);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -175,6 +244,17 @@ export default function SanggahanPage() {
   return (
     <div className="space-y-4 animate-fade-in">
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
+
+      {/* Tombol: admin sanggahkan pegawai */}
+      <div className="flex justify-end">
+        <button
+          onClick={openCreateModal}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white shadow-lg transition-all active:scale-[0.98]"
+          style={{ background: 'linear-gradient(135deg, #BF00FF, #7B00E0)' }}
+        >
+          <UserPlus size={13} /> Sanggahkan Pegawai
+        </button>
+      </div>
 
       {/* Tabs + search */}
       <div className="flex items-center gap-2">
@@ -258,6 +338,81 @@ export default function SanggahanPage() {
                 className="flex-1 py-2.5 rounded-full bg-rose-500 text-white text-sm font-bold hover:bg-rose-600 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2">
                 {processing ? <Loader2 size={14} className="animate-spin" /> : null}
                 Tolak
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: admin sanggahkan pegawai */}
+      {createModal && (
+        <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center animate-fade-in" onClick={() => !creating && setCreateModal(false)}>
+          <div className="absolute inset-0 bg-black/60" />
+          <div onClick={(e) => e.stopPropagation()}
+            className="relative z-10 w-full max-w-md bg-[#17123a] border border-white/10 rounded-t-[28px] md:rounded-3xl p-6 animate-slide-up md:animate-fade-in mt-auto md:mt-0 max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-electric-violet/20 flex items-center justify-center">
+                <UserPlus size={18} className="text-electric-violet" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-pure-white">Sanggahkan Pegawai</h3>
+                <p className="text-[10px] text-slate-mist">Koreksi absensi tanpa pengajuan pegawai</p>
+              </div>
+            </div>
+
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-mist mb-1.5">Pegawai</label>
+            <select
+              value={empId} onChange={(e) => setEmpId(e.target.value)}
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-xs text-pure-white outline-none focus:border-electric-violet/60 mb-3 appearance-none"
+            >
+              <option value="">— Pilih pegawai —</option>
+              {employees.map((emp) => (
+                <option key={emp.id} value={emp.id} className="bg-[#17123a]">{emp.full_name}</option>
+              ))}
+            </select>
+
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-mist mb-1.5">Dari</label>
+                <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
+                  className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs text-pure-white outline-none focus:border-electric-violet/60 [color-scheme:dark]" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-mist mb-1.5">Sampai</label>
+                <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
+                  className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs text-pure-white outline-none focus:border-electric-violet/60 [color-scheme:dark]" />
+              </div>
+            </div>
+
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-mist mb-1.5">Alasan</label>
+            <textarea
+              value={createReason} onChange={(e) => setCreateReason(e.target.value)}
+              rows={3} maxLength={300}
+              placeholder="Contoh: Instansi libur operasional / error sistem absensi."
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-xs text-pure-white placeholder-slate-mist/50 outline-none focus:border-electric-violet/60 resize-none mb-3"
+            />
+
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-mist mb-1.5">Foto bukti (opsional)</label>
+            <input type="file" accept="image/jpeg,image/png,image/webp"
+              onChange={(e) => setCreateFile(e.target.files?.[0] || null)}
+              className="w-full text-[10px] text-slate-mist file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-electric-violet/20 file:text-electric-violet cursor-pointer mb-4" />
+
+            <div className="rounded-xl px-3 py-2 border border-white/10 bg-white/[0.03] mb-4">
+              <p className="text-[10px] text-slate-mist leading-relaxed">
+                Semua hari dalam rentang diproses langsung disetujui. Hari yang sudah hadir, sudah disanggahkan, tanpa jadwal, atau masa depan akan dilewati otomatis.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button onClick={() => setCreateModal(false)} disabled={creating}
+                className="flex-1 py-2.5 rounded-full border border-white/15 text-slate-mist text-sm hover:bg-white/5 transition-all disabled:opacity-50">
+                Batal
+              </button>
+              <button onClick={handleCreateSanggahan}
+                disabled={creating || !empId || !dateFrom || !dateTo || !createReason.trim()}
+                className="flex-1 py-2.5 rounded-full bg-electric-violet text-white text-sm font-bold hover:bg-[#a800d4] transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2">
+                {creating ? <Loader2 size={14} className="animate-spin" /> : null}
+                Kirim
               </button>
             </div>
           </div>

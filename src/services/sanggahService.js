@@ -148,3 +148,22 @@ export async function rejectSanggahan(id, rejectionReason) {
   if (!data?.success) throw new Error(data?.error || "Gagal menolak sanggahan");
   return data;
 }
+
+// Admin sanggahkan pegawai untuk rentang tanggal (langsung disetujui &
+// dikoreksi otomatis via review_sanggahan di dalam RPC). Hari tidak valid
+// dilewati dan dilaporkan di `skipped`.
+export async function adminCreateSanggahan({ userId, dateFrom, dateTo, reason, attachmentUrl = null }) {
+  if (!userId) throw new Error("Pegawai wajib dipilih");
+  if (!dateFrom || !dateTo) throw new Error("Rentang tanggal wajib diisi");
+  if (!reason?.trim()) throw new Error("Alasan wajib diisi");
+  const { data, error } = await supabase.rpc("admin_create_sanggahan", {
+    p_user_id: userId,
+    p_date_from: dateFrom,
+    p_date_to: dateTo,
+    p_reason: reason.trim(),
+    p_attachment_url: attachmentUrl,
+  });
+  if (error) throw error;
+  if (!data?.success) throw new Error(data?.error || "Gagal menyimpan sanggahan");
+  return data;
+}
