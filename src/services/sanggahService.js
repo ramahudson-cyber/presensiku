@@ -1,4 +1,5 @@
 import { supabase } from "../lib/supabase";
+import { getShiftDefinition, isShiftEnded } from "../lib/shiftTime";
 
 const SANGGAHAN_BUCKET = "sanggahan";
 const MIN_EARLY_NOTE = "Sanggahan hanya untuk status Alpha/Terlambat.";
@@ -26,7 +27,43 @@ export async function getMyDisputableAttendance(userId) {
     .gte("date", from)
     .order("date", { ascending: false });
   if (error) throw error;
-  return data || [];
+  const rows = data || [];
+
+  // Hari alpha turunan: jadwal yang shift-nya sudah berakhir tanpa baris
+  // attendance — konsisten dengan statistik dashboard. RPC create_sanggahan
+  // menerima jalur jadwal ini (tanpa attendance_id).
+  try {
+    const [{ data: scheds }, { data: defs }] = await Promise.all([
+      supabase
+        .from("employee_schedules")
+        .select("date, shift_code")
+        .eq("user_id", userId)
+        .gte("date", from),
+      supabase
+        .from("shift_schedules")
+        .select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
+    ]);
+    const now = new Date();
+    const attended = new Set(rows.map((r) => r.date));
+    const derived = (scheds || [])
+      .filter((s) => !attended.has(s.date) && isShiftEnded(
+        s.date,
+        getShiftDefinition(defs || [], s),
+        now
+      ))
+      .map((s) => ({
+        id: `sched-${s.date}`,
+        date: s.date,
+        attendance_status: "alpha",
+        is_late: false,
+        late_minutes: 0,
+        shift_code: s.shift_code,
+      }));
+    return [...rows, ...derived].sort((a, b) => b.date.localeCompare(a.date));
+  } catch (e) {
+    console.error("Derive alpha sanggahan gagal, pakai attendance saja:", e);
+    return rows;
+  }
 }
 
 // Ajukan sanggahan (RPC server-side: validasi tanggal, status, anti-double)

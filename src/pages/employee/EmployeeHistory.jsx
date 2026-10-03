@@ -29,6 +29,30 @@ const T = {
   donutSub: '#475563',
 };
 
+// Baris alpha turunan: jadwal yang shift-nya sudah berakhir tapi tidak ada
+// baris attendance — supaya daftar konsisten dengan statistik Alpha (selisih).
+function deriveAlphaRows(attRows, schedules, shiftDefinitions, serverNow, userId) {
+  const attended = new Set((attRows || []).map((r) => r.date));
+  return (schedules || [])
+    .filter((s) => !attended.has(s.date) && isShiftEnded(
+      s.date,
+      getShiftDefinition(shiftDefinitions, s),
+      serverNow
+    ))
+    .map((s) => ({
+      id: `alpha-${s.date}`,
+      user_id: userId,
+      date: s.date,
+      shift_code: s.shift_code,
+      attendance_status: "alpha",
+      is_late: false,
+      late_minutes: 0,
+      clock_in_time: null,
+      clock_out_time: null,
+      location_in: null,
+    }));
+}
+
 export default function EmployeeHistory() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -90,10 +114,10 @@ export default function EmployeeHistory() {
       const shiftDefinitions = shiftDefinitionsRes.data || [];
       setShiftDefs(shiftDefinitions);
 
-      setHistory(attData || []);
-
       const schedules = schedRes.data || [];
       setSchedList(schedules);
+      setHistory([...(attData || []), ...deriveAlphaRows(attData, schedules, shiftDefinitions, serverNow, user.id)]
+        .sort((a, b) => b.date.localeCompare(a.date)));
       setTotalDays(schedules.filter((schedule) => schedule.date <= todayWita).length);
       setWorkingDaysPassed(
         schedules.filter((schedule) => isShiftEnded(
@@ -146,10 +170,13 @@ export default function EmployeeHistory() {
         const serverNow = new Date(serverTimeData || Date.now());
         const shiftDefinitions = shiftDefinitionsRes.data || [];
         setShiftDefs(shiftDefinitions);
-        setHistory(attData || []);
 
         const schedules = schedRes.data || [];
         setSchedList(schedules);
+        if (!cancelled) {
+          setHistory([...(attData || []), ...deriveAlphaRows(attData, schedules, shiftDefinitions, serverNow, user.id)]
+            .sort((a, b) => b.date.localeCompare(a.date)));
+        }
         setTotalDays(schedules.filter((schedule) => schedule.date <= todayWita).length);
         setWorkingDaysPassed(
           schedules.filter((schedule) => isShiftEnded(
