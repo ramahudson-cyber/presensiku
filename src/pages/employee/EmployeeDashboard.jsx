@@ -302,34 +302,35 @@ export default function EmployeeDashboard() {
       <div className="w-full p-8 pt-12 shadow-lg rounded-b-[32px] text-white hero-card-bg"
         style={{ background: 'linear-gradient(160deg, #C44DFF 0%, #BF00FF 30%, #8A00CC 60%, #4A0099 100%)' }}>
         <div className="max-w-md mx-auto">
+          {/* Icon notifikasi & keluar di paling atas, tanpa background */}
+          <div className="flex items-center justify-end gap-5 mb-2">
+            <Link
+              to="/employee/notifications"
+              aria-label="Pengumuman"
+              className="relative p-1 rounded-full hover:bg-white/10 active:scale-95 transition-all"
+            >
+              <Bell size={20} className="text-white" />
+              {announcements.some((a) => !ackedIds.has(a.id)) && (
+                <span className="absolute top-0 right-0 w-2 h-2 bg-rose-400 rounded-full ring-2 ring-[#8A00CC]" />
+              )}
+            </Link>
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              aria-label="Keluar"
+              className="p-1 rounded-full hover:bg-white/10 active:scale-95 transition-all disabled:opacity-60"
+            >
+              {loggingOut
+                ? <div className="w-5 h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
+                : <LogOut size={20} className="text-white" />}
+            </button>
+          </div>
           <div className="flex items-center gap-4 mb-8">
             <ProfileAvatarButton user={user} initials={user?.full_name?.charAt(0)?.toUpperCase() || "R"} variant="hero" />
             <div className="flex-1 min-w-0">
               <div className="text-[11px] uppercase tracking-[0.2em] opacity-80 text-white">{getGreeting(serverTime.getHours())},</div>
               <div className="text-2xl font-bold text-white">{user?.full_name || "Rama Hudson"}</div>
               <div className="text-xs opacity-75 mt-0.5 text-white">{user?.role || "Pegawai"}</div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <Link
-                to="/employee/notifications"
-                aria-label="Pengumuman"
-                className="relative w-10 h-10 rounded-full bg-white/15 border border-white/25 flex items-center justify-center hover:bg-white/25 active:scale-95 transition-all"
-              >
-                <Bell size={18} className="text-white" />
-                {announcements.some((a) => !ackedIds.has(a.id)) && (
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-rose-400 rounded-full ring-2 ring-[#8A00CC]" />
-                )}
-              </Link>
-              <button
-                onClick={handleLogout}
-                disabled={loggingOut}
-                aria-label="Keluar"
-                className="w-10 h-10 rounded-full bg-white/15 border border-white/25 flex items-center justify-center hover:bg-white/25 active:scale-95 transition-all disabled:opacity-60"
-              >
-                {loggingOut
-                  ? <div className="w-4 h-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
-                  : <LogOut size={18} className="text-white" />}
-              </button>
             </div>
           </div>
           <div className="flex justify-between items-end">
