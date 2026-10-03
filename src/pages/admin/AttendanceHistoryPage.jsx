@@ -122,7 +122,6 @@ export default function AttendanceHistoryPage() {
   });
   const [dateTo, setDateTo]       = useState(getWitaDateString());
   const [exporting, setExporting] = useState(false);
-  const organizationId = user?.active_org_override || user?.organization_id;
 
   // ── Fetch: attendance + alpha turunan (jadwal tanpa absen) ────────────────
   const fetchRecords = async () => {
@@ -142,10 +141,12 @@ export default function AttendanceHistoryPage() {
       if (attErr) throw attErr;
 
       // 2. Anggota org (untuk nama baris turunan)
+      // Tanpa filter organisasi manual di client — RLS yang membatasi per
+      // peran/organisasi (pola sama dengan DashboardPage). Filter manual
+      // membuat baris alpha turunan kosong bila organizationId null/mismatch.
       const { data: members } = await supabase
         .from("profiles")
-        .select("id, full_name, username, position, avatar_url")
-        .eq("organization_id", organizationId);
+        .select("id, full_name, username, position, avatar_url");
       const memberMap = Object.fromEntries((members || []).map((m) => [m.id, m]));
 
       // 3. Jadwal pegawai + aturan shift (untuk alpha turunan)
@@ -153,13 +154,11 @@ export default function AttendanceHistoryPage() {
         supabase
           .from("employee_schedules")
           .select("user_id, date, shift_code")
-          .eq("organization_id", organizationId)
           .gte("date", dateFrom)
           .lte("date", dateTo),
         supabase
           .from("shift_schedules")
-          .select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day")
-          .eq("organization_id", organizationId),
+          .select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
       ]);
       const workingDaySet = new Set(
         (shiftRules || []).filter((s) => s.is_working_day).map((s) => `${s.shift_code}|${s.day_of_week}`)
@@ -221,7 +220,7 @@ export default function AttendanceHistoryPage() {
     }
   };
 
-  useEffect(() => { fetchRecords(); }, [dateFrom, dateTo, organizationId]);
+  useEffect(() => { fetchRecords(); }, [dateFrom, dateTo]);
 
   const { pullDistance, isRefreshing } = usePullToRefresh(() => fetchRecords());
 
