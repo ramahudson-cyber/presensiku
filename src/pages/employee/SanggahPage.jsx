@@ -284,7 +284,7 @@ export default function SanggahPage() {
           <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
             <Clock size={13} style={{ color: '#BF00FF' }} />
           </div>
-          <p>Sanggahan ditinjau oleh admin instansi. Pastikan alasan dan bukti jelas agar cepat diproses.</p>
+          <p>Sanggahan ditinjau oleh admin. Pastikan alasan dan bukti jelas agar cepat diproses.</p>
         </div>
       </div>
     </div>

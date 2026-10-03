@@ -86,8 +86,7 @@ const InfoRow = ({ icon, label, desc, value, active = true }) => (
     </div>
     <div className="flex-1 min-w-0">
       <div className="text-sm font-semibold leading-tight" style={{ color: T.text }}>{label}</div>
-      <div className="text-[9px] mt-0.5" style={{ color: T.sub }}>{desc}</div>
-      <div className="text-sm font-bold mt-1.5 break-words leading-snug" style={{ color: T.text }}>{value}</div>
+      <div className="text-sm font-bold mt-1 break-words leading-snug" style={{ color: T.text }}>{value}</div>
     </div>
   </div>
 );
@@ -226,13 +225,13 @@ export default function EmployeeProfile() {
         <Card>
           <CardHeader title="Informasi Akun" subtitle={user?.role || 'Pegawai'} />
           <div className="px-1 pb-2 pt-0.5">
-            <InfoRow icon={icons.user} label="Nama Lengkap" desc="Nama sesuai identitas"
+            <InfoRow icon={icons.user} label="Nama Lengkap"
               value={user?.full_name || '-'} active />
-            <InfoRow icon={icons.atSign} label="Username" desc="ID akun login"
+            <InfoRow icon={icons.atSign} label="Username"
               value={user?.username || user?.email?.split('@')[0] || '-'} active />
-            <InfoRow icon={icons.idCard} label="Jabatan" desc="Posisi / jabatan"
+            <InfoRow icon={icons.idCard} label="Jabatan"
               value={user?.position || '-'} active />
-            <InfoRow icon={icons.building} label="Unit Kerja" desc="Departemen / Instansi"
+            <InfoRow icon={icons.building} label="Unit Kerja"
               value={unitKerja} active={unitKerja !== '-'} />
           </div>
         </Card>

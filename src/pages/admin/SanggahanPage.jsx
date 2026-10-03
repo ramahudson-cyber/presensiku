@@ -388,7 +388,7 @@ export default function SanggahanPage() {
             <textarea
               value={createReason} onChange={(e) => setCreateReason(e.target.value)}
               rows={3} maxLength={300}
-              placeholder="Contoh: Instansi libur operasional / error sistem absensi."
+              placeholder="Contoh: Hari libur nasional / kegiatan dinas di luar kantor."
               className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-electric-violet resize-none mb-3"
             />
 
