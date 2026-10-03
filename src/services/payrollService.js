@@ -19,6 +19,7 @@ export const DEFAULT_PAYROLL_CONFIG = {
     { min: 61, max: null, nominal: 50000 },
   ],
   alpha_nominal_per_day: 100000,
+  no_checkout_nominal: 0,
 };
 
 export async function getPayrollConfig() {

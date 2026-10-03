@@ -184,6 +184,7 @@ export async function clockIn(userId, location) {
       user_id: userId,
       date: today,
       clock_in_time: now.toISOString(),
+      clock_out_time: null,
       location_in: location,
       selfie_in_url: null,
       attendance_status: attendanceStatus,

@@ -200,25 +200,30 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
         docTitle: `Rekap Gaji — ${monthLabel(period)}`,
         header: [
           "Nama", "Username", "Hari Kerja", "Hadir", "Terlambat", "Menit Telat",
-          "Alpha", "Izin", "Sakit", "Pot. Terlambat", "Pot. Alpha", "Total Potongan", "Diterima",
+          "Alpha", "Izin", "Sakit", "Tanpa Pulang", "Pot. Terlambat", "Pot. Alpha",
+          "Pot. Tanpa Pulang", "Total Potongan", "Diterima",
         ],
         columnMeta: [
           { align: "left" }, { align: "left" },
-          ...Array.from({ length: 7 }, () => ({ align: "right" })),
-          ...Array.from({ length: 4 }, () => ({ align: "right", numFmt: RUPIAH })),
+          ...Array.from({ length: 8 }, () => ({ align: "right" })),
+          ...Array.from({ length: 5 }, () => ({ align: "right", numFmt: RUPIAH })),
         ],
         rows: lines.map((l) => [
           l.user?.full_name || "-", l.user?.username || "-",
           Number(l.work_days || 0), Number(l.hadir || 0), Number(l.terlambat || 0),
           Number(l.late_minutes_total || 0), Number(l.alpha_days || 0),
           Number(l.izin_days || 0), Number(l.sakit_days || 0),
+          Number(l.no_checkout_days || 0),
           Number(l.late_deduction || 0), Number(l.alpha_deduction || 0),
+          Number(l.no_checkout_deduction || 0),
           Number(l.total_deduction || 0), Number(l.total_received || 0),
         ]),
         totalRow: [
           "TOTAL", "", sum("work_days"), sum("hadir"), sum("terlambat"),
           sum("late_minutes_total"), sum("alpha_days"), sum("izin_days"), sum("sakit_days"),
-          sum("late_deduction"), sum("alpha_deduction"), sum("total_deduction"), sum("total_received"),
+          sum("no_checkout_days"),
+          sum("late_deduction"), sum("alpha_deduction"), sum("no_checkout_deduction"),
+          sum("total_deduction"), sum("total_received"),
         ],
       });
     } catch (e) {
@@ -289,7 +294,7 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
             <p className="text-[11px]">Klik <b>Hitung dari Absensi</b> — pastikan gaji pegawai sudah diisi di tab "Gaji Pegawai".</p>
           </div>
         ) : (
-          <table className="w-full text-[11px] min-w-[860px]">
+          <table className="w-full text-[11px] min-w-[1040px]">
             <thead>
               <tr className="text-left text-slate-500 border-b" style={{ borderColor: T.border }}>
                 {[
@@ -299,9 +304,11 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
                   { h: "Menit", align: "text-center" },
                   { h: "Alpha", align: "text-center" },
                   { h: "Izin/Sakit", align: "text-center" },
+                  { h: "Tanpa Pulang", align: "text-center" },
                   { h: "Harian", align: "text-right" },
                   { h: "Pot. Telat", align: "text-right" },
                   { h: "Pot. Alpha", align: "text-right" },
+                  { h: "Pot. Tanpa Pulang", align: "text-right" },
                   { h: "Diterima", align: "text-right" },
                 ].map(({ h, align }) => (
                   <th key={h} className={`px-3 py-2.5 font-semibold whitespace-nowrap ${align}`}>{h}</th>
@@ -320,9 +327,15 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
                   <td className="px-3 py-2.5 text-center">{l.late_minutes_total} mnt</td>
                   <td className="px-3 py-2.5 text-center text-red-500 font-semibold">{l.alpha_days}</td>
                   <td className="px-3 py-2.5 text-center">{l.izin_days}/{l.sakit_days}</td>
+                  <td className="px-3 py-2.5 text-center">
+                    <span className={l.no_checkout_days > 0 ? "text-amber-600 font-semibold" : ""}>
+                      {l.no_checkout_days || 0}
+                    </span>
+                  </td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-right">{rupiah(l.daily_rate)}</td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-right text-red-500">{rupiah(l.late_deduction)}</td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-right text-red-500">{rupiah(l.alpha_deduction)}</td>
+                  <td className="px-3 py-2.5 whitespace-nowrap text-right text-red-500">{rupiah(l.no_checkout_deduction)}</td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-right font-extrabold text-emerald-600">{rupiah(l.total_received)}</td>
                 </tr>
               ))}
@@ -449,7 +462,7 @@ function TabAturan({ period }) {
         const cfg = await getPayrollConfig();
         if (!cancelled) setConfig(cfg);
       } catch {
-        if (!cancelled) setConfig({ late_tiers: [], alpha_nominal_per_day: 0 });
+        if (!cancelled) setConfig({ late_tiers: [], alpha_nominal_per_day: 0, no_checkout_nominal: 0 });
       }
     })();
     return () => { cancelled = true; };
@@ -555,6 +568,35 @@ function TabAturan({ period }) {
             title="Nominal per hari alpha"
           />
         </div>
+      </div>
+
+      <div className="bg-white rounded-3xl border p-4 flex flex-wrap items-center justify-between gap-3" style={{ borderColor: T.border }}>
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: T.textMuted }}>Potongan Tidak Absen Pulang</p>
+          <p className="text-xs mt-0.5" style={{ color: T.textSec }}>
+            Nominal per hari — pegawai absen masuk tapi tidak pernah absen pulang
+          </p>
+        </div>
+        <div className="relative w-44">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400">Rp</span>
+          <input
+            type="number" min="0" step="1000" value={config.no_checkout_nominal ?? 0}
+            onChange={(e) => setConfig((c) => ({ ...c, no_checkout_nominal: Number(e.target.value) }))}
+            className="w-full pl-9 pr-3 py-2 rounded-2xl border text-sm font-semibold focus:outline-none focus:border-electric-violet"
+            style={{ borderColor: T.border, color: T.text }}
+            title="Nominal per hari tanpa absen pulang"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-[11px] text-amber-800">
+        <Info size={14} className="mt-0.5 shrink-0" />
+        <span>
+          Potongan tidak absen pulang hanya dihitung untuk hari yang sudah lewat. Hari yang sedang
+          berjalan, hari dengan keterangan izin/sakit, dan hari yang sedang dalam proses
+          <b> Sanggah</b> (menunggu atau disetujui admin) tidak dihitung. Nominal <b>Rp 0</b> =
+          deteksi tetap berjalan tetapi tidak memotong.
+        </span>
       </div>
 
       <div className="flex items-start gap-2 rounded-2xl border border-sky-200 bg-sky-50 p-3 text-[11px] text-sky-700">

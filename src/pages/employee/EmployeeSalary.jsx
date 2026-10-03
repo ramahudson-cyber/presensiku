@@ -95,6 +95,9 @@ function EmployeeSalaryPage() {
       ["Izin / Sakit", `${line.izin_days} / ${line.sakit_days} hari`],
       ["Potongan Keterlambatan", "− " + rupiah(line.late_deduction)],
       ["Potongan Alpha", "− " + rupiah(line.alpha_deduction)],
+      ...(line.no_checkout_days > 0
+        ? [["Potongan Tidak Absen Pulang", `− ${rupiah(line.no_checkout_deduction)} (${line.no_checkout_days} hari)`]]
+        : []),
     ];
     win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Slip Gaji ${monthLabel(line.period_month)}</title>
       <style>
@@ -216,6 +219,13 @@ function EmployeeSalaryPage() {
                 <Row label={`Hadir ${line.hadir} dari ${line.work_days} hari`} value="" muted />
                 <Row label={`Terlambat ${line.terlambat}× (${line.late_minutes_total} mnt)`} value={"− " + rupiah(line.late_deduction)} red />
                 <Row label={`Alpha ${line.alpha_days} hari`} value={"− " + rupiah(line.alpha_deduction)} red />
+                {line.no_checkout_days > 0 && (
+                  <Row
+                    label={`Tidak absen pulang ${line.no_checkout_days} hari`}
+                    value={"− " + rupiah(line.no_checkout_deduction)}
+                    red
+                  />
+                )}
                 <Row label={`Izin ${line.izin_days} hari · Sakit ${line.sakit_days} hari`} value="tidak dipotong" muted />
                 <div className="border-t pt-2.5 mt-2.5 flex items-center justify-between" style={{ borderColor: T_BORDER }}>
                   <span className="font-extrabold text-slate-900">DITERIMA</span>
