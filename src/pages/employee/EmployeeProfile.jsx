@@ -69,9 +69,11 @@ const CardHeader = ({ title, subtitle }) => (
 );
 
 // ── Info Row ──
+// Layout vertikal: label + keterangan di atas, DATA di bawahnya — nilai
+// panjang (mis. nama lengkap) melipat bebas tanpa menabrak label/terpotong.
 const InfoRow = ({ icon, label, desc, value, active = true }) => (
   <div
-    className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1"
+    className="flex items-start gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1"
     style={{
       background: active ? `linear-gradient(90deg, #BF00FF10, transparent)` : "transparent",
       borderLeft: `2px solid ${active ? "transparent" : "#BF00FF33"}`,
@@ -83,11 +85,9 @@ const InfoRow = ({ icon, label, desc, value, active = true }) => (
       <div style={{ color: '#BF00FF' }}>{icon}</div>
     </div>
     <div className="flex-1 min-w-0">
-      <div className="text-sm font-semibold" style={{ color: T.text }}>{label}</div>
-      <div className="text-[9px]" style={{ color: T.sub }}>{desc}</div>
-    </div>
-    <div className="text-right shrink-0">
-      <div className="text-sm font-semibold" style={{ color: T.text }}>{value}</div>
+      <div className="text-sm font-semibold leading-tight" style={{ color: T.text }}>{label}</div>
+      <div className="text-[9px] mt-0.5" style={{ color: T.sub }}>{desc}</div>
+      <div className="text-sm font-bold mt-1.5 break-words leading-snug" style={{ color: T.text }}>{value}</div>
     </div>
   </div>
 );
