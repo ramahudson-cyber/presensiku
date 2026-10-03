@@ -11,7 +11,7 @@ import {
   Search, Filter, Download, Calendar,
   ChevronLeft, ChevronRight, Loader2,
   CheckCircle2, XCircle, Clock, AlertTriangle,
-  RefreshCw, Inbox,
+  RefreshCw, Inbox, MessageSquareWarning,
 } from "lucide-react";
 
 // ── Konstanta ────────────────────────────────────────────────────────────────
@@ -19,6 +19,7 @@ const STATUS_OPTIONS = [
   { value: "", label: "Semua Status" },
   { value: "hadir",  label: "Hadir"  },
   { value: "terlambat", label: "Terlambat" },
+  { value: "sanggah", label: "Sanggah" },
   { value: "izin",   label: "Izin"   },
   { value: "sakit",  label: "Sakit"  },
   { value: "cuti",   label: "Cuti"   },
@@ -28,6 +29,7 @@ const STATUS_OPTIONS = [
 const STATUS_STYLE = {
   hadir:  { bg: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30", icon: <CheckCircle2 size={11} /> },
   terlambat: { bg: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30", icon: <Clock size={11} /> },
+  sanggah: { bg: "bg-violet-500/15 text-violet-300 ring-violet-500/30", icon: <MessageSquareWarning size={11} /> },
   izin:   { bg: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",       icon: <Clock size={11} />         },
   sakit:  { bg: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",    icon: <AlertTriangle size={11} /> },
   cuti:   { bg: "bg-sky-500/15 text-sky-300 ring-sky-500/30",             icon: <Calendar size={11} />      },
@@ -52,6 +54,9 @@ const fmtTime = (iso) =>
 // Izin/sakit tidak absen — sisa jam lama pada record tidak ditampilkan
 const clockDisplay = (iso, status) =>
   status === "izin" || status === "sakit" ? "–" : fmtTime(iso);
+
+// Baris hasil sanggahan disetujui (penanda notes dari RPC review_sanggahan)
+const isSanggahRow = (r) => (r.notes || "").toLowerCase().includes("dikoreksi via sanggahan");
 
 const fmtDate = (dateStr) =>
   dateStr
@@ -228,7 +233,8 @@ export default function AttendanceHistoryPage() {
   const filteredRows = useMemo(() => {
     const q = search.trim().toLowerCase();
     return mergedRows.filter((r) => {
-      if (statusFilter && r.attendance_status !== statusFilter) return false;
+      const eff = isSanggahRow(r) ? "sanggah" : r.attendance_status;
+      if (statusFilter && eff !== statusFilter) return false;
       if (q) {
         const hay = `${r.profiles?.full_name || ""} ${r.profiles?.position || ""} ${r.profiles?.username || ""}`.toLowerCase();
         if (!hay.includes(q)) return false;
@@ -268,7 +274,8 @@ export default function AttendanceHistoryPage() {
       const merged = await fetchRecords();
       const q = search.trim().toLowerCase();
       const rows = merged.filter((r) => {
-        if (statusFilter && r.attendance_status !== statusFilter) return false;
+        const eff = isSanggahRow(r) ? "sanggah" : r.attendance_status;
+        if (statusFilter && eff !== statusFilter) return false;
         if (q) {
           const hay = `${r.profiles?.full_name || ""} ${r.profiles?.position || ""} ${r.profiles?.username || ""}`.toLowerCase();
           if (!hay.includes(q)) return false;
@@ -303,7 +310,7 @@ export default function AttendanceHistoryPage() {
           r.profiles?.position ?? "-",
           fmtTime(r.clock_in_time),
           fmtTime(r.clock_out_time),
-          cap(r.attendance_status),
+          isSanggahRow(r) ? "Sanggah" : cap(r.attendance_status),
           r.location_in?.matched_location_name ?? "-",
           Number(r.late_minutes ?? 0),
           r.early_leave ? formatDuration(r.early_leave) : "-",
@@ -472,7 +479,7 @@ export default function AttendanceHistoryPage() {
                         {clockDisplay(r.clock_out_time, r.attendance_status)}
                       </td>
                       <td className="py-3 px-4">
-                        <StatusBadge status={r.attendance_status} />
+                        <StatusBadge status={isSanggahRow(r) ? "sanggah" : r.attendance_status} />
                         {r.early_leave ? (
                           <div className="text-[9px] font-semibold text-cyan-300 mt-1">
                             ⚡ Pulang Cepat {formatDuration(r.early_leave)}
@@ -515,7 +522,7 @@ export default function AttendanceHistoryPage() {
                         <div className="min-w-0">
                           <p className="font-semibold text-pure-white truncate">{r.profiles?.full_name ?? "–"}</p>
                         </div>
-                        <StatusBadge status={r.attendance_status} />
+                        <StatusBadge status={isSanggahRow(r) ? "sanggah" : r.attendance_status} />
                       </div>
                       <div className="flex items-center gap-2 mt-2 text-xs text-slate-mist">
                         <Calendar size={11} />
