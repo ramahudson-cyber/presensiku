@@ -305,33 +305,33 @@ export default function SanggahanPage() {
         </div>
       )}
 
-      {/* Modal tolak + alasan */}
+      {/* Modal tolak + alasan — tema terang sesuai layout admin */}
       {rejectModal && (
         <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center animate-fade-in" onClick={() => !processing && setRejectModal(null)}>
-          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-black/50" />
           <div onClick={(e) => e.stopPropagation()}
-            className="relative z-10 w-full max-w-md bg-[#17123a] border border-white/10 rounded-t-[28px] md:rounded-3xl p-6 animate-slide-up md:animate-fade-in mt-auto md:mt-0">
+            className="relative z-10 w-full max-w-md bg-white border border-slate-200 shadow-2xl rounded-t-[28px] md:rounded-3xl p-6 animate-slide-up md:animate-fade-in mt-auto md:mt-0">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-rose-500/15 flex items-center justify-center">
-                <MessageSquareWarning size={18} className="text-rose-300" />
+              <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
+                <MessageSquareWarning size={18} className="text-rose-500" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-pure-white">Tolak Sanggahan</h3>
-                <p className="text-[10px] text-slate-mist">Berikan alasan yang jelas untuk pegawai</p>
+                <h3 className="text-sm font-bold text-slate-900">Tolak Sanggahan</h3>
+                <p className="text-[10px] text-slate-500">Berikan alasan yang jelas untuk pegawai</p>
               </div>
             </div>
-            <p className="text-[11px] text-slate-mist mb-2">
-              Pegawai: <b className="text-pure-white">{rejectModal.profiles?.full_name || "–"}</b> · {fmtDate(rejectModal.tanggal)}
+            <p className="text-[11px] text-slate-500 mb-2">
+              Pegawai: <b className="text-slate-900">{rejectModal.profiles?.full_name || "–"}</b> · {fmtDate(rejectModal.tanggal)}
             </p>
             <textarea
               value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)}
               rows={3} maxLength={300} autoFocus
               placeholder="Contoh: Bukti tidak jelas / sudah dicek dan absen memang tercatat benar."
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-xs text-pure-white placeholder-slate-mist/50 outline-none focus:border-electric-violet/60 resize-none"
+              className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-rose-400 resize-none"
             />
             <div className="flex gap-3 mt-4">
               <button onClick={() => setRejectModal(null)} disabled={processing}
-                className="flex-1 py-2.5 rounded-full border border-white/15 text-slate-mist text-sm hover:bg-white/5 transition-all disabled:opacity-50">
+                className="flex-1 py-2.5 rounded-full border border-slate-200 text-slate-600 text-sm hover:bg-slate-50 transition-all disabled:opacity-50">
                 Batal
               </button>
               <button onClick={handleReject} disabled={processing || !rejectionReason.trim()}
@@ -344,68 +344,68 @@ export default function SanggahanPage() {
         </div>
       )}
 
-      {/* Modal: admin sanggahkan pegawai */}
+      {/* Modal: admin sanggahkan pegawai — tema terang sesuai layout admin */}
       {createModal && (
         <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center animate-fade-in" onClick={() => !creating && setCreateModal(false)}>
-          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-black/50" />
           <div onClick={(e) => e.stopPropagation()}
-            className="relative z-10 w-full max-w-md bg-[#17123a] border border-white/10 rounded-t-[28px] md:rounded-3xl p-6 animate-slide-up md:animate-fade-in mt-auto md:mt-0 max-h-[92vh] overflow-y-auto">
+            className="relative z-10 w-full max-w-md bg-white border border-slate-200 shadow-2xl rounded-t-[28px] md:rounded-3xl p-6 animate-slide-up md:animate-fade-in mt-auto md:mt-0 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-electric-violet/20 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-electric-violet/10 flex items-center justify-center">
                 <UserPlus size={18} className="text-electric-violet" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-pure-white">Sanggahkan Pegawai</h3>
-                <p className="text-[10px] text-slate-mist">Koreksi absensi tanpa pengajuan pegawai</p>
+                <h3 className="text-sm font-bold text-slate-900">Sanggahkan Pegawai</h3>
+                <p className="text-[10px] text-slate-500">Koreksi absensi tanpa pengajuan pegawai</p>
               </div>
             </div>
 
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-mist mb-1.5">Pegawai</label>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Pegawai</label>
             <select
               value={empId} onChange={(e) => setEmpId(e.target.value)}
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-xs text-pure-white outline-none focus:border-electric-violet/60 mb-3 appearance-none"
+              className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 outline-none focus:border-electric-violet mb-3"
             >
               <option value="">— Pilih pegawai —</option>
               {employees.map((emp) => (
-                <option key={emp.id} value={emp.id} className="bg-[#17123a]">{emp.full_name}</option>
+                <option key={emp.id} value={emp.id}>{emp.full_name}</option>
               ))}
             </select>
 
             <div className="grid grid-cols-2 gap-3 mb-3">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-mist mb-1.5">Dari</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Dari</label>
                 <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-                  className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs text-pure-white outline-none focus:border-electric-violet/60 [color-scheme:dark]" />
+                  className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3 py-2.5 text-xs text-slate-900 outline-none focus:border-electric-violet" />
               </div>
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-mist mb-1.5">Sampai</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Sampai</label>
                 <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
-                  className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs text-pure-white outline-none focus:border-electric-violet/60 [color-scheme:dark]" />
+                  className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3 py-2.5 text-xs text-slate-900 outline-none focus:border-electric-violet" />
               </div>
             </div>
 
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-mist mb-1.5">Alasan</label>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Alasan</label>
             <textarea
               value={createReason} onChange={(e) => setCreateReason(e.target.value)}
               rows={3} maxLength={300}
               placeholder="Contoh: Instansi libur operasional / error sistem absensi."
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-xs text-pure-white placeholder-slate-mist/50 outline-none focus:border-electric-violet/60 resize-none mb-3"
+              className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-electric-violet resize-none mb-3"
             />
 
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-mist mb-1.5">Foto bukti (opsional)</label>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Foto bukti (opsional)</label>
             <input type="file" accept="image/jpeg,image/png,image/webp"
               onChange={(e) => setCreateFile(e.target.files?.[0] || null)}
-              className="w-full text-[10px] text-slate-mist file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-electric-violet/20 file:text-electric-violet cursor-pointer mb-4" />
+              className="w-full text-[10px] text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-violet-100 file:text-violet-700 cursor-pointer mb-4" />
 
-            <div className="rounded-xl px-3 py-2 border border-white/10 bg-white/[0.03] mb-4">
-              <p className="text-[10px] text-slate-mist leading-relaxed">
+            <div className="rounded-xl px-3 py-2 border border-violet-100 bg-violet-50 mb-4">
+              <p className="text-[10px] text-slate-600 leading-relaxed">
                 Semua hari dalam rentang diproses langsung disetujui. Hari yang sudah hadir, sudah disanggahkan, tanpa jadwal, atau masa depan akan dilewati otomatis.
               </p>
             </div>
 
             <div className="flex gap-3">
               <button onClick={() => setCreateModal(false)} disabled={creating}
-                className="flex-1 py-2.5 rounded-full border border-white/15 text-slate-mist text-sm hover:bg-white/5 transition-all disabled:opacity-50">
+                className="flex-1 py-2.5 rounded-full border border-slate-200 text-slate-600 text-sm hover:bg-slate-50 transition-all disabled:opacity-50">
                 Batal
               </button>
               <button onClick={handleCreateSanggahan}
