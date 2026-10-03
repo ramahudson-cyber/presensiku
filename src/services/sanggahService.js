@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase";
-import { getShiftDefinition, isShiftEnded } from "../lib/shiftTime";
+import { getShiftDefinition, isShiftEnded, getWitaDateKey } from "../lib/shiftTime";
 
 const SANGGAHAN_BUCKET = "sanggahan";
 const MIN_EARLY_NOTE = "Sanggahan hanya untuk status Alpha/Terlambat.";
@@ -16,10 +16,13 @@ export async function getMySanggahan() {
   return data || [];
 }
 
-// Absensi milik user yang layak disanggah (Alpha/Terlambat, 60 hari terakhir)
+// Absensi milik user yang layak disanggah (Alpha/Terlambat/Tanpa Pulang,
+// 60 hari terakhir)
 export async function getMyDisputableAttendance(userId) {
   const from = new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10);
-  const [{ data, error }, { data: allDateRows }] = await Promise.all([
+  // Hari ini (WITA) masih bisa absen pulang → bukan kandidat "tanpa pulang"
+  const todayWita = getWitaDateKey();
+  const [{ data, error }, { data: allDateRows }, { data: noCheckoutRows, error: ncError }] = await Promise.all([
     supabase
       .from("attendance")
       .select("id, date, attendance_status, is_late, late_minutes, shift_code, clock_out_time")
@@ -30,9 +33,23 @@ export async function getMyDisputableAttendance(userId) {
     // Semua tanggal yang sudah punya baris attendance (status apa pun) —
     // hari hadir/izin/sakit TIDAK boleh ter-derive sebagai alpha.
     supabase.from("attendance").select("date").eq("user_id", userId).gte("date", from),
+    // Hadir tapi tidak pernah absen pulang, hari sudah lewat
+    supabase
+      .from("attendance")
+      .select("id, date, attendance_status, shift_code")
+      .eq("user_id", userId)
+      .eq("attendance_status", "hadir")
+      .not("clock_in_time", "is", null)
+      .filter("clock_out_time", "is", null)
+      .lt("date", todayWita)
+      .gte("date", from)
+      .order("date", { ascending: false }),
   ]);
   if (error) throw error;
-  const rows = data || [];
+  if (ncError) throw ncError;
+  const rows = (data || []).concat(
+    (noCheckoutRows || []).map((r) => ({ ...r, attendance_status: "tanpa_pulang" }))
+  );
 
   // Hari alpha turunan: jadwal yang shift-nya sudah berakhir tanpa baris
   // attendance — konsisten dengan statistik dashboard. RPC create_sanggahan

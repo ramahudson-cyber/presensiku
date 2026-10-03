@@ -36,7 +36,7 @@ const fmtDate = (dateKey) => {
   if (!dateKey) return "-";
   return new Date(dateKey + "T00:00:00").toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 };
-const OLD_STATUS_LABEL = { alpha: "Alpha", terlambat: "Terlambat", belum: "Belum" };
+const OLD_STATUS_LABEL = { alpha: "Alpha", terlambat: "Terlambat", belum: "Belum", tanpa_pulang: "Tidak Absen Pulang" };
 
 function StatusPill({ status }) {
   const meta = {

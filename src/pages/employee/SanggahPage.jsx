@@ -23,7 +23,7 @@ const STATUS_META = {
   rejected:  { label: "Ditolak",         color: "#EF4444", icon: XCircle },
 };
 
-const OLD_STATUS_LABEL = { alpha: "Alpha", terlambat: "Terlambat" };
+const OLD_STATUS_LABEL = { alpha: "Alpha", terlambat: "Terlambat", tanpa_pulang: "Tidak Absen Pulang" };
 
 const fmtDate = (dateKey) => {
   if (!dateKey) return "-";
@@ -130,8 +130,9 @@ export default function SanggahPage() {
             <Info size={14} style={{ color: '#BF00FF' }} />
           </div>
           <p className="text-[11px] leading-relaxed" style={{ color: T.textSec }}>
-            Ada catatan absen yang salah (Alpha/Terlambat)? Ajukan sanggah beserta alasan dan foto bukti.
-            Admin akan meninjau — bila disetujui, status absen otomatis dikoreksi menjadi Hadir.
+            Ada catatan absen yang salah (Alpha/Terlambat) atau lupa absen pulang? Ajukan sanggah
+            beserta alasan dan foto bukti. Admin akan meninjau — bila disetujui, status absen
+            otomatis dikoreksi menjadi Hadir.
           </p>
         </div>
 
@@ -148,7 +149,7 @@ export default function SanggahPage() {
             </div>
           ) : disputable.length === 0 ? (
             <p className="text-[11px] text-center py-6" style={{ color: T.textMuted }}>
-              Tidak ada absensi Alpha/Terlambat dalam 60 hari terakhir 🎉
+              Tidak ada absensi yang bisa disanggah dalam 60 hari terakhir 🎉
             </p>
           ) : (
             <>
