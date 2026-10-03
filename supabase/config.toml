@@ -7,3 +7,4 @@ project_id = "muhxylbcgvwxjzrbkgdc"
 [functions.send-shift-reminder]
 verify_jwt = true
 
+

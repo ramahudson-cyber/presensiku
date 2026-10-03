@@ -36,7 +36,7 @@ const fmtDate = (dateKey) => {
   if (!dateKey) return "-";
   return new Date(dateKey + "T00:00:00").toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 };
-const OLD_STATUS_LABEL = { alpha: "Alpha", terlambat: "Terlambat" };
+const OLD_STATUS_LABEL = { alpha: "Alpha", terlambat: "Terlambat", belum: "Belum" };
 
 function StatusPill({ status }) {
   const meta = {
@@ -399,7 +399,7 @@ export default function SanggahanPage() {
 
             <div className="rounded-xl px-3 py-2 border border-violet-100 bg-violet-50 mb-4">
               <p className="text-[10px] text-slate-600 leading-relaxed">
-                Semua hari dalam rentang diproses langsung disetujui. Hari yang sudah hadir, sudah disanggahkan, tanpa jadwal, atau masa depan akan dilewati otomatis.
+                Semua hari dalam rentang diproses langsung disetujui. Hari masa depan yang punya jadwal ditandai sebagai hari bebas (Sanggah). Hari yang sudah hadir, sudah disanggahkan, tanpa jadwal, atau lebih dari 62 hari ke depan dilewati otomatis.
               </p>
             </div>
 
