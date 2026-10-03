@@ -287,6 +287,12 @@ export default function AttendancePage() {
       serverTime
     ));
 
+  // Hari ini teratasi via sanggahan disetujui (record 'hadir' tanpa jam,
+  // penanda notes dari RPC review_sanggahan) — absen tidak diperlukan/tertutup.
+  const isSanggahCorrected = !!todayAttendance
+    && !todayAttendance?.clock_in_time
+    && (todayAttendance?.notes || "").toLowerCase().includes("dikoreksi via sanggahan");
+
   const handleCheckIn = async () => {
     setError("");
     setSuccessMsg("");
@@ -635,6 +641,21 @@ export default function AttendancePage() {
             </div>
           )}
 
+          {/* Status SANGGAH — pengganti fingerprint saat hari ini teratasi sanggahan */}
+          {isSanggahCorrected && (
+            <div className="pointer-events-auto flex flex-col items-center gap-3 mt-auto pb-16">
+              <div className="w-[120px] h-[120px] rounded-full bg-gradient-to-br from-electric-violet via-[#8B00CC] to-[#6600CC] flex flex-col items-center justify-center shadow-[0_0_40px_rgba(191,0,255,0.35)]">
+                <span className="text-[22px] font-extrabold tracking-wide text-white hero-card-bg">
+                  SANGGAH
+                </span>
+                <span className="text-[9px] text-white/70 mt-0.5">Disetujui</span>
+              </div>
+              <span className="text-[12px] font-semibold text-black text-center">
+                Absensi hari ini dikoreksi via sanggahan — tidak perlu absen
+              </span>
+            </div>
+          )}
+
           {/* Error banner */}
           {error && (
             <div className="px-3 py-2 rounded-xl">
@@ -655,7 +676,7 @@ export default function AttendancePage() {
           )}
 	        </div>
 
-		        {todayAttendance && (todayAttendance.attendance_status === "izin" || todayAttendance.attendance_status === "sakit" || todayAttendance.clock_out_time) ? null : (
+		        {todayAttendance && (todayAttendance.attendance_status === "izin" || todayAttendance.attendance_status === "sakit" || isSanggahCorrected || todayAttendance.clock_out_time) ? null : (
               <div className="pointer-events-auto flex flex-col items-center gap-3 mt-auto pb-16">
                 {isAlphaLocked && (
                   <p className="text-[11px] font-semibold text-red-600 text-center max-w-[240px]">
