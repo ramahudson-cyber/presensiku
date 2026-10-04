@@ -147,7 +147,8 @@ const EmployeesPage = () => {
             full_name: formData.full_name,
             email: formData.email,
             role: formData.role,
-            employee_status: formData.employee_status,
+            // Status opsional: kosong dikirim NULL (bukan string kosong)
+            employee_status: formData.employee_status || null,
             position: formData.position,
           })
           .eq('id', formData.id);
@@ -169,7 +170,7 @@ const EmployeesPage = () => {
           p_email: formData.email,
           p_password: defaultPass,
           p_role: formData.role,
-          p_employee_status: formData.employee_status,
+          p_employee_status: formData.employee_status || null,
           p_department: null,
           p_position: formData.position,
         });

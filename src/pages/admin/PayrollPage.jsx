@@ -322,7 +322,7 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
                 <tr key={l.id} className="border-b last:border-0 hover:bg-gray-50" style={{ borderColor: T.border }}>
                   <td className="px-3 py-2.5">
                     <p className="font-bold text-slate-800">{l.user?.full_name || l.user?.username}</p>
-                    <p className="text-[10px] text-slate-400">{l.user?.employee_status?.toUpperCase()}</p>
+                    <p className="text-[10px] text-slate-400">{(l.user?.employee_status || "-").toUpperCase()}</p>
                   </td>
                   <td className="px-3 py-2.5 text-center">{l.hadir}</td>
                   <td className="px-3 py-2.5 text-center">{l.terlambat}</td>
