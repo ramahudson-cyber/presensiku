@@ -34,8 +34,8 @@
 - 2 record terpisah
 
 ## Aturan Absensi
-- Toleransi terlambat: 5 menit (latest_check_in = start_time + 5m)
-- Terlambat > 1 jam: tidak bisa absen (blokir), hubungi admin
+- Toleransi telat: TIDAK ADA — telat dihitung mulai menit pertama setelah start_time (latest_check_in = start_time, dipaksa trigger)
+- Terlambat berapa pun tetap bisa absen selama belum lewat jam selesai shift (blokir 1 jam sudah dihapus)
 - Pegawai absen tanpa pilih shift (jadwal otomatis terbaca)
 - Admin input jadwal per bulan (manual atau upload Excel)
 - Perubahan shift: admin edit manual di aplikasi
@@ -50,7 +50,7 @@
 - Gunakan WITA (UTC+8) sebagai zona waktu
 - Tabel shifts: PG (Pagi), SR/Sore (Poli Sore), SI (Siang), ML (Malam)
 - Tabel shift_schedules: jadwal per hari (day_of_week 0=Senin..6=Minggu)
-  - latest_check_in = start_time + 5 menit (toleransi)
+  - latest_check_in = start_time (tanpa toleransi; dipaksa trigger shift_schedule_time_guard)
   - crosses_midnight = true untuk shift ML (malam)
 - Tabel employee_schedules: (user_id, date, shift_code) — UNIQUE(user_id, date)
 - Tabel attendance: shift_code (existing), schedule_match (boolean)
