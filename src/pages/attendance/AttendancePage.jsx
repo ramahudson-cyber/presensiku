@@ -12,7 +12,7 @@ import BottomNav from "../../components/BottomNav";
 import { getCurrentPosition } from "../../services/geoService";
 import { detectMockLocation, mockBlockMessage } from "../../services/mockLocationService";
 import { getPuskesmasLocation, calculateDistance, verifyLocationServer } from "../../services/attendanceService";
-import { getMondayFirstDayOfWeek, getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
+import { getMondayFirstDayOfWeek, getShiftDefinition, getWitaDateKey, isShiftEnded, isCheckInWindowOpen } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 
@@ -179,7 +179,7 @@ export default function AttendancePage() {
         const dayOfWeek = getMondayFirstDayOfWeek(today);
         const { data: definition } = await supabase
           .from("shift_schedules")
-          .select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day")
+          .select("shift_code, day_of_week, start_time, end_time, crosses_midnight, is_working_day")
           .eq("shift_code", sched.shift_code)
           .eq("day_of_week", dayOfWeek)
           .maybeSingle();
@@ -286,6 +286,21 @@ export default function AttendancePage() {
       shiftDefinition,
       serverTime
     ));
+
+  // Jendela waktu absen masuk: tombol terkunci sampai 15 menit sebelum jam
+  // shift (server tetap menegakkan lewat guard — defense in depth).
+  const checkInGate = todayAttendance
+    ? { open: true, minutesUntil: 0 }
+    : isCheckInWindowOpen(shiftDefinition, serverTime || new Date(), 15);
+  const gateOpensAt = (() => {
+    if (checkInGate.open || !shiftDefinition?.start_time) return null;
+    const match = String(shiftDefinition.start_time).match(/^(\d{1,2}):(\d{2})/);
+    if (!match) return null;
+    const total = Number(match[1]) * 60 + Number(match[2]) - 15;
+    const hh = String(Math.floor(((total % 1440) + 1440) % 1440 / 60)).padStart(2, "0");
+    const mm = String(((total % 60) + 60) % 60).padStart(2, "0");
+    return `${hh}.${mm}`;
+  })();
 
   // Hari ini teratasi via sanggahan disetujui (record 'hadir' tanpa jam,
   // penanda notes dari RPC review_sanggahan) — absen tidak diperlukan/tertutup.
@@ -683,6 +698,12 @@ export default function AttendancePage() {
                     Absensi ditutup karena jadwal hari ini sudah Alpha.
                   </p>
                 )}
+                {!checkInGate.open && (
+                  <p className="text-[11px] font-semibold text-amber-600 text-center max-w-[260px]">
+                    Waktu absensi belum dimulai — dibuka pukul {gateOpensAt} WITA
+                    ({checkInGate.minutesUntil} menit lagi).
+                  </p>
+                )}
                 <div className="relative">
               {/* Ripple rings */}
               <div className="absolute inset-0 rounded-full border-2 border-electric-violet/30 animate-ripple z-0"></div>
@@ -695,7 +716,7 @@ export default function AttendancePage() {
               {/* Main button */}
               <button
                 onClick={todayAttendance ? () => setShowCheckoutConfirm(true) : handleCheckIn}
-                disabled={isAlphaLocked || locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
+                disabled={isAlphaLocked || !checkInGate.open || locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
                 className="hero-card-bg relative w-[120px] h-[120px] rounded-full bg-gradient-to-br from-electric-violet via-[#8B00CC] to-[#6600CC] flex items-center justify-center
                   transition-all duration-300 hover:scale-105 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed
                   shadow-[0_0_40px_rgba(191,0,255,0.5),0_0_80px_rgba(191,0,255,0.25),0_10px_40px_rgba(0,0,0,0.4)]
@@ -722,7 +743,7 @@ export default function AttendancePage() {
             <span className="text-[13px] font-bold text-black tracking-[3px] uppercase" style={{
               textShadow: '0 0 15px rgba(191,0,255,0.3)'
             }}>
-              {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : isAlphaLocked ? "Absen Ditutup" : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
+              {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : isAlphaLocked ? "Absen Ditutup" : !checkInGate.open ? "Belum Dibuka" : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
             </span>
           </div>
 		        )}

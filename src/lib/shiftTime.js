@@ -132,3 +132,39 @@ export function formatDuration(minutes) {
   if (h > 0) return `${h}j`;
   return `${rest}m`;
 }
+
+/**
+ * Jendela waktu absen masuk: hanya terbuka mulai `leadMinutes` menit
+ * sebelum jam mulai shift (WITA) — mirror guard_attendance_self_write.
+ * Kontinuasi dini hari shift lintas malam selalu terbuka (+1440).
+ * Definisi tidak lengkap / placeholder 00:00 dianggap terbuka —
+ * server yang menegakkan aturan sebenarnya.
+ * Return { open, minutesUntil }: minutesUntil > 0 berarti masih tertutup.
+ */
+export function isCheckInWindowOpen(shiftDefinition, now = new Date(), leadMinutes = 15) {
+  if (!shiftDefinition?.start_time || shiftDefinition.is_working_day === false) {
+    return { open: true, minutesUntil: 0 };
+  }
+  const match = String(shiftDefinition.start_time).match(/^(\d{1,2}):(\d{2})/);
+  if (!match) return { open: true, minutesUntil: 0 };
+  const startHour = Number(match[1]);
+  const startMinute = Number(match[2]);
+  if (startHour > 23 || startMinute > 59) return { open: true, minutesUntil: 0 };
+  if (startHour === 0 && startMinute === 0) return { open: true, minutesUntil: 0 };
+
+  const nowParts = getWitaParts(now);
+  if (!nowParts) return { open: true, minutesUntil: 0 };
+
+  const nowTotal = nowParts.hour * 60 + nowParts.minute;
+  const startTotal = startHour * 60 + startMinute;
+
+  // Kontinuasi dini hari shift lintas malam: mirror guard (+1440)
+  let adjusted = nowTotal;
+  if (shiftDefinition.crosses_midnight && nowTotal < 720 && nowTotal < startTotal) {
+    adjusted = nowTotal + 1440;
+  }
+
+  const minutesUntil = startTotal - leadMinutes - adjusted;
+  if (minutesUntil <= 0) return { open: true, minutesUntil: 0 };
+  return { open: false, minutesUntil };
+}

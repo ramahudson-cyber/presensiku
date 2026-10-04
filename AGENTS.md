@@ -35,6 +35,7 @@
 
 ## Aturan Absensi
 - Toleransi telat: TIDAK ADA — telat dihitung mulai menit pertama setelah start_time (latest_check_in = start_time, dipaksa trigger)
+- Jendela waktu absen masuk: hanya terbuka mulai 15 menit sebelum start_time (dipaksa guard server; tombol di client terkunci + countdown)
 - Terlambat berapa pun tetap bisa absen selama belum lewat jam selesai shift (blokir 1 jam sudah dihapus)
 - Pegawai absen tanpa pilih shift (jadwal otomatis terbaca)
 - Admin input jadwal per bulan (manual atau upload Excel)
