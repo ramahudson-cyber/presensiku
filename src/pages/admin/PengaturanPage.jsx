@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
-import { getSetting } from "../../lib/settings";
+import { getSetting, setSettingValue } from "../../lib/settings";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import { useAuth } from "../../context/AuthContext";
@@ -11,6 +11,7 @@ import {
   CheckCircle2, AlertTriangle, Activity, Eye, Smartphone,
   Mail, Clock as ClockIcon, XCircle, Inbox, MapPinned,
   Briefcase, User, IdCard, Calendar, Bell, Sun,
+  Package, Wallet,
 } from "lucide-react";
 import TabShift from "./ShiftManagement";
 import MasterDataManagementPage from "../MasterDataManagementPage";
@@ -1456,6 +1457,95 @@ function TabAuditLog() {
 }
 
 /* ============================================================
+   TAB MODUL — modul opsional per instansi (on/off)
+   ============================================================ */
+function TabModul() {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [payrollOn, setPayrollOn] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setPayrollOn((await getSetting("payroll_enabled", "false")) === "true");
+      } catch { /* biarkan default */ }
+      finally { setLoading(false); }
+    })();
+  }, []);
+
+  const togglePayroll = async () => {
+    const next = !payrollOn;
+    const msg = next
+      ? "Aktifkan Modul Gaji?\n\nMenu Gaji muncul di sidebar, slip gaji pegawai tersedia, dan potongan (telat, alpha, tanpa pulang, pulang cepat) dihitung dari absensi."
+      : "Nonaktifkan Modul Gaji?\n\nMenu Gaji disembunyikan dan slip gaji pegawai tidak tersedia. Data rekap yang sudah ada TIDAK dihapus dan tampil kembali saat modul diaktifkan lagi.";
+    if (!window.confirm(msg)) return;
+    setSaving(true);
+    try {
+      await setSettingValue("payroll_enabled", next ? "true" : "false", "payroll");
+      setPayrollOn(next);
+      toast.success(next ? "Modul Gaji diaktifkan" : "Modul Gaji dinonaktifkan");
+      setTimeout(() => window.location.reload(), 1200);
+    } catch (err) {
+      console.error(err);
+      setPayrollOn(!next);
+      toast.error("Gagal mengubah modul: " + (err.message || ""));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <RefreshCw size={28} className="animate-spin text-periwinkle-glow" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className={`${cardBase} p-4 flex items-center justify-between gap-4`}>
+        <div className="flex items-start gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-xl bg-violet-600/20 flex items-center justify-center shrink-0">
+            <Wallet size={18} className="text-periwinkle-glow" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-sm font-medium text-pure-white">Modul Gaji</p>
+              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${payrollOn ? "bg-emerald-500/15 text-emerald-300" : "bg-white/10 text-slate-mist"}`}>
+                {payrollOn ? "AKTIF" : "NONAKTIF"}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-mist mt-1 leading-relaxed">
+              Potongan otomatis dari absensi (telat, alpha, tanpa pulang, pulang cepat),
+              slip gaji pegawai, dan menu Gaji di sidebar.
+            </p>
+            <p className="text-[10px] text-slate-mist/70 mt-1">
+              Menonaktifkan tidak menghapus data rekap — menu &amp; slip kembali saat modul diaktifkan lagi.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={togglePayroll}
+          disabled={saving}
+          title={payrollOn ? "Nonaktifkan Modul Gaji" : "Aktifkan Modul Gaji"}
+          className={`relative shrink-0 w-12 h-7 rounded-full transition-colors duration-200 disabled:opacity-50 ${payrollOn ? "bg-emerald-500" : "bg-white/15"}`}
+        >
+          <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${payrollOn ? "translate-x-5" : ""}`} />
+        </button>
+      </div>
+
+      <div className="rounded-xl px-3 py-2 border border-violet-500/30 bg-violet-600/10">
+        <p className="text-[10px] text-slate-mist leading-relaxed">
+          Pengaturan berlaku untuk instansi aktif saat ini. Sidebar dan menu pegawai menyesuaikan
+          setelah halaman dimuat ulang.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
    MAIN PAGE
    ============================================================ */
 export default function PengaturanPage() {
@@ -1484,6 +1574,7 @@ if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
     { id: "user", label: "Manajemen User", icon: Users },
     { id: "approval", label: "Approval Device", icon: Smartphone },
     { id: "audit", label: "Audit Log", icon: Activity },
+    { id: "modul", label: "Modul", icon: Package },
     // Master Data (tambah/rename role) hanya untuk super_admin —
     // admin instansi bisa selipkan role super_admin lewat sini.
     ...(user?.role === "super_admin"
@@ -1534,6 +1625,7 @@ if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
 
         {activeTab === "approval" && <TabApprovalDevice key={refreshKey} />}
         {activeTab === "audit" && <TabAuditLog key={refreshKey} />}
+        {activeTab === "modul" && <TabModul key={refreshKey} />}
       </div>
     </div>
   );
