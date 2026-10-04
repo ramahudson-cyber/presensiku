@@ -7,10 +7,13 @@ const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
  * @param {Date} serverNow - server time
  * @param {object|null} employeeSchedule - today's employee_schedule row { shift_code }
  * @param {object[]} shiftDefinitions - shift_schedules rows [{ shift_code, day_of_week, start_time, is_working_day }]
+ * @param {object|null} [attendance] - attendance hari ini; pengingat masuk
+ *   disembunyikan bila sudah absen masuk (clock_in_time terisi)
  * @returns {{ show: boolean, message?: string, minutesUntil?: number, shiftStartFormatted?: string, shiftLabel?: string }}
  */
-export function getShiftReminderInfo(serverNow, employeeSchedule, shiftDefinitions) {
+export function getShiftReminderInfo(serverNow, employeeSchedule, shiftDefinitions, attendance = null) {
   if (!employeeSchedule?.shift_code) return { show: false };
+  if (attendance?.clock_in_time) return { show: false };
 
   const nowParts = getWitaParts(serverNow);
   if (!nowParts) return { show: false };
@@ -29,11 +32,22 @@ export function getShiftReminderInfo(serverNow, employeeSchedule, shiftDefinitio
   const startHour = Number(match[1]);
   const startMinute = Number(match[2]);
   const startTotal = startHour * 60 + startMinute;
+  // Placeholder hari non-kerja mulai 00:00 — konsisten dengan guard server.
+  if (startTotal === 0) return { show: false };
   const nowTotal = nowParts.hour * 60 + nowParts.minute;
   const diff = startTotal - nowTotal;
 
-  // Within 15 minutes before shift start up to 5 minutes after
-  if (diff > 15 || diff < -5) return { show: false };
+  // Dari 15 menit sebelum shift mulai HINGGA shift berakhir: selama belum
+  // absen masuk, pegawai terus diingatkan (dulu hanya −15..+5 menit sehingga
+  // pengingat masuk nyaris tidak pernah terlihat).
+  if (diff > 15) return { show: false };
+
+  // Sudah lewat jam selesai shift → tidak ada gunanya lagi mengingatkan masuk.
+  const endMatch = def.end_time ? String(def.end_time).match(/^(\d{1,2}):(\d{2})/) : null;
+  if (endMatch && !def.crosses_midnight) {
+    const endTotal = Number(endMatch[1]) * 60 + Number(endMatch[2]);
+    if (nowTotal >= endTotal) return { show: false };
+  }
 
   const shiftLabel = SHIFT_NAMES[employeeSchedule.shift_code] || employeeSchedule.shift_code;
   const shiftStartFormatted = `${String(startHour).padStart(2, "0")}:${String(startMinute).padStart(2, "0")}`;
@@ -70,13 +84,19 @@ export function reminderToastEndKey(today, shiftCode) {
 
 /**
  * Compute shift end reminder: 15 menit sebelum jam selesai shift.
+ * Hanya relevan bila pegawai SUDAH absen masuk dan BELUM absen pulang —
+ * tanpa guard ini banner "absen pulang" muncul padahal pegawai belum
+ * melakukan absen masuk.
  * @param {Date} serverNow
  * @param {object|null} employeeSchedule
  * @param {object[]} shiftDefinitions
+ * @param {object|null} [attendance] - attendance hari ini { clock_in_time, clock_out_time }
  * @returns {{ show: boolean, message?: string, minutesUntil?: number, shiftEndFormatted?: string, shiftLabel?: string }}
  */
-export function getShiftEndReminderInfo(serverNow, employeeSchedule, shiftDefinitions) {
+export function getShiftEndReminderInfo(serverNow, employeeSchedule, shiftDefinitions, attendance = null) {
   if (!employeeSchedule?.shift_code) return { show: false };
+  // Belum absen masuk → pengingat pulang tidak relevan. Sudah absen pulang → tidak perlu diingatkan lagi.
+  if (!attendance?.clock_in_time || attendance?.clock_out_time) return { show: false };
 
   const nowParts = getWitaParts(serverNow);
   if (!nowParts) return { show: false };

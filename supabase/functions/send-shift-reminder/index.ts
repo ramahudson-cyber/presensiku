@@ -187,6 +187,26 @@ export default async function handler(req: Request) {
       if (!nameMap.has(k) && s.name) nameMap.set(k, s.name)
     }
 
+    // Kehadiran hari ini + kemarin (untuk jadwal overnight): pengingat masuk
+    // dilewati bila sudah absen masuk; pengingat pulang hanya untuk yang
+    // sudah absen masuk dan belum absen pulang.
+    const attUserIds = [...new Set((schedRows || []).map((r) => r.user_id))]
+    const attMap = new Map<string, { clock_in_time: string | null; clock_out_time: string | null }>()
+    if (attUserIds.length) {
+      const { data: attRows, error: attErr } = await supabase
+        .from('attendance')
+        .select('user_id, date, clock_in_time, clock_out_time')
+        .in('date', [today, yesterday])
+        .in('user_id', attUserIds)
+      if (attErr) throw new Error(`attendance: ${attErr.message}`)
+      for (const a of attRows || []) {
+        attMap.set(`${a.user_id}|${a.date}`, {
+          clock_in_time: a.clock_in_time,
+          clock_out_time: a.clock_out_time,
+        })
+      }
+    }
+
     // Reminder dikirim saat sisa waktu 1-2 menit sebelum shift mulai/berakhir
     // (cron tiap 1 menit; dedupe log mencegah dobel kirim dalam jendela ini)
     const WINDOW_MIN = 2
@@ -200,6 +220,10 @@ export default async function handler(req: Request) {
       // Placeholder hari non-kerja (00:00) tidak diingatkan
       if (startMin === 0 || def.is_working_day === false) continue
 
+      const att = attMap.get(`${r.user_id}|${r.date}`)
+      const alreadyIn = !!att?.clock_in_time
+      const alreadyOut = !!att?.clock_out_time
+
       const dayOffset = r.date === today ? 0 : -1440
       const startAbs = dayOffset + startMin
       const crosses = def.crosses_midnight === true
@@ -209,7 +233,7 @@ export default async function handler(req: Request) {
         nameMap.get(`${r.organization_id}|${r.shift_code}`) || r.shift_code
       const capName = displayName.charAt(0).toUpperCase() + displayName.slice(1)
 
-      if (r.date === today && startAbs - nowMin > 0 && startAbs - nowMin <= WINDOW_MIN) {
+      if (r.date === today && !alreadyIn && startAbs - nowMin > 0 && startAbs - nowMin <= WINDOW_MIN) {
         candidates.push({
           userId: r.user_id, shiftCode: r.shift_code, shiftName: capName,
           date: r.date, kind: 'start',
@@ -218,7 +242,9 @@ export default async function handler(req: Request) {
         })
       }
       // Reminder pulang: berlaku juga untuk jadwal kemarin yang shift-nya
-      // melewati tengah malam (endAbs jatuh di hari ini).
+      // melewati tengah malam (endAbs jatuh di hari ini). Hanya untuk yang
+      // sudah absen masuk dan belum absen pulang.
+      if (!alreadyIn || alreadyOut) continue
       if (endAbs - nowMin > 0 && endAbs - nowMin <= WINDOW_MIN) {
         candidates.push({
           userId: r.user_id, shiftCode: r.shift_code, shiftName: capName,

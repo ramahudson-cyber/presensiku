@@ -4,7 +4,7 @@ import { Capacitor } from "@capacitor/core";
 import { toast } from "react-toastify";
 import { supabase } from "../lib/supabase";
 import { getShiftReminderInfo, getShiftEndReminderInfo } from "../lib/notificationReminder";
-import { getWitaDateKey } from "../lib/shiftTime";
+import { getWitaDateKey, getWitaParts, getMondayFirstDayOfWeek } from "../lib/shiftTime";
 
 const CHANNEL_ID = "shift-reminders";
 const ANNOUNCEMENT_CHANNEL_ID = "announcements";
@@ -72,18 +72,30 @@ function hashId(str) {
 /**
  * Jadwalkan notifikasi lokal 15 menit sebelum shift start dan shift end.
  * Gunakan localStorage untuk memastikan hanya dijadwalkan sekali per hari.
+ * @param {Date} serverNow
+ * @param {object|null} employeeSchedule - jadwal hari ini { shift_code }
+ * @param {object[]} shiftDefinitions - shift_schedules rows
+ * @param {object|null} attendance - attendance hari ini; pengingat masuk tidak
+ *   dijadwalkan bila sudah absen masuk, pengingat pulang hanya bila sudah
+ *   absen masuk dan belum absen pulang
  */
-export async function scheduleShiftReminders(serverNow, employeeSchedule, shiftDefinitions) {
+export async function scheduleShiftReminders(serverNow, employeeSchedule, shiftDefinitions, attendance = null) {
   if (!isNative()) return;
   if (!employeeSchedule?.shift_code || !shiftDefinitions?.length) return;
 
   const today = getWitaDateKey(serverNow);
   const shiftCode = employeeSchedule.shift_code;
-  const def = shiftDefinitions.find((d) => d.shift_code === shiftCode);
+  // Definisi shift HARI INI — shift_code sama bisa punya jam berbeda per hari
+  const nowParts = getWitaParts(serverNow);
+  const dayOfWeek = nowParts ? getMondayFirstDayOfWeek(nowParts.dateKey) : null;
+  const def = shiftDefinitions.find(
+    (d) => d.shift_code === shiftCode
+      && (dayOfWeek === null || Number(d.day_of_week) === dayOfWeek)
+  ) || shiftDefinitions.find((d) => d.shift_code === shiftCode);
 
   // Check-in reminder: 15 menit sebelum mulai shift
   const startMatch = String(def?.start_time || "").match(/^(\d{1,2}):(\d{2})/);
-  if (startMatch) {
+  if (startMatch && !attendance?.clock_in_time) {
     const schedKey = `scheduled_notif_in_${today}_${shiftCode}`;
     if (!localStorage.getItem(schedKey)) {
       try {
@@ -92,7 +104,7 @@ export async function scheduleShiftReminders(serverNow, employeeSchedule, shiftD
         targetDate.setHours(Math.floor(remindMin / 60), remindMin % 60, 0, 0);
 
         if (targetDate > new Date()) {
-          const info = getShiftReminderInfo(serverNow, employeeSchedule, shiftDefinitions);
+          const info = getShiftReminderInfo(serverNow, employeeSchedule, shiftDefinitions, attendance);
           await LocalNotifications.schedule({
             notifications: [
               {
@@ -118,9 +130,10 @@ export async function scheduleShiftReminders(serverNow, employeeSchedule, shiftD
     }
   }
 
-  // Check-out reminder: 15 menit sebelum akhir shift
+  // Check-out reminder: 15 menit sebelum akhir shift — hanya relevan bila
+  // sudah absen masuk dan belum absen pulang
   const endMatch = String(def?.end_time || "").match(/^(\d{1,2}):(\d{2})/);
-  if (endMatch) {
+  if (endMatch && attendance?.clock_in_time && !attendance?.clock_out_time) {
     const schedKey = `scheduled_notif_out_${today}_${shiftCode}`;
     if (!localStorage.getItem(schedKey)) {
       try {
@@ -131,7 +144,7 @@ export async function scheduleShiftReminders(serverNow, employeeSchedule, shiftD
         targetDate.setHours(Math.floor(remindMin / 60), remindMin % 60, 0, 0);
 
         if (targetDate > new Date()) {
-          const info = getShiftEndReminderInfo(serverNow, employeeSchedule, shiftDefinitions);
+          const info = getShiftEndReminderInfo(serverNow, employeeSchedule, shiftDefinitions, attendance);
           await LocalNotifications.schedule({
             notifications: [
               {

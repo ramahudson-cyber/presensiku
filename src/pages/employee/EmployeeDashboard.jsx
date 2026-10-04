@@ -138,7 +138,7 @@ export default function EmployeeDashboard() {
     const showReminder = () => {
       if (!todaySched || !shiftDefinitions.length) return;
       const today = getWitaDateKey(serverTime);
-      const r = getShiftReminderInfo(serverTime, todaySched, shiftDefinitions);
+      const r = getShiftReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance);
       if (r.show) {
         const key = reminderToastKey(today, todaySched.shift_code);
         if (!localStorage.getItem(key)) {
@@ -146,7 +146,7 @@ export default function EmployeeDashboard() {
           localStorage.setItem(key, "1");
         }
       }
-      const endR = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions);
+      const endR = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance);
       if (endR.show) {
         const key = reminderToastEndKey(today, todaySched.shift_code);
         if (!localStorage.getItem(key)) {
@@ -158,7 +158,7 @@ export default function EmployeeDashboard() {
     showReminder();
     const id = setInterval(showReminder, 60000);
     return () => clearInterval(id);
-  }, [serverTime, todaySched, shiftDefinitions]);
+  }, [serverTime, todaySched, shiftDefinitions, todayAttendance]);
 
   const fetchData = async () => {
     try {
@@ -186,7 +186,7 @@ export default function EmployeeDashboard() {
         supabase.from("announcement_acks").select("announcement_id").eq("user_id", user.id),
         getAttendanceHistory(user.id),
         supabase.from("employee_schedules").select("date, shift_code").eq("user_id", user.id).gte("date", monthStartStr).lte("date", monthEndStr),
-        supabase.from("shift_schedules").select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
+        supabase.from("shift_schedules").select("shift_code, day_of_week, start_time, end_time, crosses_midnight, is_working_day"),
         supabase.from("shifts").select("code, name"),
       ]), 20000, "fetchAll");
       const shiftNameMap = Object.fromEntries((shiftsMasterRes.data || []).map(s => [s.code, s.name]));
@@ -202,7 +202,7 @@ export default function EmployeeDashboard() {
       setShift(shiftRes.data?.shift_code ? formatShiftBadge(shiftNameMap[shiftRes.data.shift_code] || getShiftName(shiftRes.data.shift_code)) : null);
       setTodaySched(shiftRes.data || null);
 
-      scheduleShiftReminders(serverNow, shiftRes.data || null, shiftDefinitions);
+      scheduleShiftReminders(serverNow, shiftRes.data || null, shiftDefinitions, attRes.data || null);
 
       const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
       monthAttRes.data?.forEach(a => {
@@ -522,7 +522,7 @@ export default function EmployeeDashboard() {
 
         {/* Shift Reminder Banner — check-in */}
         {(() => {
-          const r = getShiftReminderInfo(serverTime, todaySched, shiftDefinitions);
+          const r = getShiftReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance);
           if (!r.show) return null;
           return (
             <div className="rounded-3xl p-4 relative overflow-hidden border"
@@ -545,7 +545,7 @@ export default function EmployeeDashboard() {
 
         {/* Shift Reminder Banner — check-out */}
         {(() => {
-          const rEnd = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions);
+          const rEnd = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance);
           if (!rEnd.show) return null;
           return (
             <div className="rounded-3xl p-4 relative overflow-hidden border"

@@ -28,6 +28,7 @@ export default function EmployeeNotificationsPage() {
   const [serverTime, setServerTime] = useState(new Date());
   const [todaySchedule, setTodaySchedule] = useState(null);
   const [shiftDefinitions, setShiftDefinitions] = useState([]);
+  const [todayAttendance, setTodayAttendance] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [ackedIds, setAckedIds] = useState(new Set());
   const [acking, setAcking] = useState(null);
@@ -50,7 +51,7 @@ export default function EmployeeNotificationsPage() {
 
   const fetchData = async () => {
     try {
-      const [timeRes, annRes, ackRes, schedRes, shiftRes] = await Promise.all([
+      const [timeRes, annRes, ackRes, schedRes, shiftRes, attRes] = await Promise.all([
         supabase.rpc("get_server_time"),
         supabase.from("announcements").select("*").eq("is_active", true)
           .or(`expires_at.is.null,expires_at.gte.${new Date().toISOString()}`)
@@ -60,6 +61,8 @@ export default function EmployeeNotificationsPage() {
           .eq("date", getWitaDateKey()).maybeSingle(),
         supabase.from("shift_schedules")
           .select("shift_code, day_of_week, start_time, end_time, is_working_day"),
+        supabase.from("attendance").select("clock_in_time, clock_out_time").eq("user_id", user.id)
+          .eq("date", getWitaDateKey()).maybeSingle(),
       ]);
 
       if (timeRes.data) setServerTime(new Date(timeRes.data));
@@ -67,10 +70,12 @@ export default function EmployeeNotificationsPage() {
       setAckedIds(new Set((ackRes.data || []).map((r) => r.announcement_id)));
       setTodaySchedule(schedRes.data || null);
       setShiftDefinitions(shiftRes.data || []);
+      setTodayAttendance(attRes.data || null);
       scheduleShiftReminders(
         timeRes.data ? new Date(timeRes.data) : new Date(),
         schedRes.data || null,
-        shiftRes.data || []
+        shiftRes.data || [],
+        attRes.data || null
       );
     } catch (err) {
       console.error("❌ Gagal memuat notifikasi:", err);
@@ -80,8 +85,8 @@ export default function EmployeeNotificationsPage() {
     }
   };
 
-  const reminder = getShiftReminderInfo(serverTime, todaySchedule, shiftDefinitions);
-  const endReminder = getShiftEndReminderInfo(serverTime, todaySchedule, shiftDefinitions);
+  const reminder = getShiftReminderInfo(serverTime, todaySchedule, shiftDefinitions, todayAttendance);
+  const endReminder = getShiftEndReminderInfo(serverTime, todaySchedule, shiftDefinitions, todayAttendance);
   const unreadCount = getUnreadCount(announcements, ackedIds);
   const today = getWitaDateKey(serverTime);
 
