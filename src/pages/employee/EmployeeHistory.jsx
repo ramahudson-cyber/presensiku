@@ -437,12 +437,13 @@ export default function EmployeeHistory() {
                       const dateObj = new Date(item.date + "T00:00:00");
                       const dateLabel = dateObj.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
                       const dayLabel = dateObj.toLocaleDateString("id-ID", { weekday: "short" });
-                      // Derivasi "Pulang Cepat": checkout ≥15 menit sebelum jam
-                      // selesai shift (definisi dari master shift instansi).
+                      // Derivasi "Pulang Cepat": checkout lebih awal dari jam
+                      // selesai shift — TANPA toleransi, konsisten dengan
+                      // aturan potongan pulang cepat (payroll).
                       const earlyInfo = (st === "hadir" || st === "terlambat") && !isSanggah ? (() => {
                         const sched = schedList.find((s) => s.date === item.date);
                         const def = getShiftDefinition(shiftDefs, { date: item.date, shift_code: item.shift_code || sched?.shift_code });
-                        return getEarlyLeaveInfo(item.clock_out_time, item.date, def);
+                        return getEarlyLeaveInfo(item.clock_out_time, item.date, def, 0);
                       })() : null;
                       return (
                         <div key={item.id || i}

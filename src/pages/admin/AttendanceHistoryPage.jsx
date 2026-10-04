@@ -211,7 +211,8 @@ export default function AttendanceHistoryPage() {
         if (r.attendance_status !== "hadir" && r.attendance_status !== "terlambat") return r;
         const rule = shiftRuleMap.get(`${r.shift_code}|${getMondayFirstDayOfWeek(r.date)}`);
         if (!rule) return r;
-        const early = getEarlyLeaveInfo(r.clock_out_time, r.date, rule);
+        // Tanpa toleransi — konsisten dengan aturan potongan pulang cepat
+        const early = getEarlyLeaveInfo(r.clock_out_time, r.date, rule, 0);
         return early ? { ...r, early_leave: early.earlyMinutes } : r;
       });
 
