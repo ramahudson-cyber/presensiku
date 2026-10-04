@@ -98,6 +98,9 @@ function EmployeeSalaryPage() {
       ...(line.no_checkout_days > 0
         ? [["Potongan Tidak Absen Pulang", `− ${rupiah(line.no_checkout_deduction)} (${line.no_checkout_days} hari)`]]
         : []),
+      ...(line.early_leave_days > 0
+        ? [["Potongan Pulang Cepat", `− ${rupiah(line.early_leave_deduction)} (${line.early_leave_days} hari)`]]
+        : []),
     ];
     win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Slip Gaji ${monthLabel(line.period_month)}</title>
       <style>
@@ -223,6 +226,13 @@ function EmployeeSalaryPage() {
                   <Row
                     label={`Tidak absen pulang ${line.no_checkout_days} hari`}
                     value={"− " + rupiah(line.no_checkout_deduction)}
+                    red
+                  />
+                )}
+                {line.early_leave_days > 0 && (
+                  <Row
+                    label={`Pulang cepat ${line.early_leave_days} hari`}
+                    value={"− " + rupiah(line.early_leave_deduction)}
                     red
                   />
                 )}
