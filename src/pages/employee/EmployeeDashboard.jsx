@@ -7,7 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { History, Sun, Sunset, ArrowRight, Bell, ChevronRight, LogOut, ClipboardList, User, Wallet, MessageSquareWarning } from "lucide-react";
 import { signOut } from "../../services/authService";
-import { getShiftDefinition, getWitaDateKey, isShiftEnded } from "../../lib/shiftTime";
+import { getShiftDefinition, getWitaDateKey, isShiftEnded, getEarlyLeaveInfo, formatDuration } from "../../lib/shiftTime";
 import { getShiftReminderInfo, getShiftEndReminderInfo, reminderToastKey, reminderToastEndKey } from "../../lib/notificationReminder";
 import { getSetting } from "../../lib/settings";
 import { registerPushNotifications, requestNotificationPermission, scheduleShiftReminders, subscribeAnnouncementRealtime, notifyNewAnnouncement } from "../../services/pushNotificationService";
@@ -473,10 +473,23 @@ export default function EmployeeDashboard() {
                 <div className="text-[28px] font-extrabold leading-none tracking-tight mb-2">
                   {formatTime(todayAttendance.clock_out_time)}
                 </div>
-                <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-black/10 px-2.5 py-1 rounded-full">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  Selesai
-                </div>
+                {(() => {
+                  // Pulang lebih awal dari jam selesai shift → tandai di card hitam
+                  // (tanpa toleransi, konsisten dengan aturan potongan pulang cepat)
+                  const todayKey = getWitaDateKey(serverTime);
+                  const earlyInfo = getEarlyLeaveInfo(
+                    todayAttendance.clock_out_time,
+                    todayKey,
+                    getShiftDefinition(shiftDefinitions, { date: todayKey, shift_code: todaySched?.shift_code }),
+                    0
+                  );
+                  return (
+                    <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-black/10 px-2.5 py-1 rounded-full">
+                      <span className={`w-1.5 h-1.5 rounded-full ${earlyInfo ? "bg-amber-400" : "bg-emerald-500"}`} />
+                      {earlyInfo ? `Pulang Cepat ${formatDuration(earlyInfo.earlyMinutes)}` : "Selesai"}
+                    </div>
+                  );
+                })()}
               </>
             ) : (
               <>
