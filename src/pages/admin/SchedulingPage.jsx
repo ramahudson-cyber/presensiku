@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
@@ -545,9 +546,12 @@ function BulkAssignDialog({ employees, year, month, lastDay, shifts = [], onClos
     setSaving(false);
   };
 
-  return (
+  return createPortal(
+    // Portal ke body: modal keluar dari konteks stacking AdminLayout agar
+    // selalu di atas BottomNav; data-no-ptr mematikan pull-to-refresh di
+    // dalam modal agar scroll native tetap bekerja di mobile.
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-      <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-lg shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+      <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-lg shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto" data-no-ptr onClick={e => e.stopPropagation()}>
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-2xl bg-[#BF00FF]/10 flex items-center justify-center shadow-sm">
@@ -643,6 +647,7 @@ function BulkAssignDialog({ employees, year, month, lastDay, shifts = [], onClos
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
