@@ -1,18 +1,31 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { getSetting } from "../lib/settings";
 import {
   LayoutDashboard, CalendarDays,
   Users, History, FileText, Megaphone, Settings, MoreHorizontal,
-  MessageSquareWarning,
+  MessageSquareWarning, Wallet,
   FingerprintPattern,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BottomSheet from "./BottomSheet";
 
 export default function BottomNav({ hidden = false }) {
   const { user } = useAuth();
   const [moreOpen, setMoreOpen] = useState(false);
+  const [payrollOn, setPayrollOn] = useState(false);
   const userRole = user?.role || "pegawai";
+
+  // Modul Gaji (opsional per instansi) — selaras dengan Sidebar desktop:
+  // menu hanya tampil bila payroll_enabled aktif untuk instansi ini.
+  useEffect(() => {
+    if (userRole === "pegawai") return;
+    let cancelled = false;
+    getSetting("payroll_enabled", "false").then((v) => {
+      if (!cancelled) setPayrollOn(v === "true");
+    });
+    return () => { cancelled = true; };
+  }, [userRole]);
 
   if (hidden) return null;
 
@@ -36,6 +49,7 @@ export default function BottomNav({ hidden = false }) {
     { path: "/admin/schedules", label: "Jadwal Kerja", icon: CalendarDays },
     { path: "/admin/leave", label: "Cuti & Izin", icon: FileText },
     { path: "/admin/sanggahan", label: "Sanggahan", icon: MessageSquareWarning },
+    ...(payrollOn ? [{ path: "/admin/payroll", label: "Gaji", icon: Wallet }] : []),
     { path: "/admin/announcements", label: "Pengumuman", icon: Megaphone },
     { path: "/admin/settings", label: "Pengaturan", icon: Settings },
   ];
