@@ -61,15 +61,24 @@
       // Auto-reload saat service worker baru mengambil alih halaman. Tanpa ini,
       // PWA standalone (iOS) terus menjalankan versi lama dari cache sampai user
       // force-close & buka ulang app. Guard: hanya bila sebelumnya SUDAH ada
-      // controller (bukan kunjungan pertama). Kunci "app-reloaded" dipakai bersama
-      // UpdateDialog (jalur webVersionCode) — maksimal SATU reload per cold-open.
+      // controller (bukan kunjungan pertama).
+      //
+      // PENTING: guard dibaca SAAT EVENT, bukan saat parse. Versi lama
+      // menangkap `app-reloaded` sisa sesi sebelumnya saat halaman dimuat —
+      // flag itu baru dibersihkan 15 detik kemudian (main.jsx), padahal
+      // controllerchange umumnya menyala 1-3 detik setelah boot. Akibatnya
+      // reload SW ter-suppress diam-diam dan HP terjebak bundle lama walau
+      // sudah cold-open berkali-kali. Dedupe kini berbasis waktu (10 dtk):
+      // anti-loop reload, tetap bereaksi ke setiap SW baru.
       (function () {
         if (!("serviceWorker" in navigator)) return;
         var hadController = !!navigator.serviceWorker.controller;
-        var appReloaded = sessionStorage.getItem("app-reloaded");
         navigator.serviceWorker.addEventListener("controllerchange", function () {
-          if (!hadController || appReloaded) return;
-          sessionStorage.setItem("app-reloaded", "1");
+          if (!hadController) return;
+          var last = Number(sessionStorage.getItem("sw-reloaded-at") || 0);
+          if (Date.now() - last < 10000) return; // anti-loop reload beruntun
+          sessionStorage.setItem("sw-reloaded-at", String(Date.now()));
+          sessionStorage.setItem("app-reloaded", "1"); // blokir jalur reload lain beruntun
           window.location.reload();
         });
       })();
