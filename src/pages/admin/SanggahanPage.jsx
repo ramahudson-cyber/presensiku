@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "react-toastify";
 import {
   MessageSquareWarning, Hourglass, CheckCircle2, XCircle, Search,
@@ -345,12 +346,14 @@ export default function SanggahanPage() {
         </div>
       )}
 
-      {/* Modal tolak + alasan — tema terang sesuai layout admin */}
-      {rejectModal && (
+      {/* Modal tolak + alasan — tema terang sesuai layout admin.
+          Portal ke body: z-index modal tidak lagi bisa dikalahkan BottomNav,
+          dan data-no-ptr mematikan pull-to-refresh di dalam modal. */}
+      {rejectModal && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center animate-fade-in" onClick={() => !processing && setRejectModal(null)}>
           <div className="absolute inset-0 bg-black/50" />
-          <div onClick={(e) => e.stopPropagation()}
-            className="relative z-10 w-full max-w-md bg-white border border-slate-200 shadow-2xl rounded-t-[28px] md:rounded-3xl p-6 animate-slide-up md:animate-fade-in mt-auto md:mt-0">
+          <div onClick={(e) => e.stopPropagation()} data-no-ptr
+            className="relative z-10 w-full max-w-md bg-white border border-slate-200 shadow-2xl rounded-t-[28px] md:rounded-3xl p-6 animate-slide-up md:animate-fade-in mt-auto md:mt-0 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
                 <MessageSquareWarning size={18} className="text-rose-500" />
@@ -381,15 +384,16 @@ export default function SanggahanPage() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Modal batalkan persetujuan — tema terang sesuai layout admin */}
-      {cancelModal && (
+      {cancelModal && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center animate-fade-in" onClick={() => !processing && setCancelModal(null)}>
           <div className="absolute inset-0 bg-black/50" />
-          <div onClick={(e) => e.stopPropagation()}
-            className="relative z-10 w-full max-w-md bg-white border border-slate-200 shadow-2xl rounded-t-[28px] md:rounded-3xl p-6 animate-slide-up md:animate-fade-in mt-auto md:mt-0">
+          <div onClick={(e) => e.stopPropagation()} data-no-ptr
+            className="relative z-10 w-full max-w-md bg-white border border-slate-200 shadow-2xl rounded-t-[28px] md:rounded-3xl p-6 animate-slide-up md:animate-fade-in mt-auto md:mt-0 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-slate-500/10 flex items-center justify-center">
                 <RotateCcw size={18} className="text-slate-600" />
@@ -430,10 +434,10 @@ export default function SanggahanPage() {
       )}
 
       {/* Modal: admin sanggahkan pegawai — tema terang sesuai layout admin */}
-      {createModal && (
+      {createModal && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center animate-fade-in" onClick={() => !creating && setCreateModal(false)}>
           <div className="absolute inset-0 bg-black/50" />
-          <div onClick={(e) => e.stopPropagation()}
+          <div onClick={(e) => e.stopPropagation()} data-no-ptr
             className="relative z-10 w-full max-w-md bg-white border border-slate-200 shadow-2xl rounded-t-[28px] md:rounded-3xl p-6 animate-slide-up md:animate-fade-in mt-auto md:mt-0 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-electric-violet/10 flex items-center justify-center">
@@ -501,7 +505,8 @@ export default function SanggahanPage() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
