@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { exportExcelWorkbook, DATE_FMT } from "../../services/excelExport";
-import { getMondayFirstDayOfWeek, getEarlyLeaveInfo, formatDuration } from "../../lib/shiftTime";
+import { getMondayFirstDayOfWeek, getEarlyLeaveInfo, formatDuration, isShiftEnded } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import {
@@ -176,13 +176,18 @@ export default function AttendanceHistoryPage() {
       // 4. Baris attendance yang ADA: key "user_id|date"
       const attended = new Set((attRows || []).map((r) => `${r.user_id}|${r.date}`));
 
-      // 5. Alpha turunan: jadwal kerja (tanggal ≤ hari ini) tanpa attendance
+      // 5. Alpha turunan: jadwal kerja (tanggal ≤ hari ini) tanpa attendance.
+      //    isShiftEnded: shift malam hari ini (belum lewat jam selesai,
+      //    termasuk lintas malam) belum alpha — konsisten dgn Dashboard/pegawai.
       const derived = (schedRows || [])
-        .filter((s) =>
-          s.date <= witaToday
-          && workingDaySet.has(`${s.shift_code}|${(new Date(s.date + "T00:00:00").getDay() + 6) % 7}`)
-          && !attended.has(`${s.user_id}|${s.date}`)
-        )
+        .filter((s) => {
+          if (s.date > witaToday) return false;
+          if (attended.has(`${s.user_id}|${s.date}`)) return false;
+          const dow = (new Date(s.date + "T00:00:00").getDay() + 6) % 7;
+          if (!workingDaySet.has(`${s.shift_code}|${dow}`)) return false;
+          const rule = shiftRuleMap.get(`${s.shift_code}|${dow}`);
+          return isShiftEnded(s.date, rule, new Date());
+        })
         .map((s) => ({
           id: `derived-${s.user_id}-${s.date}`,
           user_id: s.user_id,

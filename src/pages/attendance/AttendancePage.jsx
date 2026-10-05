@@ -150,7 +150,35 @@ export default function AttendancePage() {
         .eq("user_id", user.id)
         .eq("date", today)
         .maybeSingle();
-      setTodayAttendance(data);
+
+      // Shift malam lintas malam: setelah tengah malam baris absensi hari
+      // ini belum ada, tapi baris KEMARIN masih menunggu absen pulang
+      // (clock_in terisi, clock_out kosong) — pakai baris itu agar tombol
+      // "Absen Pulang" tetap tersedia sampai shift benar-benar selesai.
+      let row = data;
+      if (!row) {
+        const yesterday = new Date(new Date(witaMs).getTime() - 86400000).toISOString().split("T")[0];
+        const { data: openNight } = await supabase
+          .from("attendance")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("date", yesterday)
+          .not("clock_in_time", "is", null)
+          .is("clock_out_time", null)
+          .maybeSingle();
+        if (openNight) {
+          const dow = (new Date(yesterday + "T00:00:00").getDay() + 6) % 7;
+          const { data: def } = await supabase
+            .from("shift_schedules")
+            .select("crosses_midnight")
+            .eq("shift_code", openNight.shift_code)
+            .eq("day_of_week", dow)
+            .maybeSingle();
+          if (def?.crosses_midnight) row = openNight;
+        }
+      }
+
+      setTodayAttendance(row);
     } catch (e) { console.error(e); }
   };
 
