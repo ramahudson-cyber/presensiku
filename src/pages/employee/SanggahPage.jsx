@@ -133,7 +133,7 @@ export default function SanggahPage() {
           <p className="text-[11px] leading-relaxed" style={{ color: T.textSec }}>
             Ada catatan absen yang salah (Alpha/Terlambat) atau lupa absen pulang? Ajukan sanggah
             beserta alasan dan foto bukti. Admin akan meninjau — bila disetujui, status absen
-            otomatis dikoreksi menjadi Hadir.
+            dikoreksi menjadi Sanggah (tidak alpha/terlambat, tanpa potongan gaji).
           </p>
         </div>
 

@@ -230,11 +230,13 @@ export default function SanggahanPage() {
   const { pullDistance, isRefreshing } = usePullToRefresh(() => load());
 
   const handleApprove = async (item) => {
-    if (!window.confirm(`Setujui sanggahan ${item.profiles?.full_name || ""} tanggal ${fmtDate(item.tanggal)}?\nAbsensi akan dikoreksi menjadi Hadir.`)) return;
+    // old_status = kondisi yang disanggahkan (Terlambat/Alpha/Belum)
+    const oldLabel = OLD_STATUS_LABEL[item.old_status] || item.old_status || "-";
+    if (!window.confirm(`Setujui sanggahan ${item.profiles?.full_name || ""} tanggal ${fmtDate(item.tanggal)}?\nStatus ${oldLabel} akan dikoreksi menjadi Sanggah — tanpa potongan gaji.`)) return;
     setProcessing(true);
     try {
-      const res = await approveSanggahan(item.id);
-      toast.success(res.message || "Sanggahan disetujui");
+      await approveSanggahan(item.id);
+      toast.success("Sanggahan disetujui — status dikoreksi menjadi Sanggah");
       await load();
     } catch (err) {
       toast.error(err.message || "Gagal menyetujui sanggahan");
