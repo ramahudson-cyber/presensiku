@@ -6,6 +6,7 @@ import BottomSheet from "../../components/BottomSheet";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import { getShiftDefinition } from "../../lib/shiftTime";
 import {
   ChevronLeft, ChevronRight, ChevronDown, Calendar, Sun, Moon, Sunset, CloudSun,
   Loader2, Info, Clock
@@ -67,6 +68,9 @@ export default function EmployeeSchedule() {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, PG: 0, SR: 0, SI: 0, ML: 0 });
   const [shiftsMaster, setShiftsMaster] = useState(null);
+  // Definisi shift instansi (jam mulai/selesai per hari Senin-0) — untuk
+  // menampilkan jam kerja pada teks "Jadwal hari ini"
+  const [shiftDefs, setShiftDefs] = useState([]);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [pickerYear, setPickerYear] = useState(new Date().getFullYear());
 
@@ -76,8 +80,14 @@ export default function EmployeeSchedule() {
     let cancelled = false;
     (async () => {
       try {
-        const { data } = await supabase.from("shifts").select("code, name").order("code");
-        if (!cancelled && data && data.length) setShiftsMaster(data);
+        const [{ data }, { data: defs }] = await Promise.all([
+          supabase.from("shifts").select("code, name").order("code"),
+          supabase.from("shift_schedules")
+            .select("shift_code, day_of_week, start_time, end_time, crosses_midnight, is_working_day"),
+        ]);
+        if (cancelled) return;
+        if (data && data.length) setShiftsMaster(data);
+        if (defs) setShiftDefs(defs);
       } catch { /* fallback statis */ }
     })();
     return () => { cancelled = true; };
@@ -308,6 +318,12 @@ export default function EmployeeSchedule() {
           const todaySched = schedules[todayStr];
           const shiftInfo = todaySched ? shiftMap[todaySched.shift_code] : null;
           if (!todaySched || !shiftInfo) return null;
+          // Jam kerja shift hari ini dari definisi instansi (Senin-0),
+          // format "08.00 - 13.00" konsisten dengan jam di seluruh aplikasi.
+          const def = getShiftDefinition(shiftDefs, { date: todayStr, shift_code: todaySched.shift_code });
+          const jamText = def?.start_time && def?.end_time
+            ? ` ${def.start_time.slice(0, 5).replace(":", ".")} - ${def.end_time.slice(0, 5).replace(":", ".")}`
+            : "";
           return (
             <div className="rounded-xl p-3 text-center"
               style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.2)' }}>
@@ -316,6 +332,7 @@ export default function EmployeeSchedule() {
                 <span style={{ color: T.text }}>
                   {nowD.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                   {' '}<span style={{ color: '#BF00FF' }}>({shiftInfo.name})</span>
+                  {jamText && <span style={{ color: '#BF00FF' }}>{jamText}</span>}
                 </span>
               </span>
             </div>

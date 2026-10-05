@@ -219,7 +219,7 @@ export default function TabShift() {
                   const sched = shiftScheds.find(s => s.day_of_week === i);
                   const working = sched?.is_working_day;
                   return (
-                    <div key={i} className={`flex items-center gap-2 p-2 rounded-3xl transition-all ${working ? "bg-onyx hover:bg-white/[0.06]" : "opacity-50"}`}>
+                    <div key={i} className={`flex flex-wrap items-center gap-2 p-2 rounded-3xl transition-all ${working ? "bg-onyx hover:bg-white/[0.06]" : "opacity-50"}`}>
                       <span className="w-14 text-[10px] font-semibold text-slate-mist shrink-0">{name}</span>
                       {working ? (
                         <>

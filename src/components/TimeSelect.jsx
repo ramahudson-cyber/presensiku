@@ -14,13 +14,14 @@ export default function TimeSelect({ value, onChange, disabled }) {
   const base =
     "relative flex-1 min-w-0 flex items-center bg-onyx border border-white/[0.06] rounded-2xl focus-within:ring-2 focus-within:ring-electric-violet/50";
 
+  // text-xs + padding ramping: di mobile nilai "08"/"30" harus tetap terbaca
   const selectCls =
-    "w-full appearance-none bg-transparent text-[11px] text-pure-white focus:outline-none cursor-pointer py-1.5 pl-2 pr-1";
+    "w-full appearance-none bg-transparent text-xs text-pure-white focus:outline-none cursor-pointer py-1.5 pl-1.5 pr-0.5";
 
   const optionCls = "bg-onyx text-pure-white";
 
   return (
-    <div className="flex items-stretch gap-1 flex-1 min-w-0">
+    <div className="flex items-stretch gap-1 flex-1 min-w-[100px]">
       <div className={base}>
         <select
           value={hh}
@@ -33,7 +34,7 @@ export default function TimeSelect({ value, onChange, disabled }) {
             <option key={h} value={h} className={optionCls}>{h}</option>
           ))}
         </select>
-        <ChevronDown size={11} className="text-slate-mist mr-1 shrink-0 pointer-events-none" />
+        <ChevronDown size={11} className="text-slate-mist mr-0.5 shrink-0 pointer-events-none" />
       </div>
       <span className="text-[10px] text-slate-mist self-center shrink-0">:</span>
       <div className={base}>
@@ -48,7 +49,7 @@ export default function TimeSelect({ value, onChange, disabled }) {
             <option key={m} value={m} className={optionCls}>{m}</option>
           ))}
         </select>
-        <ChevronDown size={11} className="text-slate-mist mr-1 shrink-0 pointer-events-none" />
+        <ChevronDown size={11} className="text-slate-mist mr-0.5 shrink-0 pointer-events-none" />
       </div>
     </div>
   );
