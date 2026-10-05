@@ -149,6 +149,7 @@ export default function SanggahanPage() {
   const [cancelModal, setCancelModal] = useState(null);
   const [cancelReason, setCancelReason] = useState("");
   const [search, setSearch] = useState("");
+  const [approveModal, setApproveModal] = useState(null);
 
   // ── Admin sanggahkan pegawai (multi-hari, langsung disetujui) ──
   const [createModal, setCreateModal] = useState(false);
@@ -229,14 +230,13 @@ export default function SanggahanPage() {
   useEffect(() => { load(); }, [activeTab]);
   const { pullDistance, isRefreshing } = usePullToRefresh(() => load());
 
-  const handleApprove = async (item) => {
-    // old_status = kondisi yang disanggahkan (Terlambat/Alpha/Belum)
-    const oldLabel = OLD_STATUS_LABEL[item.old_status] || item.old_status || "-";
-    if (!window.confirm(`Setujui sanggahan ${item.profiles?.full_name || ""} tanggal ${fmtDate(item.tanggal)}?\nStatus ${oldLabel} akan dikoreksi menjadi Sanggah — tanpa potongan gaji.`)) return;
+  const handleApprove = async () => {
+    if (!approveModal?.id) return;
     setProcessing(true);
     try {
-      await approveSanggahan(item.id);
+      await approveSanggahan(approveModal.id);
       toast.success("Sanggahan disetujui — status dikoreksi menjadi Sanggah");
+      setApproveModal(null);
       await load();
     } catch (err) {
       toast.error(err.message || "Gagal menyetujui sanggahan");
@@ -341,7 +341,7 @@ export default function SanggahanPage() {
           {filtered.map((item) => (
             <SanggahanCard
               key={item.id} item={item} processing={processing}
-              onApprove={handleApprove} onRejectClick={(it) => { setRejectModal(it); setRejectionReason(""); }}
+              onApprove={setApproveModal} onRejectClick={(it) => { setRejectModal(it); setRejectionReason(""); }}
               onCancelClick={(it) => { setCancelModal(it); setCancelReason(""); }}
             />
           ))}
@@ -383,6 +383,51 @@ export default function SanggahanPage() {
                 className="flex-1 py-2.5 rounded-full bg-rose-500 text-white text-sm font-bold hover:bg-rose-600 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2">
                 {processing ? <Loader2 size={14} className="animate-spin" /> : null}
                 Tolak
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Modal setujui sanggahan — tema terang sesuai layout admin */}
+      {approveModal && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center animate-fade-in" onClick={() => !processing && setApproveModal(null)}>
+          <div className="absolute inset-0 bg-black/50" />
+          <div onClick={(e) => e.stopPropagation()} data-no-ptr
+            className="relative z-10 w-full max-w-md bg-white border border-slate-200 shadow-2xl rounded-t-[28px] md:rounded-3xl p-6 animate-slide-up md:animate-fade-in mt-auto md:mt-0 max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                <CheckCircle2 size={18} className="text-emerald-500" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Setujui Sanggahan?</h3>
+                <p className="text-[10px] text-slate-500">Status akan dikoreksi menjadi Sanggah</p>
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-500 mb-2">
+              Pegawai: <b className="text-slate-900">{approveModal.profiles?.full_name || "–"}</b> · {fmtDate(approveModal.tanggal)}
+            </p>
+            <div className="flex items-center gap-2 mb-3 flex-wrap">
+              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600">
+                {OLD_STATUS_LABEL[approveModal.old_status] || approveModal.old_status || "-"}
+              </span>
+              <ChevronRight size={12} className="text-slate-400" />
+              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-600">
+                Sanggah
+              </span>
+              <span className="text-[10px] text-slate-500 ml-auto">tanpa potongan gaji</span>
+            </div>
+            <div className="flex gap-3 mt-4">
+              <button onClick={() => setApproveModal(null)} disabled={processing}
+                className="flex-1 py-2.5 rounded-full border border-slate-200 text-slate-600 text-sm hover:bg-slate-50 transition-all disabled:opacity-50">
+                Batal
+              </button>
+              <button onClick={handleApprove} disabled={processing}
+                className="flex-1 py-2.5 rounded-full text-white text-sm font-bold transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                style={{ background: 'linear-gradient(135deg, #10B981, #059669)' }}>
+                {processing ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
+                Setujui & Koreksi
               </button>
             </div>
           </div>
