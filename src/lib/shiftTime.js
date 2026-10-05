@@ -168,3 +168,18 @@ export function isCheckInWindowOpen(shiftDefinition, now = new Date(), leadMinut
   if (minutesUntil <= 0) return { open: true, minutesUntil: 0 };
   return { open: false, minutesUntil };
 }
+
+/**
+ * Label zona waktu Indonesia sesuai timezone perangkat:
+ * Asia/Jakarta → WIB (UTC+7), Asia/Makassar → WITA (UTC+8),
+ * Asia/Jayapura → WIT (UTC+9). Selain itu default aplikasi: WITA.
+ */
+export function getZonaWaktuLabel() {
+  let tz = "";
+  try {
+    tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+  } catch { /* Intl tidak tersedia */ }
+  if (tz === "Asia/Jakarta") return "WIB";
+  if (tz === "Asia/Jayapura") return "WIT";
+  return "WITA";
+}

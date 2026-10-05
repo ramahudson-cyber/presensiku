@@ -6,7 +6,7 @@ import BottomSheet from "../../components/BottomSheet";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
-import { getShiftDefinition } from "../../lib/shiftTime";
+import { getShiftDefinition, getZonaWaktuLabel } from "../../lib/shiftTime";
 import {
   ChevronLeft, ChevronRight, ChevronDown, Calendar, Sun, Moon, Sunset, CloudSun,
   Loader2, Info, Clock
@@ -332,7 +332,7 @@ export default function EmployeeSchedule() {
                 <span style={{ color: T.text }}>
                   {nowD.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                   {' '}<span style={{ color: '#BF00FF' }}>({shiftInfo.name})</span>
-                  {jamText && <span style={{ color: '#BF00FF' }}>{jamText}</span>}
+                  {jamText && <span style={{ color: '#BF00FF' }}>{jamText} {getZonaWaktuLabel()}</span>}
                 </span>
               </span>
             </div>
