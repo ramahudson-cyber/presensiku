@@ -87,13 +87,18 @@ export function reminderToastEndKey(today, shiftCode) {
  * Hanya relevan bila pegawai SUDAH absen masuk dan BELUM absen pulang —
  * tanpa guard ini banner "absen pulang" muncul padahal pegawai belum
  * melakukan absen masuk.
+ * Shift lintas malam hari ini (berakhir besok pagi): banner in-app tidak
+ * dapat ditentukan dari jadwal hari ini — didorong notifikasi native
+ * terjadwal. Kontinuasi dini hari (shift malam KEMARIN berakhir pagi ini)
+ * ditangani bila `yesterdaySchedule` diberikan pemanggil.
  * @param {Date} serverNow
  * @param {object|null} employeeSchedule
  * @param {object[]} shiftDefinitions
  * @param {object|null} [attendance] - attendance hari ini { clock_in_time, clock_out_time }
+ * @param {object|null} [yesterdaySchedule] - jadwal kemarin { shift_code, date }
  * @returns {{ show: boolean, message?: string, minutesUntil?: number, shiftEndFormatted?: string, shiftLabel?: string }}
  */
-export function getShiftEndReminderInfo(serverNow, employeeSchedule, shiftDefinitions, attendance = null) {
+export function getShiftEndReminderInfo(serverNow, employeeSchedule, shiftDefinitions, attendance = null, yesterdaySchedule = null) {
   if (!employeeSchedule?.shift_code) return { show: false };
   // Belum absen masuk → pengingat pulang tidak relevan. Sudah absen pulang → tidak perlu diingatkan lagi.
   if (!attendance?.clock_in_time || attendance?.clock_out_time) return { show: false };
@@ -101,38 +106,50 @@ export function getShiftEndReminderInfo(serverNow, employeeSchedule, shiftDefini
   const nowParts = getWitaParts(serverNow);
   if (!nowParts) return { show: false };
 
-  const dayOfWeek = getMondayFirstDayOfWeek(nowParts.dateKey);
-  const def = shiftDefinitions?.find(
-    (d) => d.shift_code === employeeSchedule.shift_code
-      && Number(d.day_of_week) === dayOfWeek
-  );
-
-  if (!def?.end_time || !def?.is_working_day) return { show: false };
-
-  const match = String(def.end_time).match(/^(\d{1,2}):(\d{2})/);
-  if (!match) return { show: false };
-
-  const endHour = Number(match[1]);
-  const endMinute = Number(match[2]);
-  const endTotal = endHour * 60 + endMinute;
-
-  // Untuk shift lintas tengah malam, end time ada di +1 hari.
-  const targetDateKey = def.crosses_midnight
-    ? addCalendarDays(nowParts.dateKey, 1)
-    : nowParts.dateKey;
-
-  // Hanya tampilkan jika tanggal target end = tanggal hari ini (atau +1 untuk overnight).
-  if (targetDateKey !== nowParts.dateKey) return { show: false };
-
   const nowTotal = nowParts.hour * 60 + nowParts.minute;
-  const diff = endTotal - nowTotal;
+  const parseEnd = (end) => {
+    const match = String(end).match(/^(\d{1,2}):(\d{2})/);
+    return match ? { h: Number(match[1]), m: Number(match[2]) } : null;
+  };
+  const findDef = (sched, dateKey) => {
+    const dow = getMondayFirstDayOfWeek(dateKey);
+    return shiftDefinitions?.find(
+      (d) => d.shift_code === sched?.shift_code && Number(d.day_of_week) === dow
+    ) || null;
+  };
+  const build = (def, diff, endH, endM) => {
+    const shiftLabel = SHIFT_NAMES[employeeSchedule.shift_code] || employeeSchedule.shift_code;
+    const shiftEndFormatted = `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
+    return {
+      show: true,
+      message: `Shift ${shiftLabel} Anda berakhir pukul ${shiftEndFormatted} WITA (${diff} menit lagi). Jangan lupa absen pulang!`,
+      minutesUntil: diff,
+      shiftEndFormatted,
+      shiftLabel,
+    };
+  };
 
-  // Within 15 minutes before shift end (up to exactly end time, no after)
-  if (diff <= 0 || diff > 15) return { show: false };
+  // 1) Shift hari ini berakhir HARI INI (bukan lintas malam)
+  const def = findDef(employeeSchedule, nowParts.dateKey);
+  if (def?.end_time && def?.is_working_day && !def.crosses_midnight) {
+    const end = parseEnd(def.end_time);
+    if (!end) return { show: false };
+    const diff = end.h * 60 + end.m - nowTotal;
+    if (diff <= 0 || diff > 15) return { show: false };
+    return build(def, diff, end.h, end.m);
+  }
 
-  const shiftLabel = SHIFT_NAMES[employeeSchedule.shift_code] || employeeSchedule.shift_code;
-  const shiftEndFormatted = `${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}`;
-  const message = `Shift ${shiftLabel} Anda berakhir pukul ${shiftEndFormatted} WITA (${diff} menit lagi). Jangan lupa absen pulang!`;
+  // 2) Kontinuasi dini hari: shift malam KEMARIN berakhir pagi ini
+  if (yesterdaySchedule?.shift_code) {
+    const yDef = findDef(yesterdaySchedule, addCalendarDays(nowParts.dateKey, -1));
+    if (yDef?.end_time && yDef?.is_working_day && yDef?.crosses_midnight) {
+      const end = parseEnd(yDef.end_time);
+      if (!end) return { show: false };
+      const diff = end.h * 60 + end.m - nowTotal;
+      if (diff <= 0 || diff > 15) return { show: false };
+      return build(yDef, diff, end.h, end.m);
+    }
+  }
 
-  return { show: true, message, minutesUntil: diff, shiftEndFormatted, shiftLabel };
+  return { show: false };
 }

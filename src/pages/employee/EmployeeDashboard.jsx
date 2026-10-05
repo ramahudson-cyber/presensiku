@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
@@ -54,6 +54,7 @@ export default function EmployeeDashboard() {
     }
   };
   const [todayAttendance, setTodayAttendance] = useState(null);
+  const yesterdaySchedRef = useRef(null);
   const [announcements, setAnnouncements] = useState([]);
   const [ackedIds, setAckedIds] = useState(new Set());
   const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0, jadwalCount: 0 });
@@ -146,7 +147,7 @@ export default function EmployeeDashboard() {
           localStorage.setItem(key, "1");
         }
       }
-      const endR = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance);
+      const endR = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance, yesterdaySchedRef.current);
       if (endR.show) {
         const key = reminderToastEndKey(today, todaySched.shift_code);
         if (!localStorage.getItem(key)) {
@@ -195,7 +196,34 @@ export default function EmployeeDashboard() {
 
       if (serverTimeData) setServerTime(serverNow);
 
-      setTodayAttendance(attRes.data);
+      // Shift malam lintas malam: setelah tengah malam, baris absensi KEMARIN
+      // masih menunggu absen pulang (clock_in terisi, clock_out kosong) —
+      // pakai baris itu untuk kartu status & pengingat, plus jadwal kemarin
+      // untuk konteks pengingat.
+      let att = attRes.data;
+      const yesterdayKey = getWitaDateKey(new Date(serverNow.getTime() - 86400000));
+      if (!att) {
+        try {
+          const { data: openNight } = await supabase.from("attendance").select("*")
+            .eq("user_id", user.id).eq("date", yesterdayKey)
+            .not("clock_in_time", "is", null).is("clock_out_time", null).maybeSingle();
+          if (openNight) {
+            const dow = (new Date(yesterdayKey + "T00:00:00").getDay() + 6) % 7;
+            const { data: nightDef } = await supabase.from("shift_schedules").select("crosses_midnight")
+              .eq("shift_code", openNight.shift_code).eq("day_of_week", dow).maybeSingle();
+            if (nightDef?.crosses_midnight) att = openNight;
+          }
+        } catch { /* fallback: tanpa baris kemarin */ }
+      }
+      {
+        const { data: ySched } = await supabase.from("employee_schedules")
+          .select("shift_code").eq("user_id", user.id).eq("date", yesterdayKey).maybeSingle();
+        yesterdaySchedRef.current = ySched?.shift_code ? { shift_code: ySched.shift_code, date: yesterdayKey } : null;
+      }
+
+      setTodayAttendance(att);
+      setShift(shiftRes.data?.shift_code ? formatShiftBadge(shiftNameMap[shiftRes.data.shift_code] || getShiftName(shiftRes.data.shift_code)) : null);
+      setTodaySched(shiftRes.data || null);
 
       // null (BUKAN string "N/A") agar badge merender "Tidak ada jadwal hari ini".
       // Nama shift diutamakan dari master DB (mis. "malam" → "Shift : Malam"), bukan kode.
@@ -558,7 +586,7 @@ export default function EmployeeDashboard() {
 
         {/* Shift Reminder Banner — check-out */}
         {(() => {
-          const rEnd = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance);
+          const rEnd = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance, yesterdaySchedRef.current);
           if (!rEnd.show) return null;
           return (
             <div className="rounded-3xl p-4 relative overflow-hidden border"
