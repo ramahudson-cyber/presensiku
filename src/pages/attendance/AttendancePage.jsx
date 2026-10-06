@@ -858,7 +858,7 @@ export default function AttendancePage() {
       >
         <div className="pb-2">
           <div className="flex flex-col items-center text-center gap-3 mb-4">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-white"
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-white hero-card-bg"
               style={{ background: 'linear-gradient(145deg, #FF0099 0%, #BF00FF 50%, #7B00E0 100%)', boxShadow: '0 10px 30px rgba(191,0,255,0.35)' }}>
               <Sunset size={28} />
             </div>
