@@ -16,13 +16,30 @@ export async function getMySanggahan() {
   return data || [];
 }
 
+// Batas absen pulang (jam selesai shift + 1 jam) sudah terlewati?
+function isCheckoutDeadlinePassed(dateKey, shiftCode, defs) {
+  const def = getShiftDefinition(defs || [], { date: dateKey, shift_code: shiftCode });
+  if (!def?.end_time) return false;
+  const dParts = String(dateKey).split("-").map(Number);
+  const m = String(def.end_time).match(/^(\d{1,2}):(\d{2})/);
+  if (!m || dParts.length !== 3) return false;
+  let endAt = Date.UTC(dParts[0], dParts[1] - 1, dParts[2], Number(m[1]), Number(m[2])) - 8 * 3600 * 1000;
+  const st = String(def.start_time || "").match(/^(\d{1,2}):(\d{2})/);
+  if (def.crosses_midnight && st) {
+    const startMin = Number(st[1]) * 60 + Number(st[2]);
+    if ((Number(m[1]) * 60 + Number(m[2])) <= startMin) endAt += 86400000;
+  }
+  return Date.now() > endAt + 3600000;
+}
+
 // Absensi milik user yang layak disanggah (Alpha/Terlambat/Tanpa Pulang,
 // 60 hari terakhir)
 export async function getMyDisputableAttendance(userId) {
   const from = new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10);
-  // Hari ini (WITA) masih bisa absen pulang → bukan kandidat "tanpa pulang"
+  // Hari ini (WITA) bisa jadi kandidat "tanpa pulang" bila batas absen
+  // pulang (jam selesai shift + 1 jam) sudah terlewati — disaring di bawah.
   const todayWita = getWitaDateKey();
-  const [{ data, error }, { data: allDateRows }, { data: noCheckoutRows, error: ncError }] = await Promise.all([
+  const [{ data, error }, { data: allDateRows }, { data: noCheckoutRows, error: ncError }, { data: defs }] = await Promise.all([
     supabase
       .from("attendance")
       .select("id, date, attendance_status, is_late, late_minutes, shift_code, clock_out_time")
@@ -33,7 +50,9 @@ export async function getMyDisputableAttendance(userId) {
     // Semua tanggal yang sudah punya baris attendance (status apa pun) —
     // hari hadir/izin/sakit TIDAK boleh ter-derive sebagai alpha.
     supabase.from("attendance").select("date").eq("user_id", userId).gte("date", from),
-    // Hadir tapi tidak pernah absen pulang, hari sudah lewat
+    // Hadir tapi tidak pernah absen pulang — hari lampau selalu lolos;
+    // HARI INI lolos hanya bila batas absen pulang sudah terlewati
+    // (disaring di bawah memakai definisi shift)
     supabase
       .from("attendance")
       .select("id, date, attendance_status, shift_code")
@@ -41,30 +60,36 @@ export async function getMyDisputableAttendance(userId) {
       .eq("attendance_status", "hadir")
       .not("clock_in_time", "is", null)
       .filter("clock_out_time", "is", null)
-      .lt("date", todayWita)
+      .lte("date", todayWita)
       .gte("date", from)
       .order("date", { ascending: false }),
+    supabase
+      .from("shift_schedules")
+      .select("shift_code, day_of_week, start_time, end_time, crosses_midnight, is_working_day"),
   ]);
   if (error) throw error;
   if (ncError) throw ncError;
+
+  // Saring hari sama: hanya lolos bila batas absen pulang sudah terlewati
+  const ncFiltered = (noCheckoutRows || []).filter((r) => {
+    if (r.date < todayWita) return true;
+    if (r.date > todayWita) return false;
+    return isCheckoutDeadlinePassed(r.date, r.shift_code, defs);
+  });
+
   const rows = (data || []).concat(
-    (noCheckoutRows || []).map((r) => ({ ...r, attendance_status: "tanpa_pulang" }))
+    ncFiltered.map((r) => ({ ...r, attendance_status: "tanpa_pulang" }))
   );
 
   // Hari alpha turunan: jadwal yang shift-nya sudah berakhir tanpa baris
   // attendance — konsisten dengan statistik dashboard. RPC create_sanggahan
   // menerima jalur jadwal ini (tanpa attendance_id).
   try {
-    const [{ data: scheds }, { data: defs }] = await Promise.all([
-      supabase
-        .from("employee_schedules")
-        .select("date, shift_code")
-        .eq("user_id", userId)
-        .gte("date", from),
-      supabase
-        .from("shift_schedules")
-        .select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
-    ]);
+    const { data: scheds } = await supabase
+      .from("employee_schedules")
+      .select("date, shift_code")
+      .eq("user_id", userId)
+      .gte("date", from);
     const now = new Date();
     const attended = new Set((allDateRows || []).map((r) => r.date));
     const derived = (scheds || [])

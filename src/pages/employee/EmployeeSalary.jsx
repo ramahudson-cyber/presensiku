@@ -46,8 +46,13 @@ function EmployeeSalaryPage() {
         const on = await isPayrollEnabled();
         if (cancelled) return;
         setEnabledState(on);
-        if (on) await load();
-        else setLoading(false);
+        if (on) {
+          // Segarkan slip bulan berjalan dari attendance terbaru — potongan
+          // no_checkout tampil begitu batas 1 jam setelah jam selesai lewat.
+          try { await ensureMyPayrollLine(currentPeriod()); } catch { /* diam */ }
+          if (cancelled) return;
+          await load();
+        } else setLoading(false);
       } catch {
         if (!cancelled) {
           setEnabledState(false);
@@ -60,18 +65,15 @@ function EmployeeSalaryPage() {
 
   const { pullDistance, isRefreshing } = usePullToRefresh(load);
 
-  // Slip bulan pilihan: pakai yang sudah ada, atau buat via RPC self-service
+  // Slip bulan pilihan: buat (bila belum ada) atau hitung ulang dari
+  // attendance terbaru — potongan no_checkout/pulang cepat selalu segar
   const openPickedSlip = async () => {
     setEnsuring(true);
     try {
       const res = await ensureMyPayrollLine(pickPeriod);
       if (res?.success) {
-        if (res.existed) {
-          toast.info(`Slip ${monthLabel(pickPeriod)} sudah ada di daftar`);
-        } else {
-          toast.success(`Slip ${monthLabel(pickPeriod)} berhasil dibuat`);
-          await load();
-        }
+        await load();
+        toast.success(res.message || `Slip ${monthLabel(pickPeriod)} diperbarui`);
       } else {
         toast.error(res?.error || "Gagal membuat slip");
       }
