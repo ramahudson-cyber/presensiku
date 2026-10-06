@@ -193,11 +193,11 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
               </h2>
               <p style={{ fontSize: 11, color: "white", textAlign: "center", marginBottom: 4 }}>{dateStr}</p>
               <p style={{ fontSize: 13, fontWeight: 700, color: "#ADFF2F", textAlign: "center", marginBottom: isLate ? 10 : 14 }}>
-                {isCheckIn ? "Selamat bekerja, semangat ya !" : "Selamat beristirahat !"}
+                {isCheckIn ? "Selamat bekerja, semangat ya !" : "Selamat beristirahat, sampai jumpa lagi !"}
               </p>
 
               {/* Late badge */}
-              {isLate && (
+              {isLate && isCheckIn && (
                 <span style={{
                   fontSize: 9, fontWeight: 600, color: "#FBBF24",
                   background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.2)",

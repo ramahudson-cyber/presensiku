@@ -87,9 +87,6 @@ export default async function handler(req, res) {
           Setelah login, Anda akan diminta mengganti password untuk keamanan akun Anda.
         </p>
       </div>
-      <div bgcolor="#0f0214" style="padding: 16px 24px; text-align: center; background-color: #0f0214;">
-        <p style="color: #6b6480; font-size: 10px; margin: 0;">${ORG_LABEL} &copy; ${new Date().getFullYear()}</p>
-      </div>
     </div>
 </body>
 </html>`;
