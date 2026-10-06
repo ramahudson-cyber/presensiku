@@ -801,10 +801,9 @@ export default function AttendancePage() {
                 )}
               </button>
             </div>
-            <span className="text-[13px] font-bold text-black tracking-[3px] uppercase" style={{
-              textShadow: '0 0 15px rgba(191,0,255,0.3)'
-            }}>
-              {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : isAlphaLocked ? "Absen Ditutup" : checkoutLateBlocked ? "Batas Pulang Lewat" : !checkInGate.open ? "Belum Dibuka" : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
+            <span className="text-[13px] font-bold tracking-[3px] uppercase rounded-full px-4 py-1.5 bg-black/45 backdrop-blur-sm text-white shadow-sm"
+              style={{ textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
+              {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : isAlphaLocked ? "Absen Ditutup" : checkoutLateBlocked ? "Batas Pulang Lewat" : !checkInGate.open ? "Belum Dibuka" : todayAttendance ? "Absen Pulang" : "Absen Masuk"}
             </span>
             {/* Batas pulang & target kompensasi telat */}
             {todayAttendance && !todayAttendance.clock_out_time && checkoutDeadlineMs !== null && !checkoutLateBlocked && (
