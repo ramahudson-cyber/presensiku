@@ -71,6 +71,9 @@ export default function AttendancePage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [isFakeGPS, setIsFakeGPS] = useState(false);
   const [saving, setSaving] = useState(false);
+  // Definisi shift untuk baris absensi malam kemarin (lintas malam) —
+  // dipakai menghitung batas absen pulang baris tersebut
+  const [nightShiftDef, setNightShiftDef] = useState(null);
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
   const [puskesmasLocation, setPuskesmasLocation] = useState({ latitude: -8.5697, longitude: 116.0821, radius_meter: 200, name: "Lokasi Absensi" });
   // Lokasi hasil pencocokan server (lokasi aktif terdekat dari posisi user)
@@ -170,14 +173,18 @@ export default function AttendancePage() {
           const dow = (new Date(yesterday + "T00:00:00").getDay() + 6) % 7;
           const { data: def } = await supabase
             .from("shift_schedules")
-            .select("crosses_midnight")
+            .select("start_time, end_time, crosses_midnight")
             .eq("shift_code", openNight.shift_code)
             .eq("day_of_week", dow)
             .maybeSingle();
-          if (def?.crosses_midnight) row = openNight;
+          if (def?.crosses_midnight) {
+            row = openNight;
+            setNightShiftDef({ start_time: def.start_time, end_time: def.end_time, crosses_midnight: true });
+          }
         }
       }
 
+      if (!row) setNightShiftDef(null);
       setTodayAttendance(row);
     } catch (e) { console.error(e); }
   };
@@ -335,6 +342,32 @@ export default function AttendancePage() {
   const isSanggahCorrected = !!todayAttendance
     && !todayAttendance?.clock_in_time
     && (todayAttendance?.notes || "").toLowerCase().includes("dikoreksi via sanggahan");
+
+  // ── Batas absen pulang 1 jam + kompensasi telat ──
+  // endAt = jam selesai shift (baris malam kemarin: besok pagi);
+  // deadline = endAt + 1 jam; target kompensasi = endAt + menit telat.
+  const activeCheckoutDef = todayAttendance?.date === (serverTime ? getWitaDateKey(serverTime) : "")
+    ? shiftDefinition
+    : nightShiftDef;
+  const endAtMs = (() => {
+    if (!todayAttendance || todayAttendance.clock_out_time || !activeCheckoutDef?.end_time || !todayAttendance.date) return null;
+    const dParts = String(todayAttendance.date).split("-").map(Number);
+    const m = String(activeCheckoutDef.end_time).match(/^(\d{1,2}):(\d{2})/);
+    if (!m || dParts.length !== 3) return null;
+    let ms = Date.UTC(dParts[0], dParts[1] - 1, dParts[2], Number(m[1]), Number(m[2])) - 8 * 3600 * 1000;
+    const st = String(activeCheckoutDef.start_time || "").match(/^(\d{1,2}):(\d{2})/);
+    if (activeCheckoutDef.crosses_midnight && st) {
+      const startMin = Number(st[1]) * 60 + Number(st[2]);
+      if ((Number(m[1]) * 60 + Number(m[2])) <= startMin) ms += 86400000;
+    }
+    return ms;
+  })();
+  const checkoutDeadlineMs = endAtMs !== null ? endAtMs + 3600000 : null;
+  const checkoutLateBlocked = checkoutDeadlineMs !== null && serverTime.getTime() > checkoutDeadlineMs;
+  const makeupTargetMs = (endAtMs !== null && todayAttendance?.is_late)
+    ? endAtMs + (todayAttendance.late_minutes || 0) * 60000
+    : null;
+  const fmtJamTitik = (ms) => ms == null ? "-" : new Date(ms).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Makassar" });
 
   const handleCheckIn = async () => {
     setError("");
@@ -744,7 +777,7 @@ export default function AttendancePage() {
               {/* Main button */}
               <button
                 onClick={todayAttendance ? () => setShowCheckoutConfirm(true) : handleCheckIn}
-                disabled={isAlphaLocked || !checkInGate.open || locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
+                disabled={isAlphaLocked || !checkInGate.open || checkoutLateBlocked || locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
                 className="hero-card-bg relative w-[120px] h-[120px] rounded-full bg-gradient-to-br from-electric-violet via-[#8B00CC] to-[#6600CC] flex items-center justify-center
                   transition-all duration-300 hover:scale-105 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed
                   shadow-[0_0_40px_rgba(191,0,255,0.5),0_0_80px_rgba(191,0,255,0.25),0_10px_40px_rgba(0,0,0,0.4)]
@@ -771,8 +804,22 @@ export default function AttendancePage() {
             <span className="text-[13px] font-bold text-black tracking-[3px] uppercase" style={{
               textShadow: '0 0 15px rgba(191,0,255,0.3)'
             }}>
-              {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : isAlphaLocked ? "Absen Ditutup" : !checkInGate.open ? "Belum Dibuka" : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
+              {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : isAlphaLocked ? "Absen Ditutup" : checkoutLateBlocked ? "Batas Pulang Lewat" : !checkInGate.open ? "Belum Dibuka" : todayAttendance ? "Absen Pulang" : "Absen Sekarang"}
             </span>
+            {/* Batas pulang & target kompensasi telat */}
+            {todayAttendance && !todayAttendance.clock_out_time && checkoutDeadlineMs !== null && !checkoutLateBlocked && (
+              <span className="text-[10px] font-medium text-slate-600 text-center mt-1">
+                Batas absen pulang: {fmtJamTitik(checkoutDeadlineMs)} WITA
+                {makeupTargetMs != null && (
+                  <> · Absen pulang minimal <b>{fmtJamTitik(makeupTargetMs)}</b> agar telat {todayAttendance.late_minutes} menit dihapus</>
+                )}
+              </span>
+            )}
+            {checkoutLateBlocked && (
+              <span className="text-[10px] font-semibold text-red-600 text-center mt-1">
+                Batas absen pulang sudah lewat (1 jam setelah jam selesai shift)
+              </span>
+            )}
           </div>
 		        )}
 
