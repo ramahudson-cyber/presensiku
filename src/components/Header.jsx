@@ -52,7 +52,6 @@ function Header() {
               aria-label="Pengumuman"
             >
               <Bell size={15} className="text-white" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-400 rounded-full ring-2 ring-[#8A00CC]" />
             </button>
             <button
               onClick={handleLogout}

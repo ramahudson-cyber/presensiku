@@ -166,7 +166,6 @@ export default function DashboardPage() {
           <div className="flex items-center gap-1.5 shrink-0">
             <button onClick={() => navigate("/admin/announcements")} className="relative w-9 h-9 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25 active:scale-95 transition-all" aria-label="Pengumuman">
               <Bell size={15} className="text-white" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-400 rounded-full ring-2 ring-[#8A00CC]" />
             </button>
           </div>
         </div>
