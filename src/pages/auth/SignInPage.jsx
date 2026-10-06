@@ -400,8 +400,8 @@ export default function SignInPage() {
       {/* Ambient sweep */}
       <div className="absolute inset-0 professional-ambient-bg pointer-events-none" />
 
-      {/* Content */}
-      <div className="relative z-10 min-h-dvh flex items-start justify-center pt-[14vh] sm:pt-[20vh] p-4 sm:p-6">
+      {/* Content — card center vertikal di semua tinggi layar */}
+      <div className="relative z-10 min-h-dvh flex items-center justify-center p-4 pt-[max(3vh,env(safe-area-inset-top))] sm:p-6">
         <div className="w-full lg:max-w-[1000px] mx-auto flex flex-col lg:flex-row lg:items-center lg:gap-16">
 
         {/* RIGHT: Hero — desktop only */}
