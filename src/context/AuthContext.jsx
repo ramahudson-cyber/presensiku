@@ -63,7 +63,7 @@ export function AuthProvider({ children }) {
           const { data: profile, error } = await withTimeout(
             supabase.from("profiles")
               .select(`*,
-                organization:organizations!profiles_org_fk(id,name,slug),
+                organization:organizations!profiles_org_fk(id,name,slug,is_active),
                 override_org:organizations!profiles_active_org_override_fkey(id,name,slug)`)
               .eq("id", nextSession.user.id)
               .maybeSingle(),
@@ -98,7 +98,7 @@ export function AuthProvider({ children }) {
         const { data: profile, error } = await supabase
           .from("profiles")
           .select(`*,
-            organization:organizations!profiles_org_fk(id,name,slug),
+            organization:organizations!profiles_org_fk(id,name,slug,is_active),
             override_org:organizations!profiles_active_org_override_fkey(id,name,slug)`)
           .eq("id", session.user.id)
           .maybeSingle();

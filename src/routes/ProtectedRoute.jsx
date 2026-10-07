@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { signOut } from "../services/authService";
+import { XCircle, LogOut } from "lucide-react";
 
 const STUCK_TIMEOUT_MS = 15000;
 
@@ -76,6 +78,35 @@ function ProtectedRoute({ children, allowedRoles }) {
               Muat Ulang Aplikasi
             </button>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Instansi disuspend oleh super admin → admin & pegawai instansi itu
+  // terkunci sampai diaktifkan kembali (super_admin platform bebas).
+  if (
+    user?.organization &&
+    user.organization.is_active === false &&
+    user.role !== "super_admin"
+  ) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+        <div className="text-center max-w-sm px-4">
+          <div className="w-14 h-14 rounded-full bg-rose-100 flex items-center justify-center mx-auto mb-4">
+            <XCircle size={28} className="text-rose-500" />
+          </div>
+          <h2 className="text-lg font-bold text-gray-800">Instansi Disuspend</h2>
+          <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+            Instansi Anda sedang disuspend oleh super admin. Aplikasi tidak dapat
+            digunakan sampai instansi diaktifkan kembali.
+          </p>
+          <button
+            onClick={async () => { await signOut(); window.location.href = "/#/login"; }}
+            className="mt-5 px-5 py-2 rounded-full border border-gray-300 text-gray-600 text-sm hover:bg-gray-50 transition-colors inline-flex items-center gap-2"
+          >
+            <LogOut size={13} /> Keluar
+          </button>
         </div>
       </div>
     );

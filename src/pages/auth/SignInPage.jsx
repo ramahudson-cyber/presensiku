@@ -173,6 +173,24 @@ export default function SignInPage() {
         return;
       }
 
+      // Instansi disuspend oleh super admin → tolak login
+      if (profile.organization_id && profile.role !== "super_admin") {
+        const { data: org } = await supabase
+          .from("organizations")
+          .select("is_active")
+          .eq("id", profile.organization_id)
+          .maybeSingle();
+        if (org && org.is_active === false) {
+          await supabase.auth.signOut();
+          await clearCredentials();
+          await setBiometricEnabled(false);
+          setAuthLoading(false);
+          setLoading(false);
+          setError("Instansi Anda sedang disuspend — hubungi super admin");
+          return;
+        }
+      }
+
       await withTimeout((async () => {
         if (rememberMe) {
           await saveCredentials(username, password);
