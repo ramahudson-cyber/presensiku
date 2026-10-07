@@ -15,14 +15,6 @@ function formatDate(isoString) {
   return new Date(isoString).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 
-function calcDuration(clockIn, clockOut) {
-  if (!clockIn || !clockOut) return null;
-  const diff = new Date(clockOut) - new Date(clockIn);
-  const hours = Math.floor(diff / 3600000);
-  const mins = Math.floor((diff % 3600000) / 60000);
-  return `${hours}j ${mins}m`;
-}
-
 // ── Inline SVG Icons (solid) ──
 function CalendarIcon() {
   return (
@@ -84,7 +76,7 @@ function IconBox({ children }) {
   );
 }
 
-export default function AttendanceResultSheet({ open, onClose, data, type, shiftName: shiftNameProp, locationName }) {
+export default function AttendanceResultSheet({ open, onClose, data, type, shiftName: shiftNameProp, locationName, endAtMs, makeupTargetMs }) {
   const navigate = useNavigate();
   const uid = useRef(Math.random().toString(36).slice(2, 8)).current;
   if (!data) return null;
@@ -94,7 +86,6 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
   const clockIn = formatTime(data.clock_in_time);
   const clockOut = formatTime(data.clock_out_time);
   const dateStr = formatDate(data.clock_in_time);
-  const duration = calcDuration(data.clock_in_time, data.clock_out_time);
   // Nama shift dari DB (prop) → map legacy → fallback generik, agar kode
   // kustom org (mis. MLM) tetap menghasilkan label manusiawi. Nama dari DB
   // bisa huruf kecil ("malam") → dikapitalisasi.
@@ -102,6 +93,28 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
   const shiftLabel = data.shift_code
     ? (cap(shiftNameProp) || SHIFT_NAMES[data.shift_code] || `Shift ${data.shift_code}`)
     : "-";
+  // ── Status pulang ──
+  // Batas pulang = jam selesai shift + menit telat (kompensasi). Pulang
+  // sebelum batas itu = "Pulang Cepat" walau sudah lewat jam selesai shift;
+  // pulang di/dalam batas = "Pulang Tepat Waktu".
+  const targetMs = makeupTargetMs ?? endAtMs;
+  let pulangStatus = null;
+  let pulangStatusColor = "#ADFF2F";
+  if (!isCheckIn) {
+    if (targetMs && data.clock_out_time) {
+      const outMs = new Date(data.clock_out_time).getTime();
+      if (outMs < targetMs) {
+        pulangStatus = "Pulang Cepat";
+        pulangStatusColor = "#FBBF24";
+      } else {
+        pulangStatus = "Pulang Tepat Waktu";
+        pulangStatusColor = "#ADFF2F";
+      }
+    } else {
+      pulangStatus = "-";
+      pulangStatusColor = "#FFFFFF";
+    }
+  }
   const statusColor = isLate ? "#FBBF24" : "#ADFF2F";
   const badgeGrad = isLate
     ? "linear-gradient(145deg, #FBBF24 0%, #F59E0B 50%, #D97706 100%)"
@@ -236,9 +249,9 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
                   <div style={{ fontSize: 16, fontWeight: 800, color: "white", marginTop: 2 }}>{isCheckIn ? clockIn : clockOut}</div>
                 </div>
                 <div style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "10px 12px", textAlign: "center" }}>
-                  <div style={{ fontSize: 9, fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: 0.8 }}>{isCheckIn ? "Status" : "Total"}</div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: statusColor, marginTop: 2 }}>
-                    {isCheckIn ? (isLate ? "Terlambat" : "Tepat Waktu") : (duration || "-")}
+                  <div style={{ fontSize: 9, fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: 0.8 }}>Status</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: isCheckIn ? statusColor : pulangStatusColor, marginTop: 2 }}>
+                    {isCheckIn ? (isLate ? "Terlambat" : "Tepat Waktu") : (pulangStatus || "-")}
                   </div>
                 </div>
               </div>

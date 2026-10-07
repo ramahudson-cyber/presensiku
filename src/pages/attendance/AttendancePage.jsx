@@ -846,6 +846,8 @@ export default function AttendancePage() {
           type={resultType}
           shiftName={todaySchedule?.name}
           locationName={matchedLocation?.name || puskesmasLocation.name}
+          endAtMs={endAtMs}
+          makeupTargetMs={makeupTargetMs}
         />
       </div>
 
