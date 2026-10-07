@@ -405,7 +405,7 @@ export default function EmployeeDashboard() {
               <>
                 <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white hero-card-bg"
                   style={{ background: 'linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)', boxShadow: '0 6px 20px rgba(191,0,255,0.25)' }}>
-                  <div className="text-[9px] uppercase tracking-[0.2em] opacity-75 font-semibold mb-3 flex items-center gap-1.5">
+                  <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
                     <Sun size={13} /> Masuk
                   </div>
                   <div className="text-[28px] font-extrabold leading-none tracking-tight mb-2">{word}</div>
@@ -416,7 +416,7 @@ export default function EmployeeDashboard() {
                 </div>
                 <div className="hero-card-bg rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-black/20"
                   style={{ background: '#000000', color: '#FFFFFF', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
-                  <div className="text-[9px] uppercase tracking-[0.2em] opacity-65 font-semibold mb-3 flex items-center gap-1.5">
+                  <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
                     <Sunset size={13} /> Pulang
                   </div>
                   <div className="text-[28px] font-extrabold leading-none tracking-tight mb-2">{word}</div>
@@ -433,7 +433,7 @@ export default function EmployeeDashboard() {
             <>
               <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white hero-card-bg"
                 style={{ background: 'linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)', boxShadow: '0 6px 20px rgba(191,0,255,0.25)' }}>
-                <div className="text-[9px] uppercase tracking-[0.2em] opacity-75 font-semibold mb-3 flex items-center gap-1.5">
+                <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
                   <Sun size={13} /> Masuk
                 </div>
                 <div className="text-[22px] font-extrabold leading-none tracking-tight mb-2">SANGGAH</div>
@@ -444,7 +444,7 @@ export default function EmployeeDashboard() {
               </div>
               <div className="hero-card-bg rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-black/20"
                 style={{ background: '#000000', color: '#FFFFFF', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
-                <div className="text-[9px] uppercase tracking-[0.2em] opacity-65 font-semibold mb-3 flex items-center gap-1.5">
+                <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
                   <Sunset size={13} /> Pulang
                 </div>
                 <div className="text-[22px] font-extrabold leading-none tracking-tight mb-2">SANGGAH</div>
@@ -460,7 +460,7 @@ export default function EmployeeDashboard() {
           {/* MASUK — Purple Gradient */}
           <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white hero-card-bg"
             style={{ background: 'linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)', boxShadow: '0 6px 20px rgba(191,0,255,0.25)' }}>
-            <div className="text-[9px] uppercase tracking-[0.2em] opacity-75 font-semibold mb-3 flex items-center gap-1.5">
+            <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
               <Sun size={13} /> Masuk
             </div>
             {todayAttendance?.clock_in_time ? (
@@ -493,7 +493,7 @@ export default function EmployeeDashboard() {
           {/* PULANG — solid black for high-contrast readability */}
           <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-black/20"
             style={{ background: '#000000', color: '#FFFFFF', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
-            <div className="text-[9px] uppercase tracking-[0.2em] opacity-65 font-semibold mb-3 flex items-center gap-1.5">
+            <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
               <Sunset size={13} /> Pulang
             </div>
             {todayAttendance?.clock_out_time ? (
