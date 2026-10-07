@@ -18,7 +18,7 @@ import {
   isBiometricEnabled, setBiometricEnabled, authenticateBiometric,
 } from "../../services/storageService";
 import {
-  AlertCircle, Mail, Clock, RefreshCw, ArrowLeft, Loader2, Eye, EyeOff, Smartphone, ShieldCheck
+  AlertCircle, Mail, Clock, RefreshCw, ArrowLeft, Loader2, Eye, EyeOff, Smartphone, ShieldCheck, XCircle
 } from "lucide-react";
 
 export default function SignInPage() {
@@ -29,6 +29,7 @@ export default function SignInPage() {
   const [useBiometric, setUseBiometric] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState("");
+  const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("");
 
@@ -186,7 +187,7 @@ export default function SignInPage() {
           await setBiometricEnabled(false);
           setAuthLoading(false);
           setLoading(false);
-          setError("Instansi Anda sedang disuspend — hubungi super admin");
+          setShowSuspendModal(true);
           return;
         }
       }
@@ -716,6 +717,29 @@ export default function SignInPage() {
             Presensiku v{appVersion}
           </p>
         </div>
+
+        {/* Modal premium: akun disuspend */}
+        {showSuspendModal && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-fade-in">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <div className="relative z-10 w-full max-w-sm rounded-[28px] border border-white/10 p-7 text-center animate-slide-up"
+              style={{ background: 'linear-gradient(160deg, #2A1745 0%, #17102B 100%)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}>
+              <div className="w-14 h-14 rounded-full bg-rose-500/15 flex items-center justify-center mx-auto mb-4">
+                <XCircle size={28} className="text-rose-400" />
+              </div>
+              <h3 className="text-lg font-bold text-pure-white">Akun Disuspend</h3>
+              <p className="text-sm text-slate-mist mt-2 leading-relaxed">
+                Akun Anda sedang di suspend dan tidak bisa login.
+              </p>
+              <button
+                onClick={() => setShowSuspendModal(false)}
+                className="mt-6 w-full py-3 rounded-full bg-electric-violet text-pure-white text-sm font-bold hover:brightness-110 active:brightness-90 transition-all"
+              >
+                Mengerti
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
     </div>
