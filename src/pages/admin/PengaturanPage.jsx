@@ -1569,7 +1569,7 @@ if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
   }
 
   const tabs = [
-    { id: "profil", label: "Profil & Lokasi", icon: MapPin },
+    { id: "profil", label: "Lokasi", icon: MapPin },
     { id: "shift", label: "Kelola Shift", icon: Sun },
     { id: "user", label: "Manajemen User", icon: Users },
     { id: "approval", label: "Approval Device", icon: Smartphone },
@@ -1604,7 +1604,7 @@ if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-shrink-0 flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all ${
+              className={`w-[92px] md:w-auto flex-shrink-0 flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all ${
                 isActive
                   ? "bg-violet-600/20 border-violet-500/50 text-pure-white shadow-lg"
                   : "bg-white/5 border-white/[0.06] text-slate-mist hover:bg-white/[0.03]"
