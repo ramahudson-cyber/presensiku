@@ -31,7 +31,7 @@ function EmployeeSalaryPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      setLines(await getMyPayrollLines());
+      setLines(await getMyPayrollLines(user.id));
     } catch {
       setLines([]);
     } finally {

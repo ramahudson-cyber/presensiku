@@ -83,10 +83,13 @@ export async function getPayrollLines(period) {
   return data || [];
 }
 
-export async function getMyPayrollLines() {
+export async function getMyPayrollLines(userId) {
+  // Hanya slip milik pegawai yang login — tanpa ini, RLS organisasi
+  // membuka slip pegawai lain (termasuk admin) ke daftar pegawai.
   const { data, error } = await supabase
     .from("payroll_lines")
     .select("*")
+    .eq("user_id", userId)
     .order("period_month", { ascending: false });
   if (error) throw error;
   return data || [];

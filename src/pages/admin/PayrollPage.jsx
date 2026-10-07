@@ -12,7 +12,7 @@ import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import {
   Wallet, Calculator, Users, SlidersHorizontal, Loader2,
-  Save, Download, Power, CheckCircle2, Info,
+  Save, Download, Power, CheckCircle2, Info, ChevronDown,
 } from "lucide-react";
 
 const T = {
@@ -361,6 +361,10 @@ function TabGaji({ user, period }) {
   const [values, setValues] = useState({}); // user_id -> string nominal
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [quickTarget, setQuickTarget] = useState("all");   // all | picked
+  const [quickPicked, setQuickPicked] = useState(new Set());
+  const [quickNominal, setQuickNominal] = useState("");
+  const [quickOpen, setQuickOpen] = useState(false);
   const organizationId = user?.active_org_override || user?.organization_id;
 
   useEffect(() => {
@@ -407,6 +411,44 @@ function TabGaji({ user, period }) {
     }
   };
 
+  // Terapkan satu nilai gaji ke beberapa/semua pegawai sekaligus
+  const applyQuick = async () => {
+    const nominal = Number(quickNominal);
+    if (!quickNominal || Number.isNaN(nominal) || nominal < 0) {
+      toast.warning("Isi nominal gaji yang valid");
+      return;
+    }
+    const targets = quickTarget === "all"
+      ? employees
+      : employees.filter((e) => quickPicked.has(e.id));
+    if (targets.length === 0) {
+      toast.warning("Pilih minimal satu pegawai");
+      return;
+    }
+    setSaving(true);
+    try {
+      await saveEmployeeConfigs(organizationId, targets.map((e) => ({ user_id: e.id, base_component: nominal })));
+      setValues((v) => {
+        const next = { ...v };
+        targets.forEach((e) => { next[e.id] = String(nominal); });
+        return next;
+      });
+      toast.success(`Gaji Rp${nominal.toLocaleString("id-ID")} diterapkan ke ${targets.length} pegawai`);
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const toggleQuickPicked = (id) => {
+    setQuickPicked((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
   return (
     <div className="space-y-4">
       <div className="bg-white rounded-3xl border p-4 flex flex-wrap items-center justify-between gap-3" style={{ borderColor: T.border }}>
@@ -419,6 +461,59 @@ function TabGaji({ user, period }) {
         >
           {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />} Simpan
         </button>
+      </div>
+
+      {/* Terapkan cepat: satu gaji untuk beberapa/semua pegawai */}
+      <div className="bg-white rounded-3xl border p-4 space-y-3" style={{ borderColor: T.border }}>
+        <button
+          onClick={() => setQuickOpen((o) => !o)}
+          className="flex items-center justify-between w-full text-left"
+        >
+          <span className="text-xs font-bold" style={{ color: T.text }}>
+            ⚡ Isi Cepat — satu gaji untuk beberapa/semua pegawai
+          </span>
+          <ChevronDown size={14} className={`transition-transform ${quickOpen ? "rotate-180" : ""}`} style={{ color: T.textMuted }} />
+        </button>
+        {quickOpen && (
+          <div className="space-y-3 pt-1">
+            <div className="flex gap-2">
+              {[
+                { id: "all", label: "Semua pegawai" },
+                { id: "picked", label: "Pegawai tertentu" },
+              ].map((opt) => (
+                <button key={opt.id} onClick={() => setQuickTarget(opt.id)}
+                  className={`flex-1 px-3 py-2 rounded-full text-xs font-semibold transition-all ${
+                    quickTarget === opt.id ? "bg-electric-violet text-white" : "bg-slate-100"
+                  }`} style={quickTarget === opt.id ? {} : { color: T.textSec }}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+            {quickTarget === "picked" && (
+              <div className="max-h-40 overflow-y-auto rounded-xl border" style={{ borderColor: T.border }}>
+                {employees.map((e) => (
+                  <label key={e.id} className="flex items-center gap-2.5 px-3.5 py-2 cursor-pointer hover:bg-slate-50">
+                    <input type="checkbox" checked={quickPicked.has(e.id)} onChange={() => toggleQuickPicked(e.id)}
+                      className="w-3.5 h-3.5 accent-[#BF00FF]" />
+                    <span className="text-xs" style={{ color: T.text }}>{e.full_name}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+            <div className="flex gap-2">
+              <div className="flex-1 flex items-center rounded-xl border px-3" style={{ borderColor: T.border }}>
+                <span className="text-xs" style={{ color: T.textMuted }}>Rp</span>
+                <input type="number" min="0" value={quickNominal} onChange={(e) => setQuickNominal(e.target.value)}
+                  placeholder="Nominal gaji"
+                  className="flex-1 py-2.5 px-2 bg-transparent text-sm outline-none" style={{ color: T.text }} />
+              </div>
+              <button onClick={applyQuick} disabled={saving || loading}
+                className="px-5 rounded-xl bg-electric-violet text-white text-sm font-semibold hover:brightness-110 disabled:opacity-50 transition-all flex items-center gap-2">
+                {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} Terapkan
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="bg-white rounded-3xl border overflow-hidden" style={{ borderColor: T.border }}>
