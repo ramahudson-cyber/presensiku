@@ -1,5 +1,5 @@
 // src/pages/admin/AttendanceHistoryPage.jsx
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
@@ -107,6 +107,194 @@ function SummaryCard({ label, value, accent, icon: Icon }) {
         <p className="text-2xl md:text-3xl font-bold text-pure-white tabular-nums leading-none">{value}</p>
         <p className="text-xs text-slate-mist uppercase tracking-wider mt-1.5 truncate">{label}</p>
       </div>
+    </div>
+  );
+}
+
+// ── Panel Pantauan Hari Ini ──────────────────────────────────────────────────
+// Pegawai siapa saja yang SUDAH dan BELUM absen hari ini, berdasarkan jadwal
+// kerja (employee_schedules) + shift yang admin isi untuk hari itu. Sumber
+// datanya mandiri (tidak terpengaruh filter tanggal halaman) dan auto-refresh
+// tiap 60 detik. Tanpa filter org manual — RLS yang membatasi, pola fetch utama.
+function TodayMonitorPanel() {
+  const [loading, setLoading] = useState(true);
+  const [today, setToday] = useState(null);
+  const [scheduledCount, setScheduledCount] = useState(0);
+  const [done, setDone] = useState([]);
+  const [notYet, setNotYet] = useState([]);
+
+  const load = useCallback(async () => {
+    try {
+      const { data: serverTimeData } = await supabase.rpc("get_server_time");
+      const now = new Date(serverTimeData || Date.now());
+      const today = getWitaDateString(now);
+      setToday(today);
+      const dowToday = getMondayFirstDayOfWeek(today);
+
+      const [schedRes, attRes, defRes, shiftsRes, membersRes] = await Promise.all([
+        supabase.from("employee_schedules").select("user_id, shift_code").eq("date", today),
+        supabase.from("attendance").select("*, profiles(full_name, position, avatar_url)").eq("date", today),
+        supabase.from("shift_schedules").select("shift_code, day_of_week, start_time, end_time, crosses_midnight, is_working_day").eq("day_of_week", dowToday),
+        supabase.from("shifts").select("code, name"),
+        supabase.from("profiles").select("id, full_name, position, avatar_url"),
+      ]);
+
+      const defMap = new Map((defRes.data || []).map((s) => [`${s.shift_code}|${s.day_of_week}`, s]));
+      const shiftNameMap = Object.fromEntries((shiftsRes.data || []).map((s) => [s.code, s.name]));
+      const memberMap = Object.fromEntries((membersRes.data || []).map((m) => [m.id, m]));
+      const attByUser = new Map((attRes.data || []).map((a) => [a.user_id, a]));
+
+      const done = [];
+      const notYet = [];
+      setScheduledCount((schedRes.data || []).length);
+
+      (schedRes.data || []).forEach((s) => {
+        const att = attByUser.get(s.user_id);
+        const def = defMap.get(`${s.shift_code}|${dowToday}`);
+        const profile = att?.profiles || memberMap[s.user_id] || {};
+        const shiftName = shiftNameMap[s.shift_code] || s.shift_code;
+        const jam = def?.start_time && def?.end_time
+          ? `${String(def.start_time).slice(0, 5)}–${String(def.end_time).slice(0, 5)}`
+          : "–";
+        const sub = `${shiftName} · ${jam}`;
+
+        if (att) {
+          done.push({
+            key: `${s.user_id}|${today}`,
+            name: att.profiles?.full_name || memberMap[s.user_id]?.full_name || "–",
+            position: att.profiles?.position || memberMap[s.user_id]?.position || "",
+            status: att.attendance_status,
+            clockIn: att.clock_in_time,
+            clockOut: att.clock_out_time,
+            notes: att.notes || "",
+            sub,
+          });
+        } else {
+          const ended = def ? isShiftEnded(today, def, now) : false;
+          notYet.push({
+            key: `${s.user_id}|${today}`,
+            name: profile.full_name || "–",
+            position: profile.position || "",
+            sub,
+            ended,
+          });
+        }
+      });
+
+      done.sort((a, b) => (b.clockIn || "").localeCompare(a.clockIn || ""));
+      notYet.sort((a, b) => a.name.localeCompare(b.name));
+      setDone(done);
+      setNotYet(notYet);
+    } catch (e) {
+      console.error("❌ Pantauan hari ini:", e);
+      toast.error("Gagal memuat pantauan hari ini");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    // setTimeout: muat pertama lewat task terpisah — setState tidak sinkron
+    // di dalam effect body (react-hooks/set-state-in-effect).
+    const kick = setTimeout(load, 0);
+    const id = setInterval(load, 60000);
+    return () => { clearTimeout(kick); clearInterval(id); };
+  }, [load]);
+
+  const showTimes = (status) => status === "hadir" || status === "terlambat";
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="w-1 h-4 rounded-full bg-electric-violet" />
+        <h3 className="text-sm font-bold text-pure-white">Pantauan Hari Ini</h3>
+        <span className="text-[10px] text-slate-mist">
+          {today ? fmtDate(today) : ""} · diperbarui otomatis tiap 1 menit
+        </span>
+      </div>
+
+      {loading ? (
+        <div className={`${cardBase} p-8 flex items-center justify-center gap-2 text-sm text-slate-mist`}>
+          <Loader2 size={16} className="animate-spin" /> Memuat pantauan...
+        </div>
+      ) : scheduledCount === 0 ? (
+        <div className={`${cardBase} p-6 text-center text-xs text-slate-mist`}>
+          Belum ada jadwal kerja hari ini — isi jadwal pegawai di menu <b className="text-pure-white">Jadwal Kerja</b> untuk mulai dipantau.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Sudah Absen */}
+          <div className={`${cardBase} p-4`}>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+                <CheckCircle2 size={13} /> Sudah Absen
+              </p>
+              <span className="text-xs font-bold text-pure-white tabular-nums">{done.length}</span>
+            </div>
+            {done.length === 0 ? (
+              <p className="text-[11px] text-slate-mist py-4 text-center">Belum ada yang absen hari ini.</p>
+            ) : (
+              <div>
+                {done.map((r) => (
+                  <div key={r.key} className="flex items-center gap-3 py-2 border-b border-white/[0.04] last:border-0">
+                    <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${avatarGradient(r.name)} flex items-center justify-center text-white text-[10px] font-bold shrink-0`}>
+                      {initials(r.name)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-pure-white truncate">{r.name}</p>
+                      <p className="text-[10px] text-slate-mist truncate">{r.position || "\u00A0"}</p>
+                      <p className="text-[10px] text-slate-mist/80 truncate">{r.sub}</p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <StatusBadge status={isSanggahRow(r) ? "sanggah" : r.status} />
+                      <p className="text-[10px] text-slate-mist mt-1 tabular-nums">
+                        {showTimes(r.status)
+                          ? `${fmtTime(r.clockIn)} – ${r.clockOut ? fmtTime(r.clockOut) : "…"}`
+                          : "Tidak absen"}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Belum Absen */}
+          <div className={`${cardBase} p-4`}>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                <Clock size={13} /> Belum Absen
+              </p>
+              <span className="text-xs font-bold text-pure-white tabular-nums">{notYet.length}</span>
+            </div>
+            {notYet.length === 0 ? (
+              <p className="text-[11px] text-emerald-300 py-4 text-center">Semua pegawai terjadwal sudah absen ✓</p>
+            ) : (
+              <div>
+                {notYet.map((r) => (
+                  <div key={r.key} className="flex items-center gap-3 py-2 border-b border-white/[0.04] last:border-0">
+                    <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${avatarGradient(r.name)} flex items-center justify-center text-white text-[10px] font-bold shrink-0`}>
+                      {initials(r.name)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-pure-white truncate">{r.name}</p>
+                      <p className="text-[10px] text-slate-mist truncate">{r.position || "\u00A0"}</p>
+                      <p className="text-[10px] text-slate-mist/80 truncate">{r.sub}</p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      {r.ended ? (
+                        <span className="text-[10px] font-semibold text-rose-300">Lewat jam shift</span>
+                      ) : (
+                        <span className="text-[10px] font-semibold text-amber-300">Menunggu</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -360,6 +548,9 @@ export default function AttendanceHistoryPage() {
         <SummaryCard label="Sakit"  value={summary.sakit}  accent="from-green-yellow to-electric-violet"  icon={AlertTriangle}  />
         <SummaryCard label="Alpha"  value={summary.alpha}  accent="from-rose-500 to-pink-700"    icon={XCircle}        />
       </div>
+
+      {/* Pantauan hari ini — siapa yang sudah/belum absen sesuai jadwal + shift */}
+      <TodayMonitorPanel />
 
       {/* Filter Bar */}
       <div className={`${cardBase} p-4`}>
