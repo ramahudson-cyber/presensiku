@@ -34,7 +34,6 @@ export default function SignInPage() {
 
   const [step, setStep] = useState("login");
   const [otpCode, setOtpCode] = useState("");
-  const [generatedOtp, setGeneratedOtp] = useState("");
   const [deviceInfo, setDeviceInfo] = useState(null);
   const [userEmail, setUserEmail] = useState("");
   const [, setDeviceDebug] = useState("");
@@ -268,7 +267,6 @@ export default function SignInPage() {
         setLoading(false);
         return;
       }
-      setGeneratedOtp(otpResult.otp);
       setStep("otp");
     })(), 90000);
     } catch (err) {
@@ -362,7 +360,7 @@ export default function SignInPage() {
       if (!res.success) {
         setError("Gagal kirim ulang: " + (res.error || "Cek koneksi internet"));
       } else {
-        setGeneratedOtp(res.otp);
+
       }
     } catch {
       setError("Gagal kirim ulang.");
@@ -589,7 +587,7 @@ export default function SignInPage() {
                   </p>
                   <div className="mt-3 p-2 bg-green-yellow/10 border border-green-yellow/20 rounded-[12px]">
                     <p className="text-[10px] text-green-yellow/70">
-                      Tidak terima email? Gunakan kode: <span className="font-mono font-bold text-green-yellow tracking-wider text-sm">{generatedOtp}</span>
+                      Tidak terima email? Periksa folder spam, atau gunakan tombol kirim ulang di bawah.
                     </p>
                   </div>
                 </div>
