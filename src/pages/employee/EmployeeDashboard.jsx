@@ -361,7 +361,7 @@ export default function EmployeeDashboard() {
           <div className="flex items-center gap-4 mb-8">
             <ProfileAvatarButton user={user} initials={user?.full_name?.charAt(0)?.toUpperCase() || "R"} variant="hero" />
             <div className="flex-1 min-w-0">
-              <div className="text-[11px] uppercase tracking-[0.2em] opacity-80 text-white">{getGreeting(serverTime.getHours())},</div>
+              <div className="text-[13px] font-medium opacity-90 text-white">{getGreeting(serverTime.getHours())},</div>
               <div className="text-2xl font-bold text-white">{user?.full_name || "Rama Hudson"}</div>
               <div className="text-xs opacity-75 mt-0.5 text-white">
                 {[user?.role, user?.position].filter(Boolean).join(" · ") || "Pegawai"}
