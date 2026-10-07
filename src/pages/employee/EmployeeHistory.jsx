@@ -71,6 +71,25 @@ export default function EmployeeHistory() {
   // Jadwal + definisi shift dipertahankan untuk derivasi "Pulang Cepat"
   const [shiftDefs, setShiftDefs] = useState([]);
   const [schedList, setSchedList] = useState([]);
+  // Master nama shift instansi (kode → nama, mis. PG → Pagi) untuk baris daftar
+  const [shiftNameMap, setShiftNameMap] = useState({});
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await supabase.from("shifts").select("code, name").order("code");
+        if (!cancelled && data) {
+          const map = {};
+          data.forEach((s) => {
+            if (s.code) map[s.code] = s.name ? s.name.charAt(0).toUpperCase() + s.name.slice(1) : s.code;
+          });
+          setShiftNameMap(map);
+        }
+      } catch { /* fallback: tampilkan kode */ }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
 
@@ -462,6 +481,11 @@ export default function EmployeeHistory() {
                             {item.location_in?.matched_location_name && (
                               <div className="text-[9px] font-medium" style={{ color: T.textMuted }}>
                                 Lokasi : {item.location_in.matched_location_name}
+                              </div>
+                            )}
+                            {item.shift_code && (
+                              <div className="text-[9px] font-semibold" style={{ color: "#BF00FF" }}>
+                                Shift : {shiftNameMap[item.shift_code] || item.shift_code}
                               </div>
                             )}
                           </div>
