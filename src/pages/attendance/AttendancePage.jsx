@@ -350,7 +350,7 @@ export default function AttendancePage() {
     ? shiftDefinition
     : nightShiftDef;
   const endAtMs = (() => {
-    if (!todayAttendance || todayAttendance.clock_out_time || !activeCheckoutDef?.end_time || !todayAttendance.date) return null;
+    if (!todayAttendance || !activeCheckoutDef?.end_time || !todayAttendance.date) return null;
     const dParts = String(todayAttendance.date).split("-").map(Number);
     const m = String(activeCheckoutDef.end_time).match(/^(\d{1,2}):(\d{2})/);
     if (!m || dParts.length !== 3) return null;
