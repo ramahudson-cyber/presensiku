@@ -801,13 +801,13 @@ export default function AttendancePage() {
                 )}
               </button>
             </div>
-            <span className="text-[13px] font-bold tracking-[3px] uppercase rounded-full px-5 py-2 bg-[#17131f]/95 border border-white/30 text-white shadow-lg"
+            <span className="text-[13px] font-bold tracking-[3px] uppercase rounded-full px-5 py-2 bg-[#17131f]/95 border border-white/30 text-white hero-card-bg shadow-lg"
               style={{ textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
               {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : isAlphaLocked ? "Absen Ditutup" : checkoutLateBlocked ? "Batas Pulang Lewat" : !checkInGate.open ? "Belum Dibuka" : todayAttendance ? "Absen Pulang" : "Absen Masuk"}
             </span>
             {/* Batas pulang & target kompensasi telat */}
             {todayAttendance && !todayAttendance.clock_out_time && checkoutDeadlineMs !== null && !checkoutLateBlocked && (
-              <span className="text-[10px] font-medium text-slate-600 text-center mt-1">
+              <span className="text-[10px] font-medium rounded-full px-3.5 py-1.5 bg-[#17131f]/95 border border-white/25 text-white/90 hero-card-bg text-center shadow-md">
                 Batas absen pulang: {fmtJamTitik(checkoutDeadlineMs)} WITA
                 {makeupTargetMs != null && (
                   <> · Absen pulang minimal <b>{fmtJamTitik(makeupTargetMs)}</b> agar telat {todayAttendance.late_minutes} menit dihapus</>
@@ -815,7 +815,7 @@ export default function AttendancePage() {
               </span>
             )}
             {checkoutLateBlocked && (
-              <span className="text-[10px] font-semibold text-red-600 text-center mt-1">
+              <span className="text-[10px] font-semibold rounded-full px-3.5 py-1.5 bg-[#17131f]/95 border border-white/25 text-rose-300 hero-card-bg text-center shadow-md">
                 Batas absen pulang sudah lewat (1 jam setelah jam selesai shift)
               </span>
             )}
