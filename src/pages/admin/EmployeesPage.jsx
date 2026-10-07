@@ -114,6 +114,15 @@ const EmployeesPage = () => {
     setConfirmDelete(employee.id);
   };
 
+  // Tombol hapus hanya tampil bila memang boleh:
+  // - bukan akun sendiri (admin tidak bisa menghapus dirinya)
+  // - super_admin boleh menghapus siapa pun kecuali super_admin;
+  //   admin hanya boleh menghapus pegawai/kepala unit
+  const canDelete = (emp) =>
+    emp.role !== 'super_admin'
+    && emp.id !== user?.id
+    && !(user?.role !== 'super_admin' && emp.role === 'admin');
+
   const confirmDeleteAction = async () => {
     if (!confirmDelete) return;
     const id = confirmDelete;
@@ -489,7 +498,7 @@ const EmployeesPage = () => {
                             title="Edit">
                             <Pencil size={15} />
                           </button>
-                          {emp.role !== 'super_admin' && (
+                          {canDelete(emp) && (
                             <button onClick={() => handleDelete(emp)}
                               className="p-1.5 text-rose-300 hover:bg-rose-500/15 rounded-lg transition-all hover:scale-110"
                               title="Hapus">
@@ -528,7 +537,7 @@ const EmployeesPage = () => {
                             aria-label="Edit">
                             <Pencil size={14} />
                           </button>
-                          {emp.role !== 'super_admin' && (
+                          {canDelete(emp) && (
                             <button onClick={() => handleDelete(emp)}
                               className="p-1.5 text-rose-300 bg-rose-500/10 rounded-lg active:scale-95 transition-all"
                               aria-label="Hapus">
