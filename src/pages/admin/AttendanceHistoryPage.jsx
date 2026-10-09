@@ -11,7 +11,7 @@ import {
   Search, Filter, Download, Calendar,
   ChevronLeft, ChevronRight, Loader2,
   CheckCircle2, XCircle, Clock, AlertTriangle,
-  RefreshCw, Inbox, MessageSquareWarning,
+  RefreshCw, Inbox, MessageSquareWarning, MapPin,
 } from "lucide-react";
 
 // ── Konstanta ────────────────────────────────────────────────────────────────
@@ -168,6 +168,11 @@ function TodayMonitorPanel() {
             clockOut: att.clock_out_time,
             notes: att.notes || "",
             sub,
+            // Data lokasi absen (dari JSONB location_in). Fallback aman: data
+            // lama tanpa lokasi -> null, ditampilkan sebagai "–".
+            locName: att.location_in?.matched_location_name || null,
+            locDistance: att.location_in?.distance_from_location
+              ?? att.location_in?.distance_from_puskesmas ?? null,
           });
         } else {
           const ended = def ? isShiftEnded(today, def, now) : false;
@@ -244,6 +249,20 @@ function TodayMonitorPanel() {
                       <p className="text-xs font-semibold text-pure-white truncate">{r.name}</p>
                       <p className="text-[10px] text-slate-mist truncate">{r.position || "\u00A0"}</p>
                       <p className="text-[10px] text-slate-mist/80 truncate">{r.sub}</p>
+                      {/* Lokasi absen masuk — aksen ungu */}
+                      <p className="text-[10px] truncate flex items-center gap-1 mt-0.5">
+                        <MapPin size={10} className="text-violet-300 shrink-0" />
+                        {r.locName ? (
+                          <>
+                            <span className="text-violet-300 font-medium truncate">{r.locName}</span>
+                            {r.locDistance != null && (
+                              <span className="text-violet-300/60 shrink-0">· {Math.round(r.locDistance)} m</span>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-slate-mist/60">Lokasi: –</span>
+                        )}
+                      </p>
                     </div>
                     <div className="shrink-0 text-right">
                       <StatusBadge status={isSanggahRow(r) ? "sanggah" : r.status} />
