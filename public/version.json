@@ -1,10 +1,10 @@
 {
-  "version": "1.8.0",
-  "versionCode": 27,
-  "webVersionCode": 24,
-  "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.0/app-release.apk",
+  "version": "1.8.1",
+  "versionCode": 28,
+  "webVersionCode": 25,
+  "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.1/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
-  "changelog": "Keamanan absensi: anti fake-GPS berlapis (deteksi mock/emulator/root di APK, Play Integrity, validasi server radius + velocity, Android wajib lewat APK). Update APK ke v1.8.0.",
+  "changelog": "Perbaikan penting: kode OTP verifikasi perangkat tidak terkirim di APK Android (request tertuju ke server lokal, bukan server email). Update ke v1.8.1 agar login perangkat baru berfungsi.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }

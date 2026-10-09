@@ -267,11 +267,18 @@ export async function sendOtpEmail(userEmail, userName) {
     if (otpError) throw otpError;
     if (!otp) throw new Error("Gagal generate kode OTP");
 
-    // Kirim email via Vercel serverless function
+    // Kirim email via Vercel serverless function.
+    // PENTING: di APK Capacitor, window.location.origin = http://localhost
+    // (server lokal WebView) — request ke situ tidak pernah sampai ke Vercel,
+    // dan SPA-fallback 200 membuatnya terlihat "sukses" padahal email tidak
+    // terkirim. Karena itu native APK SELALU memakai URL produksi absolut.
+    const PROD_API = "https://presensiku-beige.vercel.app/api/send-otp";
     const isDev = import.meta.env.DEV;
-    const apiUrl = isDev 
+    const apiUrl = isDev
       ? "http://localhost:5173/api/send-otp"
-      : API_BASE + "/api/send-otp";
+      : isNativePlatform()
+        ? PROD_API
+        : API_BASE + "/api/send-otp";
 
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -283,12 +290,20 @@ export async function sendOtpEmail(userEmail, userName) {
       }),
     });
 
-    // Body bisa bukan JSON (mis. error infra Vercel) — parse defensif
+    // Body bisa bukan JSON (mis. SPA-fallback HTML dari server lokal Capacitor
+    // atau error infra Vercel) — parse defensif dan JANGAN anggap sukses bila
+    // respons bukan JSON sukses eksplisit.
     let result = {};
     try { result = await response.json(); } catch { result = {}; }
 
     if (!response.ok) {
       throw new Error(result.error || `Gagal mengirim OTP (server ${response.status})`);
+    }
+    if (result.success !== true) {
+      throw new Error(
+        result.error
+        || "Server tidak merespons dengan benar. Cek koneksi internet lalu coba lagi."
+      );
     }
 
     return { success: true, otp };
