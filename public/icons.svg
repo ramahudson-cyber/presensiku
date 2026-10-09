@@ -1,11 +1,30 @@
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<svg width="512" height="512" viewBox="0 0 512 512"
+    xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#BF00FF"/>
       <stop offset="100%" stop-color="#660099"/>
     </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
-  <text x="50%" y="44%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="72" fill="white" letter-spacing="0.5">Presensiku</text>
-  <text x="50%" y="61%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-weight="500" font-size="26" fill="#adff2f" letter-spacing="0.5">Absen anti ribet, kerja makin greget!</text>
+  <rect width="512" height="512" rx="113" fill="url(#bg)"/>
+  <svg x="0" y="0" width="512" height="512" viewBox="0 0 120 120">
+  <g transform="translate(60 60) scale(0.72) translate(-60 -60)">
+    <!-- Ripple/lingkaran sonar samar di pusat pin -->
+    <ellipse cx="60" cy="66" rx="40" ry="27" fill="none"
+             stroke="rgba(255,255,255,0.18)" stroke-width="2.5" />
+    <ellipse cx="60" cy="66" rx="30" ry="20" fill="none"
+             stroke="rgba(255,255,255,0.28)" stroke-width="2.5" />
+
+    <!-- Badan pin (garis putih) -->
+    <path d="M60 10 C38 10 22 26 22 46 C22 66 43 92 60 106 C77 92 98 66 98 46 C98 26 82 10 60 10 Z"
+          fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" />
+
+    <!-- Ring dalam -->
+    <circle cx="60" cy="46" r="26" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="4" />
+
+    <!-- Inti bercahaya -->
+    <circle cx="60" cy="46" r="17" fill="#FFFFFF" opacity="0.22" />
+    <circle cx="60" cy="46" r="11" fill="#FFFFFF" opacity="0.55" />
+    <circle cx="60" cy="46" r="5"  fill="#FFFFFF" />
+  </g></svg>
 </svg>
