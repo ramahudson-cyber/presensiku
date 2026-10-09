@@ -2,8 +2,8 @@
   "appId": "com.presensiku.app",
   "appName": "Presensiku",
   "webDir": "dist",
-  "version": "1.7.1",
-  "versionCode": 26,
+  "version": "1.8.0",
+  "versionCode": 27,
   "plugins": {
     "Geolocation": {
       "permissions": {
@@ -16,7 +16,7 @@
     "CapacitorUpdater": {
       "autoUpdate": false,
       "allowModifyUrl": true,
-      "version": "1.7.1"
+      "version": "1.8.0"
     }
   }
 }

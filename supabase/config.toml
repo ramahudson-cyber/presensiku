@@ -7,4 +7,9 @@ project_id = "muhxylbcgvwxjzrbkgdc"
 [functions.send-shift-reminder]
 verify_jwt = true
 
+# Play Integrity: dipanggil setelah APK memperoleh integrity token.
+# Tetap wajib JWT (endpoint hanya untuk user login).
+[functions.verify-integrity]
+verify_jwt = true
+
 

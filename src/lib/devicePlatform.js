@@ -31,12 +31,26 @@ export function getDeviceType() {
  * Only regular employees are platform-bound. Admin and supervisory roles
  * remain usable from web or native clients as required by operations.
  *
- * Sejak web push PWA: Android web (Chrome maupun PWA ter-install) DIIZINKAN
- * agar pegawai tetap menerima push notification; desktop web tetap diblokir
- * karena absen dari PC adalah celah fake GPS yang paling mudah.
+ * Kebijakan anti fake-GPS (berlapis):
+ *   - Android: WAJIB lewat APK native. Chrome/PWA Android DIBLOKIR TOTAL,
+ *     karena browser tidak punya API deteksi mock location — celah fake GPS
+ *     paling mudah. Push notification pegawai ikut pindah ke APK.
+ *   - iOS: TIDAK ada APK, jadi PWA iOS tetap DIIZINKAN untuk absen. Deteksi
+ *     lokasi palsu di iOS mengandalkan validasi sisi server (radius,
+ *     velocity, dan sinyal integritas lain).
+ *   - Desktop web: tetap diblokir (absen dari PC = celah paling mudah).
+ *
+ * Catatan: iOS di WebView/PWA juga terdeteksi sebagai 'ios' (bukan 'native'
+ * Capacitor), dan memang sengaja diizinkan.
  */
 export function isPegawaiWebBlocked(role, deviceType = getDeviceType()) {
-  return role === 'pegawai' && deviceType === 'desktop';
+  if (role !== 'pegawai') return false;
+  return deviceType === 'desktop' || deviceType === 'android';
+}
+
+// true hanya bila pegawai dibuka dari Android via browser/PWA (bukan APK).
+export function isAndroidWebBlocked(role, deviceType = getDeviceType()) {
+  return role === 'pegawai' && deviceType === 'android';
 }
 
 export function getBlockDeviceType(deviceType = getDeviceType()) {

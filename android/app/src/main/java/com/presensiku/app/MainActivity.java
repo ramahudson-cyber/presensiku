@@ -10,5 +10,6 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(ImeiPlugin.class);
         registerPlugin(ApkDownloadPlugin.class);
         registerPlugin(MockLocationPlugin.class);
+        registerPlugin(PlayIntegrityPlugin.class);
     }
 }

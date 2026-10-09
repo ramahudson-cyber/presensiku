@@ -11,6 +11,7 @@ import BottomSheet from "../../components/BottomSheet";
 import BottomNav from "../../components/BottomNav";
 import { getCurrentPosition } from "../../services/geoService";
 import { detectMockLocation, mockBlockMessage } from "../../services/mockLocationService";
+import { buildIntegritySignal, attachIntegrity, logSecurityEvent, fetchIntegrityVerdict } from "../../services/integrityService";
 import { getPuskesmasLocation, calculateDistance, verifyLocationServer } from "../../services/attendanceService";
 import { getMondayFirstDayOfWeek, getShiftDefinition, getWitaDateKey, isShiftEnded, isCheckInWindowOpen } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
@@ -379,9 +380,23 @@ export default function AttendancePage() {
     setSaving(true);
     try {
       const mockCheck = await detectMockLocation();
+      const integrityVerdict = await fetchIntegrityVerdict();
+      const integritySignal = buildIntegritySignal(mockCheck, { deviceVisitorId, integrityVerdict });
       if (mockCheck.isMock) {
         setIsFakeGPS(true);
         setError(mockBlockMessage(mockCheck));
+        // Catat percobaan (server akan menolak insert; event terpisah agar terekam).
+        logSecurityEvent("MOCK_REJECTED", {
+          severity: mockCheck.emulator ? "critical" : "warning",
+          location: integritySignal,
+          violations: mockCheck.emulator ? ["emulator"] : ["mock_location"],
+        });
+        setSaving(false);
+        return;
+      }
+      if (mockCheck.needsUpdate) {
+        setIsFakeGPS(true);
+        setError("Aplikasi Presensiku Anda perlu diperbarui untuk melanjutkan absen. Silakan update ke versi terbaru.");
         setSaving(false);
         return;
       }
@@ -474,13 +489,13 @@ export default function AttendancePage() {
         date: today,
         clock_in_time: now.toISOString(),
         clock_out_time: null,
-        location_in: {
+        location_in: attachIntegrity({
           latitude: freshLoc.latitude,
           longitude: freshLoc.longitude,
           accuracy: freshLoc.accuracy,
           altitude: freshLoc.altitude,
           distance_from_puskesmas: serverCheck.distance,
-        },
+        }, integritySignal),
         location_out: null,
         selfie_in_url: null,
         selfie_out_url: null,
@@ -519,9 +534,22 @@ export default function AttendancePage() {
     setSaving(true);
     try {
       const mockCheck = await detectMockLocation();
+      const integrityVerdict = await fetchIntegrityVerdict();
+      const integritySignal = buildIntegritySignal(mockCheck, { deviceVisitorId, integrityVerdict });
       if (mockCheck.isMock) {
         setIsFakeGPS(true);
         setError(mockBlockMessage(mockCheck));
+        logSecurityEvent("MOCK_REJECTED", {
+          severity: mockCheck.emulator ? "critical" : "warning",
+          location: integritySignal,
+          violations: mockCheck.emulator ? ["emulator"] : ["mock_location"],
+        });
+        setSaving(false);
+        return;
+      }
+      if (mockCheck.needsUpdate) {
+        setIsFakeGPS(true);
+        setError("Aplikasi Presensiku Anda perlu diperbarui untuk melanjutkan absen. Silakan update ke versi terbaru.");
         setSaving(false);
         return;
       }
@@ -558,13 +586,13 @@ export default function AttendancePage() {
         .from("attendance")
         .update({
           clock_out_time: now.toISOString(),
-          location_out: {
+          location_out: attachIntegrity({
             latitude: freshLoc.latitude,
             longitude: freshLoc.longitude,
             accuracy: freshLoc.accuracy,
             altitude: freshLoc.altitude,
             distance_from_puskesmas: serverCheck.distance,
-          },
+          }, integritySignal),
           selfie_out_url: null,
           device_visitor_id: deviceVisitorId,
           device_name: deviceName,
