@@ -155,6 +155,15 @@ function TabProfilPuskesmas() {
       toast.error("Longitude harus berada di antara -180 dan 180");
       return;
     }
+    // Cegah koordinat default Puskesmas tersimpan untuk lokasi baru:
+    // titik awal peta memang di Puskesmas, jadi koordinat yang sama persis
+    // artinya admin belum memilih titik sebenarnya.
+    if (!editingId
+      && Math.abs(latitude - (-8.5697)) < 0.000001
+      && Math.abs(longitude - 116.0821) < 0.000001) {
+      toast.error("Titik masih di default Puskesmas — pilih titik lokasi sebenarnya di peta dulu");
+      return;
+    }
     if (!Number.isInteger(radius) || radius < 50 || radius > 2000) {
       toast.error("Radius harus berupa bilangan bulat antara 50 dan 2000 meter (min. 50 m menoleransi error GPS)");
       return;
@@ -322,6 +331,7 @@ function TabProfilPuskesmas() {
         <div className="min-w-0">
           <h2 className={sectionTitle}>Lokasi Absensi</h2>
           <p className={sectionSub}>Kelola lokasi & radius absensi GPS</p>
+          <p className="text-slate-mist text-xs mt-1">Pastikan tiap titik diambil di lokasi sebenarnya (berdiri di titiknya atau silang dengan Google Maps) — jangan simpan semua dari kantor.</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}

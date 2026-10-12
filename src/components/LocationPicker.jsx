@@ -14,6 +14,53 @@ const T = {
   rowBg: 'rgba(15,23,42,0.02)',
 };
 
+// Jarak titik terpilih ke posisi admin saat ini (readout sekali baca).
+// Bila >500 m, tampilkan peringatan: pastikan titik adalah lokasi
+// sebenarnya, bukan posisi admin yang sedang duduk di kantor.
+function MyPositionDistance({ lat, lng }) {
+  const [text, setText] = useState("");
+  const [warn, setWarn] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    setText("");
+    setWarn(false);
+    getCurrentPosition({ timeout: 15000 })
+      .then((pos) => {
+        if (cancelled) return;
+        const R = 6371000;
+        const toRad = (d) => (d * Math.PI) / 180;
+        const dLat = toRad(pos.latitude - lat);
+        const dLon = toRad(pos.longitude - lng);
+        const a = Math.sin(dLat / 2) ** 2
+          + Math.cos(toRad(lat)) * Math.cos(toRad(pos.latitude)) * Math.sin(dLon / 2) ** 2;
+        const meters = Math.round(2 * R * Math.asin(Math.sqrt(a)));
+        const label = meters >= 1000 ? `${(meters / 1000).toFixed(1)} km` : `${meters} m`;
+        setText(`Titik ini ${label} dari posisi Anda sekarang.`);
+        setWarn(meters > 500);
+      })
+      .catch(() => { if (!cancelled) { setText(""); setWarn(false); } });
+    return () => { cancelled = true; };
+  }, [lat, lng]);
+
+  if (!text) return null;
+  return (
+    <div className={`flex items-start gap-2 rounded-xl border px-3 py-2 text-xs ${
+      warn
+        ? "border-rose-200 bg-rose-50 text-rose-700"
+        : "border-gray-200 bg-gray-50 text-gray-600"
+    }`}>
+      <AlertTriangle size={14} className="mt-0.5 shrink-0" />
+      <span>
+        {text}{" "}
+        {warn && (
+          <b>Pastikan ini titik lokasi sebenarnya (mis. rumah/toko), bukan posisi Anda saat ini.</b>
+        )}
+      </span>
+    </div>
+  );
+}
+
 export default function LocationPicker({
   onCancel,
   onConfirm,
@@ -81,12 +128,14 @@ export default function LocationPicker({
 
       markerRef.current.on("dragend", () => {
         const pos = markerRef.current.getLatLng();
+        stopAutoWatch();
         setLat(parseFloat(pos.lat.toFixed(6)));
         setLng(parseFloat(pos.lng.toFixed(6)));
         setHasSelection(true);
       });
 
       map.on("click", (e) => {
+        stopAutoWatch();
         if (markerRef.current) markerRef.current.setLatLng(e.latlng);
         setLat(parseFloat(e.latlng.lat.toFixed(6)));
         setLng(parseFloat(e.latlng.lng.toFixed(6)));
@@ -175,6 +224,11 @@ export default function LocationPicker({
     const newLat = parseFloat(result.lat);
     const newLng = parseFloat(result.lon);
     if (!updateMapPosition(newLat, newLng)) return;
+    stopAutoWatch();
+    // Pilihan pencarian = keputusan eksplisit admin: kunci & tandai terpilih
+    // agar koordinat salah tidak tersimpan dari hasil pencarian yang keliru.
+    setHasSelection(true);
+    setGpsLocked(false);
     setShowResults(false);
     setSearchQuery(result.display_name);
   };
@@ -212,7 +266,9 @@ export default function LocationPicker({
       setLocationError("Latitude harus -90 sampai 90 dan longitude -180 sampai 180");
       return;
     }
+    stopAutoWatch();
     setHasSelection(true);
+    setGpsLocked(false);
     setLocationError("");
   };
 
@@ -240,6 +296,13 @@ export default function LocationPicker({
 
   // Auto-locate: watch GPS saat menambah lokasi baru. Setiap fix menggerakkan
   // marker live; begitu akurasi ≤20 m, watch berhenti & Konfirmasi terbuka.
+  // Pilihan eksplisit admin (klik/seret/cari/manual) menghentikan auto-watch
+  // permanen agar titik tidak tertimpa posisi admin berikutnya.
+  const stopAutoWatch = () => {
+    watchStopRef.current?.();
+    watchStopRef.current = null;
+    setAutoLocking(false);
+  };
   useEffect(() => {
     if (initialSelected) return undefined; // edit lokasi lama: tidak auto-watch
     let stopped = false;
@@ -252,8 +315,7 @@ export default function LocationPicker({
         if (pos.accuracy <= GPS_LOCK_ACCURACY) {
           // Kunci fix terbaik — berhenti memindahkan titik
           stopped = true;
-          watchStopRef.current?.();
-          setAutoLocking(false);
+          stopAutoWatch();
           setGpsLocked(true);
           setHasSelection(true);
         }
@@ -418,6 +480,11 @@ export default function LocationPicker({
           Akurasi GPS ±{gpsAccuracy} m{gpsAccuracy > 20 ? " — kurang presisi, pertimbangkan ulangi" : " — bagus"}
         </div>
       )}
+
+      {/* Pengaman koordinat "bohong": titik lokasi harus diambil di titik
+          sebenarnya — bila admin memilih titik dari kantor, peringatan ini
+          muncul agar tidak tersimpan koordinat posisi admin. */}
+      <MyPositionDistance lat={lat} lng={lng} />
 
       <div className="flex gap-3">
         <button

@@ -10,30 +10,62 @@ const DEFAULT_PUSKESMAS_LOCATION = {
 const DEFAULT_RADIUS_METER = 200;
 
 /**
- * Ambil lokasi puskesmas aktif dari database
- * @returns {Promise<{latitude, longitude, name, radius_meter}>}
+ * Ambil SEMUA lokasi aktif dari database (multi-lokasi).
+ * get_active_location mengembalikan SETOF — jangan hanya pakai baris pertama.
+ * @returns {Promise<Array<{id, latitude, longitude, name, radius_meter}>>}
  */
-export async function getPuskesmasLocation() {
+export async function getActiveLocations() {
   try {
     const { data, error } = await supabase.rpc('get_active_location');
 
     if (error) throw error;
 
     if (data && data.length > 0) {
-      const loc = data[0];
-      return {
+      return data.map((loc) => ({
+        id: loc.id,
         latitude: parseFloat(loc.latitude),
         longitude: parseFloat(loc.longitude),
         name: loc.name,
         radius_meter: loc.radius_meter,
-      };
+      }));
     }
 
-    return { ...DEFAULT_PUSKESMAS_LOCATION, radius_meter: DEFAULT_RADIUS_METER };
+    return [{ ...DEFAULT_PUSKESMAS_LOCATION, radius_meter: DEFAULT_RADIUS_METER }];
   } catch (err) {
-    console.error("❌ Gagal fetch lokasi dari DB, pakai default:", err.message);
-    return { ...DEFAULT_PUSKESMAS_LOCATION, radius_meter: DEFAULT_RADIUS_METER };
+    console.error("❌ Gagal fetch daftar lokasi dari DB, pakai default:", err.message);
+    return [{ ...DEFAULT_PUSKESMAS_LOCATION, radius_meter: DEFAULT_RADIUS_METER }];
   }
+}
+
+/**
+ * Ambil lokasi puskesmas aktif dari database
+ * Kompatibilitas: lokasi pertama dari daftar aktif (urutan name ASC dari server).
+ * Untuk penilaian jarak yang benar, pakai getNearestLocation().
+ * @returns {Promise<{latitude, longitude, name, radius_meter}>}
+ */
+export async function getPuskesmasLocation() {
+  const locations = await getActiveLocations();
+  return locations[0];
+}
+
+/**
+ * Cari lokasi aktif TERDEKAT dari posisi user (Haversine).
+ * Client mirror dari match_attendance_location di server — server tetap
+ * otoritas final, fungsi ini hanya untuk tampilan & pra-cek yang jujur.
+ * @returns {Promise<{location, distance}>}
+ */
+export async function getNearestLocation(userLat, userLon) {
+  const locations = await getActiveLocations();
+  let best = locations[0];
+  let bestDistance = calculateDistance(userLat, userLon, best.latitude, best.longitude);
+  for (let i = 1; i < locations.length; i++) {
+    const d = calculateDistance(userLat, userLon, locations[i].latitude, locations[i].longitude);
+    if (d < bestDistance) {
+      best = locations[i];
+      bestDistance = d;
+    }
+  }
+  return { location: best, distance: bestDistance };
 }
 
 /**
@@ -62,29 +94,26 @@ export function calculateDistance(lat1, lon1, lat2, lon2) {
 }
 
 /**
- * Cek apakah user dalam radius puskesmas
+ * Cek apakah user dalam radius lokasi aktif TERDEKAT
  * + ANTI FAKE GPS DETECTION
+ * Bentuk return dipertahankan; ditambah matchedLocation (lokasi yang dinilai).
  */
 export async function isWithinRadius(userLat, userLon, accuracy, altitude) {
-  const puskesmas = await getPuskesmasLocation();
-  const distance = calculateDistance(
-    userLat, userLon,
-    puskesmas.latitude,
-    puskesmas.longitude
-  );
-  
+  const { location: nearest, distance } = await getNearestLocation(userLat, userLon);
+
   // === ANTI FAKE GPS HEURISTIK ===
   // 1. Akurasi terlalu sempurna (< 5 meter) = curiga Fake GPS
   // 2. Altitude null/0 = curiga Fake GPS (GPS asli biasanya punya ketinggian)
   const isSuspiciousAccuracy = accuracy && accuracy < 5;
   const isSuspiciousAltitude = altitude === null || altitude === 0 || altitude === undefined;
   const isFakeGPS = isSuspiciousAccuracy || isSuspiciousAltitude;
-  
+
   return {
-    withinRadius: distance <= puskesmas.radius_meter,
+    withinRadius: distance <= nearest.radius_meter,
     distance: Math.round(distance),
-    puskesmasName: puskesmas.name,
-    radius: puskesmas.radius_meter,
+    puskesmasName: nearest.name,
+    radius: nearest.radius_meter,
+    matchedLocation: nearest,
     isFakeGPS: isFakeGPS,
     accuracy: accuracy,
     altitude: altitude,

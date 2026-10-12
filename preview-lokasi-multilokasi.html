@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — Perbaikan Lokasi Multi-Titik</title>
+<style>
+body{font-family:Inter,Arial,sans-serif;background:#f4f2fa;margin:0;padding:24px;color:#1e1b2e}
+.card{max-width:680px;margin:0 auto;background:#fff;border-radius:16px;padding:24px;border:1px solid #e5e1f2}
+h1{font-size:18px;margin:0 0 8px}.sub{font-size:12px;color:#777;margin-bottom:16px}
+.loc{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid #eee;border-radius:12px;margin-bottom:10px}
+.dot{width:36px;height:36px;border-radius:50%;background:#eef7e8;display:flex;align-items:center;justify-content:center;flex:none}
+b{font-size:14px}.coord{font-family:monospace;font-size:12px;color:#555}
+.badge{font-size:10px;background:#eef7e8;color:#3d8b1f;border-radius:99px;padding:2px 8px;margin-left:6px}
+.warn{margin-top:16px;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:12px;font-size:12px;color:#991b1b}
+.ok{margin-top:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:12px;font-size:12px;color:#166534}
+code{background:#f3f1fa;padding:1px 6px;border-radius:6px;font-size:12px}
+</style></head><body><div class="card">
+<h1>Perbaikan: Koordinat Lokasi &amp; Validasi Multi-Titik</h1>
+<div class="sub">Preview perubahan UI — daftar lokasi + pengaman form tambah lokasi</div>
+<div class="loc"><div class="dot">📍</div><div><b>rumah wiki <span class="badge">AKTIF</span></b><br><span class="coord">lat/lng dititik-ulang di lokasi sebenarnya</span></div></div>
+<div class="loc"><div class="dot">📍</div><div><b>lesehan <span class="badge">AKTIF</span></b><br><span class="coord">jarak dihitung ke titik TERDEKAT, bukan selalu Puskesmas</span></div></div>
+<div class="loc"><div class="dot">📍</div><div><b>puskesmas ampenan <span class="badge">AKTIF</span></b><br><span class="coord">-8.569919, 116.076892</span></div></div>
+<div class="warn"><b>Baru di form Tambah Lokasi:</b> (1) koordinat default Puskesmas ditolak saat simpan — wajib pilih titik; (2) pilihan manual/klik/seret/cari menghentikan auto-GPS; (3) tampil jarak "titik ini X m dari posisi Anda" + peringatan bila &gt; 500 m; (4) tip: titik diambil di lokasi sebenarnya / silang Google Maps.</div>
+<div class="ok"><b>Perilaku absen:</b> kartu ungu &amp; pin peta memakai <code>matchedLocation</code> (server) atau lokasi aktif terdekat (fallback) — label tidak lagi selalu "Puskesmas". Server tetap otoritas validasi; anti fake-GPS tidak dilonggarkan.</div>
+</div></body></html>

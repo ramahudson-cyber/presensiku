@@ -12,7 +12,7 @@ import BottomNav from "../../components/BottomNav";
 import { getCurrentPosition } from "../../services/geoService";
 import { detectMockLocation, mockBlockMessage } from "../../services/mockLocationService";
 import { buildIntegritySignal, attachIntegrity, logSecurityEvent, fetchIntegrityVerdict } from "../../services/integrityService";
-import { getPuskesmasLocation, calculateDistance, verifyLocationServer } from "../../services/attendanceService";
+import { getPuskesmasLocation, getNearestLocation, verifyLocationServer } from "../../services/attendanceService";
 import { getMondayFirstDayOfWeek, getShiftDefinition, getWitaDateKey, isShiftEnded, isCheckInWindowOpen } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
@@ -275,11 +275,14 @@ export default function AttendancePage() {
         setLocationStatus("valid");
         setError("");
       } else {
-        const dist = calculateDistance(loc.latitude, loc.longitude, puskesmasLocation.latitude, puskesmasLocation.longitude);
+        // Fallback offline/server-gagal: nilai terhadap lokasi aktif TERDEKAT
+        // (bukan baris pertama alfabetis) agar label & status tidak selalu Puskesmas.
+        const { location: nearest, distance: dist } = await getNearestLocation(loc.latitude, loc.longitude);
+        setMatchedLocation(prev => prev?.id === nearest.id ? prev : nearest);
         const rounded = Math.round(dist);
         prevDistanceRef.current = rounded;
         setDistance(rounded);
-        const isValid = rounded <= ((puskesmasLocation.radius_meter || 200) + (loc.accuracy || 0));
+        const isValid = rounded <= ((nearest.radius_meter || 200) + (loc.accuracy || 0));
         setLocationStatus(isValid ? "valid" : "invalid");
         if (isValid) setError("");
       }
