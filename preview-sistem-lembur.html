@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preview — Sistem Lembur</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:24px;font-family:Inter,system-ui,Arial,sans-serif;background:#f4f2fb;color:#0f172a}
+.wrap{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+h1{grid-column:1/-1;font-size:18px;margin:0 0 4px}
+.sub{grid-column:1/-1;font-size:12px;color:#64748b;margin:0 0 8px}
+.card{background:#fff;border:1px solid rgba(31,41,55,.08);border-radius:24px;padding:20px;box-shadow:0 4px 16px rgba(15,23,42,.06)}
+.badge{font-size:9px;font-weight:700;padding:3px 10px;border-radius:99px}
+.p{background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.25)}
+.a{background:rgba(16,185,129,.1);color:#10b981;border:1px solid rgba(16,185,129,.25)}
+.r{background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.25)}
+.lbl{font-size:9px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.06em}
+.stat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.st{background:#fff;border:1px solid rgba(31,41,55,.08);border-radius:16px;padding:10px}
+.st b{display:block;font-size:20px;color:#bf00ff;margin-top:3px}
+.row{border-radius:16px;border:1px solid rgba(31,41,55,.08);padding:12px;margin-bottom:8px;background:rgba(15,23,42,.02)}
+.row p{margin:0;font-size:12.5px;font-weight:700}
+.row .m{font-size:11.5px;color:#475569;margin-top:2px;font-weight:400}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:99px;padding:12px 18px;color:#fff;font-weight:700;font-size:13px;background:linear-gradient(135deg,#bf00ff,#9900cc);width:100%;justify-content:center;margin-top:10px}
+.inp{width:100%;border:1px solid rgba(31,41,55,.08);border-radius:14px;padding:12px;font-size:13px;background:#fff;margin-top:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.act{display:flex;gap:6px}
+.b1{background:rgba(16,185,129,.15);color:#10b981;border:1px solid rgba(16,185,129,.3);border-radius:12px;padding:8px;cursor:pointer}
+.b2{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:8px;cursor:pointer}
+.note{grid-column:1/-1;font-size:11px;color:#64748b;background:#fff;border:1px solid rgba(31,41,55,.08);border-radius:16px;padding:14px;line-height:1.7}
+</style></head><body><div class="wrap">
+<h1>⏰ Sistem Lembur — Preview</h1>
+<p class="sub">Kiri: halaman pegawai (/employee/overtime) · Kanan: halaman admin (/admin/overtime) · Tarif diatur di Pengaturan → Modul</p>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:800">Lembur</span><span class="badge p">sisi pegawai</span></div>
+  <div class="stat">
+    <div class="st"><span class="lbl">Menunggu</span><b style="color:#f59e0b">1</b></div>
+    <div class="st"><span class="lbl">Disetujui</span><b style="color:#10b981">2</b></div>
+    <div class="st"><span class="lbl">Total Uang</span><b style="font-size:13px">Rp112.500</b></div>
+  </div>
+  <div class="row" style="background:#fff">
+    <span class="lbl" style="margin-bottom:6px;display:block">Ajukan Lembur</span>
+    <div class="grid2">
+      <div><span class="lbl">Tanggal</span><input class="inp" type="date" value="2026-10-19"></div>
+      <div class="grid2"><div><span class="lbl">Mulai</span><input class="inp" type="time" value="16:30"></div><div><span class="lbl">Selesai</span><input class="inp" type="time" value="19:00"></div></div>
+    </div>
+    <input class="inp" placeholder="Alasan: menyelesaikan laporan rekam medis">
+    <button class="btn">Kirim Pengajuan</button>
+  </div>
+  <div class="row"><p>Senin, 19 Okt 2026 <span class="badge p" style="float:right">Menunggu</span></p><p class="m">16:30 – 19:00 · 2,5 jam · "menyelesaikan laporan rekam medis"</p></div>
+  <div class="row"><p>Kamis, 15 Okt 2026 <span class="badge a" style="float:right">Disetujui</span></p><p class="m">14:00 – 16:30 · 2,5 jam</p><p class="m" style="color:#10b981;font-weight:700">Dibayar: 2,5 jam × Rp45.000/jam = Rp112.500</p></div>
+  <div class="row"><p>Selasa, 13 Okt 2026 <span class="badge r" style="float:right">Ditolak</span></p><p class="m">18:00 – 20:00 · alasan: sudah ada petugas jaga</p></div>
+</div>
+
+<div class="card" style="background:#0b0912;color:#fff;border-color:rgba(255,255,255,.08)">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:800">Kelola Lembur</span><span class="badge a">sisi admin</span></div>
+  <div class="stat">
+    <div class="st" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08)"><span class="lbl" style="color:#9aa0b4">Menunggu</span><b style="color:#fcd34d">3</b></div>
+    <div class="st" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08)"><span class="lbl" style="color:#9aa0b4">Jam (bulan ini)</span><b>12,5</b></div>
+    <div class="st" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08)"><span class="lbl" style="color:#9aa0b4">Uang (bulan ini)</span><b style="font-size:14px;color:#a3e635">Rp562.500</b></div>
+  </div>
+  <div class="row" style="background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)">
+    <p>epic <span class="badge p">Menunggu</span></p>
+    <p class="m" style="color:#9aa0b4">19 Okt 2026 · 16:30–19:00 · 2,5 jam · "menyelesaikan laporan"</p>
+    <div class="act" style="margin-top:8px;justify-content:flex-end"><button class="b1">✓</button><button class="b2">✕</button></div>
+  </div>
+  <div class="row" style="background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)">
+    <p>Andi Saputra <span class="badge a">Disetujui</span></p>
+    <p class="m" style="color:#9aa0b4">15 Okt 2026 · 14:00–16:30 · dibayar 2,5 jam = <b style="color:#a3e635">Rp112.500</b></p>
+  </div>
+  <p style="font-size:11px;color:#9aa0b4;background:rgba(255,255,255,.05);border-radius:12px;padding:10px;margin-top:10px">
+    Saat menyetujui: admin bisa <b style="color:#fff">mengubah jam yang dibayar</b> (default = pengajuan), lihat estimasi uang, lalu kunci. Tombol <b style="color:#fff">+ Buat Lembur</b> untuk input langsung tanpa pengajuan. Export Excel tersedia.
+  </p>
+</div>
+
+<div class="note">
+<b>Alur lengkap:</b> Admin set tarif di Pengaturan (Rp/jam, minimal menit, maks jam/hari) → pegawai mengajukan (atau admin buatkan langsung) → admin setujui (jam dibayar bisa disesuaikan; uang = jam × tarif, dihitung server & terkunci) → lembur disetujui muncul otomatis sebagai komponen <b>+</b> di Rekap Gaji & slip gaji pegawai bulan terkait. Pengajuan ganda pada tanggal & jam yang sama diblokir sistem. Semua angka uang dihitung server — tidak bisa dimanipulasi dari klien.
+</div>
+</div></body></html>

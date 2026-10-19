@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { getSetting, setSettingValue } from "../../lib/settings";
+import { getOvertimeConfig, saveOvertimeConfig } from "../../services/overtimeService";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import { useAuth } from "../../context/AuthContext";
@@ -1473,6 +1474,9 @@ function TabModul() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [payrollOn, setPayrollOn] = useState(false);
+  // Konfigurasi lembur (custom oleh admin, berlaku per instansi)
+  const [otConfig, setOtConfig] = useState({ rate_per_hour: 15000, min_minutes: 30, max_hours_per_day: 4 });
+  const [otSaving, setOtSaving] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -1482,6 +1486,34 @@ function TabModul() {
       finally { setLoading(false); }
     })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const cfg = await getOvertimeConfig();
+        setOtConfig(cfg);
+      } catch { /* default */ }
+    })();
+  }, []);
+
+  const saveOvertime = async () => {
+    const rate = Number(otConfig.rate_per_hour);
+    const minMin = Number(otConfig.min_minutes);
+    const maxH = Number(otConfig.max_hours_per_day);
+    if (!Number.isFinite(rate) || rate < 0) return toast.error("Tarif per jam tidak valid");
+    if (!Number.isInteger(minMin) || minMin < 0) return toast.error("Minimal menit tidak valid");
+    if (!Number.isFinite(maxH) || maxH <= 0 || maxH > 24) return toast.error("Maksimal jam per hari harus 1–24");
+    setOtSaving(true);
+    try {
+      await saveOvertimeConfig({ rate_per_hour: rate, min_minutes: minMin, max_hours_per_day: maxH });
+      toast.success("Pengaturan lembur tersimpan — berlaku untuk pengajuan berikutnya");
+    } catch (err) {
+      toast.error("Gagal menyimpan: " + (err.message || ""));
+    } finally {
+      setOtSaving(false);
+    }
+  };
+
 
   const togglePayroll = async () => {
     const next = !payrollOn;
@@ -1550,6 +1582,56 @@ function TabModul() {
           Pengaturan berlaku untuk instansi aktif saat ini. Sidebar dan menu pegawai menyesuaikan
           setelah halaman dimuat ulang.
         </p>
+      </div>
+
+      {/* ── PENGATURAN LEMBUR ── */}
+      <div className={`${cardBase} p-4 space-y-4`}>
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-violet-600/20 flex items-center justify-center shrink-0">
+            <Clock size={18} className="text-periwinkle-glow" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-pure-white">Lembur</p>
+            <p className="text-[11px] text-slate-mist mt-1 leading-relaxed">
+              Tarif dan batas lembur. Uang = jam disetujui × tarif; angka dikunci saat disetujui,
+              jadi mengubah tarif di sini tidak mengubah lembur yang sudah lama.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label className={labelBase}>Tarif per jam (Rp)</label>
+            <input
+              type="number" min="0" step="500"
+              value={otConfig.rate_per_hour}
+              onChange={(e) => setOtConfig({ ...otConfig, rate_per_hour: e.target.value })}
+              className={inputBase}
+            />
+          </div>
+          <div>
+            <label className={labelBase}>Minimal menit dihitung</label>
+            <input
+              type="number" min="0" step="5"
+              value={otConfig.min_minutes}
+              onChange={(e) => setOtConfig({ ...otConfig, min_minutes: e.target.value })}
+              className={inputBase}
+            />
+          </div>
+          <div>
+            <label className={labelBase}>Maksimal jam / hari</label>
+            <input
+              type="number" min="1" max="24" step="0.5"
+              value={otConfig.max_hours_per_day}
+              onChange={(e) => setOtConfig({ ...otConfig, max_hours_per_day: e.target.value })}
+              className={inputBase}
+            />
+          </div>
+        </div>
+
+        <button onClick={saveOvertime} disabled={otSaving} className={btnPrimary}>
+          <Save size={15} /> Simpan Pengaturan Lembur
+        </button>
       </div>
     </div>
   );

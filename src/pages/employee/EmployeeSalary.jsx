@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { isPayrollEnabled, getMyPayrollLines, ensureMyPayrollLine } from "../../services/payrollService";
+import { getApprovedOvertimeTotals } from "../../services/overtimeService";
 import { getCurrentVersion } from "../../services/updateService";
 import { Wallet, Loader2, Download, Info, CalendarSearch } from "lucide-react";
 import { toast } from "react-toastify";
@@ -22,22 +23,50 @@ const statusEnum = {
 
 function EmployeeSalaryPage() {
   const { user } = useAuth();
+  const cancelledRef = useRef(false);
+  useEffect(() => {
+    cancelledRef.current = false;
+    return () => { cancelledRef.current = true; };
+  }, []);
   const [enabled, setEnabledState] = useState(null);
   const [lines, setLines] = useState([]);
+  // Total lembur disetujui per periode (YYYY-MM) — komponen "+" tampilan
+  // slip; payroll_lines tidak diubah (read-only gabungan).
+  const [otByPeriod, setOtByPeriod] = useState({});
   const [loading, setLoading] = useState(true);
   const [pickPeriod, setPickPeriod] = useState(currentPeriod());
   const [ensuring, setEnsuring] = useState(false);
 
-  const load = useCallback(async () => {
+  // Bukan useCallback: compiler React tidak bisa mempertahankan memoization
+  // manual lama begitu Promise.all ditambahkan — plain function + ref guard.
+  const load = async () => {
     setLoading(true);
     try {
-      setLines(await getMyPayrollLines(user.id));
+      const myLines = await getMyPayrollLines(user.id);
+      setLines(myLines);
+      // Tarik total lembur disetujui utk tiap periode slip milik pegawai.
+      const periods = [...new Set((myLines || []).map((l) => l.period_month?.slice(0, 7)).filter(Boolean))];
+      const entries = await Promise.all(
+        periods.map(async (p) => {
+          try {
+            const map = await getApprovedOvertimeTotals(p);
+            return [p, map.get(user.id) || null];
+          } catch {
+            return [p, null];
+          }
+        })
+      );
+      if (!cancelledRef.current) {
+        setOtByPeriod(Object.fromEntries(entries.filter(([, v]) => v)));
+      }
     } catch {
       setLines([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
+  const loadRef = useRef(() => {});
+  useEffect(() => { loadRef.current = load; }, [load]);
 
   useEffect(() => {
     let cancelled = false;
@@ -92,6 +121,12 @@ function EmployeeSalaryPage() {
       ["Gaji / Komponen", rupiah(line.base_component)],
       ["Hari Kerja", `${line.work_days} hari`],
       ["Hadir", `${line.hadir} hari`],
+      ...((otByPeriod[line.period_month?.slice(0, 7)]?.overtime_amount || 0) > 0
+        ? [[
+            `Lembur (${otByPeriod[line.period_month?.slice(0, 7)].overtime_hours.toLocaleString("id-ID")} jam)`,
+            "+ " + rupiah(otByPeriod[line.period_month?.slice(0, 7)].overtime_amount),
+          ]]
+        : []),
       ["Terlambat", `${line.terlambat} kali (${line.late_minutes_total} menit)`],
       ["Alpha", `${line.alpha_days} hari`],
       ["Izin / Sakit", `${line.izin_days} / ${line.sakit_days} hari`],
@@ -222,6 +257,13 @@ function EmployeeSalaryPage() {
               <div className="px-5 py-3 space-y-1.5 text-[13px]">
                 <Row label="Gaji / Komponen" value={rupiah(line.base_component)} />
                 <Row label={`Hadir ${line.hadir} dari ${line.work_days} hari`} value="" muted />
+                {(otByPeriod[line.period_month?.slice(0, 7)]?.overtime_amount || 0) > 0 && (
+                  <Row
+                    label={`Lembur ${otByPeriod[line.period_month?.slice(0, 7)].overtime_hours.toLocaleString("id-ID")} jam`}
+                    value={"+" + rupiah(otByPeriod[line.period_month?.slice(0, 7)].overtime_amount)}
+                    green
+                  />
+                )}
                 <Row label={`Terlambat ${line.terlambat}× (${line.late_minutes_total} mnt)`} value={"− " + rupiah(line.late_deduction)} red />
                 <Row label={`Alpha ${line.alpha_days} hari`} value={"− " + rupiah(line.alpha_deduction)} red />
                 {line.no_checkout_days > 0 && (
@@ -256,11 +298,11 @@ function EmployeeSalaryPage() {
 
 const T_BORDER = "rgba(31,41,55,0.08)";
 
-function Row({ label, value, red, muted }) {
+function Row({ label, value, red, muted, green }) {
   return (
     <div className="flex items-center justify-between gap-3">
       <span className={muted ? "text-slate-400" : "text-slate-600"}>{label}</span>
-      <span className={`font-semibold whitespace-nowrap ${red ? "text-red-500" : muted ? "text-slate-400 italic text-[11px]" : "text-slate-800"}`}>
+      <span className={`font-semibold whitespace-nowrap ${red ? "text-red-500" : green ? "text-emerald-600" : muted ? "text-slate-400 italic text-[11px]" : "text-slate-800"}`}>
         {value}
       </span>
     </div>

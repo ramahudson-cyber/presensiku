@@ -6,7 +6,7 @@ import { getSetting } from "../lib/settings";
 import {
   LayoutDashboard, Users, CalendarCheck, CalendarDays,
   FileText, Megaphone, Settings, LogOut,
-  History, X, ClipboardList, Building2, Wallet, Bell, MessageSquareWarning, ShieldAlert
+  History, X, ClipboardList, Building2, Wallet, Bell, MessageSquareWarning, ShieldAlert, Clock
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import ProfileSheet from "./ProfileSheet";
@@ -39,6 +39,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
     { path: "/employee/schedule", label: "Jadwal Shift", icon: CalendarDays },
     { path: "/employee/leave", label: "Izin / Sakit", icon: ClipboardList },
     { path: "/employee/sanggah", label: "Sanggahan", icon: MessageSquareWarning },
+    { path: "/employee/overtime", label: "Lembur", icon: Clock },
   ];
 
   // Menu khusus platform super_admin (Kelola Instansi)
@@ -59,6 +60,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
     { path: "/admin/schedules", label: "Jadwal Kerja", icon: CalendarDays },
     { path: "/admin/leave", label: "Cuti & Izin", icon: FileText },
     { path: "/admin/sanggahan", label: "Sanggahan", icon: MessageSquareWarning },
+    { path: "/admin/overtime", label: "Lembur", icon: Clock },
     ...(payrollOn ? [{ path: "/admin/payroll", label: "Gaji", icon: Wallet }] : []),
     { path: "/admin/announcements", label: "Pengumuman", icon: Megaphone },
     ...(userRole === "super_admin" ? superAdminMenus : []),

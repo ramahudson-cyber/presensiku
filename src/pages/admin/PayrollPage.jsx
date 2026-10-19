@@ -6,6 +6,7 @@ import {
   getEmployeeConfigs, saveEmployeeConfigs, recalculatePayroll, getPayrollLines,
 } from "../../services/payrollService";
 import { exportExcelWorkbook, RUPIAH } from "../../services/excelExport";
+import { getApprovedOvertimeTotals } from "../../services/overtimeService";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
@@ -189,10 +190,26 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
     { base: 0, cut: 0, received: 0 }
   );
 
+  // Komponen lembur (read-only): total uang lembur disetujui per pegawai
+  // untuk periode rekap. Sumber: overtime_requests (fitur lembur). Tidak
+  // mengubah payroll_lines — hanya penampil gabungan di rekap & export.
+  const [overtimeTotals, setOvertimeTotals] = useState(new Map());
+  useEffect(() => {
+    let cancelled = false;
+    getApprovedOvertimeTotals(period.slice(0, 7))
+      .then((m) => { if (!cancelled) setOvertimeTotals(m); })
+      .catch(() => { if (!cancelled) setOvertimeTotals(new Map()); });
+    return () => { cancelled = true; };
+  }, [period, lines]);
+
+  const otOf = (userId) => overtimeTotals.get(userId) || { overtime_hours: 0, overtime_amount: 0 };
+
   const exportExcel = async () => {
     setExporting(true);
     try {
       const sum = (k) => lines.reduce((a, l) => a + Number(l[k] || 0), 0);
+      const otSumHours = lines.reduce((a, l) => a + (otOf(l.user_id).overtime_hours || 0), 0);
+      const otSumAmount = lines.reduce((a, l) => a + (otOf(l.user_id).overtime_amount || 0), 0);
       await exportExcelWorkbook({
         filename: `gaji-${period}.xlsx`,
         sheetName: "Rekap Gaji",
@@ -201,7 +218,7 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
         header: [
           "Nama", "Username", "Hari Kerja", "Hadir", "Terlambat", "Menit Telat",
           "Alpha", "Izin", "Sakit", "Tanpa Pulang", "Pulang Cepat", "Pot. Terlambat", "Pot. Alpha",
-          "Pot. Tanpa Pulang", "Pot. Pulang Cepat", "Total Potongan", "Diterima",
+          "Pot. Tanpa Pulang", "Pot. Pulang Cepat", "Lembur (jam)", "Uang Lembur", "Total Potongan", "Diterima",
         ],
         columnMeta: [
           { align: "left" }, { align: "left" },
@@ -216,6 +233,8 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
           Number(l.no_checkout_days || 0), Number(l.early_leave_days || 0),
           Number(l.late_deduction || 0), Number(l.alpha_deduction || 0),
           Number(l.no_checkout_deduction || 0), Number(l.early_leave_deduction || 0),
+          otOf(l.user_id).overtime_hours || 0,
+          otOf(l.user_id).overtime_amount || 0,
           Number(l.total_deduction || 0), Number(l.total_received || 0),
         ]),
         totalRow: [
@@ -223,7 +242,7 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
           sum("late_minutes_total"), sum("alpha_days"), sum("izin_days"), sum("sakit_days"),
           sum("no_checkout_days"), sum("early_leave_days"),
           sum("late_deduction"), sum("alpha_deduction"), sum("no_checkout_deduction"),
-          sum("early_leave_deduction"), sum("total_deduction"), sum("total_received"),
+          sum("early_leave_deduction"), otSumHours, otSumAmount, sum("total_deduction"), sum("total_received"),
         ],
       });
     } catch (e) {
@@ -311,6 +330,7 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
                   { h: "Pot. Alpha", align: "text-right" },
                   { h: "Pot. Tanpa Pulang", align: "text-right" },
                   { h: "Pot. Pulang Cepat", align: "text-right" },
+                  { h: "Lembur", align: "text-right" },
                   { h: "Diterima", align: "text-right" },
                 ].map(({ h, align }) => (
                   <th key={h} className={`px-3 py-2.5 font-semibold whitespace-nowrap ${align}`}>{h}</th>
@@ -344,6 +364,15 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
                   <td className="px-3 py-2.5 whitespace-nowrap text-right text-red-500">{rupiah(l.alpha_deduction)}</td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-right text-red-500">{rupiah(l.no_checkout_deduction)}</td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-right text-red-500">{rupiah(l.early_leave_deduction)}</td>
+                  <td className="px-3 py-2.5 whitespace-nowrap text-right text-emerald-600">
+                    {otOf(l.user_id).overtime_amount > 0 ? (
+                      <span title={`${otOf(l.user_id).overtime_hours} jam lembur`}>
+                        +{rupiah(otOf(l.user_id).overtime_amount)}
+                      </span>
+                    ) : (
+                      <span className="text-slate-300">–</span>
+                    )}
+                  </td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-right font-extrabold text-emerald-600">{rupiah(l.total_received)}</td>
                 </tr>
               ))}

@@ -7,6 +7,8 @@ import EmployeesPage from "../pages/admin/EmployeesPage";
 import AttendancePage from "../pages/attendance/AttendancePage";
 import AttendanceHistoryPage from "../pages/admin/AttendanceHistoryPage";
 import SecurityAttendancePage from "../pages/admin/SecurityAttendancePage";
+import OvertimeManagementPage from "../pages/admin/OvertimeManagementPage";
+import OvertimeRequestPage from "../pages/employee/OvertimeRequestPage";
 import PengaturanPage from "../pages/admin/PengaturanPage";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import EmployeeNotificationsPage from "../pages/employee/EmployeeNotificationsPage";
@@ -75,6 +77,11 @@ function AppRoutes() {
             <SecurityAttendancePage />
           </ProtectedRoute>
         } />
+        <Route path="overtime" element={
+          <ProtectedRoute allowedRoles={["super_admin", "admin", "admin_puskesmas"]}>
+            <OvertimeManagementPage />
+          </ProtectedRoute>
+        } />
         <Route path="schedules" element={
           <ProtectedRoute allowedRoles={["super_admin", "admin", "admin_puskesmas"]}>
             <SchedulingPage />
@@ -131,6 +138,7 @@ function AppRoutes() {
         <Route path="history" element={<EmployeeHistory />} />
         <Route path="leave" element={<LeaveRequestPage />} />
         <Route path="sanggah" element={<SanggahPage />} />
+        <Route path="overtime" element={<OvertimeRequestPage />} />
         <Route path="salary" element={<EmployeeSalary />} />
       </Route>
 
