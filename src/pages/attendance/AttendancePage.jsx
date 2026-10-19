@@ -86,6 +86,20 @@ export default function AttendancePage() {
 	  const DISTANCE_THRESHOLD = 5;
 	  const [refreshing, setRefreshing] = useState(false);
 
+  // Throttle pencatatan event keamanan: getLocation berjalan tiap 5 detik,
+  // tanpa ini tabel attendance_security_events akan dibanjiri baris identik.
+  const securityLogRef = useRef({});
+  // Ref (bukan state) agar getLocation yang dipanggil interval 5 detik dari
+  // effect deps [] tidak menangkap deviceVisitorId lama yang masih kosong.
+  const deviceVisitorIdRef = useRef("");
+  useEffect(() => { deviceVisitorIdRef.current = deviceVisitorId; }, [deviceVisitorId]);
+  const logSecurityOnce = (key, cooldownMs, eventType, payload) => {
+    const now = Date.now();
+    if (now - (securityLogRef.current[key] || 0) < cooldownMs) return;
+    securityLogRef.current[key] = now;
+    logSecurityEvent(eventType, payload);
+  };
+
 
 
   const [resultSheetOpen, setResultSheetOpen] = useState(false);
@@ -246,6 +260,11 @@ export default function AttendancePage() {
       if (isFake) {
         setIsFakeGPS(true);
         setLocationStatus("invalid");
+        logSecurityOnce("fake-local", 5 * 60 * 1000, "FAKE_LOCATION_REJECTED", {
+          severity: "warning",
+          location: { ...loc, device_visitor_id: deviceVisitorIdRef.current },
+          violations: ["fake_gps_heuristic"],
+        });
         setRefreshing(false);
         return;
       }
@@ -264,7 +283,20 @@ export default function AttendancePage() {
           });
         }
         if (!serverResult.valid) {
-          if (serverResult.suspicious_accuracy) setIsFakeGPS(true);
+          if (serverResult.suspicious_accuracy) {
+            setIsFakeGPS(true);
+            // Kasus "Akurasi GPS mencurigakan (1.0m)": sebelumnya hanya error
+            // di layar pegawai. Dicatat agar admin bisa menindaklanjuti.
+            logSecurityOnce("suspicious-accuracy", 5 * 60 * 1000, "SUSPICIOUS_ACCURACY", {
+              severity: "warning",
+              location: {
+                ...loc,
+                accuracy: loc.accuracy ?? serverResult.accuracy ?? null,
+                device_visitor_id: deviceVisitorIdRef.current,
+              },
+              violations: ["suspicious_accuracy"],
+            });
+          }
           setLocationStatus("invalid");
           setDistance(serverResult.distance);
           setError(serverResult.error);
@@ -389,9 +421,10 @@ export default function AttendancePage() {
         setIsFakeGPS(true);
         setError(mockBlockMessage(mockCheck));
         // Catat percobaan (server akan menolak insert; event terpisah agar terekam).
+        // Sertakan koordinat terakhir yang diketahui agar kolom lat/lng/accuracy terisi.
         logSecurityEvent("MOCK_REJECTED", {
           severity: mockCheck.emulator ? "critical" : "warning",
-          location: integritySignal,
+          location: { ...integritySignal, ...(currentCoords || {}) },
           violations: mockCheck.emulator ? ["emulator"] : ["mock_location"],
         });
         setSaving(false);
@@ -400,6 +433,11 @@ export default function AttendancePage() {
       if (mockCheck.needsUpdate) {
         setIsFakeGPS(true);
         setError("Aplikasi Presensiku Anda perlu diperbarui untuk melanjutkan absen. Silakan update ke versi terbaru.");
+        logSecurityOnce("app-integrity", 5 * 60 * 1000, "APP_INTEGRITY_MISSING", {
+          severity: "warning",
+          location: { ...integritySignal, ...(currentCoords || {}) },
+          violations: ["plugin_missing"],
+        });
         setSaving(false);
         return;
       }
@@ -409,6 +447,11 @@ export default function AttendancePage() {
       if (isFake) {
         setIsFakeGPS(true);
         setError("Terdeteksi Fake GPS! Absen ditolak.");
+        logSecurityEvent("FAKE_LOCATION_REJECTED", {
+          severity: "warning",
+          location: { ...freshLoc, device_visitor_id: deviceVisitorId },
+          violations: ["fake_gps_heuristic"],
+        });
         setSaving(false);
         return;
       }
@@ -418,6 +461,13 @@ export default function AttendancePage() {
       if (!serverCheck.valid) {
         setError(serverCheck.error || "Anda di luar radius absen. Silakan mendekat ke titik absensi.");
         setIsFakeGPS(!!serverCheck.suspicious_accuracy);
+        if (serverCheck.suspicious_accuracy) {
+          logSecurityEvent("SUSPICIOUS_ACCURACY", {
+            severity: "warning",
+            location: { ...freshLoc, device_visitor_id: deviceVisitorId },
+            violations: ["suspicious_accuracy"],
+          });
+        }
         setSaving(false);
         return;
       }
@@ -553,6 +603,11 @@ export default function AttendancePage() {
       if (mockCheck.needsUpdate) {
         setIsFakeGPS(true);
         setError("Aplikasi Presensiku Anda perlu diperbarui untuk melanjutkan absen. Silakan update ke versi terbaru.");
+        logSecurityOnce("app-integrity", 5 * 60 * 1000, "APP_INTEGRITY_MISSING", {
+          severity: "warning",
+          location: { ...integritySignal, ...(currentCoords || {}) },
+          violations: ["plugin_missing"],
+        });
         setSaving(false);
         return;
       }
@@ -562,6 +617,11 @@ export default function AttendancePage() {
       if (isFake) {
         setIsFakeGPS(true);
         setError("Terdeteksi Fake GPS! Absen pulang ditolak.");
+        logSecurityEvent("FAKE_LOCATION_REJECTED", {
+          severity: "warning",
+          location: { ...freshLoc, device_visitor_id: deviceVisitorId },
+          violations: ["fake_gps_heuristic"],
+        });
         setSaving(false);
         return;
       }
@@ -571,6 +631,13 @@ export default function AttendancePage() {
       if (!serverCheck.valid) {
         setError(serverCheck.error || "Anda di luar radius absen. Tidak bisa absen pulang.");
         setIsFakeGPS(!!serverCheck.suspicious_accuracy);
+        if (serverCheck.suspicious_accuracy) {
+          logSecurityEvent("SUSPICIOUS_ACCURACY", {
+            severity: "warning",
+            location: { ...freshLoc, device_visitor_id: deviceVisitorId },
+            violations: ["suspicious_accuracy"],
+          });
+        }
         setSaving(false);
         return;
       }

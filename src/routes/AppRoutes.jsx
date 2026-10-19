@@ -6,6 +6,7 @@ import DashboardPage from "../pages/admin/DashboardPage";
 import EmployeesPage from "../pages/admin/EmployeesPage";
 import AttendancePage from "../pages/attendance/AttendancePage";
 import AttendanceHistoryPage from "../pages/admin/AttendanceHistoryPage";
+import SecurityAttendancePage from "../pages/admin/SecurityAttendancePage";
 import PengaturanPage from "../pages/admin/PengaturanPage";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import EmployeeNotificationsPage from "../pages/employee/EmployeeNotificationsPage";
@@ -69,6 +70,11 @@ function AppRoutes() {
         } />
         <Route path="attendance" element={<AttendancePage />} />
         <Route path="attendance-history" element={<AttendanceHistoryPage />} />
+        <Route path="keamanan-absensi" element={
+          <ProtectedRoute allowedRoles={["super_admin", "admin", "admin_puskesmas"]}>
+            <SecurityAttendancePage />
+          </ProtectedRoute>
+        } />
         <Route path="schedules" element={
           <ProtectedRoute allowedRoles={["super_admin", "admin", "admin_puskesmas"]}>
             <SchedulingPage />

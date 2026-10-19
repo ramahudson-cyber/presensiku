@@ -84,12 +84,14 @@ export function attachIntegrity(location, integritySignal) {
  */
 export async function logSecurityEvent(eventType, { severity = "warning", location = null, violations = null } = {}) {
   try {
-    await supabase.rpc("log_attendance_security_event", {
+    const { error } = await supabase.rpc("log_attendance_security_event", {
       p_event_type: eventType,
       p_severity: severity,
       p_loc: location,
       p_violations: violations,
     });
+    // supabase-js tidak melempar error RPC — tanpa cek ini kegagalan hilang.
+    if (error) console.warn("logSecurityEvent ditolak server:", error.message);
   } catch (err) {
     // Jangan ganggu UX absen karena logging gagal.
     console.warn("logSecurityEvent gagal:", err?.message);

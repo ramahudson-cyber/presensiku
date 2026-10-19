@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preview — Keamanan Absensi</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:#0b0912;color:#fff;font-family:Inter,system-ui,Arial,sans-serif}
+.wrap{max-width:980px;margin:0 auto}
+h1{font-size:20px;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.sub{font-size:12px;color:#9aa0b4;margin:0 0 20px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;display:flex;gap:10px;align-items:center}
+.ico{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+.num{font-size:24px;font-weight:700;line-height:1}
+.lbl{font-size:10px;color:#9aa0b4;text-transform:uppercase;letter-spacing:.06em;margin-top:6px}
+.filters{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.filters input,.filters select{background:#171425;border:1px solid rgba(255,255,255,.1);color:#c9cbdb;border-radius:12px;padding:10px 12px;font-size:12px;flex:1;min-width:130px}
+.panel{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.ph .t{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.bar{width:4px;height:16px;border-radius:4px}
+.btn{background:#bf00ff;color:#fff;border:0;border-radius:99px;padding:8px 14px;font-size:11px;font-weight:600;cursor:pointer}
+.row{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.05)}
+.row:last-child{border:0}
+.av{width:32px;height:32px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none;background:linear-gradient(135deg,#bf00ff,#2b0066)}
+.nm{font-size:12px;font-weight:600}
+.mt{font-size:11px;color:#9aa0b4;margin-top:2px}
+.tm{font-size:10px;color:#6f7488;margin-top:3px}
+.badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:99px;display:inline-flex;gap:4px;align-items:center}
+.crit{background:rgba(244,63,94,.15);color:#fda4af;border:1px solid rgba(244,63,94,.3)}
+.warn{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+.flag{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+.detail{background:#fff;color:#0f172a;border-radius:16px;padding:16px;margin-top:16px}
+.detail h3{font-size:13px;margin:0 0 2px}
+.detail .who{font-size:10px;color:#94a3b8;margin:0 0 12px}
+.dr{display:flex;justify-content:space-between;gap:12px;background:#f8fafc;border-radius:10px;padding:9px 12px;margin-bottom:6px;font-size:11px}
+.dr span:first-child{color:#64748b}
+.dr span:last-child{font-weight:600;text-align:right;word-break:break-all}
+.note{font-size:11px;color:#9aa0b4;margin-top:16px;line-height:1.6}
+</style></head><body><div class="wrap">
+<h1>🛡 Keamanan Absensi</h1>
+<p class="sub">Jejak percobaan fake GPS, akurasi mencurigakan, dan absen yang ditandai — menu baru di sidebar admin</p>
+
+<div class="cards">
+  <div class="card"><div class="ico" style="background:linear-gradient(135deg,#f43f5e,#be123c)">⚠</div><div><div class="num">3</div><div class="lbl">Penolakan Hari Ini</div></div></div>
+  <div class="card"><div class="ico" style="background:linear-gradient(135deg,#f59e0b,#c2410c)">🚩</div><div><div class="num">2</div><div class="lbl">Absen Berflag</div></div></div>
+  <div class="card"><div class="ico" style="background:linear-gradient(135deg,#bf00ff,#2b0066)">📱</div><div><div class="num">4</div><div class="lbl">Pegawai Terlibat</div></div></div>
+  <div class="card"><div class="ico" style="background:linear-gradient(135deg,#0ea5e9,#1d4ed8)">✓</div><div><div class="num" style="font-size:16px">Waspada</div><div class="lbl">Tingkat Tertinggi</div></div></div>
+</div>
+
+<div class="filters">
+  <input placeholder="Cari nama pegawai atau device…">
+  <select><option>Semua Jenis</option><option>Akurasi GPS mencurigakan</option><option>Fake GPS terdeteksi</option></select>
+  <select><option>Semua Tingkat</option><option>Kritis</option><option>Peringatan</option></select>
+  <input value="2026-09-13" type="date">
+  <input value="2026-10-12" type="date">
+</div>
+
+<div class="panel">
+  <div class="ph"><div class="t"><div class="bar" style="background:#f43f5e"></div>Riwayat Pelanggaran <span style="font-size:10px;color:#9aa0b4;font-weight:400">3 kejadian</span></div><button class="btn">⬇ Export</button></div>
+  <div class="row"><div class="av">E</div><div style="flex:1"><div class="nm">epic <span class="badge warn">⚠ WARNING</span></div><div class="mt">Akurasi GPS mencurigakan · akurasi 1 m · suspicious_accuracy</div><div class="tm">🕐 12 Okt 2026, 12.14</div></div><div style="font-size:10px;color:#6f7488">Detail</div></div>
+  <div class="row"><div class="av">A</div><div style="flex:1"><div class="nm">Andi Saputra <span class="badge crit">✕ CRITICAL</span></div><div class="mt">Fake GPS terdeteksi · mock_location</div><div class="tm">🕐 12 Okt 2026, 07.31</div></div><div style="font-size:10px;color:#6f7488">Detail</div></div>
+  <div class="row"><div class="av">R</div><div style="flex:1"><div class="nm">Rina Wati <span class="badge warn">⚠ WARNING</span></div><div class="mt">Lokasi palsu (heuristik) · fake_gps_heuristic</div><div class="tm">🕐 11 Okt 2026, 20.02</div></div><div style="font-size:10px;color:#6f7488">Detail</div></div>
+</div>
+
+<div class="panel">
+  <div class="ph"><div class="t"><div class="bar" style="background:#f59e0b"></div>Absen Berflag <span style="font-size:10px;color:#9aa0b4;font-weight:400">2 baris</span></div><button class="btn">⬇ Export</button></div>
+  <div class="row"><div class="av">A</div><div style="flex:1"><div class="nm">Andi Saputra <span class="badge flag">⚠ DITANDAI</span></div><div class="mt">12 Okt 2026 · 07.31–16.02 · puskesmas ampenan · 38 m</div><div class="tm">mock GPS · rooted</div></div><div style="font-size:10px;color:#6f7488">Detail</div></div>
+  <div class="row"><div class="av">B</div><div style="flex:1"><div class="nm">Budi Hartono <span class="badge flag">⚠ DITANDAI</span></div><div class="mt">11 Okt 2026 · 20.05–07.01 · rumah wiki · 12 m</div><div class="tm">kecepatan 182 km/jam</div></div><div style="font-size:10px;color:#6f7488">Detail</div></div>
+</div>
+
+<div class="detail">
+  <h3>Detail Pelanggaran</h3><p class="who">epic</p>
+  <div class="dr"><span>Waktu</span><span>12 Okt 2026, 12.14</span></div>
+  <div class="dr"><span>Jenis</span><span>Akurasi GPS mencurigakan</span></div>
+  <div class="dr"><span>Akurasi GPS</span><span>1 m</span></div>
+  <div class="dr"><span>Koordinat</span><span>-8.569919, 116.076892</span></div>
+  <div class="dr"><span>Pelanggaran</span><span>suspicious_accuracy</span></div>
+  <div class="dr"><span>Device ID</span><span>android-id-xxxx</span></div>
+  <div class="dr"><span>Runtime / Platform</span><span>native / android</span></div>
+</div>
+
+<p class="note">Kasus di screenshot ("Akurasi GPS mencurigakan 1.0m") kini muncul sebagai baris pertama — sebelumnya hanya tampil di layar pegawai dan hilang tanpa jejak.</p>
+</div></body></html>

@@ -2,6 +2,16 @@
 
 > File ini di-update otomatis. Setiap selesai tugas → bilang **"catat progress"** untuk update.
 
+## 🛡️ Halaman Keamanan Absensi (12 Okt 2026) — SIAP DEPLOY
+Pantauan kecurangan fake GPS untuk `super_admin` + `admin_puskesmas` di **`/admin/keamanan-absensi`**.
+- **Panel A** membaca `attendance_security_events` (jejak percobaan yang DITOLAK) — sebelumnya tabel ini hanya ditulis, tidak pernah dibaca UI.
+- **Panel B** membaca `attendance` dengan `mock_flag = true` (absen lolos tapi ditandai): mock/emulator/rooted/velocity, `integrity_verdict`, lokasi cocok, jarak, akurasi.
+- **Pencatatan baru** di `AttendancePage.jsx` (best-effort, tidak mengubah logika blokir): `SUSPICIOUS_ACCURACY` (kasus "Akurasi GPS mencurigakan 1.0m"), `FAKE_LOCATION_REJECTED` (heuristik `accuracy<3 && altitude null/0`), `APP_INTEGRITY_MISSING` (plugin hilang/perlu update). `getLocation` di-throttle 5 menit per jenis agar tabel tidak dibanjiri (interval GPS 5 detik).
+- Payload event kini menyertakan koordinat + akurasi agar kolom `latitude/longitude/accuracy` terisi (sebelumnya hanya `integritySignal` tanpa koordinat).
+- **Tidak ada migrasi DB**: RLS `attendance_security_events` sudah mengizinkan `super_admin` (semua) + `admin_puskesmas` (instansinya). `kepala_unit` sengaja tidak diberi akses.
+- Export Excel 2 sheet terpisah (Pelanggaran & Absen Berflag) memakai `exportExcelWorkbook`.
+- `webVersionCode` 25 → **26** (wajib karena deploy UI web).
+
 ## 🔔 Push Reminder Shift Server-Side (2 Okt 2026) — ✅ LIVE
 Reminder shift kini dikirim dari SERVER → muncul saat aplikasi PWA/APK **tertutup** (bukan hanya saat dibuka). Infrastruktur yang sudah ada sebelumnya (device_tokens, token Android+web, firebase-messaging-sw.js, send-push utk pengumuman) tidak diubah.
 - **Alur**: pg_cron `shift-reminder-push` (*/5 menit) → POST Edge Function `send-shift-reminder` (header `Authorization: Bearer <service_role dari Vault>` + `x-cron-secret`) → hitung jadwal mulai/berakhir ≤20 menit (WITA, dukung malam lintas tengah malam via jadwal kemarin) → dedupe `shift_notification_log` (unique user+shift+date+kind) → FCM HTTP v1 ke semua token user.

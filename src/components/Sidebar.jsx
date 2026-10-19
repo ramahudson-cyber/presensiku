@@ -6,7 +6,7 @@ import { getSetting } from "../lib/settings";
 import {
   LayoutDashboard, Users, CalendarCheck, CalendarDays,
   FileText, Megaphone, Settings, LogOut,
-  History, X, ClipboardList, Building2, Wallet, Bell, MessageSquareWarning
+  History, X, ClipboardList, Building2, Wallet, Bell, MessageSquareWarning, ShieldAlert
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import ProfileSheet from "./ProfileSheet";
@@ -51,6 +51,11 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
     { path: "/admin/employees", label: "Pegawai", icon: Users },
     { path: "/admin/attendance", label: "Absensi", icon: CalendarCheck },
     { path: "/admin/attendance-history", label: "Riwayat Absensi", icon: History },
+    // Pantauan kecurangan: hanya admin instansi & platform admin (sesuai RLS
+    // attendance_security_events — kepala_unit tidak diberi akses).
+    ...(["super_admin", "admin", "admin_puskesmas"].includes(userRole)
+      ? [{ path: "/admin/keamanan-absensi", label: "Keamanan Absensi", icon: ShieldAlert }]
+      : []),
     { path: "/admin/schedules", label: "Jadwal Kerja", icon: CalendarDays },
     { path: "/admin/leave", label: "Cuti & Izin", icon: FileText },
     { path: "/admin/sanggahan", label: "Sanggahan", icon: MessageSquareWarning },
@@ -81,7 +86,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
           .select("*", { count: "exact", head: true })
           .eq("user_id", user.id);
         if (!cancelled) setUnreadCount(Math.max(0, (annCount || 0) - (ackCount || 0)));
-      } catch (e) { /* silent */ }
+      } catch { /* silent */ }
     };
     fetchUnread();
     const id = setInterval(fetchUnread, 60000);

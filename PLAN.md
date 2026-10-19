@@ -164,3 +164,33 @@ Buka folder project lalu bilang ke AI:
 - ✅ Service layer selesai
 - ✅ Migration selesai
 - ⏳ Tinggal run SQL di Supabase Dashboard: `ALTER TYPE leave_type ADD VALUE IF NOT EXISTS 'izin';`
+
+---
+
+## Task Baru: Halaman Keamanan Absensi (Pantauan Fake GPS) — **SELESAI**
+
+**Tujuan:** Admin instansi & super_admin bisa melihat jejak kecurangan absensi (fake GPS, akurasi mencurigakan, emulator/rooted, kecepatan tidak wajar) — termasuk percobaan yang DITOLAK, yang sebelumnya tidak meninggalkan jejak yang bisa dibaca.
+
+### Latar belakang audit
+- `attendance_security_events` + RPC `log_attendance_security_event` sudah ada dan RLS-nya sudah mengizinkan admin, tetapi **tidak ada satu pun pembaca di `src/`**.
+- Penolakan `suspicious_accuracy` (mis. "Akurasi GPS mencurigakan 1.0m"), heuristik lokal `accuracy<3 && altitude null/0`, dan plugin hilang hanya menampilkan error di HP — tidak dicatat.
+- `attendance.mock_flag`, `client_integrity`, `integrity_verdict`, velocity tersimpan tapi tidak dirender/difilter/diekspor.
+
+### Files Created/Modified
+| File | Action | Keterangan |
+|------|--------|------------|
+| `src/pages/admin/SecurityAttendancePage.jsx` | **Baru** | Ringkasan 4 kartu + Panel Pelanggaran + Panel Absen Berflag + filter + detail BottomSheet + export Excel |
+| `src/routes/AppRoutes.jsx` | Ubah | Route `keamanan-absensi`, guard `super_admin`/`admin`/`admin_puskesmas` |
+| `src/components/Sidebar.jsx` | Ubah | Menu "Keamanan Absensi" (ikon `ShieldAlert`), hanya role di atas |
+| `src/pages/attendance/AttendancePage.jsx` | Ubah | Catat `SUSPICIOUS_ACCURACY`, `FAKE_LOCATION_REJECTED`, `APP_INTEGRITY_MISSING` (best-effort, throttle 5 menit) + sertakan koordinat di payload event |
+| `public/version.json` | Ubah | `webVersionCode` 25 → 26 |
+| `src/services/updateService.js` | Ubah | `CURRENT_WEB_VERSION_CODE` 26 |
+
+### Tidak diubah
+Logika blokir absen, RLS, migrasi DB, `api/*`, email/OTP, data lokasi.
+
+### Status
+- ✅ Halaman + route + menu
+- ✅ Pencatatan event penolakan
+- ✅ Build hijau
+- ✅ Deploy web (CI ke `presensiku-beige`)
