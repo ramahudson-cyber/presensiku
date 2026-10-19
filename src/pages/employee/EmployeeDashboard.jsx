@@ -5,7 +5,7 @@ import { supabase } from "../../lib/supabase";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
-import { History, Sun, Sunset, ArrowRight, Bell, ChevronRight, LogOut, ClipboardList, User, Wallet, MessageSquareWarning } from "lucide-react";
+import { History, Sun, Sunset, ArrowRight, Bell, ChevronRight, LogOut, ClipboardList, User, Wallet, MessageSquareWarning, Clock } from "lucide-react";
 import { signOut } from "../../services/authService";
 import { getShiftDefinition, getWitaDateKey, isShiftEnded, getEarlyLeaveInfo, formatDuration } from "../../lib/shiftTime";
 import { getShiftReminderInfo, getShiftEndReminderInfo, reminderToastKey, reminderToastEndKey } from "../../lib/notificationReminder";
@@ -539,6 +539,7 @@ export default function EmployeeDashboard() {
           {[
             { to: "/employee/leave", icon: ClipboardList, label: "Izin/Sakit", tile: "linear-gradient(135deg, #EDE9FE, #DDD6FE)", color: "text-violet-600" },
             { to: "/employee/sanggah", icon: MessageSquareWarning, label: "Sanggah", tile: "linear-gradient(135deg, #CFFAFE, #A5F3FC)", color: "text-cyan-600" },
+            { to: "/employee/overtime", icon: Clock, label: "Lembur", tile: "linear-gradient(135deg, #FFEDD5, #FED7AA)", color: "text-orange-600" },
             { to: "/employee/history", icon: History, label: "Riwayat Kehadiran", tile: "linear-gradient(135deg, #DBEAFE, #BFDBFE)", color: "text-blue-600" },
             { to: "/employee/notifications", icon: Bell, label: "Notifikasi", tile: "linear-gradient(135deg, #FEF3C7, #FDE68A)", color: "text-amber-600", badge: true },
             ...(payrollOn ? [{ to: "/employee/salary", icon: Wallet, label: "Slip Gaji", tile: "linear-gradient(135deg, #D1FAE5, #A7F3D0)", color: "text-emerald-600" }] : []),

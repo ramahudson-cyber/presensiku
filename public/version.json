@@ -1,10 +1,10 @@
 {
-  "version": "1.8.2",
-  "versionCode": 29,
-  "webVersionCode": 27,
-  "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.2/app-release.apk",
+  "version": "1.8.3",
+  "versionCode": 30,
+  "webVersionCode": 28,
+  "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.3/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
-  "changelog": "Fitur baru: sistem lembur — pegawai dapat mengajukan lembur, admin menyetujui dengan tarif per jam yang bisa diatur, dan uang lembur masuk otomatis ke slip gaji. Plus halaman Keamanan Absensi untuk memantau percobaan fake GPS.",
+  "changelog": "Menu Lembur kini tersedia di halaman Menu dashboard pegawai (selain sidebar). Fitur lembur: ajukan, disetujui admin, uang lembur masuk slip gaji.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }
