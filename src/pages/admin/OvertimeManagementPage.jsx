@@ -11,6 +11,7 @@ import {
   reviewOvertimeRequest,
   adminCreateOvertime,
   getOvertimeConfig,
+  saveOvertimeConfig,
 } from "../../services/overtimeService";
 import { exportExcelWorkbook, DATE_FMT } from "../../services/excelExport";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
@@ -18,6 +19,7 @@ import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import BottomSheet from "../../components/BottomSheet";
 import {
   Clock, Check, X, Plus, Download, Loader2, RefreshCw, Inbox, Search,
+  Settings2, Banknote,
 } from "lucide-react";
 
 const cardBase = "design-card";
@@ -75,6 +77,11 @@ export default function OvertimeManagementPage() {
   const [decide, setDecide] = useState(null); // { row, action }
   const [hoursInput, setHoursInput] = useState("");
   const [rejectReason, setRejectReason] = useState("");
+
+  // BottomSheet pengaturan tarif (langsung dari halaman ini)
+  const [showRate, setShowRate] = useState(false);
+  const [rateForm, setRateForm] = useState({ rate_per_hour: "15000", min_minutes: "30", max_hours_per_day: "4" });
+  const [savingRate, setSavingRate] = useState(false);
 
   // BottomSheet buat lembur
   const [showCreate, setShowCreate] = useState(false);
@@ -193,6 +200,37 @@ export default function OvertimeManagementPage() {
     }
   };
 
+  // Buka sheet tarif dengan nilai yang sedang berlaku.
+  const openRate = () => {
+    setRateForm({
+      rate_per_hour: String(config.rate_per_hour ?? 15000),
+      min_minutes: String(config.min_minutes ?? 30),
+      max_hours_per_day: String(config.max_hours_per_day ?? 4),
+    });
+    setShowRate(true);
+  };
+
+  const submitRate = async () => {
+    const rate = Number(rateForm.rate_per_hour);
+    const minMin = Number(rateForm.min_minutes);
+    const maxH = Number(rateForm.max_hours_per_day);
+    if (!Number.isFinite(rate) || rate <= 0) return toast.error("Tarif per jam harus lebih dari 0");
+    if (!Number.isInteger(minMin) || minMin < 0) return toast.error("Minimal menit tidak valid");
+    if (!Number.isFinite(maxH) || maxH <= 0 || maxH > 24) return toast.error("Maksimal jam per hari harus 1–24");
+
+    setSavingRate(true);
+    try {
+      await saveOvertimeConfig({ rate_per_hour: rate, min_minutes: minMin, max_hours_per_day: maxH });
+      setConfig({ rate_per_hour: rate, min_minutes: minMin, max_hours_per_day: maxH });
+      setShowRate(false);
+      toast.success("Tarif lembur tersimpan — berlaku untuk persetujuan berikutnya");
+    } catch (err) {
+      toast.error(err.message || "Gagal menyimpan tarif");
+    } finally {
+      setSavingRate(false);
+    }
+  };
+
   const handleExport = async () => {
     setExporting(true);
     try {
@@ -256,6 +294,27 @@ export default function OvertimeManagementPage() {
             <Plus size={15} /> <span className="hidden sm:inline">Buat Lembur</span>
           </button>
         </div>
+      </div>
+
+      {/* Tarif lembur — terlihat & bisa diubah langsung dari halaman ini */}
+      <div className={`${cardBase} p-4 flex items-center justify-between gap-4 flex-wrap`}>
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0">
+            <Banknote size={18} className="text-emerald-300" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-wider text-slate-mist">Tarif Lembur Saat Ini</p>
+            <p className="text-xl md:text-2xl font-bold text-green-yellow tabular-nums leading-tight">
+              {rupiah(config.rate_per_hour)} <span className="text-xs font-medium text-slate-mist">/ jam</span>
+            </p>
+            <p className="text-[10px] text-slate-mist/70 mt-0.5">
+              Minimal {config.min_minutes} menit · maksimal {config.max_hours_per_day} jam/hari
+            </p>
+          </div>
+        </div>
+        <button onClick={openRate} className={btnPrimary + " shrink-0"}>
+          <Settings2 size={15} /> Ubah Tarif
+        </button>
       </div>
 
       {/* Ringkasan */}
@@ -466,6 +525,72 @@ export default function OvertimeManagementPage() {
           <button onClick={submitCreate} disabled={creating} className={btnPrimary + " w-full"}>
             {creating ? <Loader2 size={15} className="animate-spin" /> : <Plus size={15} />}
             Catat Lembur
+          </button>
+        </div>
+      </BottomSheet>
+
+      {/* Sheet: pengaturan tarif lembur */}
+      <BottomSheet
+        open={showRate}
+        onClose={() => setShowRate(false)}
+        title="Pengaturan Tarif Lembur"
+        subtitle="Berlaku untuk persetujuan berikutnya — lembur lama tidak berubah"
+      >
+        <div className="space-y-4 pb-2">
+          <div>
+            <label className="text-xs font-semibold text-slate-mist block mb-1.5">Tarif per jam (Rp)</label>
+            <input
+              type="number" min="1" step="500"
+              value={rateForm.rate_per_hour}
+              onChange={(e) => setRateForm({ ...rateForm, rate_per_hour: e.target.value })}
+              className={inputBase}
+              placeholder="15000"
+            />
+            <div className="flex gap-2 mt-2 flex-wrap">
+              {[10000, 15000, 20000, 25000].map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => setRateForm({ ...rateForm, rate_per_hour: String(v) })}
+                  className="px-3 py-1.5 rounded-full text-[11px] font-semibold border border-white/10 text-slate-mist hover:bg-white/5"
+                >
+                  {rupiah(v)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-slate-mist block mb-1.5">Minimal menit</label>
+              <input
+                type="number" min="0" step="5"
+                value={rateForm.min_minutes}
+                onChange={(e) => setRateForm({ ...rateForm, min_minutes: e.target.value })}
+                className={inputBase}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-mist block mb-1.5">Maks jam/hari</label>
+              <input
+                type="number" min="1" max="24" step="0.5"
+                value={rateForm.max_hours_per_day}
+                onChange={(e) => setRateForm({ ...rateForm, max_hours_per_day: e.target.value })}
+                className={inputBase}
+              />
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-white/5 p-3 text-[11px] text-slate-mist">
+            Contoh: 2 jam lembur × {rupiah(Number(rateForm.rate_per_hour) || 0)} ={" "}
+            <b className="text-green-yellow">
+              {rupiah((Number(rateForm.rate_per_hour) || 0) * 2)}
+            </b>
+          </div>
+
+          <button onClick={submitRate} disabled={savingRate} className={btnPrimary + " w-full"}>
+            {savingRate ? <Loader2 size={15} className="animate-spin" /> : <Settings2 size={15} />}
+            Simpan Tarif
           </button>
         </div>
       </BottomSheet>
