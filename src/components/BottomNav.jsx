@@ -4,7 +4,7 @@ import { getSetting } from "../lib/settings";
 import {
   LayoutDashboard, CalendarDays,
   Users, History, FileText, Megaphone, Settings, MoreHorizontal,
-  MessageSquareWarning, Wallet,
+  MessageSquareWarning, Wallet, ShieldAlert, Clock,
   FingerprintPattern,
 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -45,10 +45,20 @@ export default function BottomNav({ hidden = false }) {
     { path: "/admin/attendance-history", label: "Riwayat", icon: History },
   ];
 
+  // Menu khusus admin instansi & platform (sama dengan guard route & Sidebar:
+  // kepala_unit tidak diberi akses lembur/keamanan absensi).
+  const canManageOvertime = ["super_admin", "admin", "admin_puskesmas"].includes(userRole);
+
   const adminMore = [
     { path: "/admin/schedules", label: "Jadwal Kerja", icon: CalendarDays },
     { path: "/admin/leave", label: "Cuti & Izin", icon: FileText },
     { path: "/admin/sanggahan", label: "Sanggahan", icon: MessageSquareWarning },
+    ...(canManageOvertime
+      ? [
+          { path: "/admin/overtime", label: "Lembur", icon: Clock },
+          { path: "/admin/keamanan-absensi", label: "Keamanan Absensi", icon: ShieldAlert },
+        ]
+      : []),
     ...(payrollOn ? [{ path: "/admin/payroll", label: "Gaji", icon: Wallet }] : []),
     { path: "/admin/announcements", label: "Pengumuman", icon: Megaphone },
     { path: "/admin/settings", label: "Pengaturan", icon: Settings },
