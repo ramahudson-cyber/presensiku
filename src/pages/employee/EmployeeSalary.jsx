@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { isPayrollEnabled, getMyPayrollLines, ensureMyPayrollLine } from "../../services/payrollService";
 import { getCurrentVersion } from "../../services/updateService";
@@ -30,6 +30,13 @@ function EmployeeSalaryPage() {
 
   // Uang lembur sudah tersimpan di baris slip (overtime_hours/overtime_amount)
   // dan sudah termasuk dalam total_received — tidak perlu query terpisah.
+  //
+  // Muat data slip. Dipanggil manual (tombol/pull-to-refresh) — untuk effect
+  // awal, logikanya ditulis inline dengan dependency primitif (user?.id) agar
+  // tidak ada fungsi yang berubah identitas setiap render. Sebelumnya `load`
+  // dipakai sebagai dependency effect sehingga effect berjalan tanpa henti
+  // (setState → render → fungsi baru → effect lagi) dan halaman selalu
+  // berputar "loading".
   const load = async () => {
     setLoading(true);
     try {
@@ -40,8 +47,6 @@ function EmployeeSalaryPage() {
       setLoading(false);
     }
   };
-  const loadRef = useRef(() => {});
-  useEffect(() => { loadRef.current = load; }, [load]);
 
   useEffect(() => {
     let cancelled = false;
@@ -53,10 +58,28 @@ function EmployeeSalaryPage() {
         if (on) {
           // Segarkan slip bulan berjalan dari attendance terbaru — potongan
           // no_checkout tampil begitu batas 1 jam setelah jam selesai lewat.
-          try { await ensureMyPayrollLine(currentPeriod()); } catch { /* diam */ }
+          // Timeout: RPC bisa menunggu row lock; tanpa batas, spinner bisa
+          // menggantung selamanya. Kegagalan diabaikan (data tetap dimuat).
+          try {
+            await Promise.race([
+              ensureMyPayrollLine(currentPeriod()),
+              new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 15000)),
+            ]);
+          } catch { /* diam — lanjut muat slip */ }
           if (cancelled) return;
-          await load();
-        } else setLoading(false);
+          try {
+            // Batas waktu: tanpa ini, request yang menggantung (jaringan/lock)
+            // membuat halaman berputar "loading" selamanya.
+            const myLines = await Promise.race([
+              getMyPayrollLines(user.id),
+              new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 20000)),
+            ]);
+            if (!cancelled) setLines(myLines);
+          } catch {
+            if (!cancelled) setLines([]);
+          }
+        }
+        if (!cancelled) setLoading(false);
       } catch {
         if (!cancelled) {
           setEnabledState(false);
@@ -65,7 +88,7 @@ function EmployeeSalaryPage() {
       }
     })();
     return () => { cancelled = true; };
-  }, [load]);
+  }, [user?.id]);
 
   const { pullDistance, isRefreshing } = usePullToRefresh(load);
 
@@ -74,7 +97,10 @@ function EmployeeSalaryPage() {
   const openPickedSlip = async () => {
     setEnsuring(true);
     try {
-      const res = await ensureMyPayrollLine(pickPeriod);
+      const res = await Promise.race([
+        ensureMyPayrollLine(pickPeriod),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Server terlalu lama merespons — coba lagi.")), 20000)),
+      ]);
       if (res?.success) {
         await load();
         toast.success(res.message || `Slip ${monthLabel(pickPeriod)} diperbarui`);
