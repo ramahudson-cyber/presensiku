@@ -87,24 +87,28 @@ export async function getOvertimeRequests({ status = "", dateFrom = "", dateTo =
   return data || [];
 }
 
-export async function reviewOvertimeRequest(requestId, action, { hours = null, rejectionReason = null } = {}) {
+export async function reviewOvertimeRequest(requestId, action, { hours = null, rejectionReason = null, payMode = null, fixedAmount = null } = {}) {
   const { data, error } = await supabase.rpc("review_overtime_request", {
     p_request_id: requestId,
     p_action: action,
     p_hours: hours,
     p_rejection_reason: rejectionReason,
+    p_pay_mode: payMode,
+    p_fixed_amount: fixedAmount,
   });
   if (error) throw error;
   return unwrap(data);
 }
 
-export async function adminCreateOvertime({ user_id, date, start_time, end_time, reason }) {
+export async function adminCreateOvertime({ user_id, date, start_time, end_time, reason, pay_mode = "hourly", fixed_amount = null }) {
   const { data, error } = await supabase.rpc("admin_create_overtime", {
     p_user_id: user_id,
     p_date: date,
     p_start_time: start_time,
     p_end_time: end_time,
     p_reason: reason || null,
+    p_pay_mode: pay_mode,
+    p_fixed_amount: fixed_amount,
   });
   if (error) throw error;
   return unwrap(data);

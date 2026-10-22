@@ -285,7 +285,9 @@ export default function OvertimeRequestPage() {
                     )}
                     {r.status === "approved" && (
                       <p style={{ fontSize: 11, color: "#10B981", fontWeight: 700, marginTop: 6 }}>
-                        Dibayar: {Number(r.approved_hours).toLocaleString("id-ID")} jam × {rupiah(r.pay_rate_per_hour)}/jam = <b>{rupiah(r.pay_amount)}</b>
+                        {r.pay_mode === "fixed"
+                          ? <>Dibayar: nominal tetap <b>{rupiah(r.pay_amount)}</b> ({Number(r.approved_hours).toLocaleString("id-ID")} jam)</>
+                          : <>Dibayar: {Number(r.approved_hours).toLocaleString("id-ID")} jam × {rupiah(r.pay_rate_per_hour)}/jam = <b>{rupiah(r.pay_amount)}</b></>}
                       </p>
                     )}
                     {r.status === "rejected" && r.rejection_reason && (

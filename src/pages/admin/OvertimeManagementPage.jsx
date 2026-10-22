@@ -77,6 +77,9 @@ export default function OvertimeManagementPage() {
   const [decide, setDecide] = useState(null); // { row, action }
   const [hoursInput, setHoursInput] = useState("");
   const [rejectReason, setRejectReason] = useState("");
+  // Mode bayar saat menyetujui: 'hourly' (tarif × jam) atau 'fixed' (borongan)
+  const [decideMode, setDecideMode] = useState("hourly");
+  const [decideAmount, setDecideAmount] = useState("");
 
   // BottomSheet pengaturan tarif (langsung dari halaman ini)
   const [showRate, setShowRate] = useState(false);
@@ -86,7 +89,7 @@ export default function OvertimeManagementPage() {
   // BottomSheet buat lembur
   const [showCreate, setShowCreate] = useState(false);
   const [members, setMembers] = useState([]);
-  const [createForm, setCreateForm] = useState({ user_id: "", date: todayStr(), start_time: "", end_time: "", reason: "" });
+  const [createForm, setCreateForm] = useState({ user_id: "", date: todayStr(), start_time: "", end_time: "", reason: "", pay_mode: "hourly", fixed_amount: "" });
   const [creating, setCreating] = useState(false);
 
   const load = async () => {
@@ -149,6 +152,9 @@ export default function OvertimeManagementPage() {
     setDecide({ row, action });
     setHoursInput(action === "approve" ? String(Number(row.requested_hours)) : "");
     setRejectReason("");
+    // Default mengikuti mode pengajuan; admin boleh mengganti ke borongan.
+    setDecideMode(row.pay_mode === "fixed" ? "fixed" : "hourly");
+    setDecideAmount(row.fixed_amount != null ? String(Number(row.fixed_amount)) : "");
   };
 
   const submitDecide = async () => {
@@ -160,9 +166,16 @@ export default function OvertimeManagementPage() {
         toast.error("Jam dibayar tidak valid");
         return;
       }
-      if (h > config.max_hours_per_day) {
+      if (decideMode === "hourly" && h > config.max_hours_per_day) {
         toast.error(`Melebihi batas ${config.max_hours_per_day} jam/hari — ubah Pengaturan lembur dulu`);
         return;
+      }
+      if (decideMode === "fixed") {
+        const amt = Number(decideAmount);
+        if (!Number.isFinite(amt) || amt <= 0) {
+          toast.error("Nominal lembur harus lebih dari 0");
+          return;
+        }
       }
     }
     setProcessing(row.id);
@@ -170,6 +183,8 @@ export default function OvertimeManagementPage() {
       const res = await reviewOvertimeRequest(row.id, action, {
         hours: action === "approve" ? Number(hoursInput) : null,
         rejectionReason: action === "reject" ? rejectReason : null,
+        payMode: action === "approve" ? decideMode : null,
+        fixedAmount: action === "approve" && decideMode === "fixed" ? Number(decideAmount) : null,
       });
       toast.success(res.message || "Berhasil");
       setDecide(null);
@@ -182,16 +197,24 @@ export default function OvertimeManagementPage() {
   };
 
   const submitCreate = async () => {
-    const { user_id, date, start_time, end_time, reason } = createForm;
+    const { user_id, date, start_time, end_time, reason, pay_mode, fixed_amount } = createForm;
     if (!user_id) return toast.error("Pilih pegawai dulu");
     if (!date || !start_time || !end_time) return toast.error("Tanggal & jam wajib diisi");
     if (end_time <= start_time) return toast.error("Jam selesai harus setelah jam mulai");
+    if (pay_mode === "fixed") {
+      const amt = Number(fixed_amount);
+      if (!Number.isFinite(amt) || amt <= 0) return toast.error("Nominal lembur harus lebih dari 0");
+    }
     setCreating(true);
     try {
-      const res = await adminCreateOvertime({ user_id, date, start_time, end_time, reason });
+      const res = await adminCreateOvertime({
+        user_id, date, start_time, end_time, reason,
+        pay_mode,
+        fixed_amount: pay_mode === "fixed" ? Number(fixed_amount) : null,
+      });
       toast.success(res.message || "Lembur tercatat");
       setShowCreate(false);
-      setCreateForm({ user_id: "", date: todayStr(), start_time: "", end_time: "", reason: "" });
+      setCreateForm({ user_id: "", date: todayStr(), start_time: "", end_time: "", reason: "", pay_mode: "hourly", fixed_amount: "" });
       await load();
     } catch (err) {
       toast.error(err.message || "Gagal membuat lembur");
@@ -244,10 +267,11 @@ export default function OvertimeManagementPage() {
         sheetName: "Lembur",
         orgName,
         docTitle: "Rekap Lembur",
-        header: ["Tanggal", "Nama", "Username", "Jabatan", "Jam Mulai", "Jam Selesai", "Jam Diajukan", "Jam Dibayar", "Tarif/Jam", "Uang Lembur", "Status", "Alasan"],
+        header: ["Tanggal", "Nama", "Username", "Jabatan", "Jam Mulai", "Jam Selesai", "Jam Diajukan", "Jam Dibayar", "Mode Bayar", "Tarif/Jam", "Nominal Tetap", "Uang Lembur", "Status", "Alasan"],
         columnMeta: [
-          { numFmt: DATE_FMT }, {}, {}, {}, {}, {}, { align: "right" }, { align: "right" },
-          { align: "right", numFmt: '"Rp"#,##0' }, { align: "right", numFmt: '"Rp"#,##0' }, {}, { wrap: true },
+          { numFmt: DATE_FMT }, {}, {}, {}, {}, {}, { align: "right" }, { align: "right" }, {},
+          { align: "right", numFmt: '"Rp"#,##0' }, { align: "right", numFmt: '"Rp"#,##0' },
+          { align: "right", numFmt: '"Rp"#,##0' }, {}, { wrap: true },
         ],
         rows: filtered.map((r) => [
           new Date(r.date + "T00:00:00Z"),
@@ -258,7 +282,9 @@ export default function OvertimeManagementPage() {
           r.end_time,
           Number(r.requested_hours),
           r.approved_hours != null ? Number(r.approved_hours) : null,
+          r.pay_mode === "fixed" ? "Nominal tetap" : "Per jam",
           r.pay_rate_per_hour != null ? Number(r.pay_rate_per_hour) : null,
+          r.fixed_amount != null ? Number(r.fixed_amount) : null,
           r.pay_amount != null ? Number(r.pay_amount) : null,
           STATUS_LABEL[r.status] || r.status,
           r.status === "rejected" ? (r.rejection_reason || "") : (r.reason || ""),
@@ -392,7 +418,9 @@ export default function OvertimeManagementPage() {
                     <p className="text-[11px] text-slate-mist mt-0.5">
                       {fmtDate(r.date)} · {r.start_time}–{r.end_time} · {Number(r.requested_hours).toLocaleString("id-ID")} jam
                       {r.status === "approved" && r.pay_amount != null && (
-                        <> · dibayar {Number(r.approved_hours)} jam = <b className="text-green-yellow">{rupiah(r.pay_amount)}</b></>
+                        r.pay_mode === "fixed"
+                          ? <> · nominal tetap = <b className="text-green-yellow">{rupiah(r.pay_amount)}</b></>
+                          : <> · dibayar {Number(r.approved_hours)} jam = <b className="text-green-yellow">{rupiah(r.pay_amount)}</b></>
                       )}
                     </p>
                     {r.reason && <p className="text-[10px] text-slate-mist/70 mt-0.5 italic truncate">"{r.reason}"</p>}
@@ -431,28 +459,76 @@ export default function OvertimeManagementPage() {
         {decide && (
           <div className="space-y-4 pb-2">
             <div className="rounded-2xl bg-white/5 p-3 text-xs text-slate-mist space-y-1">
-              <p>Diajukan: <b className="text-pure-white">{Number(decide.row.requested_hours).toLocaleString("id-ID")} jam</b></p>
-              <p>Tarif saat ini: <b className="text-pure-white">{rupiah(config.rate_per_hour)}/jam</b></p>
+              <p>Diajukan: <b className="text-pure-white">{Number(decide.row.requested_hours).toLocaleString("id-ID")} jam</b>
+                {" "}({decide.row.start_time}–{decide.row.end_time})</p>
+              <p>Tarif per jam: <b className="text-pure-white">{rupiah(config.rate_per_hour)}/jam</b></p>
               {decide.action === "approve" && (
-                <p>Estimasi uang: <b className="text-green-yellow">
-                  {rupiah((Number(hoursInput) || 0) * config.rate_per_hour)}
+                <p>Uang dibayar: <b className="text-green-yellow">
+                  {decideMode === "fixed"
+                    ? rupiah(Number(decideAmount) || 0) + " (nominal tetap)"
+                    : rupiah((Number(hoursInput) || 0) * config.rate_per_hour)}
                 </b></p>
               )}
             </div>
 
             {decide.action === "approve" ? (
-              <div>
-                <label className="text-xs font-semibold text-slate-mist block mb-1.5">Jam yang dibayar</label>
-                <input
-                  type="number" step="0.25" min="0" max={config.max_hours_per_day}
-                  value={hoursInput}
-                  onChange={(e) => setHoursInput(e.target.value)}
-                  className={inputBase}
-                />
-                <p className="text-[10px] text-slate-mist/70 mt-1">
-                  Boleh dikurangi dari pengajuan. Angka ini yang masuk slip gaji.
-                </p>
-              </div>
+              <>
+                {/* Pilih cara bayar: per jam atau nominal tetap (borongan) */}
+                <div>
+                  <label className="text-xs font-semibold text-slate-mist block mb-1.5">Cara bayar</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { v: "hourly", label: "Per jam" },
+                      { v: "fixed", label: "Nominal tetap" },
+                    ].map((o) => (
+                      <button
+                        key={o.v}
+                        type="button"
+                        onClick={() => setDecideMode(o.v)}
+                        className={`py-2.5 rounded-xl text-xs font-semibold border transition-colors ${
+                          decideMode === o.v
+                            ? "bg-electric-violet text-pure-white border-electric-violet"
+                            : "border-white/10 text-slate-mist hover:bg-white/5"
+                        }`}
+                      >
+                        {o.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-mist block mb-1.5">
+                    {decideMode === "fixed" ? "Nominal dibayar (Rp)" : "Jam yang dibayar"}
+                  </label>
+                  {decideMode === "fixed" ? (
+                    <>
+                      <input
+                        type="number" step="1000" min="0"
+                        value={decideAmount}
+                        onChange={(e) => setDecideAmount(e.target.value)}
+                        className={inputBase}
+                        placeholder="500000"
+                      />
+                      <p className="text-[10px] text-slate-mist/70 mt-1">
+                        Total uang untuk lembur ini, berapa pun jamnya (mis. jaga hari libur 07.00–23.00).
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <input
+                        type="number" step="0.25" min="0" max={config.max_hours_per_day}
+                        value={hoursInput}
+                        onChange={(e) => setHoursInput(e.target.value)}
+                        className={inputBase}
+                      />
+                      <p className="text-[10px] text-slate-mist/70 mt-1">
+                        Boleh dikurangi dari pengajuan. Angka ini yang masuk slip gaji.
+                      </p>
+                    </>
+                  )}
+                </div>
+              </>
             ) : (
               <div>
                 <label className="text-xs font-semibold text-slate-mist block mb-1.5">Alasan penolakan (opsional)</label>
@@ -519,9 +595,50 @@ export default function OvertimeManagementPage() {
               placeholder="Contoh: penambahan jaga sore"
               className={inputBase} />
           </div>
-          <p className="text-[10px] text-slate-mist/70">
-            Uang = jam × tarif {rupiah(config.rate_per_hour)}/jam, dihitung otomatis oleh server.
-          </p>
+
+          {/* Cara bayar: per jam atau nominal tetap (borongan) */}
+          <div>
+            <label className="text-xs font-semibold text-slate-mist block mb-1.5">Cara bayar</label>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { v: "hourly", label: "Per jam" },
+                { v: "fixed", label: "Nominal tetap" },
+              ].map((o) => (
+                <button
+                  key={o.v}
+                  type="button"
+                  onClick={() => setCreateForm({ ...createForm, pay_mode: o.v })}
+                  className={`py-2.5 rounded-xl text-xs font-semibold border transition-colors ${
+                    createForm.pay_mode === o.v
+                      ? "bg-electric-violet text-pure-white border-electric-violet"
+                      : "border-white/10 text-slate-mist hover:bg-white/5"
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {createForm.pay_mode === "fixed" ? (
+            <div>
+              <label className="text-xs font-semibold text-slate-mist block mb-1.5">Nominal dibayar (Rp)</label>
+              <input type="number" step="1000" min="0"
+                value={createForm.fixed_amount}
+                onChange={(e) => setCreateForm({ ...createForm, fixed_amount: e.target.value })}
+                placeholder="500000"
+                className={inputBase} />
+              <p className="text-[10px] text-slate-mist/70 mt-1">
+                Total uang untuk lembur ini, berapa pun jamnya — mis. jaga hari libur 07.00–23.00 = Rp500.000.
+                Tidak dibatasi maksimal jam/hari.
+              </p>
+            </div>
+          ) : (
+            <p className="text-[10px] text-slate-mist/70">
+              Uang = jam × tarif {rupiah(config.rate_per_hour)}/jam, dihitung otomatis oleh server.
+            </p>
+          )}
+
           <button onClick={submitCreate} disabled={creating} className={btnPrimary + " w-full"}>
             {creating ? <Loader2 size={15} className="animate-spin" /> : <Plus size={15} />}
             Catat Lembur
