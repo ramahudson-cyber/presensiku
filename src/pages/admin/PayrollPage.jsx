@@ -6,7 +6,6 @@ import {
   getEmployeeConfigs, saveEmployeeConfigs, recalculatePayroll, getPayrollLines,
 } from "../../services/payrollService";
 import { exportExcelWorkbook, RUPIAH } from "../../services/excelExport";
-import { getApprovedOvertimeTotals } from "../../services/overtimeService";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
@@ -185,31 +184,20 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
     (acc, l) => ({
       base: acc.base + Number(l.base_component),
       cut: acc.cut + Number(l.total_deduction),
+      ot: acc.ot + Number(l.overtime_amount || 0),
       received: acc.received + Number(l.total_received),
     }),
-    { base: 0, cut: 0, received: 0 }
+    { base: 0, cut: 0, ot: 0, received: 0 }
   );
 
-  // Komponen lembur (read-only): total uang lembur disetujui per pegawai
-  // untuk periode rekap. Sumber: overtime_requests (fitur lembur). Tidak
-  // mengubah payroll_lines — hanya penampil gabungan di rekap & export.
-  const [overtimeTotals, setOvertimeTotals] = useState(new Map());
-  useEffect(() => {
-    let cancelled = false;
-    getApprovedOvertimeTotals(period.slice(0, 7))
-      .then((m) => { if (!cancelled) setOvertimeTotals(m); })
-      .catch(() => { if (!cancelled) setOvertimeTotals(new Map()); });
-    return () => { cancelled = true; };
-  }, [period, lines]);
-
-  const otOf = (userId) => overtimeTotals.get(userId) || { overtime_hours: 0, overtime_amount: 0 };
-
+  // Lembur kini tersimpan di baris slip (overtime_hours/overtime_amount) dan
+  // sudah termasuk dalam total_received — dibaca langsung dari payroll_lines.
   const exportExcel = async () => {
     setExporting(true);
     try {
       const sum = (k) => lines.reduce((a, l) => a + Number(l[k] || 0), 0);
-      const otSumHours = lines.reduce((a, l) => a + (otOf(l.user_id).overtime_hours || 0), 0);
-      const otSumAmount = lines.reduce((a, l) => a + (otOf(l.user_id).overtime_amount || 0), 0);
+      const otSumHours = sum("overtime_hours");
+      const otSumAmount = sum("overtime_amount");
       await exportExcelWorkbook({
         filename: `gaji-${period}.xlsx`,
         sheetName: "Rekap Gaji",
@@ -233,8 +221,8 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
           Number(l.no_checkout_days || 0), Number(l.early_leave_days || 0),
           Number(l.late_deduction || 0), Number(l.alpha_deduction || 0),
           Number(l.no_checkout_deduction || 0), Number(l.early_leave_deduction || 0),
-          otOf(l.user_id).overtime_hours || 0,
-          otOf(l.user_id).overtime_amount || 0,
+          Number(l.overtime_hours || 0),
+          Number(l.overtime_amount || 0),
           Number(l.total_deduction || 0), Number(l.total_received || 0),
         ]),
         totalRow: [
@@ -286,10 +274,11 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
 
       {/* Ringkasan */}
       {lines.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
           {[
             { label: "Total Komponen", value: totals.base, cls: "text-slate-800" },
             { label: "Total Potongan", value: totals.cut, cls: "text-red-500" },
+            { label: "Total Lembur", value: totals.ot, cls: "text-emerald-600" },
             { label: "Total Dibayarkan", value: totals.received, cls: "text-emerald-600" },
           ].map(({ label, value, cls }) => (
             <div key={label} className="bg-white rounded-3xl border p-4" style={{ borderColor: T.border }}>
@@ -365,9 +354,9 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
                   <td className="px-3 py-2.5 whitespace-nowrap text-right text-red-500">{rupiah(l.no_checkout_deduction)}</td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-right text-red-500">{rupiah(l.early_leave_deduction)}</td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-right text-emerald-600">
-                    {otOf(l.user_id).overtime_amount > 0 ? (
-                      <span title={`${otOf(l.user_id).overtime_hours} jam lembur`}>
-                        +{rupiah(otOf(l.user_id).overtime_amount)}
+                    {Number(l.overtime_amount || 0) > 0 ? (
+                      <span title={`${Number(l.overtime_hours || 0)} jam lembur (sudah termasuk Diterima)`}>
+                        +{rupiah(l.overtime_amount)}
                       </span>
                     ) : (
                       <span className="text-slate-300">–</span>

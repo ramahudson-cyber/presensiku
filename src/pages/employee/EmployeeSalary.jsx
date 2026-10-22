@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { isPayrollEnabled, getMyPayrollLines, ensureMyPayrollLine } from "../../services/payrollService";
-import { getApprovedOvertimeTotals } from "../../services/overtimeService";
 import { getCurrentVersion } from "../../services/updateService";
 import { Wallet, Loader2, Download, Info, CalendarSearch } from "lucide-react";
 import { toast } from "react-toastify";
@@ -23,42 +22,18 @@ const statusEnum = {
 
 function EmployeeSalaryPage() {
   const { user } = useAuth();
-  const cancelledRef = useRef(false);
-  useEffect(() => {
-    cancelledRef.current = false;
-    return () => { cancelledRef.current = true; };
-  }, []);
   const [enabled, setEnabledState] = useState(null);
   const [lines, setLines] = useState([]);
-  // Total lembur disetujui per periode (YYYY-MM) — komponen "+" tampilan
-  // slip; payroll_lines tidak diubah (read-only gabungan).
-  const [otByPeriod, setOtByPeriod] = useState({});
   const [loading, setLoading] = useState(true);
   const [pickPeriod, setPickPeriod] = useState(currentPeriod());
   const [ensuring, setEnsuring] = useState(false);
 
-  // Bukan useCallback: compiler React tidak bisa mempertahankan memoization
-  // manual lama begitu Promise.all ditambahkan — plain function + ref guard.
+  // Uang lembur sudah tersimpan di baris slip (overtime_hours/overtime_amount)
+  // dan sudah termasuk dalam total_received — tidak perlu query terpisah.
   const load = async () => {
     setLoading(true);
     try {
-      const myLines = await getMyPayrollLines(user.id);
-      setLines(myLines);
-      // Tarik total lembur disetujui utk tiap periode slip milik pegawai.
-      const periods = [...new Set((myLines || []).map((l) => l.period_month?.slice(0, 7)).filter(Boolean))];
-      const entries = await Promise.all(
-        periods.map(async (p) => {
-          try {
-            const map = await getApprovedOvertimeTotals(p);
-            return [p, map.get(user.id) || null];
-          } catch {
-            return [p, null];
-          }
-        })
-      );
-      if (!cancelledRef.current) {
-        setOtByPeriod(Object.fromEntries(entries.filter(([, v]) => v)));
-      }
+      setLines(await getMyPayrollLines(user.id));
     } catch {
       setLines([]);
     } finally {
@@ -121,10 +96,10 @@ function EmployeeSalaryPage() {
       ["Gaji / Komponen", rupiah(line.base_component)],
       ["Hari Kerja", `${line.work_days} hari`],
       ["Hadir", `${line.hadir} hari`],
-      ...((otByPeriod[line.period_month?.slice(0, 7)]?.overtime_amount || 0) > 0
+      ...(Number(line.overtime_amount || 0) > 0
         ? [[
-            `Lembur (${otByPeriod[line.period_month?.slice(0, 7)].overtime_hours.toLocaleString("id-ID")} jam)`,
-            "+ " + rupiah(otByPeriod[line.period_month?.slice(0, 7)].overtime_amount),
+            `Lembur (${Number(line.overtime_hours || 0).toLocaleString("id-ID")} jam)`,
+            "+ " + rupiah(line.overtime_amount),
           ]]
         : []),
       ["Terlambat", `${line.terlambat} kali (${line.late_minutes_total} menit)`],
@@ -257,10 +232,10 @@ function EmployeeSalaryPage() {
               <div className="px-5 py-3 space-y-1.5 text-[13px]">
                 <Row label="Gaji / Komponen" value={rupiah(line.base_component)} />
                 <Row label={`Hadir ${line.hadir} dari ${line.work_days} hari`} value="" muted />
-                {(otByPeriod[line.period_month?.slice(0, 7)]?.overtime_amount || 0) > 0 && (
+                {Number(line.overtime_amount || 0) > 0 && (
                   <Row
-                    label={`Lembur ${otByPeriod[line.period_month?.slice(0, 7)].overtime_hours.toLocaleString("id-ID")} jam`}
-                    value={"+" + rupiah(otByPeriod[line.period_month?.slice(0, 7)].overtime_amount)}
+                    label={`Lembur ${Number(line.overtime_hours || 0).toLocaleString("id-ID")} jam`}
+                    value={"+" + rupiah(line.overtime_amount)}
                     green
                   />
                 )}
