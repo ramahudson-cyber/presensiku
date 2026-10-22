@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { exportExcelWorkbook, DATE_FMT } from "../../services/excelExport";
+import { shiftLabel } from "../../lib/shiftName";
 import { getMondayFirstDayOfWeek, getEarlyLeaveInfo, formatDuration, isShiftEnded } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
@@ -152,7 +153,7 @@ function TodayMonitorPanel() {
         const att = attByUser.get(s.user_id);
         const def = defMap.get(`${s.shift_code}|${dowToday}`);
         const profile = att?.profiles || memberMap[s.user_id] || {};
-        const shiftName = shiftNameMap[s.shift_code] || s.shift_code;
+        const shiftName = shiftLabel(s.shift_code, shiftNameMap[s.shift_code]);
         const jam = def?.start_time && def?.end_time
           ? `${String(def.start_time).slice(0, 5)}–${String(def.end_time).slice(0, 5)}`
           : "–";

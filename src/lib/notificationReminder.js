@@ -1,6 +1,5 @@
 import { getWitaParts, getMondayFirstDayOfWeek, addCalendarDays } from "./shiftTime";
-
-const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
+import { shiftLabel as resolveShiftLabel } from "./shiftName";
 
 /**
  * Compute shift reminder info based on current time.
@@ -49,7 +48,7 @@ export function getShiftReminderInfo(serverNow, employeeSchedule, shiftDefinitio
     if (nowTotal >= endTotal) return { show: false };
   }
 
-  const shiftLabel = SHIFT_NAMES[employeeSchedule.shift_code] || employeeSchedule.shift_code;
+  const shiftLabel = resolveShiftLabel(employeeSchedule.shift_code);
   const shiftStartFormatted = `${String(startHour).padStart(2, "0")}:${String(startMinute).padStart(2, "0")}`;
 
   let message;
@@ -118,7 +117,7 @@ export function getShiftEndReminderInfo(serverNow, employeeSchedule, shiftDefini
     ) || null;
   };
   const build = (def, diff, endH, endM) => {
-    const shiftLabel = SHIFT_NAMES[employeeSchedule.shift_code] || employeeSchedule.shift_code;
+    const shiftLabel = resolveShiftLabel(employeeSchedule.shift_code);
     const shiftEndFormatted = `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
     return {
       show: true,

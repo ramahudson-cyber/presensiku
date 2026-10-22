@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { supabase } from "../../lib/supabase";
 import { getShiftDefinition, getWitaParts, isShiftEnded, getEarlyLeaveInfo, formatDuration } from "../../lib/shiftTime";
+import { shiftLabel } from "../../lib/shiftName";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
@@ -485,7 +486,7 @@ export default function EmployeeHistory() {
                             )}
                             {item.shift_code && (
                               <div className="text-[9px] font-semibold" style={{ color: "#BF00FF" }}>
-                                Shift : {shiftNameMap[item.shift_code] || item.shift_code}
+                                Shift : {shiftLabel(item.shift_code, shiftNameMap[item.shift_code])}
                               </div>
                             )}
                           </div>

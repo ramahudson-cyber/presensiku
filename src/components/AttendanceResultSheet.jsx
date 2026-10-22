@@ -2,8 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import thumbsUpImg from "../assets/thumbs-up-success.png";
 import wavingGoodbyeImg from "../assets/waving-goodbye.png";
-
-const SHIFT_NAMES = { PG: "Pagi", SR: "Sore", SI: "Siang", ML: "Malam" };
+import { shiftLabelPrefixed } from "../lib/shiftName";
 
 function formatTime(isoString) {
   if (!isoString) return "-";
@@ -86,12 +85,10 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
   const clockIn = formatTime(data.clock_in_time);
   const clockOut = formatTime(data.clock_out_time);
   const dateStr = formatDate(data.clock_in_time);
-  // Nama shift dari DB (prop) → map legacy → fallback generik, agar kode
-  // kustom org (mis. MLM) tetap menghasilkan label manusiawi. Nama dari DB
-  // bisa huruf kecil ("malam") → dikapitalisasi.
-  const cap = (s) => (s ? s.trim().charAt(0).toUpperCase() + s.trim().slice(1) : s);
+  // Label shift: nama dari DB (prop) diprioritaskan, lalu alias umum
+  // (termasuk kode kustom instansi seperti SNG), terakhir kode mentah.
   const shiftLabel = data.shift_code
-    ? (cap(shiftNameProp) || SHIFT_NAMES[data.shift_code] || `Shift ${data.shift_code}`)
+    ? shiftLabelPrefixed(data.shift_code, shiftNameProp)
     : "-";
   // ── Status pulang ──
   // Batas pulang = jam selesai shift + menit telat (kompensasi). Pulang

@@ -25,18 +25,8 @@ function withTimeout(promise, ms, label) {
   ]);
 }
 
-// Fallback nama shift bila master DB tidak tersedia — nama resmi selalu
-// diutamakan dari tabel shifts (mendukung kode kustom org, mis. MLM).
-const SHIFT_NAMES = { PG:'Pagi', SR:'Sore', SI:'Siang', SG:'Siang', ML:'Malam', MLM:'Malam', LB:'Libur' };
-const getShiftName = (code) => SHIFT_NAMES[code] || (code || 'Shift');
-// Badge hero: "Shift : Malam". Nama dari master DB dikapitalisasi; nama yang
-// sudah diawali "Shift" tidak diberi awalan ganda.
-const formatShiftBadge = (name) => {
-  if (!name) return null;
-  const trimmed = name.trim();
-  const cap = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
-  return /^shift\b/i.test(cap) ? cap : `Shift : ${cap}`;
-};
+// Fallback nama shift terpusat (mendukung kode kustom instansi, mis. SNG).
+import { shiftLabelPrefixed as formatShiftBadge } from "../../lib/shiftName";
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
@@ -222,12 +212,12 @@ export default function EmployeeDashboard() {
       }
 
       setTodayAttendance(att);
-      setShift(shiftRes.data?.shift_code ? formatShiftBadge(shiftNameMap[shiftRes.data.shift_code] || getShiftName(shiftRes.data.shift_code)) : null);
+      setShift(shiftRes.data?.shift_code ? formatShiftBadge(shiftRes.data.shift_code, shiftNameMap[shiftRes.data.shift_code]) : null);
       setTodaySched(shiftRes.data || null);
 
       // null (BUKAN string "N/A") agar badge merender "Tidak ada jadwal hari ini".
       // Nama shift diutamakan dari master DB (mis. "malam" → "Shift : Malam"), bukan kode.
-      setShift(shiftRes.data?.shift_code ? formatShiftBadge(shiftNameMap[shiftRes.data.shift_code] || getShiftName(shiftRes.data.shift_code)) : null);
+      setShift(shiftRes.data?.shift_code ? formatShiftBadge(shiftRes.data.shift_code, shiftNameMap[shiftRes.data.shift_code]) : null);
       setTodaySched(shiftRes.data || null);
 
       scheduleShiftReminders(serverNow, shiftRes.data || null, shiftDefinitions, attRes.data || null);
