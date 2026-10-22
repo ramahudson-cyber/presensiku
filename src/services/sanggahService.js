@@ -17,18 +17,27 @@ export async function getMySanggahan() {
 }
 
 // Batas absen pulang (jam selesai shift + 1 jam) sudah terlewati?
-function isCheckoutDeadlinePassed(dateKey, shiftCode, defs) {
+// OvertimeEnd (HH:MM) = jam selesai lembur approved; bila ada, batas memakai
+// jam selesai lembur + 1 jam (sama dengan effective_checkout_deadline di DB).
+function isCheckoutDeadlinePassed(dateKey, shiftCode, defs, overtimeEnd = null) {
   const def = getShiftDefinition(defs || [], { date: dateKey, shift_code: shiftCode });
   if (!def?.end_time) return false;
   const dParts = String(dateKey).split("-").map(Number);
-  const m = String(def.end_time).match(/^(\d{1,2}):(\d{2})/);
-  if (!m || dParts.length !== 3) return false;
-  let endAt = Date.UTC(dParts[0], dParts[1] - 1, dParts[2], Number(m[1]), Number(m[2])) - 8 * 3600 * 1000;
-  const st = String(def.start_time || "").match(/^(\d{1,2}):(\d{2})/);
-  if (def.crosses_midnight && st) {
-    const startMin = Number(st[1]) * 60 + Number(st[2]);
-    if ((Number(m[1]) * 60 + Number(m[2])) <= startMin) endAt += 86400000;
-  }
+  const toMs = (hhmm) => {
+    const m = String(hhmm).match(/^(\d{1,2}):(\d{2})/);
+    if (!m || dParts.length !== 3) return null;
+    let ms = Date.UTC(dParts[0], dParts[1] - 1, dParts[2], Number(m[1]), Number(m[2])) - 8 * 3600 * 1000;
+    const st = String(def.start_time || "").match(/^(\d{1,2}):(\d{2})/);
+    if (def.crosses_midnight && st) {
+      const startMin = Number(st[1]) * 60 + Number(st[2]);
+      if ((Number(m[1]) * 60 + Number(m[2])) <= startMin) ms += 86400000;
+    }
+    return ms;
+  };
+  const shiftEnd = toMs(def.end_time);
+  const otEnd = overtimeEnd ? toMs(overtimeEnd) : null;
+  const endAt = shiftEnd === null ? null : Math.max(shiftEnd, otEnd ?? shiftEnd);
+  if (endAt === null) return false;
   return Date.now() > endAt + 3600000;
 }
 
@@ -70,11 +79,26 @@ export async function getMyDisputableAttendance(userId) {
   if (error) throw error;
   if (ncError) throw ncError;
 
-  // Saring hari sama: hanya lolos bila batas absen pulang sudah terlewati
+  // Saring hari sama: hanya lolos bila batas absen pulang sudah terlewati.
+  // Lembur approved memperpanjang batas → jendela sanggah ikut bergeser.
+  const sameDayDates = (noCheckoutRows || []).filter((r) => r.date === todayWita).map((r) => r.date);
+  let overtimeByDate = {};
+  if (sameDayDates.length > 0) {
+    const { data: otRows } = await supabase
+      .from("overtime_requests")
+      .select("date, end_time")
+      .eq("status", "approved")
+      .in("date", [...new Set(sameDayDates)]);
+    (otRows || []).forEach((r) => {
+      const prev = overtimeByDate[r.date];
+      if (!prev || String(r.end_time) > String(prev)) overtimeByDate[r.date] = r.end_time;
+    });
+  }
+
   const ncFiltered = (noCheckoutRows || []).filter((r) => {
     if (r.date < todayWita) return true;
     if (r.date > todayWita) return false;
-    return isCheckoutDeadlinePassed(r.date, r.shift_code, defs);
+    return isCheckoutDeadlinePassed(r.date, r.shift_code, defs, overtimeByDate[r.date] || null);
   });
 
   const rows = (data || []).concat(

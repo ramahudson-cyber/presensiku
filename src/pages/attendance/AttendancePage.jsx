@@ -13,6 +13,7 @@ import { getCurrentPosition } from "../../services/geoService";
 import { detectMockLocation, mockBlockMessage } from "../../services/mockLocationService";
 import { buildIntegritySignal, attachIntegrity, logSecurityEvent, fetchIntegrityVerdict } from "../../services/integrityService";
 import { getPuskesmasLocation, getNearestLocation, verifyLocationServer } from "../../services/attendanceService";
+import { getApprovedOvertimeEnd } from "../../services/overtimeService";
 import { getMondayFirstDayOfWeek, getShiftDefinition, getWitaDateKey, isShiftEnded, isCheckInWindowOpen } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
@@ -75,6 +76,9 @@ export default function AttendancePage() {
   // Definisi shift untuk baris absensi malam kemarin (lintas malam) —
   // dipakai menghitung batas absen pulang baris tersebut
   const [nightShiftDef, setNightShiftDef] = useState(null);
+  // Jam selesai lembur APPROVED (HH:MM) untuk tanggal baris absensi ini.
+  // Batas absen pulang diperpanjang bila ada lembur disetujui.
+  const [overtimeEndTime, setOvertimeEndTime] = useState(null);
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
   const [puskesmasLocation, setPuskesmasLocation] = useState({ latitude: -8.5697, longitude: 116.0821, radius_meter: 200, name: "Lokasi Absensi" });
   // Lokasi hasil pencocokan server (lokasi aktif terdekat dari posisi user)
@@ -201,6 +205,19 @@ export default function AttendancePage() {
 
       if (!row) setNightShiftDef(null);
       setTodayAttendance(row);
+
+      // Lembur DISETUJUI memperpanjang batas absen pulang (jam selesai lembur
+      // + 1 jam). Lookup memakai row.date — bukan tanggal WITA hari ini —
+      // karena baris shift malam kemarin bertanggal kemarin.
+      if (row?.date) {
+        try {
+          setOvertimeEndTime(await getApprovedOvertimeEnd(user.id, row.date));
+        } catch {
+          setOvertimeEndTime(null);
+        }
+      } else {
+        setOvertimeEndTime(null);
+      }
     } catch (e) { console.error(e); }
   };
 
@@ -398,8 +415,36 @@ export default function AttendancePage() {
     }
     return ms;
   })();
-  const checkoutDeadlineMs = endAtMs !== null ? endAtMs + 3600000 : null;
-  const checkoutLateBlocked = checkoutDeadlineMs !== null && serverTime.getTime() > checkoutDeadlineMs;
+  // Lembur disetujui memperpanjang batas pulang: deadline = jam selesai lembur
+  // + 1 jam, bila lebih lambat dari deadline shift. Server menegakkan aturan
+  // yang sama lewat effective_checkout_deadline().
+  const overtimeEndAtMs = (() => {
+    if (!overtimeEndTime || !todayAttendance?.date) return null;
+    const dParts = String(todayAttendance.date).split("-").map(Number);
+    const m = String(overtimeEndTime).match(/^(\d{1,2}):(\d{2})/);
+    if (!m || dParts.length !== 3) return null;
+    let ms = Date.UTC(dParts[0], dParts[1] - 1, dParts[2], Number(m[1]), Number(m[2])) - 8 * 3600 * 1000;
+    // Shift malam: lembur yang selesai sebelum jam mulai shift terjadi setelah
+    // tengah malam → geser satu hari (mirror effective_checkout_deadline).
+    const st = String(activeCheckoutDef?.start_time || "").match(/^(\d{1,2}):(\d{2})/);
+    if (activeCheckoutDef?.crosses_midnight && st) {
+      const startMin = Number(st[1]) * 60 + Number(st[2]);
+      if ((Number(m[1]) * 60 + Number(m[2])) <= startMin) ms += 86400000;
+    }
+    return ms;
+  })();
+  const effectiveEndAtMs = (endAtMs !== null && overtimeEndAtMs !== null)
+    ? Math.max(endAtMs, overtimeEndAtMs)
+    : (overtimeEndAtMs ?? endAtMs);
+  const effectiveCheckoutDeadlineMs = effectiveEndAtMs !== null
+    ? effectiveEndAtMs + 3600000
+    : null;
+  const checkoutLateBlocked = effectiveCheckoutDeadlineMs !== null
+    && !!serverTime
+    && serverTime.getTime() > effectiveCheckoutDeadlineMs;
+  const overtimeExtendsDeadline = overtimeEndAtMs !== null
+    && endAtMs !== null
+    && overtimeEndAtMs > endAtMs;
   const makeupTargetMs = (endAtMs !== null && todayAttendance?.is_late)
     ? endAtMs + (todayAttendance.late_minutes || 0) * 60000
     : null;
@@ -904,9 +949,12 @@ export default function AttendancePage() {
               {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : isAlphaLocked ? "Absen Ditutup" : checkoutLateBlocked ? "Batas Pulang Lewat" : !checkInGate.open ? "Belum Dibuka" : todayAttendance ? "Absen Pulang" : "Absen Masuk"}
             </span>
             {/* Batas pulang & target kompensasi telat */}
-            {todayAttendance && !todayAttendance.clock_out_time && checkoutDeadlineMs !== null && !checkoutLateBlocked && (
+            {todayAttendance && !todayAttendance.clock_out_time && effectiveCheckoutDeadlineMs !== null && !checkoutLateBlocked && (
               <span className="text-[10px] font-medium rounded-full px-3.5 py-1.5 bg-[#17131f]/95 border border-white/25 text-white/90 hero-card-bg text-center shadow-md">
-                Batas absen pulang: {fmtJamTitik(checkoutDeadlineMs)} WITA
+                Batas absen pulang: {fmtJamTitik(effectiveCheckoutDeadlineMs)} WITA
+                {overtimeExtendsDeadline && (
+                  <> · diperpanjang karena lembur s/d {fmtJamTitik(overtimeEndAtMs)}</>
+                )}
                 {makeupTargetMs != null && (
                   <> · Absen pulang minimal <b>{fmtJamTitik(makeupTargetMs)}</b> agar telat {todayAttendance.late_minutes} menit dihapus</>
                 )}
@@ -914,7 +962,7 @@ export default function AttendancePage() {
             )}
             {checkoutLateBlocked && (
               <span className="text-[10px] font-semibold rounded-full px-3.5 py-1.5 bg-[#17131f]/95 border border-white/25 text-rose-300 hero-card-bg text-center shadow-md">
-                Batas absen pulang sudah lewat (1 jam setelah jam selesai shift)
+                Batas absen pulang sudah lewat (1 jam setelah jam selesai {overtimeExtendsDeadline ? "lembur" : "shift"})
               </span>
             )}
           </div>

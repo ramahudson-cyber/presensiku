@@ -110,6 +110,27 @@ export async function adminCreateOvertime({ user_id, date, start_time, end_time,
   return unwrap(data);
 }
 
+// Jam selesai lembur APPROVED untuk user+tanggal (dipakai aturan batas absen
+// pulang). Mengembalikan string "HH:MM" paling akhir, atau null bila tidak ada.
+// Beberapa slot lembur per hari dimungkinkan (unique index user+date+start_time),
+// jadi ambil yang paling akhir — bukan .maybeSingle().
+export async function getApprovedOvertimeEnd(userId, date) {
+  if (!userId || !date) return null;
+  const { data, error } = await supabase
+    .from("overtime_requests")
+    .select("end_time")
+    .eq("user_id", userId)
+    .eq("date", date)
+    .eq("status", "approved");
+  if (error) throw error;
+  if (!data || data.length === 0) return null;
+  return data
+    .map((r) => r.end_time)
+    .filter((t) => /^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(t || ""))
+    .sort()
+    .pop() || null;
+}
+
 // Rekap uang lembur disetujui per pegawai untuk periode "YYYY-MM".
 // Dipakai PayrollPage — read-only, tidak mengubah slip yang ada.
 export async function getApprovedOvertimeTotals(period) {
