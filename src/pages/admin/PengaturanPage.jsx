@@ -165,8 +165,8 @@ function TabProfilPuskesmas() {
       toast.error("Titik masih di default Puskesmas — pilih titik lokasi sebenarnya di peta dulu");
       return;
     }
-    if (!Number.isInteger(radius) || radius < 50 || radius > 2000) {
-      toast.error("Radius harus berupa bilangan bulat antara 50 dan 2000 meter (min. 50 m menoleransi error GPS)");
+    if (!Number.isInteger(radius) || radius < 2 || radius > 2000) {
+      toast.error("Radius harus bilangan bulat 2–2000 meter. Radius real: tanpa toleransi GPS, jarak melebihi radius langsung ditolak.");
       return;
     }
     if (isSuperAdmin && !formData.organization_id) {
@@ -442,7 +442,7 @@ function TabProfilPuskesmas() {
                 Radius Absensi (meter) *
               </label>
               <input
-                type="number" required min="50" max="2000"
+                type="number" required min="2" max="2000"
                 value={formData.radius_meter}
                 onChange={(e) => setFormData({ ...formData, radius_meter: e.target.value })}
                 className={inputBase}

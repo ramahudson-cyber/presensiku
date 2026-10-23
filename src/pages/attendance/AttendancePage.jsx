@@ -331,7 +331,7 @@ export default function AttendancePage() {
         const rounded = Math.round(dist);
         prevDistanceRef.current = rounded;
         setDistance(rounded);
-        const isValid = rounded <= ((nearest.radius_meter || 200) + (loc.accuracy || 0));
+        const isValid = rounded <= (nearest.radius_meter || 200);
         setLocationStatus(isValid ? "valid" : "invalid");
         if (isValid) setError("");
       }
