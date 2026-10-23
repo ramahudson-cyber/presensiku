@@ -1,7 +1,7 @@
 {
   "version": "1.8.4",
   "versionCode": 31,
-  "webVersionCode": 36,
+  "webVersionCode": 37,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.4/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
   "changelog": "Lembur kini memperpanjang batas absen pulang: bila lembur disetujui sampai 22.00, absen pulang masih bisa dilakukan sampai 23.00 (tidak lagi terblokir 1 jam setelah jam selesai shift).",

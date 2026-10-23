@@ -527,18 +527,18 @@ export default function EmployeeDashboard() {
         </div>
         <div className="grid grid-cols-3 gap-x-2 gap-y-4">
           {[
-            { to: "/employee/leave", icon: ClipboardList, label: "Izin/Sakit", tile: "linear-gradient(135deg, #EDE9FE, #DDD6FE)", color: "text-violet-600" },
-            { to: "/employee/sanggah", icon: MessageSquareWarning, label: "Sanggah", tile: "linear-gradient(135deg, #CFFAFE, #A5F3FC)", color: "text-cyan-600" },
-            { to: "/employee/overtime", icon: Clock, label: "Lembur", tile: "linear-gradient(135deg, #FFEDD5, #FED7AA)", color: "text-orange-600" },
-            { to: "/employee/history", icon: History, label: "Riwayat Kehadiran", tile: "linear-gradient(135deg, #DBEAFE, #BFDBFE)", color: "text-blue-600" },
-            { to: "/employee/notifications", icon: Bell, label: "Notifikasi", tile: "linear-gradient(135deg, #FEF3C7, #FDE68A)", color: "text-amber-600", badge: true },
-            ...(payrollOn ? [{ to: "/employee/salary", icon: Wallet, label: "Slip Gaji", tile: "linear-gradient(135deg, #D1FAE5, #A7F3D0)", color: "text-emerald-600" }] : []),
-            { to: "/employee/profile", icon: User, label: "Profil", tile: "linear-gradient(135deg, #FCE7F3, #FBCFE8)", color: "text-pink-600" },
+            { to: "/employee/leave", icon: ClipboardList, label: "Izin/Sakit" },
+            { to: "/employee/sanggah", icon: MessageSquareWarning, label: "Sanggah" },
+            { to: "/employee/overtime", icon: Clock, label: "Lembur" },
+            { to: "/employee/history", icon: History, label: "Riwayat Kehadiran" },
+            { to: "/employee/notifications", icon: Bell, label: "Notifikasi", badge: true },
+            ...(payrollOn ? [{ to: "/employee/salary", icon: Wallet, label: "Slip Gaji" }] : []),
+            { to: "/employee/profile", icon: User, label: "Profil" },
           ].map((item) => (
             <Link key={item.to} to={item.to} className="flex flex-col items-center gap-2.5 py-1 group">
-              <span className="relative w-16 h-16 rounded-[22px] flex items-center justify-center shadow-[0_6px_16px_rgba(15,23,42,0.12)] transition-transform group-hover:-translate-y-0.5 group-active:scale-95"
-                style={{ background: item.tile }}>
-                <item.icon size={30} strokeWidth={2} className={item.color} />
+              <span className="relative w-16 h-16 rounded-[22px] flex items-center justify-center shadow-[0_6px_16px_rgba(191,0,255,0.28)] transition-transform group-hover:-translate-y-0.5 group-active:scale-95"
+                style={{ background: 'linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)' }}>
+                <item.icon size={30} strokeWidth={2} className="text-white" />
                 {item.badge && unreadNotif > 0 && (
                   <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold grid place-items-center shadow">
                     {unreadNotif}
