@@ -21,7 +21,7 @@ const PIN_SCALE_NORMAL = 0.82; // full-bleed icon (favicon, apple-touch, launche
 const PIN_SCALE_MASKABLE = 0.72; // area aman adaptive/maskable (PWA)
 // Adaptive Android: foreground 108dp, konten aman ~66dp. Pin di viewBox 120
 // diskalakan agar mengisi area aman dengan pas.
-const PIN_SCALE_FOREGROUND = 0.78;
+const PIN_SCALE_FOREGROUND = 0.68;
 
 const SIZES = {
   'mipmap-mdpi': 48,
