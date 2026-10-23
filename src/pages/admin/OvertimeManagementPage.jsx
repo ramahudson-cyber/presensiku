@@ -359,6 +359,13 @@ export default function OvertimeManagementPage() {
         </div>
       </div>
 
+      {/* Catatan aturan pembayaran lembur */}
+      <div className={`${cardBase} p-4 border border-amber-500/25`}>
+        <p className="text-xs text-slate-mist leading-relaxed">
+          <span className="font-semibold text-amber-300">Catatan:</span> Lembur hanya dibayarkan bila pegawai melakukan absen pulang pada tanggal lembur.
+        </p>
+      </div>
+
       {/* Filter + Export */}
       <div className={`${cardBase} p-4`}>
         <div className="flex flex-col md:flex-row gap-3">

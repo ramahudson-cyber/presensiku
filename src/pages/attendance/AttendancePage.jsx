@@ -960,6 +960,11 @@ export default function AttendancePage() {
                 )}
               </span>
             )}
+            {todayAttendance && !todayAttendance.clock_out_time && overtimeExtendsDeadline && !checkoutLateBlocked && (
+              <span className="text-[10px] font-medium rounded-full px-3.5 py-1.5 bg-[#17131f]/95 border border-white/25 text-amber-200 hero-card-bg text-center shadow-md">
+                Jangan lupa absen pulang — uang lembur hangus bila tidak ada absen pulang hari ini.
+              </span>
+            )}
             {checkoutLateBlocked && (
               <span className="text-[10px] font-semibold rounded-full px-3.5 py-1.5 bg-[#17131f]/95 border border-white/25 text-rose-300 hero-card-bg text-center shadow-md">
                 Batas absen pulang sudah lewat (1 jam setelah jam selesai {overtimeExtendsDeadline ? "lembur" : "shift"})

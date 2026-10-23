@@ -235,6 +235,12 @@ export default function OvertimeRequestPage() {
               </div>
             )}
 
+            <div className="rounded-2xl px-4 py-3" style={{ background: "#FFF7ED", border: "1px solid rgba(245,158,11,0.25)" }}>
+              <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.5 }}>
+                <b style={{ color: T.text }}>Penting:</b> Uang lembur hanya dibayar jika Anda tetap melakukan absen pulang di hari lembur. Lembur tanpa absen pulang tidak dibayarkan.
+              </p>
+            </div>
+
             <button type="submit" disabled={loading}
               style={{
                 width: "100%", padding: "14px", border: "none", borderRadius: 14,
