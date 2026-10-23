@@ -536,7 +536,7 @@ export default function EmployeeDashboard() {
             { to: "/employee/profile", icon: User, label: "Profil" },
           ].map((item) => (
             <Link key={item.to} to={item.to} className="flex flex-col items-center gap-2.5 py-1 group">
-              <span className="relative w-16 h-16 rounded-[22px] flex items-center justify-center shadow-[0_6px_16px_rgba(191,0,255,0.28)] transition-transform group-hover:-translate-y-0.5 group-active:scale-95"
+              <span className="hero-card-bg relative w-16 h-16 rounded-[22px] flex items-center justify-center shadow-[0_6px_16px_rgba(191,0,255,0.28)] transition-transform group-hover:-translate-y-0.5 group-active:scale-95"
                 style={{ background: 'linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)' }}>
                 <item.icon size={30} strokeWidth={2} className="text-white" />
                 {item.badge && unreadNotif > 0 && (
