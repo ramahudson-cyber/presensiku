@@ -312,112 +312,167 @@ const EmployeesPage = () => {
       {/* Modal Form */}
       {showForm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="design-modal w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-5 md:p-6 border-b border-white/[0.06] sticky top-0 bg-onyx/95 backdrop-blur-md z-10">
-              <h2 className="text-lg font-bold text-white">
-                {formData.id ? 'Edit Pegawai' : 'Tambah Pegawai Baru'}
-              </h2>
+          <div
+            className="w-full max-w-xl max-h-[92vh] overflow-y-auto animate-fade-in"
+            style={{ background: '#F4F2FB', border: '1px solid rgba(31,41,55,0.08)', borderRadius: 24, boxShadow: '0 20px 60px rgba(15,23,42,0.18)' }}
+          >
+            <div
+              className="flex items-center justify-between p-5 md:p-6 sticky top-0 z-10 backdrop-blur-md"
+              style={{ background: 'rgba(244,242,251,0.95)', borderBottom: '1px solid rgba(31,41,55,0.08)' }}
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+                <span className="text-sm font-bold" style={{ color: '#0F172A' }}>
+                  {formData.id ? 'Edit Pegawai' : 'Tambah Pegawai Baru'}
+                </span>
+              </div>
               <button
                 onClick={resetForm}
-                className="p-1.5 rounded-xl text-slate-mist hover:text-white hover:bg-white/[0.03] transition-all"
+                className="p-1.5 rounded-xl transition-all"
+                style={{ color: '#94A3B8' }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-5 md:p-6 space-y-4 pb-28">
-              {!formData.id && (
-                <div>
-                  <label className={labelBase}>
-                    <IdCard size={11} className="inline mr-1" />
-                    Username *
-                  </label>
-                  <input
-                    type="text" name="username" value={formData.username}
-                    onChange={handleInputChange} required
-                    placeholder="Contoh: AMP0001"
-                    className={inputBase}
-                  />
+            <form onSubmit={handleSubmit} className="p-5 md:p-6 space-y-4 pb-4">
+              {/* Kartu 1 — Akun & Akses */}
+              <div
+                className="rounded-3xl p-5"
+                style={{ background: '#FFFFFF', border: '1px solid rgba(31,41,55,0.08)', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' }}
+              >
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+                  <span className="text-xs font-bold" style={{ color: '#0F172A' }}>1. Akun & Akses</span>
                 </div>
-              )}
+                <div className="space-y-3">
+                  {!formData.id && (
+                    <div>
+                      <label className="text-[10px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: '#94A3B8' }}>
+                        <IdCard size={11} className="inline mr-1" />
+                        Username *
+                      </label>
+                      <input
+                        type="text" name="username" value={formData.username}
+                        onChange={handleInputChange} required
+                        placeholder="Contoh: AMP0001"
+                        className="w-full rounded-xl px-3.5 py-2.5 text-[13px] outline-none"
+                        style={{ background: '#FAFAFC', border: '1px solid rgba(31,41,55,0.08)', color: '#0F172A' }}
+                      />
+                    </div>
+                  )}
 
-              <div>
-                <label className={labelBase}>
-                  <User size={11} className="inline mr-1" />
-                  Nama Lengkap *
-                </label>
-                <input
-                  type="text" name="full_name" value={formData.full_name}
-                  onChange={handleInputChange} required
-                  placeholder="Nama lengkap pegawai"
-                  className={inputBase}
-                />
-              </div>
+                  <div>
+                    <label className="text-[10px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: '#94A3B8' }}>
+                      <Mail size={11} className="inline mr-1" />
+                      Email *
+                    </label>
+                    <input
+                      type="email" name="email" value={formData.email}
+                      onChange={handleInputChange} required
+                      placeholder="nama@email.com"
+                      className="w-full rounded-xl px-3.5 py-2.5 text-[13px] outline-none"
+                      style={{ background: '#FAFAFC', border: '1px solid rgba(31,41,55,0.08)', color: '#0F172A' }}
+                    />
+                  </div>
 
-              <div>
-                <label className={labelBase}>
-                  <Mail size={11} className="inline mr-1" />
-                  Email *
-                </label>
-                <input
-                  type="email" name="email" value={formData.email}
-                  onChange={handleInputChange} required
-                  placeholder="nama@email.com"
-                  className={inputBase}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className={labelBase}>
-                    <Briefcase size={11} className="inline mr-1" />
-                    Role *
-                  </label>
-                  <select name="role" value={formData.role} onChange={handleInputChange} required
-                    className={inputBase}>
-                    <option value="" className="bg-onyx">Pilih Role</option>
-                    {allowedRoles.map(r => (
-                      <option key={r.id} value={r.name} className="bg-onyx">{r.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className={labelBase}>
-                    <IdCard size={11} className="inline mr-1" />
-                    Status{formData.id ? " *" : ""}
-                  </label>
-                  <select name="employee_status" value={formData.employee_status} onChange={handleInputChange} required={!!formData.id}
-                    className={inputBase}>
-                    <option value="" className="bg-onyx">Pilih Status (opsional)</option>
-                    {masterData.statuses.map(s => (
-                      <option key={s.id} value={s.name} className="bg-onyx">{s.name}</option>
-                    ))}
-                  </select>
+                  <div>
+                    <label className="text-[10px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: '#94A3B8' }}>
+                      <Briefcase size={11} className="inline mr-1" />
+                      Role *
+                    </label>
+                    <select
+                      name="role" value={formData.role} onChange={handleInputChange} required
+                      className="w-full rounded-xl px-3.5 py-2.5 text-[13px] outline-none"
+                      style={{ background: '#FAFAFC', border: '1px solid rgba(31,41,55,0.08)', color: '#0F172A' }}
+                    >
+                      <option value="">Pilih Role</option>
+                      {allowedRoles.map(r => (
+                        <option key={r.id} value={r.name}>{r.name}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label className={labelBase}>
-                  <Briefcase size={11} className="inline mr-1" />
-                  Jabatan{formData.id ? " *" : ""}
-                </label>
-                <select name="position" value={formData.position} onChange={handleInputChange} required={!!formData.id}
-                  className={inputBase}>
-                  <option value="" className="bg-onyx">Pilih Jabatan (opsional)</option>
-                  {masterData.positions.map(p => (
-                    <option key={p.id} value={p.name} className="bg-onyx">{p.name}</option>
-                  ))}
-                </select>
+              {/* Kartu 2 — Data Pegawai */}
+              <div
+                className="rounded-3xl p-5"
+                style={{ background: '#FFFFFF', border: '1px solid rgba(31,41,55,0.08)', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' }}
+              >
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+                  <span className="text-xs font-bold" style={{ color: '#0F172A' }}>2. Data Pegawai</span>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-[10px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: '#94A3B8' }}>
+                      <User size={11} className="inline mr-1" />
+                      Nama Lengkap *
+                    </label>
+                    <input
+                      type="text" name="full_name" value={formData.full_name}
+                      onChange={handleInputChange} required
+                      placeholder="Nama lengkap pegawai"
+                      className="w-full rounded-xl px-3.5 py-2.5 text-[13px] outline-none"
+                      style={{ background: '#FAFAFC', border: '1px solid rgba(31,41,55,0.08)', color: '#0F172A' }}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: '#94A3B8' }}>
+                        <IdCard size={11} className="inline mr-1" />
+                        Status{formData.id ? " *" : ""}
+                      </label>
+                      <select
+                        name="employee_status" value={formData.employee_status} onChange={handleInputChange} required={!!formData.id}
+                        className="w-full rounded-xl px-3.5 py-2.5 text-[13px] outline-none"
+                        style={{ background: '#FAFAFC', border: '1px solid rgba(31,41,55,0.08)', color: '#0F172A' }}
+                      >
+                        <option value="">Pilih Status (opsional)</option>
+                        {masterData.statuses.map(s => (
+                          <option key={s.id} value={s.name}>{s.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: '#94A3B8' }}>
+                        <Briefcase size={11} className="inline mr-1" />
+                        Jabatan{formData.id ? " *" : ""}
+                      </label>
+                      <select
+                        name="position" value={formData.position} onChange={handleInputChange} required={!!formData.id}
+                        className="w-full rounded-xl px-3.5 py-2.5 text-[13px] outline-none"
+                        style={{ background: '#FAFAFC', border: '1px solid rgba(31,41,55,0.08)', color: '#0F172A' }}
+                      >
+                        <option value="">Pilih Jabatan (opsional)</option>
+                        {masterData.positions.map(p => (
+                          <option key={p.id} value={p.name}>{p.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex gap-3 pt-2 sticky bottom-0 bg-onyx/98 backdrop-blur-md z-10 -mx-5 md:-mx-6 px-5 md:px-6 pb-4 pt-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)]">
-                <button type="button" onClick={resetForm}
-                  className="flex-1 py-2.5 border border-white/10 bg-white/5 text-white rounded-full text-sm font-medium hover:bg-white/[0.08] transition-all">
+              <div
+                className="flex gap-3 sticky bottom-0 z-10 -mx-5 md:-mx-6 px-5 md:px-6 pt-3 pb-4 backdrop-blur-md"
+                style={{ background: 'rgba(244,242,251,0.95)', boxShadow: '0 -8px 24px rgba(15,23,42,0.06)' }}
+              >
+                <button
+                  type="button" onClick={resetForm}
+                  className="flex-1 py-2.5 rounded-full text-sm font-semibold transition-all"
+                  style={{ background: '#FFFFFF', border: '1px solid rgba(31,41,55,0.12)', color: '#475569' }}
+                >
                   Batal
                 </button>
-                <button type="submit" disabled={loading}
-                  className="flex-1 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium hover:brightness-110 active:brightness-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20">
+                <button
+                  type="submit" disabled={loading}
+                  className="flex-1 py-2.5 rounded-full text-sm font-bold text-white transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
+                  style={{ background: 'linear-gradient(135deg, #BF00FF, #7B00E0)', boxShadow: '0 6px 18px rgba(191,0,255,0.3)' }}
+                >
                   {loading && <RefreshCwIconSpinning />}
                   {loading ? 'Menyimpan...' : formData.id ? 'Update' : 'Simpan'}
                 </button>
