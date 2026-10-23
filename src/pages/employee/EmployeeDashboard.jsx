@@ -394,7 +394,7 @@ export default function EmployeeDashboard() {
             return (
               <>
                 <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white hero-card-bg"
-                  style={{ background: 'linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)', boxShadow: '0 6px 20px rgba(191,0,255,0.25)' }}>
+                  style={{ background: '#000000', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
                   <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
                     <Sun size={13} /> Masuk
                   </div>
@@ -422,7 +422,7 @@ export default function EmployeeDashboard() {
           {isSanggahToday && (
             <>
               <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white hero-card-bg"
-                style={{ background: 'linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)', boxShadow: '0 6px 20px rgba(191,0,255,0.25)' }}>
+                style={{ background: '#000000', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
                 <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
                   <Sun size={13} /> Masuk
                 </div>
@@ -447,9 +447,9 @@ export default function EmployeeDashboard() {
           )}
           {!(todayAttendance?.attendance_status === "izin" || todayAttendance?.attendance_status === "sakit") && !isSanggahToday && (
           <>
-          {/* MASUK — Purple Gradient */}
+          {/* MASUK — solid black, senada dengan card Pulang */}
           <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white hero-card-bg"
-            style={{ background: 'linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)', boxShadow: '0 6px 20px rgba(191,0,255,0.25)' }}>
+            style={{ background: '#000000', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
             <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
               <Sun size={13} /> Masuk
             </div>
