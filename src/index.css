@@ -1244,7 +1244,10 @@ textarea::placeholder { color: #94a3b8; }
   color: rgba(23, 18, 31, 0.4);
   font-size: 14px;
   opacity: 1; /* selalu terlihat, bukan hanya saat hover */
-  margin: 8px 2px 0 0;
+  /* margin-left:auto → X selalu menempel tepi kanan inti berapa pun
+     panjang teks; margin-top 6px → center X (12px) sejajar center chip
+     (chip: margin-top 1px + tinggi 34px → center 18px = 6+12) */
+  margin: 6px 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1344,6 +1347,10 @@ textarea::placeholder { color: #94a3b8; }
     width: 31px;
     height: 31px;
     border-radius: 10px;
+  }
+  /* X sejajar chip mobile: center chip = 1 + 15.5 = 16.5px → margin-top 5px */
+  .Toastify__toast .Toastify__close-button {
+    margin: 5px 0 0 auto;
   }
   .pz-chip svg {
     width: 15px;
