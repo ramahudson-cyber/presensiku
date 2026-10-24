@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase'; // ✅ FIX: path yang benar
 import { MasterService } from '../../services/masterService';
 import { useAuth } from '../../context/AuthContext';
@@ -309,12 +310,20 @@ const EmployeesPage = () => {
         />
       </div>
 
-      {/* Modal Form */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      {/* Modal Form — portal ke body: z-index modal tidak bisa dikalahkan
+          BottomNav, dan di HP tampil sebagai bottom sheet full-lebar
+          (pola sama dengan form Sanggahkan Pegawai). */}
+      {showForm && createPortal(
+        <div
+          className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center p-0 md:p-4 animate-fade-in"
+          onClick={() => !loading && resetForm()}
+        >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
           <div
-            className="w-full max-w-xl max-h-[92vh] overflow-y-auto animate-fade-in"
-            style={{ background: '#F4F2FB', border: '1px solid rgba(31,41,55,0.08)', borderRadius: 24, boxShadow: '0 20px 60px rgba(15,23,42,0.18)' }}
+            onClick={(e) => e.stopPropagation()}
+            data-no-ptr
+            className="relative z-10 w-full max-w-xl max-h-[92vh] overflow-y-auto rounded-t-[28px] md:rounded-3xl mt-auto md:mt-0 animate-slide-up md:animate-fade-in"
+            style={{ background: '#F4F2FB', border: '1px solid rgba(31,41,55,0.08)', boxShadow: '0 20px 60px rgba(15,23,42,0.18)' }}
           >
             <div
               className="flex items-center justify-between p-5 md:p-6 sticky top-0 z-10 backdrop-blur-md"
@@ -480,7 +489,7 @@ const EmployeesPage = () => {
             </form>
           </div>
         </div>
-      )}
+      , document.body)}
 
       {/* Desktop Table + Mobile Cards */}
         <div className="design-card overflow-hidden">
