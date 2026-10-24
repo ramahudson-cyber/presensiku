@@ -519,14 +519,16 @@ function TabGaji({ user, period }) {
               </div>
             )}
             <div className="flex gap-2">
-              <div className="flex-1 flex items-center rounded-xl border px-3" style={{ borderColor: T.border }}>
-                <span className="text-xs" style={{ color: T.textMuted }}>Rp</span>
+              {/* min-w-0: tanpa ini input number memaksa lebar minimum bawaan
+                  browser dan mendorong tombol Terapkan keluar layar di HP */}
+              <div className="flex-1 min-w-0 flex items-center rounded-xl border px-3" style={{ borderColor: T.border }}>
+                <span className="text-xs shrink-0" style={{ color: T.textMuted }}>Rp</span>
                 <input type="number" min="0" value={quickNominal} onChange={(e) => setQuickNominal(e.target.value)}
                   placeholder="Nominal gaji"
-                  className="flex-1 py-2.5 px-2 bg-transparent text-sm outline-none" style={{ color: T.text }} />
+                  className="flex-1 min-w-0 py-2.5 px-2 bg-transparent text-sm outline-none" style={{ color: T.text }} />
               </div>
               <button onClick={applyQuick} disabled={saving || loading}
-                className="px-5 rounded-xl bg-electric-violet text-white text-sm font-semibold hover:brightness-110 disabled:opacity-50 transition-all flex items-center gap-2">
+                className="px-5 shrink-0 rounded-xl bg-electric-violet text-white text-sm font-semibold hover:brightness-110 disabled:opacity-50 transition-all flex items-center gap-2">
                 {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} Terapkan
               </button>
             </div>
