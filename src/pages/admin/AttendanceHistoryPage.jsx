@@ -3,7 +3,8 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
-import { exportExcelWorkbook, DATE_FMT } from "../../services/excelExport";
+import { exportExcelWorkbook, DATE_FMT, RUPIAH } from "../../services/excelExport";
+import { getApprovedOvertimeByDateRange } from "../../services/overtimeService";
 import { shiftLabel } from "../../lib/shiftName";
 import { getMondayFirstDayOfWeek, getEarlyLeaveInfo, formatDuration, isShiftEnded } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
@@ -486,6 +487,14 @@ export default function AttendanceHistoryPage() {
       // Ambil ulang dataset gabungan (attendance asli + alpha turunan dari
       // jadwal) saat tombol diklik, lalu terapkan filter yang sama dengan UI.
       const merged = await fetchRecords();
+      // Lembur APPROVED dalam rentang yang sama (aditif — kegagalan fetch
+      // lembur TIDAK boleh menggagalkan export; kolom lembur jadi kosong).
+      let otMap = new Map();
+      try {
+        otMap = await getApprovedOvertimeByDateRange(dateFrom, dateTo);
+      } catch (e) {
+        console.warn("Gagal memuat lembur untuk export:", e);
+      }
       const q = search.trim().toLowerCase();
       const rows = merged.filter((r) => {
         const eff = isSanggahRow(r) ? "sanggah" : r.attendance_status;
@@ -511,10 +520,11 @@ export default function AttendanceHistoryPage() {
         sheetName: "Riwayat Absensi",
         orgName: user?.override_org?.name || user?.organization?.name,
         docTitle: `Riwayat Absensi — ${fmtDay(dateFrom)} s.d. ${fmtDay(dateTo)}`,
-        header: ["Tanggal", "Nama", "Jabatan", "Absen Masuk", "Absen Pulang", "Status", "Lokasi Absen", "Terlambat (menit)", "Pulang Cepat"],
+        header: ["Tanggal", "Nama", "Jabatan", "Absen Masuk", "Absen Pulang", "Status", "Lokasi Absen", "Terlambat (menit)", "Pulang Cepat", "Lembur (jam)", "Uang Lembur (Rp)"],
         columnMeta: [
           { align: "center", numFmt: DATE_FMT }, { align: "left" }, { align: "left" },
           { align: "center" }, { align: "center" }, { align: "center" }, { align: "left" }, { align: "right" }, { align: "center" },
+          { align: "right" }, { align: "right", numFmt: RUPIAH },
         ],
         rows: rows.map((r) => [
           // Suffix Z: parse UTC midnight — tanpa ini Date tengah malam lokal
@@ -528,6 +538,8 @@ export default function AttendanceHistoryPage() {
           r.location_in?.matched_location_name ?? "-",
           Number(r.late_minutes ?? 0),
           r.early_leave ? formatDuration(r.early_leave) : "-",
+          (() => { const ot = otMap.get(`${r.user_id}|${r.date}`); return ot ? Number(ot.hours.toFixed(2)) : null; })(),
+          (() => { const ot = otMap.get(`${r.user_id}|${r.date}`); return ot ? Number(ot.amount.toFixed(2)) : null; })(),
         ]),
       });
       toast.success(`${rows.length} baris berhasil diekspor`);

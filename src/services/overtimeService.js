@@ -158,3 +158,26 @@ export async function getApprovedOvertimeTotals(period) {
   }
   return byUser;
 }
+
+// Overtime APPROVED per user+tanggal dalam rentang bebas (untuk export riwayat
+// absensi). Multi-slot per hari dijumlahkan (unique index user+date+start_time).
+// Return: Map<`${user_id}|${date}`, { hours, amount }>
+export async function getApprovedOvertimeByDateRange(dateFrom, dateTo) {
+  const { data, error } = await supabase
+    .from("overtime_requests")
+    .select("user_id, date, approved_hours, pay_amount")
+    .eq("status", "approved")
+    .gte("date", dateFrom)
+    .lte("date", dateTo)
+    .range(0, 1999);
+  if (error) throw error;
+  const map = new Map();
+  (data || []).forEach((r) => {
+    const key = `${r.user_id}|${r.date}`;
+    const cur = map.get(key) || { hours: 0, amount: 0 };
+    cur.hours += Number(r.approved_hours || 0);
+    cur.amount += Number(r.pay_amount || 0);
+    map.set(key, cur);
+  });
+  return map;
+}
