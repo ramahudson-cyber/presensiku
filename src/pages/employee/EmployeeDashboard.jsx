@@ -502,9 +502,9 @@ export default function EmployeeDashboard() {
                     0
                   );
                   return (
-                    <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-black/10 px-2.5 py-1 rounded-full">
-                      <span className={`w-1.5 h-1.5 rounded-full ${earlyInfo ? "bg-amber-400" : "bg-emerald-500"}`} />
-                      {earlyInfo ? `Pulang Cepat ${formatDuration(earlyInfo.earlyMinutes)}` : "Selesai"}
+                    <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full" style={{ border: '1px solid rgba(255,255,255,0.25)' }}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${earlyInfo ? "bg-amber-300" : "bg-emerald-300"}`} />
+                      <span className="opacity-90">{earlyInfo ? `Pulang Cepat ${formatDuration(earlyInfo.earlyMinutes)}` : "Selesai"}</span>
                     </div>
                   );
                 })()}
