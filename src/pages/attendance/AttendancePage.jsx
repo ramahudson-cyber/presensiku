@@ -8,8 +8,9 @@ import {
 import LocationMap from "../../components/LocationMap";
 import AttendanceResultSheet from "../../components/AttendanceResultSheet";
 import BottomSheet from "../../components/BottomSheet";
+import GpsDisabledSheet from "../../components/GpsDisabledSheet";
 import BottomNav from "../../components/BottomNav";
-import { getCurrentPosition } from "../../services/geoService";
+import { getCurrentPosition, isLocationDisabledError } from "../../services/geoService";
 import { detectMockLocation, mockBlockMessage } from "../../services/mockLocationService";
 import { buildIntegritySignal, attachIntegrity, logSecurityEvent, fetchIntegrityVerdict } from "../../services/integrityService";
 import { getPuskesmasLocation, getNearestLocation, verifyLocationServer } from "../../services/attendanceService";
@@ -110,6 +111,11 @@ export default function AttendancePage() {
   const [resultType, setResultType] = useState("in");
   const [resultData, setResultData] = useState(null);
   const [showScheduleAlert, setShowScheduleAlert] = useState(false);
+  // Sheet "Aktifkan Lokasi" — GPS/layanan lokasi HP mati saat absen
+  const [gpsSheetOpen, setGpsSheetOpen] = useState(false);
+  // Setelah user menekan "Nanti", jangan auto-buka lagi dari getLocation
+  // interval 5 detik — sheet tetap muncul saat aksi eksplisit (absen/retry).
+  const gpsSheetDismissedRef = useRef(false);
 
   const syncServerTime = async () => {
     try {
@@ -335,10 +341,21 @@ export default function AttendancePage() {
         setLocationStatus(isValid ? "valid" : "invalid");
         if (isValid) setError("");
       }
-    } catch {
+    } catch (err) {
       setLocationStatus("error");
+      // GPS/layanan lokasi mati → tawarkan sheet "Aktifkan Lokasi"
+      // (auto saja; jika user sudah menekan "Nanti", jangan nagging)
+      if (isLocationDisabledError(err) && !gpsSheetDismissedRef.current) setGpsSheetOpen(true);
     }
     setRefreshing(false);
+  };
+
+  // Sheet "Aktifkan Lokasi" → Coba Lagi: tutup sheet & ulangi pengambilan
+  // lokasi (fungsi yang sama dengan auto-load saat mount).
+  const handleGpsRetry = () => {
+    gpsSheetDismissedRef.current = false;
+    setGpsSheetOpen(false);
+    getLocation();
   };
 
   const getTodayScheduleInfo = async (witaDate, userId) => {
@@ -620,7 +637,16 @@ export default function AttendancePage() {
       setResultType("in");
       setResultSheetOpen(true);
     } catch (err) {
-      setError("Gagal absen: " + (err.message || ""));
+      if (isLocationDisabledError(err)) {
+        // Lokasi belum aktif: sheet sendiri yang menjelaskan — hindari
+        // pesan error generik yang membingungkan. Aksi eksplisit user,
+        // jadi tampil walau sebelumnya "Nanti".
+        gpsSheetDismissedRef.current = false;
+        setError("Lokasi belum aktif");
+        setGpsSheetOpen(true);
+      } else {
+        setError("Gagal absen: " + (err.message || ""));
+      }
     } finally {
       setSaving(false);
     }
@@ -723,7 +749,13 @@ export default function AttendancePage() {
       setResultType("out");
       setResultSheetOpen(true);
     } catch (err) {
-      setError("Gagal absen pulang: " + (err.message || ""));
+      if (isLocationDisabledError(err)) {
+        gpsSheetDismissedRef.current = false;
+        setError("Lokasi belum aktif");
+        setGpsSheetOpen(true);
+      } else {
+        setError("Gagal absen pulang: " + (err.message || ""));
+      }
     } finally {
       setSaving(false);
     }
@@ -1051,6 +1083,13 @@ export default function AttendancePage() {
         </div>
       </BottomSheet>
 	      <BottomNav hidden={true} />
+
+      {/* ── SHEET AKTIFKAN LOKASI — GPS/layanan lokasi mati ── */}
+      <GpsDisabledSheet
+        open={gpsSheetOpen}
+        onClose={() => { gpsSheetDismissedRef.current = true; setGpsSheetOpen(false); }}
+        onRetry={handleGpsRetry}
+      />
 
 {/* Premium Schedule Alert */}
       {showScheduleAlert && (

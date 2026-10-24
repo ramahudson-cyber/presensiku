@@ -11,5 +11,6 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(ApkDownloadPlugin.class);
         registerPlugin(MockLocationPlugin.class);
         registerPlugin(PlayIntegrityPlugin.class);
+        registerPlugin(LocationSettingsPlugin.class);
     }
 }

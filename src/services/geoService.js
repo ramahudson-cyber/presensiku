@@ -95,3 +95,24 @@ export async function watchPosition(options = {}, onPosition, onError) {
   );
   return () => navigator.geolocation.clearWatch(watchId);
 }
+
+// Deteksi error layanan lokasi/GPS mati (native codes Capacitor geolocation + web code 2)
+export function isLocationDisabledError(err) {
+  const code = err?.code ?? "";
+  const message = err?.message || "";
+  if (typeof code === "string" && /^OS-PLUG-GLOC-(0007|0009|0014|0016|0017)$/.test(code)) return true;
+  if (/location services are not enabled|request to enable location was denied|location settings error|network and location turned off/i.test(message)) return true;
+  if (code === 2) return true; // web POSITION_UNAVAILABLE (umumnya layanan lokasi mati)
+  return false;
+}
+
+// Buka UI bawaan OS: Android → halaman Lokasi sistem. Web → false (panggilan tampilkan instruksi).
+export async function openLocationSettings() {
+  if (!isNativePlatform()) return false;
+  try {
+    await Capacitor.Plugins.LocationSettings.openLocationSettings();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}

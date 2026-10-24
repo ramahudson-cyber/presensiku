@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Crosshair, Check, Search, Loader2, AlertTriangle, Lock } from "lucide-react";
-import { getCurrentPosition, watchPosition } from "../services/geoService";
+import { getCurrentPosition, watchPosition, isLocationDisabledError } from "../services/geoService";
+import GpsDisabledSheet from "./GpsDisabledSheet";
 
 // Light-mode tokens — per DESIGN.md
 const T = {
@@ -87,6 +88,8 @@ export default function LocationPicker({
   const [mapError, setMapError] = useState(false);
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState("");
+  // Sheet "Aktifkan Lokasi" — GPS/layanan lokasi HP mati saat ambil titik
+  const [gpsSheetOpen, setGpsSheetOpen] = useState(false);
   const [manualLat, setManualLat] = useState(initialLat.toString());
   const [manualLng, setManualLng] = useState(initialLng.toString());
   // Auto-locate (lokasi baru): GPS di-watch kontinu sampai terkunci ≤20 m,
@@ -254,9 +257,18 @@ export default function LocationPicker({
       }
     } catch (error) {
       setLocationError(error?.message || "Lokasi saat ini tidak dapat dibaca");
+      // GPS/layanan lokasi mati → tawarkan sheet "Aktifkan Lokasi"
+      if (isLocationDisabledError(error)) setGpsSheetOpen(true);
     } finally {
       setLocating(false);
     }
+  };
+
+  // Sheet "Aktifkan Lokasi" → Coba Lagi: tutup sheet & ulangi pengambilan
+  // lokasi (fungsi ambil lokasi existing di komponen ini).
+  const handleGpsRetry = () => {
+    setGpsSheetOpen(false);
+    handleLocateMe();
   };
 
   const handleManualInput = () => {
@@ -321,7 +333,11 @@ export default function LocationPicker({
         }
       },
       (err) => {
-        if (!stopped) setLocationError(err?.message || "GPS tidak dapat diakses");
+        if (!stopped) {
+          setLocationError(err?.message || "GPS tidak dapat diakses");
+          // GPS/layanan lokasi mati → tawarkan sheet "Aktifkan Lokasi"
+          if (isLocationDisabledError(err)) setGpsSheetOpen(true);
+        }
       }
     ).then((stop) => {
       if (stopped) stop();
@@ -508,6 +524,13 @@ export default function LocationPicker({
       <p className="text-[10px] text-gray-400 text-center">
         Klik di peta, seret marker, atau cari alamat untuk memilih lokasi
       </p>
+
+      {/* ── SHEET AKTIFKAN LOKASI — GPS/layanan lokasi mati ── */}
+      <GpsDisabledSheet
+        open={gpsSheetOpen}
+        onClose={() => setGpsSheetOpen(false)}
+        onRetry={handleGpsRetry}
+      />
     </div>
   );
 }
