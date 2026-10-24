@@ -10,6 +10,7 @@ import {
   getOvertimeRequests,
   reviewOvertimeRequest,
   adminCreateOvertime,
+  adminCancelOvertime,
   getOvertimeConfig,
   saveOvertimeConfig,
 } from "../../services/overtimeService";
@@ -19,7 +20,7 @@ import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import BottomSheet from "../../components/BottomSheet";
 import {
   Clock, Check, X, Plus, Download, Loader2, RefreshCw, Inbox, Search,
-  Settings2, Banknote,
+  Settings2, Banknote, Trash2,
 } from "lucide-react";
 
 const cardBase = "design-card";
@@ -80,6 +81,8 @@ export default function OvertimeManagementPage() {
   // Mode bayar saat menyetujui: 'hourly' (tarif × jam) atau 'fixed' (borongan)
   const [decideMode, setDecideMode] = useState("hourly");
   const [decideAmount, setDecideAmount] = useState("");
+  // Lembur approved yang akan dibatalkan (row object)
+  const [cancelRow, setCancelRow] = useState(null);
 
   // BottomSheet pengaturan tarif (langsung dari halaman ini)
   const [showRate, setShowRate] = useState(false);
@@ -193,6 +196,21 @@ export default function OvertimeManagementPage() {
       await load();
     } catch (err) {
       toast.error(err.message || "Gagal memproses");
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const submitCancel = async () => {
+    if (!cancelRow) return;
+    setProcessing(cancelRow.id);
+    try {
+      const res = await adminCancelOvertime(cancelRow.id);
+      toast.success(res.message || "Lembur dibatalkan");
+      setCancelRow(null);
+      await load();
+    } catch (err) {
+      toast.error(err.message || "Gagal membatalkan lembur");
     } finally {
       setProcessing(null);
     }
@@ -472,6 +490,13 @@ export default function OvertimeManagementPage() {
                       </button>
                     </div>
                   )}
+                  {r.status === "approved" && (
+                    <button onClick={() => setCancelRow(r)} disabled={processing === r.id}
+                      className="p-2 rounded-xl bg-rose-500/10 text-rose-300 ring-1 ring-rose-500/25 hover:bg-rose-500/20 disabled:opacity-50 shrink-0"
+                      title="Batalkan lembur">
+                      <Trash2 size={14} />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -577,6 +602,39 @@ export default function OvertimeManagementPage() {
             >
               {processing === decide.row.id ? <Loader2 size={15} className="animate-spin" /> : decide.action === "approve" ? <Check size={15} /> : <X size={15} />}
               {decide.action === "approve" ? "Setujui & Kunci Uang" : "Tolak Pengajuan"}
+            </button>
+          </div>
+        )}
+      </BottomSheet>
+
+      {/* Sheet: batalkan lembur yang sudah disetujui */}
+      <BottomSheet
+        open={!!cancelRow}
+        onClose={() => setCancelRow(null)}
+        title="Batalkan Lembur"
+        subtitle={cancelRow ? `${cancelRow.user?.full_name} · ${fmtDate(cancelRow.date)} · ${cancelRow.start_time}–${cancelRow.end_time}` : ""}
+      >
+        {cancelRow && (
+          <div className="space-y-4 pb-2">
+            <div className="rounded-2xl bg-rose-500/10 ring-1 ring-rose-500/20 p-3.5 text-xs text-slate-mist space-y-1.5">
+              <p>Slot lembur ini <b className="text-pure-white">dihapus permanen</b>. Efeknya:</p>
+              <p>· Uang lembur <b className="text-pure-white">{rupiah(cancelRow.pay_amount)}</b> tidak dibayarkan — slip gaji <i>draft</i> bulan lembur dihitung ulang otomatis.</p>
+              <p>· Batas absen pulang pegawai kembali mengikuti jam shift (tidak lagi diperpanjang lembur ini).</p>
+              <p className="text-slate-mist/70 pt-0.5">Pegawai dapat mengajukan ulang bila lembur masih diperlukan. Slip yang sudah <i>final</i> tidak diubah otomatis.</p>
+            </div>
+            <button
+              onClick={submitCancel}
+              disabled={processing === cancelRow.id}
+              className="w-full py-3 rounded-full text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+            >
+              {processing === cancelRow.id ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+              Ya, Batalkan Lembur
+            </button>
+            <button
+              onClick={() => setCancelRow(null)}
+              className="w-full py-2.5 rounded-full text-xs font-semibold text-slate-mist hover:bg-white/5 border border-white/10"
+            >
+              Jangan, Biarkan
             </button>
           </div>
         )}

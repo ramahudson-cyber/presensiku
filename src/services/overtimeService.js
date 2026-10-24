@@ -100,6 +100,16 @@ export async function reviewOvertimeRequest(requestId, action, { hours = null, r
   return unwrap(data);
 }
 
+// Admin membatalkan lembur yang SUDAH disetujui (hapus slot + slip draft
+// bulan lembur dihitung ulang oleh RPC).
+export async function adminCancelOvertime(requestId) {
+  const { data, error } = await supabase.rpc("admin_cancel_overtime", {
+    p_request_id: requestId,
+  });
+  if (error) throw error;
+  return unwrap(data);
+}
+
 export async function adminCreateOvertime({ user_id, date, start_time, end_time, reason, pay_mode = "hourly", fixed_amount = null }) {
   const { data, error } = await supabase.rpc("admin_create_overtime", {
     p_user_id: user_id,
