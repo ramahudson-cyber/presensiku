@@ -89,7 +89,9 @@ export default function OvertimeManagementPage() {
   // BottomSheet buat lembur
   const [showCreate, setShowCreate] = useState(false);
   const [members, setMembers] = useState([]);
-  const [createForm, setCreateForm] = useState({ user_id: "", date: todayStr(), start_time: "", end_time: "", reason: "", pay_mode: "hourly", fixed_amount: "" });
+  // Multi-pilih: satu lembur bisa dibuat untuk banyak pegawai sekaligus.
+  const [createUsers, setCreateUsers] = useState([]);
+  const [createForm, setCreateForm] = useState({ date: todayStr(), start_time: "", end_time: "", reason: "", pay_mode: "hourly", fixed_amount: "" });
   const [creating, setCreating] = useState(false);
 
   const load = async () => {
@@ -197,8 +199,8 @@ export default function OvertimeManagementPage() {
   };
 
   const submitCreate = async () => {
-    const { user_id, date, start_time, end_time, reason, pay_mode, fixed_amount } = createForm;
-    if (!user_id) return toast.error("Pilih pegawai dulu");
+    const { date, start_time, end_time, reason, pay_mode, fixed_amount } = createForm;
+    if (!createUsers.length) return toast.error("Pilih pegawai dulu — bisa centang lebih dari satu");
     if (!date || !start_time || !end_time) return toast.error("Tanggal & jam wajib diisi");
     if (end_time <= start_time) return toast.error("Jam selesai harus setelah jam mulai");
     if (pay_mode === "fixed") {
@@ -207,15 +209,31 @@ export default function OvertimeManagementPage() {
     }
     setCreating(true);
     try {
-      const res = await adminCreateOvertime({
-        user_id, date, start_time, end_time, reason,
-        pay_mode,
-        fixed_amount: pay_mode === "fixed" ? Number(fixed_amount) : null,
-      });
-      toast.success(res.message || "Lembur tercatat");
-      setShowCreate(false);
-      setCreateForm({ user_id: "", date: todayStr(), start_time: "", end_time: "", reason: "", pay_mode: "hourly", fixed_amount: "" });
-      await load();
+      let ok = 0;
+      const failed = [];
+      for (const uid of createUsers) {
+        try {
+          await adminCreateOvertime({
+            user_id: uid, date, start_time, end_time, reason,
+            pay_mode,
+            fixed_amount: pay_mode === "fixed" ? Number(fixed_amount) : null,
+          });
+          ok++;
+        } catch (err) {
+          const name = members.find((m) => m.id === uid)?.full_name || "pegawai";
+          failed.push(`${name}: ${err.message || "gagal"}`);
+        }
+      }
+      if (ok) toast.success(`✅ Lembur tercatat untuk ${ok} pegawai`);
+      if (failed.length) {
+        toast.error(`Gagal ${failed.length}: ${failed.slice(0, 3).join("; ")}${failed.length > 3 ? " …" : ""}`);
+      }
+      if (ok) {
+        setShowCreate(false);
+        setCreateForm({ date: todayStr(), start_time: "", end_time: "", reason: "", pay_mode: "hourly", fixed_amount: "" });
+        setCreateUsers([]);
+        await load();
+      }
     } catch (err) {
       toast.error(err.message || "Gagal membuat lembur");
     } finally {
@@ -563,17 +581,42 @@ export default function OvertimeManagementPage() {
       <BottomSheet open={showCreate} onClose={() => setShowCreate(false)} title="Buat Lembur untuk Pegawai" subtitle="Langsung tercatat & disetujui">
         <div className="space-y-4 pb-2">
           <div>
-            <label className="text-xs font-semibold text-slate-mist block mb-1.5">Pegawai</label>
-            <select
-              value={createForm.user_id}
-              onChange={(e) => setCreateForm({ ...createForm, user_id: e.target.value })}
-              className={inputBase}
-            >
-              <option value="">— Pilih pegawai —</option>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold text-slate-mist">
+                Pegawai {createUsers.length ? `(${createUsers.length} dipilih)` : ""}
+              </label>
+              <button
+                type="button"
+                onClick={() => setCreateUsers((p) => (p.length === members.length && members.length ? [] : members.map((m) => m.id)))}
+                className="text-[10px] font-semibold text-electric-violet hover:underline"
+              >
+                {createUsers.length === members.length && members.length ? "Hapus semua" : "Pilih semua"}
+              </button>
+            </div>
+            <div className="max-h-44 overflow-y-auto space-y-1 rounded-xl border border-white/10 bg-white/[0.03] p-1.5">
               {members.map((m) => (
-                <option key={m.id} value={m.id}>{m.full_name}{m.position ? ` (${m.position})` : ""}</option>
+                <label
+                  key={m.id}
+                  className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-xs transition-colors ${
+                    createUsers.includes(m.id)
+                      ? "bg-electric-violet/15 text-pure-white"
+                      : "text-slate-mist hover:bg-white/5"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={createUsers.includes(m.id)}
+                    onChange={() => setCreateUsers((p) => (p.includes(m.id) ? p.filter((x) => x !== m.id) : [...p, m.id]))}
+                    className="accent-[#BF00FF] w-3.5 h-3.5 shrink-0"
+                  />
+                  <span className="flex-1 min-w-0 truncate font-medium">{m.full_name}</span>
+                  {m.position && <span className="text-[9px] text-slate-mist/70 truncate max-w-[45%]">{m.position}</span>}
+                </label>
               ))}
-            </select>
+              {!members.length && (
+                <p className="text-[10px] text-slate-mist/60 text-center py-4">Tidak ada pegawai</p>
+              )}
+            </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
