@@ -1,6 +1,6 @@
 import {
   Bell, LogOut, Users, CalendarCheck, History, CalendarDays,
-  FileText, Megaphone, Settings, Building2, LayoutDashboard,
+  FileText, Megaphone, Settings, Building2, LayoutDashboard, Clock,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { signOut } from "../services/authService";
@@ -16,6 +16,7 @@ const PAGES = {
   "/admin/announcements": { icon: Megaphone, title: "Pengumuman", desc: "Berita untuk seluruh pegawai" },
   "/admin/organizations": { icon: Building2, title: "Kelola Instansi", desc: "Instansi platform Presensiku" },
   "/admin/settings": { icon: Settings, title: "Pengaturan", desc: "Konfigurasi aplikasi & instansi" },
+  "/admin/overtime": { icon: Clock, title: "Kelola Lembur", desc: "Setujui pengajuan, buatkan lembur, dan rekap uang lembur" },
 };
 
 function Header() {

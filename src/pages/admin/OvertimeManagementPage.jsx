@@ -343,24 +343,15 @@ export default function OvertimeManagementPage() {
     <div className="space-y-5 pb-24">
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
-      {/* Header */}
-      <div className="flex items-start justify-between gap-3 flex-wrap">
-        <div className="min-w-0">
-          <h2 className="text-xl font-bold text-pure-white flex items-center gap-2">
-            <Clock size={18} className="text-electric-violet" /> Kelola Lembur
-          </h2>
-          <p className="text-sm text-slate-mist mt-0.5">
-            Setujui pengajuan, buatkan lembur, dan rekap uang lembur
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <button onClick={load} disabled={loading} className={btnPrimary + " !px-3"}>
-            <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
-          </button>
-          <button onClick={() => setShowCreate(true)} className={btnPrimary}>
-            <Plus size={15} /> <span className="hidden sm:inline">Buat Lembur</span>
-          </button>
-        </div>
+      {/* Header — judul halaman ada di banner ungu atas (Header.jsx);
+          di sini hanya tombol aksi */}
+      <div className="flex items-center justify-end gap-2 flex-wrap">
+        <button onClick={load} disabled={loading} className={btnPrimary + " !px-3"}>
+          <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
+        </button>
+        <button onClick={() => setShowCreate(true)} className={btnPrimary}>
+          <Plus size={15} /> <span className="hidden sm:inline">Buat Lembur</span>
+        </button>
       </div>
 
       {/* Tarif lembur — terlihat & bisa diubah langsung dari halaman ini */}
