@@ -207,8 +207,10 @@ export default async function handler(req: Request) {
       }
     }
 
-    // Reminder dikirim saat sisa waktu 1-2 menit sebelum shift mulai/berakhir
-    // (cron tiap 1 menit; dedupe log mencegah dobel kirim dalam jendela ini)
+    // Reminder MASUK dikirim 1-2 menit sebelum shift mulai (WINDOW_MIN).
+    // Reminder PULANG dikirim TEPAT saat jam selesai shift — toleransi +1
+    // menit hanya agar cron yang gagal pada menit keberangkatan masih bisa
+    // mengirim ulang (dedupe log mencegah dobel kirim).
     const WINDOW_MIN = 2
     const candidates: Candidate[] = []
     for (const r of schedRows || []) {
@@ -243,14 +245,16 @@ export default async function handler(req: Request) {
       }
       // Reminder pulang: berlaku juga untuk jadwal kemarin yang shift-nya
       // melewati tengah malam (endAbs jatuh di hari ini). Hanya untuk yang
-      // sudah absen masuk dan belum absen pulang.
+      // sudah absen masuk dan belum absen pulang. Dikirim TEPAT saat jam
+      // selesai shift (lateMin = 0), bukan beberapa menit sebelumnya.
       if (!alreadyIn || alreadyOut) continue
-      if (endAbs - nowMin > 0 && endAbs - nowMin <= WINDOW_MIN) {
+      const lateMin = nowMin - endAbs
+      if (lateMin >= 0 && lateMin <= 1) {
         candidates.push({
           userId: r.user_id, shiftCode: r.shift_code, shiftName: capName,
           date: r.date, kind: 'end',
           timeStr: String(Math.floor(endMin / 60)).padStart(2, '0') + ':' + String(endMin % 60).padStart(2, '0'),
-          diffMin: endAbs - nowMin,
+          diffMin: lateMin,
         })
       }
     }
@@ -281,12 +285,13 @@ export default async function handler(req: Request) {
       const c = toSend.find((x) => x.userId === row.user_id)
       if (!c) continue
       const title = c.kind === 'start' ? 'Pengingat Absen Masuk' : 'Pengingat Absen Pulang'
-      // Sisa waktu nyata saat notifikasi dikirim (bukan angka hardcoded)
+      // Masuk: sisa waktu nyata saat notifikasi dikirim. Pulang: dikirim tepat
+      // saat shift berakhir, jadi tanpa hitungan "menit lagi".
       const lagText = c.diffMin >= 1 ? `${c.diffMin} menit lagi` : 'kurang dari 1 menit lagi'
       const body =
         c.kind === 'start'
           ? `Shift ${c.shiftName} Anda dimulai ${c.timeStr} WITA (${lagText}). Jangan lupa absen masuk.`
-          : `Shift ${c.shiftName} Anda berakhir ${c.timeStr} WITA (${lagText}). Jangan lupa absen pulang.`
+          : `Shift ${c.shiftName} Anda berakhir ${c.timeStr} WITA. Segera absen pulang!`
       try {
         const ok = await sendFcm(row.token, title, body, {
           type: 'shift_reminder',

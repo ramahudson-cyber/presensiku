@@ -3,7 +3,7 @@ import { PushNotifications } from "@capacitor/push-notifications";
 import { Capacitor } from "@capacitor/core";
 import { toast } from "react-toastify";
 import { supabase } from "../lib/supabase";
-import { getShiftReminderInfo, getShiftEndReminderInfo } from "../lib/notificationReminder";
+import { getShiftReminderInfo } from "../lib/notificationReminder";
 import { getWitaDateKey, getWitaParts, getMondayFirstDayOfWeek } from "../lib/shiftTime";
 
 const CHANNEL_ID = "shift-reminders";
@@ -70,7 +70,8 @@ function hashId(str) {
 }
 
 /**
- * Jadwalkan notifikasi lokal 15 menit sebelum shift start dan shift end.
+ * Jadwalkan notifikasi lokal: 15 menit sebelum shift start, dan TEPAT saat
+ * shift end (bukan lebih awal).
  * Gunakan localStorage untuk memastikan hanya dijadwalkan sekali per hari.
  * @param {Date} serverNow
  * @param {object|null} employeeSchedule - jadwal hari ini { shift_code }
@@ -130,7 +131,7 @@ export async function scheduleShiftReminders(serverNow, employeeSchedule, shiftD
     }
   }
 
-  // Check-out reminder: 15 menit sebelum akhir shift — hanya relevan bila
+  // Check-out reminder: TEPAT saat akhir shift — hanya relevan bila
   // sudah absen masuk dan belum absen pulang
   const endMatch = String(def?.end_time || "").match(/^(\d{1,2}):(\d{2})/);
   if (endMatch && attendance?.clock_in_time && !attendance?.clock_out_time) {
@@ -138,21 +139,19 @@ export async function scheduleShiftReminders(serverNow, employeeSchedule, shiftD
     if (!localStorage.getItem(schedKey)) {
       try {
         const targetDate = new Date(serverNow);
-        // Shift lintas tengah malam (ML): akhir shift ada di hari berikutnya
+        // Shift lintas tengah malam (ML): akhir shift ada di hari berikutnya.
+        // Reminder pulang TEPAT saat jam selesai shift — bukan lebih awal.
         if (def.crosses_midnight) targetDate.setDate(targetDate.getDate() + 1);
-        const remindMin = Number(endMatch[1]) * 60 + Number(endMatch[2]) - 15;
-        targetDate.setHours(Math.floor(remindMin / 60), remindMin % 60, 0, 0);
+        targetDate.setHours(Number(endMatch[1]), Number(endMatch[2]), 0, 0);
 
         if (targetDate > new Date()) {
-          const info = getShiftEndReminderInfo(serverNow, employeeSchedule, shiftDefinitions, attendance);
+          const endStr = `${String(endMatch[1]).padStart(2, "0")}:${endMatch[2]}`;
           await LocalNotifications.schedule({
             notifications: [
               {
                 id: hashId(`out_${today}_${shiftCode}`),
                 title: "🔔 Pengingat Absen Pulang",
-                body: info.show
-                  ? info.message
-                  : `Shift Anda berakhir 15 menit lagi. Jangan lupa absen pulang!`,
+                body: `Shift Anda berakhir pukul ${endStr} WITA. Segera absen pulang!`,
                 schedule: { at: targetDate },
                 channelId: CHANNEL_ID,
                 sound: "default",
