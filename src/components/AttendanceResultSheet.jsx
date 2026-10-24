@@ -14,6 +14,8 @@ function formatDate(isoString) {
   return new Date(isoString).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 
+const cap = (s) => (s ? s.trim().charAt(0).toUpperCase() + s.trim().slice(1) : s);
+
 // ── Inline SVG Icons (solid) ──
 function CalendarIcon() {
   return (
