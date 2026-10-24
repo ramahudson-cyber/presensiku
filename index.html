@@ -23,7 +23,12 @@
     <title>Presensiku</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Boot background: ungu senada splash & welcome page — menutup layar
+           putih WebView selama bundle React dimuat. ReactDOM mengganti isi
+           #root saat render pertama, jadi placeholder ini lenyap sendiri. -->
+      <div style="position:fixed;inset:0;background:#660099"></div>
+    </div>
     <script>
       // Jaring pengaman white screen: bila module utama gagal dimuat (aset lama
       // hilang setelah deploy / cache SW basi), bersihkan cache & SW lalu reload
