@@ -46,7 +46,9 @@ export default function SchedulingPage() {
   const { user } = useAuth();
   const isSuperAdmin = user?.role === "super_admin";
   const [employees, setEmployees] = useState([]);
-  const [selectedUser, setSelectedUser] = useState("");
+  // Multi-pilih: jadwal bisa dibuat untuk banyak pegawai sekaligus (checklist
+  // di sheet Cari Pegawai). Kalender menampilkan jadwal pegawai pertama.
+  const [selectedUsers, setSelectedUsers] = useState([]);
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
   const [schedules, setSchedules] = useState({});
@@ -86,6 +88,7 @@ export default function SchedulingPage() {
   const lastDay = new Date(year, month + 1, 0).getDate();
   const dateStr = (d) => d ? `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}` : null;
 
+  const selectedUser = selectedUsers[0] || ""; // pegawai utama yang jadwalnya tampil di kalender
   const selectedEmployee = employees.find(e => e.id === selectedUser);
   const assignedCount = Object.keys(schedules).length;
 
@@ -105,8 +108,8 @@ export default function SchedulingPage() {
         return;
       }
       setEmployees(data || []);
-      if (!selectedUser && user?.id && (isSuperAdmin || data?.some(item => item.id === user.id))) {
-        setSelectedUser(user.id);
+      if (!selectedUsers.length && user?.id && (isSuperAdmin || data?.some(item => item.id === user.id))) {
+        setSelectedUsers([user.id]);
       }
     });
   }, [isSuperAdmin, user?.id]);
@@ -165,10 +168,15 @@ export default function SchedulingPage() {
           <Users size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-mist z-10" />
           <div onClick={() => setShowSearchModal(true)}
             className="w-full pl-9 pr-3 py-2.5 text-sm rounded-2xl bg-onyx border border-white/[0.06] text-pure-white cursor-pointer flex items-center gap-2 hover:bg-white/[0.03] transition-all">
-            {selectedEmployee ? (
+            {selectedUsers.length === 1 && selectedEmployee ? (
               <>
                 <span className="flex-1 truncate font-medium">{selectedEmployee.full_name}</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-onyx text-slate-mist">{selectedEmployee.role}</span>
+              </>
+            ) : selectedUsers.length > 1 ? (
+              <>
+                <span className="flex-1 truncate font-medium">{selectedUsers.length} pegawai dipilih</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#BF00FF]/20 text-[#BF00FF] font-semibold">multi</span>
               </>
             ) : (
               <span className="text-slate-mist flex-1">Pilih pegawai...</span>
@@ -334,12 +342,16 @@ export default function SchedulingPage() {
         />
       )}
 
-      {/* EMPLOYEE SEARCH — Bottom Sheet */}
+      {/* EMPLOYEE SEARCH — Bottom Sheet (multi-pilih via checklist) */}
       <BottomSheet open={showSearchModal} onClose={() => setShowSearchModal(false)}
         title="Cari Pegawai" subtitle={employees.length + " pegawai terdaftar"}>
         <EmployeeSearchContent
-          employees={employees} value={selectedUser}
-          onSelect={(id) => { setSelectedUser(id); setShowSearchModal(false); }} />
+          employees={employees} selectedIds={selectedUsers}
+          onToggle={(id) => setSelectedUsers(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id])}
+          onToggleAll={(ids, allSel) => setSelectedUsers(p => allSel
+            ? p.filter(x => !ids.includes(x))
+            : Array.from(new Set([...p, ...ids])))}
+          onDone={() => setShowSearchModal(false)} />
       </BottomSheet>
 
       {/* CONFIRM CLEAR */}
@@ -372,26 +384,27 @@ export default function SchedulingPage() {
   }
 
   function handleDayClick(day) {
-    if (!selectedUser) { toast.warning("Pilih pegawai dulu"); return; }
+    if (!selectedUsers.length) { toast.warning("Pilih pegawai dulu"); return; }
     setShowShiftPicker(dateStr(day));
   }
 
   async function assignShift(shiftCode) {
-    if (!showShiftPicker || !selectedUser) return;
+    if (!showShiftPicker || !selectedUsers.length) return;
     const key = showShiftPicker;
     try {
       if (schedules[key]?.shift_code === shiftCode) {
-        await supabase.from("employee_schedules").delete().eq("user_id", selectedUser).eq("date", key);
+        // Toggle-off: hapus shift yang sama untuk SEMUA pegawai terpilih;
+        // pegawai dengan shift lain di tanggal itu tidak tersentuh.
+        await supabase.from("employee_schedules").delete()
+          .in("user_id", selectedUsers).eq("date", key).eq("shift_code", shiftCode);
         setSchedules(prev => { const n = { ...prev }; delete n[key]; return n; });
         toast.success("Jadwal dihapus");
       } else {
-        const { error } = await supabase.from("employee_schedules").upsert(
-          { user_id: selectedUser, date: key, shift_code: shiftCode },
-          { onConflict: "user_id,date" }
-        );
+        const rows = selectedUsers.map(uid => ({ user_id: uid, date: key, shift_code: shiftCode }));
+        const { error } = await supabase.from("employee_schedules").upsert(rows, { onConflict: "user_id,date" });
         if (error) throw error;
         setSchedules(prev => ({ ...prev, [key]: { date: key, shift_code: shiftCode } }));
-        toast.success(`Shift ${shifts.find(s => s.code === shiftCode)?.name || shiftCode} ditetapkan`);
+        toast.success(`Shift ${shifts.find(s => s.code === shiftCode)?.name || shiftCode} ditetapkan untuk ${selectedUsers.length} pegawai`);
       }
     } catch (err) { toast.error("Gagal: " + err.message); }
     setShowShiftPicker(null);
@@ -431,41 +444,43 @@ export default function SchedulingPage() {
   }
 
   async function handleCopyPrevMonth() {
-    if (!selectedUser) return;
+    if (!selectedUsers.length) return;
     const pm = month === 0 ? 11 : month - 1;
     const py = month === 0 ? year - 1 : year;
     const pDays = Math.min(new Date(py, pm + 1, 0).getDate(), lastDay);
     setLoading(true);
     try {
-      const { data: prev } = await supabase.from("employee_schedules").select("date, shift_code")
-        .eq("user_id", selectedUser)
+      const { data: prev } = await supabase.from("employee_schedules").select("user_id, date, shift_code")
+        .in("user_id", selectedUsers)
         .gte("date", `${py}-${String(pm + 1).padStart(2,"0")}-01`)
         .lte("date", `${py}-${String(pm + 1).padStart(2,"0")}-${String(pDays).padStart(2,"0")}`);
       if (!prev?.length) { toast.info("Tidak ada jadwal bulan lalu"); setLoading(false); return; }
       const inserts = prev.map(s => ({
-        user_id: selectedUser,
+        user_id: s.user_id,
         date: `${year}-${String(month + 1).padStart(2,"0")}-${s.date.split("-")[2].padStart(2,"0")}`,
         shift_code: s.shift_code
       }));
       const { error } = await supabase.from("employee_schedules").upsert(inserts, { onConflict: "user_id,date" });
       if (error) throw error;
-      toast.success(`✅ ${inserts.length} jadwal dicopy dari bulan lalu`);
+      toast.success(`✅ ${inserts.length} jadwal untuk ${new Set(prev.map(p => p.user_id)).size} pegawai dicopy dari bulan lalu`);
       await loadSchedules();
     } catch (err) { toast.error("Gagal: " + err.message); }
     setLoading(false);
   }
 
   function handleClearMonth() {
-    if (!selectedUser) return;
-    const name = employees.find(e => e.id === selectedUser)?.full_name;
+    if (!selectedUsers.length) return;
+    const name = selectedUsers.length === 1
+      ? employees.find(e => e.id === selectedUsers[0])?.full_name
+      : `${selectedUsers.length} pegawai`;
     setConfirmClear({ name });
   }
 
   async function confirmClearMonth() {
-    if (!selectedUser) return;
+    if (!selectedUsers.length) return;
     const s = `${year}-${String(month + 1).padStart(2,"0")}-01`;
     const e = `${year}-${String(month + 1).padStart(2,"0")}-${String(lastDay).padStart(2,"0")}`;
-    await supabase.from("employee_schedules").delete().eq("user_id", selectedUser).gte("date", s).lte("date", e);
+    await supabase.from("employee_schedules").delete().in("user_id", selectedUsers).gte("date", s).lte("date", e);
     setSchedules({});
     setConfirmClear(null);
     toast.success("Jadwal dibersihkan");
@@ -473,15 +488,16 @@ export default function SchedulingPage() {
 }
 
 /* ============================================================
-   EMPLOYEE SEARCH CONTENT
+   EMPLOYEE SEARCH CONTENT — multi-pilih (checklist + pilih semua)
    ============================================================ */
-function EmployeeSearchContent({ employees, value, onSelect }) {
+function EmployeeSearchContent({ employees, selectedIds, onToggle, onToggleAll, onDone }) {
   const [q, setQ] = useState("");
   const inputRef = useRef(null);
 
   useEffect(() => { setTimeout(() => inputRef.current?.focus(), 200); }, []);
 
   const filtered = q ? employees.filter(e => e.full_name.toLowerCase().includes(q.toLowerCase())) : employees;
+  const allFilteredSelected = filtered.length > 0 && filtered.every(e => selectedIds.includes(e.id));
 
   return (
     <div className="space-y-2">
@@ -491,10 +507,21 @@ function EmployeeSearchContent({ employees, value, onSelect }) {
           placeholder="Ketik nama pegawai..."
           className="w-full pl-9 pr-3 py-2.5 text-sm rounded-2xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#BF00FF]/40 transition-all" />
       </div>
+      <div className="flex items-center justify-between px-1">
+        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+          Pegawai ({selectedIds.length} dipilih)
+        </span>
+        <button onClick={() => onToggleAll(filtered.map(e => e.id), allFilteredSelected)}
+          className="text-[10px] font-semibold text-[#BF00FF] hover:text-[#a000e6] transition-all">
+          {allFilteredSelected ? "Hapus semua" : "Pilih semua"}
+        </button>
+      </div>
       <div className="max-h-56 overflow-y-auto space-y-0.5 -mx-1 px-1">
         {filtered.map(emp => (
-          <button key={emp.id} onClick={() => onSelect(emp.id)}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm text-left transition-all hover:bg-gray-50 ${emp.id === value ? "bg-[#BF00FF]/10 text-gray-900 ring-1 ring-[#BF00FF]/40" : "text-gray-600"}`}>
+          <label key={emp.id}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm text-left cursor-pointer transition-all ${selectedIds.includes(emp.id) ? "bg-[#BF00FF]/10 text-gray-900 ring-1 ring-[#BF00FF]/40" : "text-gray-600 hover:bg-gray-50"}`}>
+            <input type="checkbox" checked={selectedIds.includes(emp.id)} onChange={() => onToggle(emp.id)}
+              className="accent-[#BF00FF] w-4 h-4 shrink-0" />
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#BF00FF] to-[#7066ed] flex items-center justify-center text-xs font-bold text-white shrink-0">
               {emp.full_name.charAt(0)}
             </div>
@@ -502,11 +529,14 @@ function EmployeeSearchContent({ employees, value, onSelect }) {
               <p className="font-medium truncate">{emp.full_name}</p>
               <p className="text-[10px] text-gray-400">{emp.role}</p>
             </div>
-            {emp.id === value && <CheckCircle2 size={16} className="text-[#BF00FF] shrink-0" />}
-          </button>
+          </label>
         ))}
         {!filtered.length && <p className="text-xs text-gray-400 text-center py-6">Tidak ditemukan</p>}
       </div>
+      <button onClick={onDone}
+        className="w-full py-2.5 bg-[#BF00FF] hover:bg-[#a000e6] text-white rounded-full text-sm font-semibold shadow-lg active:scale-[0.98] transition-all">
+        Selesai{selectedIds.length ? ` (${selectedIds.length} dipilih)` : ""}
+      </button>
     </div>
   );
 }
