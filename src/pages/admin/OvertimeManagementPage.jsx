@@ -202,7 +202,12 @@ export default function OvertimeManagementPage() {
     const { date, start_time, end_time, reason, pay_mode, fixed_amount } = createForm;
     if (!createUsers.length) return toast.error("Pilih pegawai dulu — bisa centang lebih dari satu");
     if (!date || !start_time || !end_time) return toast.error("Tanggal & jam wajib diisi");
-    if (end_time <= start_time) return toast.error("Jam selesai harus setelah jam mulai");
+    // Lintas tengah malam (selesai < mulai) diizinkan s/d 06:00 (mirror guard
+    // server di admin_create_overtime); selesai == mulai selalu ditolak.
+    if (end_time === start_time) return toast.error("Jam selesai tidak boleh sama dengan jam mulai");
+    if (end_time < start_time && end_time > "06:00") {
+      return toast.error("Lembur lintas tengah malam maksimal sampai jam 06:00");
+    }
     if (pay_mode === "fixed") {
       const amt = Number(fixed_amount);
       if (!Number.isFinite(amt) || amt <= 0) return toast.error("Nominal lembur harus lebih dari 0");

@@ -14,7 +14,7 @@ import { getCurrentPosition, isLocationDisabledError } from "../../services/geoS
 import { detectMockLocation, mockBlockMessage } from "../../services/mockLocationService";
 import { buildIntegritySignal, attachIntegrity, logSecurityEvent, fetchIntegrityVerdict } from "../../services/integrityService";
 import { getPuskesmasLocation, getNearestLocation, verifyLocationServer } from "../../services/attendanceService";
-import { getApprovedOvertimeEnd } from "../../services/overtimeService";
+import { getApprovedOvertimeSlots } from "../../services/overtimeService";
 import { getMondayFirstDayOfWeek, getShiftDefinition, getWitaDateKey, isShiftEnded, isCheckInWindowOpen } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
@@ -79,7 +79,7 @@ export default function AttendancePage() {
   const [nightShiftDef, setNightShiftDef] = useState(null);
   // Jam selesai lembur APPROVED (HH:MM) untuk tanggal baris absensi ini.
   // Batas absen pulang diperpanjang bila ada lembur disetujui.
-  const [overtimeEndTime, setOvertimeEndTime] = useState(null);
+  const [overtimeSlots, setOvertimeSlots] = useState(null);
   const [deviceVisitorId, setDeviceVisitorId] = useState("");
   const [puskesmasLocation, setPuskesmasLocation] = useState({ latitude: -8.5697, longitude: 116.0821, radius_meter: 200, name: "Lokasi Absensi" });
   // Lokasi hasil pencocokan server (lokasi aktif terdekat dari posisi user)
@@ -217,12 +217,12 @@ export default function AttendancePage() {
       // karena baris shift malam kemarin bertanggal kemarin.
       if (row?.date) {
         try {
-          setOvertimeEndTime(await getApprovedOvertimeEnd(user.id, row.date));
+          setOvertimeSlots(await getApprovedOvertimeSlots(user.id, row.date));
         } catch {
-          setOvertimeEndTime(null);
+          setOvertimeSlots(null);
         }
       } else {
-        setOvertimeEndTime(null);
+        setOvertimeSlots(null);
       }
     } catch (e) { console.error(e); }
   };
@@ -434,21 +434,40 @@ export default function AttendancePage() {
   })();
   // Lembur disetujui memperpanjang batas pulang: deadline = jam selesai lembur
   // + 1 jam, bila lebih lambat dari deadline shift. Server menegakkan aturan
-  // yang sama lewat effective_checkout_deadline().
+  // yang sama lewat effective_checkout_deadline(). Dua kelompok slot:
+  //   plain = slot sehari (end > start); pada shift malam, slot yang selesai
+  //           sebelum jam mulai shift terjadi setelah tengah malam → +1 hari;
+  //   cross = slot lintas tengah malam (end <= start) → selalu selesai besok.
   const overtimeEndAtMs = (() => {
-    if (!overtimeEndTime || !todayAttendance?.date) return null;
+    if (!overtimeSlots || !todayAttendance?.date) return null;
     const dParts = String(todayAttendance.date).split("-").map(Number);
-    const m = String(overtimeEndTime).match(/^(\d{1,2}):(\d{2})/);
-    if (!m || dParts.length !== 3) return null;
-    let ms = Date.UTC(dParts[0], dParts[1] - 1, dParts[2], Number(m[1]), Number(m[2])) - 8 * 3600 * 1000;
-    // Shift malam: lembur yang selesai sebelum jam mulai shift terjadi setelah
-    // tengah malam → geser satu hari (mirror effective_checkout_deadline).
+    if (dParts.length !== 3) return null;
+    const toMs = (hhmm) => {
+      const m = String(hhmm).match(/^(\d{1,2}):(\d{2})/);
+      if (!m) return null;
+      return Date.UTC(dParts[0], dParts[1] - 1, dParts[2], Number(m[1]), Number(m[2])) - 8 * 3600 * 1000;
+    };
     const st = String(activeCheckoutDef?.start_time || "").match(/^(\d{1,2}):(\d{2})/);
-    if (activeCheckoutDef?.crosses_midnight && st) {
-      const startMin = Number(st[1]) * 60 + Number(st[2]);
-      if ((Number(m[1]) * 60 + Number(m[2])) <= startMin) ms += 86400000;
+    const startMin = st ? Number(st[1]) * 60 + Number(st[2]) : null;
+
+    let plainMs = null;
+    if (overtimeSlots.plain) {
+      plainMs = toMs(overtimeSlots.plain);
+      const pm = String(overtimeSlots.plain).match(/^(\d{1,2}):(\d{2})/);
+      if (plainMs !== null && activeCheckoutDef?.crosses_midnight && st && pm
+        && (Number(pm[1]) * 60 + Number(pm[2])) <= startMin) {
+        plainMs += 86400000;
+      }
     }
-    return ms;
+    let crossMs = null;
+    if (overtimeSlots.cross) {
+      crossMs = toMs(overtimeSlots.cross);
+      if (crossMs !== null) crossMs += 86400000;
+    }
+    if (plainMs === null && crossMs === null) return null;
+    if (plainMs === null) return crossMs;
+    if (crossMs === null) return plainMs;
+    return Math.max(plainMs, crossMs);
   })();
   const effectiveEndAtMs = (endAtMs !== null && overtimeEndAtMs !== null)
     ? Math.max(endAtMs, overtimeEndAtMs)

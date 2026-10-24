@@ -89,12 +89,23 @@ export default function OvertimeRequestPage() {
     if (!startTime || !endTime) return null;
     const [sh, sm] = startTime.split(":").map(Number);
     const [eh, em] = endTime.split(":").map(Number);
-    const mins = eh * 60 + em - (sh * 60 + sm);
+    let mins = eh * 60 + em - (sh * 60 + sm);
     if (!Number.isFinite(mins)) return null;
-    if (mins <= 0) return { error: "Jam selesai harus setelah jam mulai" };
+    if (mins === 0) return { error: "Jam selesai tidak boleh sama dengan jam mulai" };
+    // Lintas tengah malam (selesai < mulai): durasi berlanjut ke esok hari,
+    // dibatasi sampai 06:00 (mirror guard server).
+    const crosses = mins < 0;
+    if (crosses && eh * 60 + em > 6 * 60) {
+      return { error: "Lembur lintas tengah malam maksimal sampai jam 06:00" };
+    }
+    if (crosses) mins += 24 * 60;
     const hours = Math.floor(mins / 60);
     const rem = mins % 60;
-    return { label: (hours ? hours + " jam " : "") + (rem ? rem + " menit" : ""), mins };
+    return {
+      label: (hours ? hours + " jam " : "") + (rem ? rem + " menit" : "") + (crosses ? " · selesai besok" : ""),
+      mins,
+      crosses,
+    };
   }, [startTime, endTime]);
 
   const stats = useMemo(() => {

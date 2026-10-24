@@ -115,24 +115,29 @@ export async function adminCreateOvertime({ user_id, date, start_time, end_time,
 }
 
 // Jam selesai lembur APPROVED untuk user+tanggal (dipakai aturan batas absen
-// pulang). Mengembalikan string "HH:MM" paling akhir, atau null bila tidak ada.
-// Beberapa slot lembur per hari dimungkinkan (unique index user+date+start_time),
-// jadi ambil yang paling akhir — bukan .maybeSingle().
-export async function getApprovedOvertimeEnd(userId, date) {
+// pulang). Dua kelompok slot dikembalikan terpisah supaya pemanggil bisa
+// menghitung waktu selesai efektif dengan benar:
+//   plain = "HH:MM" terakhir slot sehari (end > start)
+//   cross = "HH:MM" terakhir slot lintas tengah malam (end <= start → besok)
+// Beberapa slot lembur per hari dimungkinkan (unique index user+date+start_time).
+export async function getApprovedOvertimeSlots(userId, date) {
   if (!userId || !date) return null;
   const { data, error } = await supabase
     .from("overtime_requests")
-    .select("end_time")
+    .select("start_time, end_time")
     .eq("user_id", userId)
     .eq("date", date)
     .eq("status", "approved");
   if (error) throw error;
-  if (!data || data.length === 0) return null;
-  return data
-    .map((r) => r.end_time)
-    .filter((t) => /^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(t || ""))
-    .sort()
-    .pop() || null;
+  const valid = (data || [])
+    .map((r) => ({ start: r.start_time || "", end: r.end_time || "" }))
+    .filter((s) => /^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(s.end) && /^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(s.start));
+  if (valid.length === 0) return null;
+  const maxOf = (arr) => arr.sort().pop() || null;
+  return {
+    plain: maxOf(valid.filter((s) => s.end > s.start).map((s) => s.end)),
+    cross: maxOf(valid.filter((s) => s.end <= s.start).map((s) => s.end)),
+  };
 }
 
 // Rekap uang lembur disetujui per pegawai untuk periode "YYYY-MM".
