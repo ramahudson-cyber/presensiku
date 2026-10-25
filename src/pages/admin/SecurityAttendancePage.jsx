@@ -321,16 +321,9 @@ export default function SecurityAttendancePage() {
     <div className="space-y-5 pb-24">
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
-      {/* Header */}
-      <div className="flex items-start justify-between gap-3 flex-wrap">
-        <div className="min-w-0">
-          <h2 className={`${sectionTitle} flex items-center gap-2`}>
-            <ShieldAlert size={18} className="text-electric-violet" /> Keamanan Absensi
-          </h2>
-          <p className={sectionSub}>
-            Jejak percobaan fake GPS, akurasi mencurigakan, dan absen yang ditandai
-          </p>
-        </div>
+      {/* Header — judul halaman ada di banner ungu atas (Header.jsx);
+          di sini hanya tombol aksi */}
+      <div className="flex items-center justify-end gap-2 flex-wrap">
         <button
           onClick={() => load()}
           disabled={loading}

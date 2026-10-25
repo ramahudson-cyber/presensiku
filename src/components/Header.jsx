@@ -1,7 +1,7 @@
 import {
   Bell, LogOut, Users, CalendarCheck, History, CalendarDays,
   FileText, Megaphone, Settings, Building2, LayoutDashboard, Clock,
-  MessageSquareWarning,
+  MessageSquareWarning, ShieldAlert, Wallet,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { signOut } from "../services/authService";
@@ -19,6 +19,8 @@ const PAGES = {
   "/admin/settings": { icon: Settings, title: "Pengaturan", desc: "Konfigurasi aplikasi & instansi" },
   "/admin/overtime": { icon: Clock, title: "Kelola Lembur", desc: "Setujui pengajuan, buatkan lembur, dan rekap uang lembur" },
   "/admin/sanggahan": { icon: MessageSquareWarning, title: "Sanggahan", desc: "Review sanggahan kehadiran pegawai" },
+  "/admin/keamanan-absensi": { icon: ShieldAlert, title: "Keamanan Absensi", desc: "Jejak percobaan fake GPS, akurasi mencurigakan, dan absen yang ditandai" },
+  "/admin/payroll": { icon: Wallet, title: "Gaji", desc: "Potongan keterlambatan & alpha dihitung otomatis dari absensi" },
 };
 
 function Header() {

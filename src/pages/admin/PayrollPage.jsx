@@ -117,12 +117,7 @@ export default function PayrollPage() {
   return (
     <div className="space-y-5">
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
-      <div>
-        <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: T.text }}>Gaji</h1>
-        <p className="text-sm mt-0.5" style={{ color: T.textSec }}>
-          Potongan keterlambatan & alpha dihitung otomatis dari absensi
-        </p>
-      </div>
+      {/* Judul halaman "Gaji" tampil di banner ungu atas (Header.jsx) */}
 
       {/* Tabs */}
       <div className="flex gap-2 flex-wrap">
