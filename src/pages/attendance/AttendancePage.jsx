@@ -149,7 +149,10 @@ export default function AttendancePage() {
       if (loc) setPuskesmasLocation(loc);
     });
     const timeSync = setInterval(syncServerTime, 5 * 60 * 1000);
-    const locationCheck = setInterval(getLocation, 5 * 1000);
+    // Cek lokasi tiap 20 detik (dulu 5 detik). Setiap cek memanggil RPC
+    // verifikasi ke Supabase — 5 detik berarti 720 request/jam per pegawai.
+    // 20 detik tetap responsif tetapi memangkas 75% beban server.
+    const locationCheck = setInterval(getLocation, 20 * 1000);
 
     return () => {
       clearInterval(timeSync);

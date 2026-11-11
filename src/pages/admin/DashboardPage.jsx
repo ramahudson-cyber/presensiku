@@ -37,7 +37,9 @@ export default function DashboardPage() {
       } catch (err) { console.error("Server time sync failed:", err); }
     };
     syncServer();
-    const t = setInterval(syncServer, 60000);
+    // Sinkron jam server tiap 5 menit (dulu 1 menit). Drift jam ditangani
+    // tick per detik, jadi interval lebih panjang tidak memengaruhi akurasi.
+    const t = setInterval(syncServer, 300000);
     // Tick per detik antara sync — jam hero berjalan real-time
     const tick = setInterval(() => setServerNow(prev => new Date(prev.getTime() + 1000)), 1000);
     return () => { clearInterval(t); clearInterval(tick); };

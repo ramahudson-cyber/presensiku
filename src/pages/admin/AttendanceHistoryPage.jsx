@@ -204,7 +204,10 @@ function TodayMonitorPanel() {
     // setTimeout: muat pertama lewat task terpisah — setState tidak sinkron
     // di dalam effect body (react-hooks/set-state-in-effect).
     const kick = setTimeout(load, 0);
-    const id = setInterval(load, 60000);
+    // Segarkan tiap 5 menit (dulu 1 menit): panel ini memanggil 6 query
+    // sekaligus, dan bila dibiarkan terbuka terus interval 1 menit ikut
+    // menyumbang kuota egress Supabase.
+    const id = setInterval(load, 300000);
     return () => { clearTimeout(kick); clearInterval(id); };
   }, [load]);
 
@@ -343,10 +346,13 @@ export default function AttendanceHistoryPage() {
     try {
       const witaToday = getWitaDateString();
 
-      // 1. Baris attendance asli (cap besar; dataset per org-bulan kecil)
+      // 1. Baris attendance asli (cap besar; dataset per org-bulan kecil).
+      // Kolom disebut eksplisit — select("*") ikut menarik client_integrity,
+      // device_*, dan selfie_* yang tidak dipakai tabel/ekspor dan hanya
+      // menambah byte egress pada setiap pemuatan.
       const { data: attRows, error: attErr } = await supabase
         .from("attendance")
-        .select("*, profiles(full_name, position, avatar_url)")
+        .select("id, user_id, date, attendance_status, is_late, late_minutes, clock_in_time, clock_out_time, notes, shift_code, location_in, profiles(full_name, position, avatar_url)")
         .gte("date", dateFrom)
         .lte("date", dateTo)
         .order("date", { ascending: false })

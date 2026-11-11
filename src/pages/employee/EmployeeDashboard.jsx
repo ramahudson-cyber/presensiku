@@ -120,7 +120,10 @@ export default function EmployeeDashboard() {
       } catch { /* silent */ }
     };
     fetchUnread();
-    const id = setInterval(fetchUnread, 60000);
+    // 5 menit (dulu 1 menit). Realtime pengumuman sudah menangani pembaruan
+    // instan; polling ini hanya jaring pengaman dan ikut membebani egress
+    // bila ratusan pegawai membuka dashboard bersamaan.
+    const id = setInterval(fetchUnread, 300000);
     return () => { cancelled = true; clearInterval(id); };
   }, [user?.id]);
 

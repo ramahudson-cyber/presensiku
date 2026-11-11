@@ -194,9 +194,9 @@ export default function SecurityAttendancePage() {
 
   useEffect(() => {
     // setTimeout: hindari setState sinkron di body effect (pola halaman lain).
-    // Polling 60 detik memakai mode silent agar panel tidak berkedip "Memuat…".
+    // Polling 5 menit (dulu 1 menit), mode silent agar panel tidak berkedip.
     const kick = setTimeout(load, 0);
-    const id = setInterval(() => load(true), 60000);
+    const id = setInterval(() => load(true), 300000);
     return () => { clearTimeout(kick); clearInterval(id); };
   }, [load]);
 

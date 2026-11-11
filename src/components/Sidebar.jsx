@@ -91,7 +91,9 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
       } catch { /* silent */ }
     };
     fetchUnread();
-    const id = setInterval(fetchUnread, 60000);
+    // 5 menit (dulu 1 menit). Realtime pengumuman sudah menangani pembaruan
+    // instan, jadi polling ini hanya jaring pengaman.
+    const id = setInterval(fetchUnread, 300000);
     return () => { cancelled = true; clearInterval(id); };
   }, [user?.id, user?.role]);
 

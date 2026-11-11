@@ -45,45 +45,49 @@ export default function EmployeeEditProfile() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Kompres dulu jika lebih dari 500KB
-    if (file.size > 500 * 1024) {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const MAX = 512;
-          let w = img.width, h = img.height;
-          if (w > h) { h = (MAX / w) * h; w = MAX; } else { w = (MAX / h) * w; h = MAX; }
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, w, h);
-          canvas.toBlob((blob) => {
-            if (!blob) { setAvatarFile(file); setPreview(ev.target.result); return; }
-            const compressed = new File([blob], file.name, { type: "image/jpeg" });
-            setAvatarFile(compressed);
-            setPreview(ev.target.result);
-          }, "image/jpeg", 0.8);
-        };
-        img.src = ev.target.result;
+// SELALU kompres ke 256px sebelum upload. Avatar tampil kecil di UI,
+    // jadi file besar (ratusan KB) hanya membebani kuota egress Supabase:
+    // setiap perangkat mengunduhnya ulang. 256px JPEG q0.82 ≈ 10–25 KB.
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX = 256;
+        // Rasio tunggal: perkecil ke maks 256px; gambar kecil tidak diperbesar.
+        const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob((blob) => {
+          if (!blob) { setAvatarFile(file); setPreview(ev.target.result); return; }
+          const compressed = new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+          setAvatarFile(compressed);
+          setPreview(ev.target.result);
+        }, "image/jpeg", 0.82);
       };
-      reader.readAsDataURL(file);
-    } else {
-      setAvatarFile(file);
-      const reader = new FileReader();
-      reader.onload = (ev) => setPreview(ev.target.result);
-      reader.readAsDataURL(file);
-    }
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
   };
 
   const uploadAvatar = async (file) => {
     const fileExt = file.name.split(".").pop() || "jpg";
     const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
+    // cacheControl 1 tahun: nama file unik (timestamp) sehingga isinya tidak
+    // pernah berubah. Tanpa ini setiap perangkat mengunduh ulang avatar tiap
+    // jam — penyumbang terbesar kuota egress Supabase.
     const { error: uploadError } = await supabase.storage
       .from("avatars")
-      .upload(fileName, file, { upsert: true });
+      .upload(fileName, file, {
+        upsert: true,
+        cacheControl: "31536000",
+        contentType: file.type || "image/jpeg",
+      });
 
     if (uploadError) {
       if (uploadError.message?.includes("exceeded") || uploadError.message?.includes("size")) {
