@@ -324,8 +324,10 @@ export default function EmployeeDashboard() {
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* HERO — vibrant violet gradient. hero-card-bg dipakai karena rule global
           index.css `.text-white !important` memaksa teks gelap di light mode;
-          rule proteksi hero-card-bg mengembalikan teks jadi putih. */}
-      <div className="w-full p-8 pt-12 shadow-lg rounded-b-[32px] text-white hero-card-bg"
+          rule proteksi hero-card-bg mengembalikan teks jadi putih.
+          emp-hero-drop: animasi masuk (turun pelan) — hanya transform/opacity,
+          tampilan akhirnya identik tanpa animasi. */}
+      <div className="w-full p-8 pt-12 shadow-lg rounded-b-[32px] text-white hero-card-bg emp-hero-drop"
         style={{ background: 'linear-gradient(160deg, #C44DFF 0%, #BF00FF 30%, #8A00CC 60%, #4A0099 100%)' }}>
         <div className="max-w-md mx-auto">
           {/* Icon notifikasi & keluar di paling atas, tanpa background */}
@@ -377,8 +379,9 @@ export default function EmployeeDashboard() {
       </div>
 
       <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
-        {/* SECTION TITLE: Status hari ini — bar + judul, pola sama dengan header "Menu" */}
-        <div className="flex items-center gap-3 mb-4">
+        {/* SECTION TITLE: Status hari ini — bar + judul, pola sama dengan header "Menu".
+            emp-status-title: judul memudar halus (tanpa membesar). */}
+        <div className="emp-status-title flex items-center gap-3 mb-4">
           <div className="w-1 h-4 rounded-full shrink-0" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
           <div>
             <div className="text-lg font-extrabold tracking-tight" style={{ color: T.text }}>Status hari ini</div>
@@ -386,8 +389,9 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* 2 CARDS: MASUK & PULANG */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* 2 CARDS: MASUK & PULANG
+            emp-status-cards: kartu muncul timbul (naik + membesar dari 93%). */}
+        <div className="emp-status-cards grid grid-cols-2 gap-3">
           {/* Status non-hadir (izin/sakit) → tampil status besar, bukan jam */}
           {(() => {
             const st = todayAttendance?.attendance_status;
