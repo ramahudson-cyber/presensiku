@@ -1,4 +1,5 @@
 import { supabase } from "../lib/supabase";
+import { compressImage } from "../lib/imageCompress";
 import { getShiftDefinition, isShiftEnded, getWitaDateKey } from "../lib/shiftTime";
 
 const SANGGAHAN_BUCKET = "sanggahan";
@@ -159,11 +160,20 @@ export async function cancelMySanggahan(id) {
 
 // Upload foto bukti ke bucket 'sanggahan' (folder per user)
 export async function uploadSanggahanEvidence(userId, file) {
-  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+  // Kompres dulu (maks 1024px, JPEG q0.75): foto kamera 2 MB biasanya turun
+  // ke ±150 KB. Tanpa ini kuota storage 1 GB cepat penuh dan setiap pratinjau
+  // di halaman admin mengunduh ulang file besar.
+  const compressed = await compressImage(file, { maxSize: 1024, quality: 0.75 });
+  const ext = compressed.name.split(".").pop()?.toLowerCase() || "jpg";
   const path = `${userId}/${Date.now()}.${ext}`;
   const { error } = await supabase.storage
     .from(SANGGAHAN_BUCKET)
-    .upload(path, file, { upsert: true, contentType: file.type || undefined });
+    .upload(path, compressed, {
+      upsert: true,
+      contentType: compressed.type || "image/jpeg",
+      // Nama file unik (timestamp) → isinya tidak berubah, aman di-cache.
+      cacheControl: "604800",
+    });
   if (error) {
     const msg = /size|too large/i.test(error.message)
       ? "Ukuran foto melebihi 2MB"

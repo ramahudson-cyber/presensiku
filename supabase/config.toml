@@ -7,6 +7,11 @@ project_id = "muhxylbcgvwxjzrbkgdc"
 [functions.send-shift-reminder]
 verify_jwt = true
 
+# Retensi foto bukti sanggahan — dipanggil pg_cron harian dengan pola
+# otentikasi sama: Bearer service role (Vault) + x-cron-secret.
+[functions.cleanup-evidence]
+verify_jwt = true
+
 # Play Integrity: dipanggil setelah APK memperoleh integrity token.
 # Tetap wajib JWT (endpoint hanya untuk user login).
 [functions.verify-integrity]
