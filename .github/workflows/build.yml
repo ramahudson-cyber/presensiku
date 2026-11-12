@@ -68,10 +68,24 @@ jobs:
           name: SIAP-Puskesmas-APK
           path: android/app/build/outputs/apk/release/app-release.apk
 
+      # Deploy lewat CLI hanya bila VERCEL_TOKEN masih valid. Vercel juga
+      # men-deploy otomatis dari integrasi Git setiap push ke main, jadi token
+      # kedaluwarsa TIDAK boleh menggagalkan seluruh workflow (dulu langkah
+      # unggah APK ke Release ikut terlewat karena kegagalan ini).
       - name: Deploy ke Vercel (web app only)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: npx vercel --prod --token $VERCEL_TOKEN --yes
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::warning::VERCEL_TOKEN kosong — deploy CLI dilewati (integrasi Git Vercel tetap jalan)."
+            exit 0
+          fi
+          if npx vercel whoami --token "$VERCEL_TOKEN" >/dev/null 2>&1; then
+            npx vercel --prod --token "$VERCEL_TOKEN" --yes
+          else
+            echo "::warning::VERCEL_TOKEN tidak valid/kedaluwarsa — deploy CLI dilewati."
+            echo "Perbarui secret VERCEL_TOKEN di GitHub. Deploy tetap berjalan via integrasi Git Vercel."
+          fi
 
       - name: Tentukan versi rilis (dari public/version.json)
         run: echo "RELEASE_TAG=v$(jq -r .version public/version.json)" >> "$GITHUB_ENV"
