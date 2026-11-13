@@ -23,8 +23,8 @@ export default function GpsDisabledSheet({ open, onClose, onRetry }) {
     >
       <div className="pb-2">
         <div className="flex flex-col items-center text-center gap-3 mb-4">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-[linear-gradient(135deg,rgba(191,0,255,0.14)_0%,rgba(139,0,204,0.10)_100%)] border border-[rgba(191,0,255,0.25)]">
-            <MapPinOff size={26} className="text-[#BF00FF]" />
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-[linear-gradient(135deg,rgba(47,139,248,0.14)_0%,rgba(31,116,224,0.10)_100%)] border border-[rgba(47,139,248,0.25)]">
+            <MapPinOff size={26} className="text-[#2F8BF8]" />
           </div>
           <p className="text-sm text-gray-600 leading-relaxed max-w-[300px]">
             Absen membutuhkan lokasi GPS. Aktifkan <b>Layanan Lokasi</b> di pengaturan HP Anda, lalu coba lagi.
@@ -39,7 +39,7 @@ export default function GpsDisabledSheet({ open, onClose, onRetry }) {
         {native && (
           <button
             onClick={handleOpenSettings}
-            className="w-full py-2.5 rounded-full text-white text-sm font-semibold transition-all active:scale-95 bg-[#BF00FF] hover:bg-[#a000e6] mb-3"
+            className="w-full py-2.5 rounded-full text-white text-sm font-semibold transition-all active:scale-95 bg-[#2F8BF8] hover:bg-[#1F74E0] mb-3"
           >
             Aktifkan Lokasi
           </button>
@@ -54,7 +54,7 @@ export default function GpsDisabledSheet({ open, onClose, onRetry }) {
           </button>
           <button
             onClick={onRetry}
-            className="flex-1 py-2.5 rounded-full border border-gray-300 bg-white text-[#BF00FF] text-sm font-semibold transition-all active:scale-95 hover:bg-gray-50"
+            className="flex-1 py-2.5 rounded-full border border-gray-300 bg-white text-[#2F8BF8] text-sm font-semibold transition-all active:scale-95 hover:bg-gray-50"
           >
             Coba Lagi
           </button>

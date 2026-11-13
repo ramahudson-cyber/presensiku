@@ -12,7 +12,7 @@ export default function TimeSelect({ value, onChange, disabled }) {
   const [hh = "00", mm = "00"] = normalized.split(":");
 
   const base =
-    "relative flex-1 min-w-0 flex items-center bg-onyx border border-white/[0.06] rounded-2xl focus-within:ring-2 focus-within:ring-electric-violet/50";
+    "relative flex-1 min-w-0 flex items-center bg-onyx border border-white/[0.06] rounded-2xl focus-within:ring-2 focus-within:ring-[#2F8BF8]/50";
 
   // text-xs + padding ramping: di mobile nilai "08"/"30" harus tetap terbaca
   const selectCls =
