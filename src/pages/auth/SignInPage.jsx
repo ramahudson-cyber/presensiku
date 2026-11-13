@@ -399,108 +399,154 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="login-dark-bg min-h-screen relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%)'
-      }}>
-      {/* Halo glow */}
+    <div className="min-h-screen relative overflow-hidden" style={{ background: "#F4F2FB" }}>
+      {/* Ambient lembut: dua sapuan biru sangat halus (tanpa orbs/blur berat) */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(circle farthest-side at 0px -30%, rgba(167,139,250,0.25), rgba(124,58,237,0) 84%)'
+          background:
+            "radial-gradient(circle at 10% -5%, rgba(57,192,223,0.16), transparent 45%), radial-gradient(circle at 95% 0%, rgba(47,139,248,0.13), transparent 42%)",
         }}
       />
 
-      {/* Subtle grid overlay */}
-      <div className="absolute inset-0 professional-grid-bg pointer-events-none" />
-
-      {/* Ambient sweep */}
-      <div className="absolute inset-0 professional-ambient-bg pointer-events-none" />
-
-      {/* Content — card center vertikal di semua tinggi layar */}
       <div className="relative z-10 min-h-dvh flex items-center justify-center p-4 pt-[max(3vh,env(safe-area-inset-top))] sm:p-6">
         <div className="w-full lg:max-w-[1000px] mx-auto flex flex-col lg:flex-row lg:items-center lg:gap-16">
 
-        {/* RIGHT: Hero — desktop only */}
-        <div className="hidden lg:block lg:flex-1">
-          <div className="text-left px-2">
-            <h1 className="font-urbanist text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
-              Presensiku
-            </h1>
-            <p className="text-green-yellow text-base leading-relaxed mt-8 tracking-[0.72px]">
-              Absen anti ribet, kerja makin greget!
-            </p>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-6">
-              <span className="text-[#c4b5fd] text-sm tracking-[2.5px] uppercase font-semibold">Disiplin</span>
-              <span className="text-slate-mist/20 text-sm">•</span>
-              <span className="text-[#c4b5fd] text-sm tracking-[2.5px] uppercase font-semibold">Akurat</span>
-              <span className="text-slate-mist/20 text-sm">•</span>
-              <span className="text-[#c4b5fd] text-sm tracking-[2.5px] uppercase font-semibold">Optimal</span>
-            </div>
-          </div>
-        </div>
-
-          {/* LEFT: Card */}
-          <div className="w-full max-w-[420px] mx-auto lg:mx-0 lg:flex-1">
-
-            {/* Hero — mobile/tablet only */}
-            <div className="text-left mb-6 sm:mb-10 lg:hidden px-2">
-              <h1 className="font-urbanist text-3xl sm:text-4xl font-bold tracking-[1.22px] text-pure-white leading-none">
+          {/* Hero — desktop only */}
+          <div className="hidden lg:block lg:flex-1">
+            <div className="text-left px-2">
+              <div
+                className="inline-flex items-center justify-center rounded-[22px] mb-6"
+                style={{
+                  width: 64,
+                  height: 64,
+                  background: "linear-gradient(135deg,#39C0DF 0%,#2F8BF8 55%,#4A7CFB 100%)",
+                  boxShadow: "0 12px 26px -8px rgba(47,139,248,0.5)",
+                }}
+              >
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 21s-7-4.5-7-10a7 7 0 1 1 14 0c0 5.5-7 10-7 10z" />
+                  <circle cx="12" cy="11" r="2.6" />
+                </svg>
+              </div>
+              <h1 className="text-4xl font-extrabold tracking-tight leading-none" style={{ color: "#0F172A" }}>
                 Presensiku
               </h1>
-              <p className="text-green-yellow text-sm sm:text-base leading-relaxed mt-6 sm:mt-8 tracking-[0.72px] hidden sm:block">
+              <p className="text-base leading-relaxed mt-6" style={{ color: "#475569" }}>
                 Absen anti ribet, kerja makin greget!
               </p>
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-4 hidden sm:flex">
-                <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Disiplin</span>
-                <span className="text-slate-mist/20 text-xs sm:text-sm">•</span>
-                <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Akurat</span>
-                <span className="text-slate-mist/20 text-xs sm:text-sm">•</span>
-                <span className="text-[#c4b5fd] text-xs sm:text-sm tracking-[2.5px] uppercase font-semibold">Optimal</span>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-5">
+                <span className="text-xs font-bold uppercase tracking-[0.22em]" style={{ color: "#2F8BF8" }}>Disiplin</span>
+                <span className="text-sm" style={{ color: "#CBD5E1" }}>•</span>
+                <span className="text-xs font-bold uppercase tracking-[0.22em]" style={{ color: "#2F8BF8" }}>Akurat</span>
+                <span className="text-sm" style={{ color: "#CBD5E1" }}>•</span>
+                <span className="text-xs font-bold uppercase tracking-[0.22em]" style={{ color: "#2F8BF8" }}>Optimal</span>
               </div>
             </div>
+          </div>
 
-            {/* Card */}
-          <div className="bg-white/[0.04] backdrop-blur-xl rounded-[24px] p-6 sm:p-10 border border-white/[0.06] shadow-2xl">
+          {/* Form */}
+          <div className="w-full max-w-[420px] mx-auto lg:mx-0 lg:flex-1">
+
+            {/* Brand — mobile/tablet only */}
+            <div className="text-left mb-6 sm:mb-8 lg:hidden px-1">
+              <div
+                className="inline-flex items-center justify-center rounded-[20px] mb-4"
+                style={{
+                  width: 56,
+                  height: 56,
+                  background: "linear-gradient(135deg,#39C0DF 0%,#2F8BF8 55%,#4A7CFB 100%)",
+                  boxShadow: "0 10px 22px -8px rgba(47,139,248,0.5)",
+                }}
+              >
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 21s-7-4.5-7-10a7 7 0 1 1 14 0c0 5.5-7 10-7 10z" />
+                  <circle cx="12" cy="11" r="2.6" />
+                </svg>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-none" style={{ color: "#0F172A" }}>
+                Presensiku
+              </h1>
+              <p className="text-sm leading-relaxed mt-4" style={{ color: "#475569" }}>
+                Absen anti ribet, kerja makin greget!
+              </p>
+            </div>
+
+            {/* Kartu form — putih, mengambang di atas latar lembut */}
+            <div
+              className="rounded-[26px] p-6 sm:p-8 border"
+              style={{ background: "#FFFFFF", borderColor: "rgba(31,41,55,0.08)", boxShadow: "0 10px 30px rgba(15,23,42,0.07)" }}
+            >
             {/* LOGIN STEP */}
             {step === "login" && (
               <>
-                <h2 className="text-lg font-semibold text-pure-white mb-5">Masuk</h2>
+                <h2 className="text-2xl font-extrabold tracking-tight leading-none" style={{ color: "#0F172A" }}>Masuk</h2>
+                <p className="text-xs mt-2 mb-5" style={{ color: "#475569" }}>
+                  Gunakan username atau email terdaftar.
+                </p>
                 {error && (
-                  <div className="mb-4 p-3 bg-electric-violet/10 rounded-[16px] flex items-start gap-2.5">
-                    <AlertCircle size="15" className="text-white shrink-0 mt-0.5" />
-                    <p className="text-xs sm:text-sm text-white">{error}</p>
+                  <div className="mb-4 p-3 rounded-[14px] flex items-start gap-2.5"
+                    style={{ background: "#FEF2F2", border: "1px solid #FECACA" }}>
+                    <AlertCircle size={15} className="shrink-0 mt-0.5" style={{ color: "#EF4444" }} />
+                    <p className="text-xs sm:text-sm" style={{ color: "#B91C1C" }}>{error}</p>
                   </div>
                 )}
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-[11px] font-medium text-white/70 uppercase tracking-[0.05em] mb-1.5">Username / Email</label>
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="nama@email.com"
-                      required
-                      disabled={loading}
-                      className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-white/[0.06] border border-white/[0.08] rounded-[16px] text-pure-white text-sm placeholder-white/30 focus:outline-none focus:border-electric-violet/50 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40"
-                    />
+                    <label className="block text-[9.5px] font-extrabold uppercase tracking-[0.13em] mb-1.5" style={{ color: "#94A3B8" }}>
+                      Username / Email
+                    </label>
+                    <div
+                      className="flex items-center gap-2.5 rounded-[14px] border px-3.5"
+                      style={{ background: "#FAFAFC", borderColor: "rgba(31,41,55,0.08)" }}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                        <path d="M4 6h16v12H4z" />
+                        <path d="m4 7 8 6 8-6" />
+                      </svg>
+                      <input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="nama@email.com"
+                        required
+                        disabled={loading}
+                        className="flex-1 min-w-0 py-3 bg-transparent text-sm outline-none disabled:opacity-40"
+                        style={{ color: "#0F172A" }}
+                      />
+                    </div>
+                    <p className="text-[9.5px] mt-1.5" style={{ color: "#94A3B8" }}>
+                      Format: <b style={{ color: "#2F8BF8" }}>username@kode-instansi</b> atau email terdaftar.
+                    </p>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-white/70 uppercase tracking-[0.05em] mb-1.5">Password</label>
-                    <div className="relative">
+                    <label className="block text-[9.5px] font-extrabold uppercase tracking-[0.13em] mb-1.5" style={{ color: "#94A3B8" }}>
+                      Password
+                    </label>
+                    <div
+                      className="flex items-center gap-2.5 rounded-[14px] border px-3.5"
+                      style={{ background: "#FAFAFC", borderColor: "rgba(31,41,55,0.08)" }}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                        <rect x="4" y="10" width="16" height="10" rx="2" />
+                        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                      </svg>
                       <input
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
+                        placeholder="Masukkan password"
                         required
                         disabled={loading}
-                        className="w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-white/[0.06] border border-white/[0.08] rounded-[16px] text-pure-white text-sm placeholder-white/30 focus:outline-none focus:border-electric-violet/50 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40 pr-11"
+                        className="flex-1 min-w-0 py-3 bg-transparent text-sm outline-none disabled:opacity-40"
+                        style={{ color: "#0F172A" }}
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-mist hover:text-pure-white transition-colors"
+                        className="shrink-0"
+                        style={{ color: "#94A3B8" }}
+                        aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
                       >
                         {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>
@@ -516,23 +562,27 @@ export default function SignInPage() {
                           onChange={(e) => setRememberMe(e.target.checked)}
                           className="peer sr-only"
                         />
-                        <div className="w-[18px] h-[18px] rounded-[6px] border border-slate-mist/40 bg-obsidian peer-checked:bg-electric-violet peer-checked:border-electric-violet transition-all duration-200" />
+                        <div
+                          className="w-[18px] h-[18px] rounded-[6px] border transition-all duration-200 peer-checked:bg-electric-violet peer-checked:border-electric-violet"
+                          style={{ borderColor: "#CBD5E1", background: "#FFFFFF" }}
+                        />
                         <svg
-                          className="absolute inset-0 w-[18px] h-[18px] text-pure-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
-                          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}
+                          className="absolute inset-0 w-[18px] h-[18px] opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
+                          fill="none" viewBox="0 0 24 24" stroke="#FFFFFF" strokeWidth={3}
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
                       <div>
-                        <p className="text-sm text-pure-white font-medium leading-tight">Ingat Saya</p>
+                        <p className="text-sm font-medium leading-tight" style={{ color: "#475569" }}>Ingat Saya</p>
                       </div>
                     </label>
 
                     <button
                       type="button"
                       onClick={() => alert("Silahkan hubungi Admin untuk reset password.")}
-                      className="text-xs text-white/55 hover:text-white/80 transition-colors"
+                      className="text-xs font-bold transition-colors"
+                      style={{ color: "#2F8BF8" }}
                     >
                       Lupa password?
                     </button>
@@ -548,45 +598,58 @@ export default function SignInPage() {
                           onChange={(e) => setUseBiometric(e.target.checked)}
                           className="peer sr-only"
                         />
-                        <div className="w-[18px] h-[18px] rounded-[6px] border border-slate-mist/40 bg-obsidian peer-checked:bg-electric-violet peer-checked:border-electric-violet transition-all duration-200" />
+                        <div
+                          className="w-[18px] h-[18px] rounded-[6px] border transition-all duration-200 peer-checked:bg-electric-violet peer-checked:border-electric-violet"
+                          style={{ borderColor: "#CBD5E1", background: "#FFFFFF" }}
+                        />
                         <svg
-                          className="absolute inset-0 w-[18px] h-[18px] text-pure-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
-                          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}
+                          className="absolute inset-0 w-[18px] h-[18px] opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
+                          fill="none" viewBox="0 0 24 24" stroke="#FFFFFF" strokeWidth={3}
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
                       <div>
-                        <p className="text-sm text-pure-white font-medium leading-tight flex items-center gap-1.5">
-                          <ShieldCheck size={14} className="text-periwinkle-glow" />
+                        <p className="text-sm font-medium leading-tight flex items-center gap-1.5" style={{ color: "#475569" }}>
+                          <ShieldCheck size={14} style={{ color: "#2F8BF8" }} />
                           Gunakan Sidik Jari
                         </p>
                       </div>
                     </label>
                   )}
-                  
+
                   {/* Note for Ingat Saya removed from checkbox label */}
-                  {rememberMe && <p className="text-[10px] text-slate-mist/60 leading-relaxed -mt-2 mb-4 ml-[30px]">Username & password tersimpan untuk login cepat</p>}
+                  {rememberMe && <p className="text-[10px] leading-relaxed -mt-2 mb-4 ml-[30px]" style={{ color: "#94A3B8" }}>Username &amp; password tersimpan untuk login cepat</p>}
 
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-3.5 sm:py-4 px-8 bg-electric-violet text-pure-white font-medium text-sm rounded-full hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40 flex items-center justify-center gap-2.5"
+                  <div
+                    className="w-full py-3.5 sm:py-4 px-8 rounded-full text-pure-white font-bold text-sm flex items-center justify-center gap-2.5"
+                    style={{ background: "linear-gradient(135deg, #39C0DF 0%, #2F8BF8 55%, #4A7CFB 100%)", boxShadow: "0 10px 24px -8px rgba(47,139,248,0.55)" }}
                   >
-                    {loading ? (
-                      <>
-                        <Loader2 size={16} className="animate-spin" />
-                        {loadingText || "Memproses..."}
-                      </>
-                    ) : (
-                      "Masuk"
-                    )}
-                  </button>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full flex items-center justify-center gap-2.5 disabled:opacity-40"
+                      style={{ background: "transparent", border: 0, color: "inherit", font: "inherit", cursor: loading ? "default" : "pointer" }}
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          {loadingText || "Memproses..."}
+                        </>
+                      ) : (
+                        "Masuk"
+                      )}
+                    </button>
+                  </div>
                 </form>
-                <div className="mt-6 sm:mt-8 flex items-center justify-center gap-2 text-[10px] text-slate-mist/70">
-                  <Smartphone size={12} className="shrink-0" />
-                  <span>Device baru memerlukan verifikasi OTP & approval admin</span>
+                <div
+                  className="mt-4 p-3 rounded-[14px] flex items-start gap-2.5"
+                  style={{ background: "#EEF6FF", border: "1px solid rgba(47,139,248,0.16)" }}
+                >
+                  <Smartphone size={13} className="shrink-0 mt-0.5" style={{ color: "#2F8BF8" }} />
+                  <span className="text-[10px] leading-relaxed" style={{ color: "#3A5A7A" }}>
+                    Perangkat baru memerlukan verifikasi OTP via email dan persetujuan admin.
+                  </span>
                 </div>
               </>
             )}
@@ -594,26 +657,28 @@ export default function SignInPage() {
             {/* OTP STEP */}
             {step === "otp" && (
               <>
-                <div className="text-center mb-6 sm:mb-8">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-electric-violet/10 mb-4">
-                    <Mail size={20} className="text-periwinkle-glow" />
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-[16px] mb-4"
+                    style={{ background: "#EEF6FF", border: "1px solid rgba(47,139,248,0.16)" }}>
+                    <Mail size={20} style={{ color: "#2F8BF8" }} />
                   </div>
-                  <h2 className="font-urbanist text-xl sm:text-2xl font-medium tracking-[0.76px] text-pure-white">
+                  <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight" style={{ color: "#0F172A" }}>
                     Verifikasi OTP
                   </h2>
-                  <p className="text-slate-mist text-xs sm:text-sm mt-2 tracking-[0.72px]">
+                  <p className="text-xs sm:text-sm mt-2" style={{ color: "#475569" }}>
                     Kode dikirim ke {userEmail}
                   </p>
-                  <div className="mt-3 p-2 bg-green-yellow/10 border border-green-yellow/20 rounded-[12px]">
-                    <p className="text-[10px] text-green-yellow/70">
+                  <div className="mt-3 p-2.5 rounded-[12px]" style={{ background: "#FEFCE8", border: "1px solid #FDE68A" }}>
+                    <p className="text-[10px]" style={{ color: "#92400E" }}>
                       Tidak terima email? Periksa folder spam, atau gunakan tombol kirim ulang di bawah.
                     </p>
                   </div>
                 </div>
                 {error && (
-                  <div className="mb-4 p-3 bg-electric-violet/10 rounded-[16px] flex items-start gap-2.5">
-                    <AlertCircle size="15" className="text-white shrink-0 mt-0.5" />
-                    <p className="text-xs sm:text-sm text-white">{error}</p>
+                  <div className="mb-4 p-3 rounded-[14px] flex items-start gap-2.5"
+                    style={{ background: "#FEF2F2", border: "1px solid #FECACA" }}>
+                    <AlertCircle size={15} className="shrink-0 mt-0.5" style={{ color: "#EF4444" }} />
+                    <p className="text-xs sm:text-sm" style={{ color: "#B91C1C" }}>{error}</p>
                   </div>
                 )}
                 <form onSubmit={handleVerifyOtp} className="space-y-4">
@@ -625,12 +690,14 @@ export default function SignInPage() {
                     required
                     maxLength={6}
                     disabled={loading}
-                    className="w-full px-4 py-4 sm:py-5 bg-obsidian border border-onyx rounded-[16px] text-pure-white text-center text-xl sm:text-2xl font-mono tracking-[0.5em] placeholder-slate-mist/40 focus:outline-none focus:border-electric-violet/40 focus:ring-1 focus:ring-electric-violet/20 transition-all duration-200 disabled:opacity-40"
+                    className="w-full py-4 sm:py-5 rounded-[16px] text-center text-xl sm:text-2xl font-mono tracking-[0.5em] outline-none disabled:opacity-40"
+                    style={{ background: "#FAFAFC", border: "1px solid rgba(31,41,55,0.08)", color: "#0F172A" }}
                   />
                   <button
                     type="submit"
                     disabled={loading || otpCode.length !== 6}
-                    className="w-full py-3.5 sm:py-4 px-8 bg-electric-violet text-pure-white font-medium text-sm rounded-full hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40 flex items-center justify-center gap-2.5"
+                    className="w-full py-3.5 sm:py-4 px-8 rounded-full text-white font-bold text-sm flex items-center justify-center gap-2.5 disabled:opacity-40 transition-all"
+                    style={{ background: "linear-gradient(135deg, #39C0DF 0%, #2F8BF8 55%, #4A7CFB 100%)" }}
                   >
                     {loading ? (
                       <>
@@ -642,17 +709,19 @@ export default function SignInPage() {
                     )}
                   </button>
                 </form>
-                <div className="mt-4 sm:mt-5 flex items-center justify-between">
+                <div className="mt-4 flex items-center justify-between">
                   <button
                     onClick={handleCancel}
-                    className="text-xs text-slate-mist hover:text-pure-white transition-colors flex items-center gap-1.5"
+                    className="text-xs font-semibold flex items-center gap-1.5"
+                    style={{ color: "#94A3B8" }}
                   >
                     <ArrowLeft size={12} /> Kembali
                   </button>
                   <button
                     onClick={handleResendOtp}
                     disabled={loading}
-                    className="text-xs text-slate-mist hover:text-periwinkle-glow transition-colors flex items-center gap-1.5"
+                    className="text-xs font-semibold flex items-center gap-1.5"
+                    style={{ color: "#2F8BF8" }}
                   >
                     <RefreshCw size={12} /> Kirim ulang
                   </button>
@@ -663,34 +732,35 @@ export default function SignInPage() {
             {/* PENDING STEP */}
             {step === "pending" && (
               <>
-                <div className="text-center mb-6 sm:mb-8">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-electric-violet/10 mb-4">
-                    <Clock size={20} className="text-periwinkle-glow" />
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-[16px] mb-4"
+                    style={{ background: "#EEF6FF", border: "1px solid rgba(47,139,248,0.16)" }}>
+                    <Clock size={20} style={{ color: "#2F8BF8" }} />
                   </div>
-                  <h2 className="font-urbanist text-xl sm:text-2xl font-medium tracking-[0.76px] text-pure-white">
+                  <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight" style={{ color: "#0F172A" }}>
                     Menunggu Approval
                   </h2>
-                  <p className="text-slate-mist text-xs sm:text-sm mt-2 tracking-[0.72px]">
-                    OTP terverifikasi
-                  </p>
+                  <p className="text-xs sm:text-sm mt-2" style={{ color: "#475569" }}>OTP terverifikasi</p>
                 </div>
-                <div className="p-3 sm:p-4 bg-obsidian rounded-[16px] mb-4 border border-onyx">
-                  <p className="text-xs text-slate-mist">
-                    Status: <span className="text-periwinkle-glow">Pending</span>
+                <div className="p-3.5 rounded-[14px] mb-4" style={{ background: "#FAFAFC", border: "1px solid rgba(31,41,55,0.08)" }}>
+                  <p className="text-xs" style={{ color: "#475569" }}>
+                    Status: <span className="font-bold" style={{ color: "#2F8BF8" }}>Pending</span>
                   </p>
-                  <p className="text-[10px] text-slate-mist/60 mt-1">{deviceInfo?.deviceName}</p>
+                  <p className="text-[10px] mt-1" style={{ color: "#94A3B8" }}>{deviceInfo?.deviceName}</p>
                 </div>
                 {error && (
-                  <div className="mb-4 p-3 bg-electric-violet/10 rounded-[16px] flex items-start gap-2.5">
-                    <AlertCircle size="15" className="text-white shrink-0 mt-0.5" />
-                    <p className="text-xs sm:text-sm text-white">{error}</p>
+                  <div className="mb-4 p-3 rounded-[14px] flex items-start gap-2.5"
+                    style={{ background: "#FEF2F2", border: "1px solid #FECACA" }}>
+                    <AlertCircle size={15} className="shrink-0 mt-0.5" style={{ color: "#EF4444" }} />
+                    <p className="text-xs sm:text-sm" style={{ color: "#B91C1C" }}>{error}</p>
                   </div>
                 )}
                 <div className="space-y-3">
                   <button
                     onClick={checkApprovalStatus}
                     disabled={loading}
-                    className="w-full py-3.5 sm:py-4 px-8 bg-electric-violet text-pure-white font-medium text-sm rounded-full hover:brightness-110 active:brightness-90 transition-all duration-200 disabled:opacity-40 flex items-center justify-center gap-2.5"
+                    className="w-full py-3.5 sm:py-4 px-8 rounded-full text-white font-bold text-sm flex items-center justify-center gap-2.5 disabled:opacity-40"
+                    style={{ background: "linear-gradient(135deg, #39C0DF 0%, #2F8BF8 55%, #4A7CFB 100%)" }}
                   >
                     {loading ? (
                       <>
@@ -703,7 +773,8 @@ export default function SignInPage() {
                   </button>
                   <button
                     onClick={handleCancel}
-                    className="w-full py-3.5 px-8 border border-onyx text-slate-mist text-sm rounded-full hover:bg-pure-white/5 hover:text-pure-white transition-all duration-200"
+                    className="w-full py-3.5 px-8 rounded-full text-sm font-semibold transition-all"
+                    style={{ background: "#FFFFFF", border: "1px solid rgba(31,41,55,0.12)", color: "#475569" }}
                   >
                     Logout
                   </button>
@@ -713,7 +784,7 @@ export default function SignInPage() {
           </div>
 
           {/* Footer */}
-          <p className="text-center text-[10px] text-pure-white mt-6 sm:mt-8 tracking-[0.65px]">
+          <p className="text-center text-[10px] mt-6 tracking-[0.65px]" style={{ color: "#94A3B8" }}>
             Presensiku v{appVersion}
           </p>
         </div>

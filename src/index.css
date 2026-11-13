@@ -858,6 +858,28 @@ textarea::placeholder { color: #94a3b8; }
 .admin-light .shadow-xl,
 .admin-light .shadow-lg { box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06) !important; }
 
+/* ----------------------------------------------------------------------------
+   Bayangan tombol: dikurangi di seluruh aplikasi (permintaan pemilik).
+   Aturan ini menimpa kelas shadow Tailwind DAN box-shadow inline pada elemen
+   <button>/[role="button"]. Yang paling menonjol dihilangkan: glow warna
+   (mis. ungu `0 6px 18px rgba(191,0,255,.3)`) dan bayangan tebal. Diganti
+   satu bayangan sangat tipis yang cukup untuk memisahkan tombol dari latar
+   putih. Link biasa TIDAK tersentuh (tidak diberi bayangan buatan).
+   ----------------------------------------------------------------------------
+*/
+button,
+[role="button"] {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+}
+button:hover,
+[role="button"]:hover {
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08) !important;
+}
+button:active,
+[role="button"]:active {
+  box-shadow: none !important;
+}
+
 /* Hero-card white-text protection inside light admin */
 .admin-light .hero-card-bg,
 .admin-light .hero-card-bg .text-white,

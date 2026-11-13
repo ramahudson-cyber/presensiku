@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — Login Premium Bersih (palet biru)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #E9ECF2; min-height: 100vh; color: #0F172A;
+    display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 26px 16px 44px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .headline { font-size: 14px; font-weight: 800; color: #334155; text-align: center; }
+  .row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .phone {
+    width: 360px; height: 700px; border-radius: 34px; overflow: hidden; position: relative;
+    box-shadow: 0 24px 64px rgba(15,23,42,.22); border: 1px solid #E2E8F0;
+    background: #F4F2FB;
+  }
+  .phone-label { font-size: 10.5px; font-weight: 700; color: #64748B; text-align: center; padding: 0 0 10px; }
+
+  .login { position: absolute; inset: 0; padding: 46px 26px 26px; display: flex; flex-direction: column; }
+
+  .brandmark {
+    width: 64px; height: 64px; border-radius: 22px; display: grid; place-items: center;
+    background: linear-gradient(135deg, #39C0DF 0%, #2F8BF8 55%, #4A7CFB 100%);
+    box-shadow: 0 12px 26px -8px rgba(47,139,248,.55);
+  }
+  .brandmark svg { width: 30px; height: 30px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .welcome { margin-top: 26px; }
+  .welcome .hi { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #2F8BF8; }
+  .welcome h2 { margin-top: 8px; font-size: 26px; font-weight: 800; line-height: 1.15; letter-spacing: -.02em; color: #0F172A; }
+  .welcome p { margin-top: 8px; font-size: 12.5px; line-height: 1.5; color: #475569; }
+
+  form { margin-top: 26px; display: flex; flex-direction: column; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 9.5px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: #94A3B8; }
+  .inp {
+    position: relative; display: flex; align-items: center; gap: 10px;
+    background: #FFFFFF; border: 1px solid rgba(31,41,55,.08); border-radius: 16px;
+    padding: 0 14px; height: 48px; box-shadow: 0 4px 16px rgba(15,23,42,.06);
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .inp:focus-within { border-color: rgba(47,139,248,.45); box-shadow: 0 0 0 4px rgba(47,139,248,.10); }
+  .inp svg { width: 16px; height: 16px; stroke: #94A3B8; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .inp input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 13.5px; color: #0F172A; font-family: inherit; }
+  .inp input::placeholder { color: #B6BCCB; }
+  .hint { font-size: 9.5px; color: #94A3B8; }
+  .hint b { color: #2F8BF8; font-weight: 700; }
+
+  .row-between { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .check { display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 600; color: #475569; }
+  .check .box { width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid #CBD5E1; background: #fff; display: grid; place-items: center; }
+  .check .box.on { background: #2F8BF8; border-color: #2F8BF8; }
+  .check .box.on::after { content: ""; width: 8px; height: 4px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translate(1px,-1px); }
+  .link-blue { font-size: 11.5px; font-weight: 700; color: #2F8BF8; text-decoration: none; }
+
+  .submit {
+    margin-top: 6px; height: 50px; border-radius: 16px; border: 0; cursor: pointer;
+    background: linear-gradient(135deg, #39C0DF 0%, #2F8BF8 55%, #4A7CFB 100%);
+    color: #fff; font-size: 14px; font-weight: 800;
+    box-shadow: 0 12px 26px -8px rgba(47,139,248,.6);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .otp-note { display: flex; gap: 9px; align-items: flex-start; margin-top: 2px; background: #EEF6FF; border: 1px solid rgba(47,139,248,.16); border-radius: 14px; padding: 11px 12px; }
+  .otp-note svg { width: 13px; height: 13px; stroke: #2F8BF8; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; margin-top: 1px; }
+  .otp-note p { font-size: 10px; line-height: 1.5; color: #3A5A7A; }
+
+  .foot { margin-top: auto; text-align: center; padding-top: 18px; }
+  .foot .place { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #475569; }
+  .foot .ver { margin-top: 3px; font-size: 9.5px; letter-spacing: .1em; color: #94A3B8; }
+
+  /* varian 2: band gradasi di atas */
+  .login.graded { padding-top: 0; }
+  .graded .band { padding: 46px 26px 24px; background: linear-gradient(160deg, #39C0DF 0%, #32ACFB 32%, #3F93FD 62%, #4A7CFB 100%); border-radius: 0 0 32px 32px; color: #fff; }
+  .graded .band .hi { color: rgba(255,255,255,.85); }
+  .graded .band h2 { color: #fff; }
+  .graded .band p { color: rgba(255,255,255,.8); }
+  .graded .brandmark { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3); box-shadow: none; }
+  .graded form { margin-top: 18px; }
+
+  .note { width: 400px; background: #fff; border-radius: 18px; padding: 16px 18px; border: 1px solid #E2E8F0; font-size: 11.5px; color: #64748B; line-height: 1.6; }
+  .note b { color: #0F172A; }
+  .note ul { margin: 8px 0 0 18px; } .note li { margin-bottom: 5px; }
+  .sw { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; color: #334155; margin-right: 10px; }
+  .sw i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 1px solid rgba(15,23,42,.1); }
+</style>
+</head>
+<body>
+
+  <div class="headline">LOGIN PREMIUM BERSIH — palet biru dari DESIGN.md</div>
+
+  <div class="row">
+    <!-- VARIAN 1: LAYAR TERANG -->
+    <div>
+      <div class="phone-label">VARIAN A — bersih, terang, kartu mengambang</div>
+      <div class="phone">
+        <div class="login">
+          <div class="brandmark">
+            <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a7 7 0 1 1 14 0c0 5.5-7 10-7 10z"/><circle cx="12" cy="11" r="2.6"/></svg>
+          </div>
+          <div class="welcome">
+            <div class="hi">Selamat datang kembali</div>
+            <h2>Masuk ke<br>Presensiku</h2>
+            <p>Gunakan username atau email terdaftar untuk melanjutkan.</p>
+          </div>
+
+          <form onsubmit="return false">
+            <div class="field">
+              <label>Username / Email</label>
+              <div class="inp">
+                <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
+                <input type="text" placeholder="nama@email.com" value="">
+              </div>
+              <span class="hint">Format: <b>username@kode-instansi</b> atau email terdaftar.</span>
+            </div>
+
+            <div class="field">
+              <label>Password</label>
+              <div class="inp">
+                <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                <input type="password" placeholder="Masukkan password" value="password">
+              </div>
+            </div>
+
+            <div class="row-between">
+              <div class="check"><span class="box on"></span>Ingat Saya</div>
+              <a class="link-blue" href="#">Lupa password?</a>
+            </div>
+
+            <button class="submit" type="button">Masuk
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+
+            <div class="otp-note">
+              <svg viewBox="0 0 24 24"><path d="M12 8v5"/><circle cx="12" cy="16.5" r=".6" fill="#2F8BF8"/><path d="M12 3 3 7v6c0 5 4.5 7.5 9 8 4.5-.5 9-3 9-8V7z"/></svg>
+              <p>Perangkat baru memerlukan verifikasi <b>OTP via email</b> dan persetujuan admin.</p>
+            </div>
+          </form>
+
+          <div class="foot">
+            <div class="place">Presensiku</div>
+            <div class="ver">v1.8.4 — Presensiku</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VARIAN 2: BAND GRADASI -->
+    <div>
+      <div class="phone-label">VARIAN B — band gradasi di atas, form mengambang</div>
+      <div class="phone">
+        <div class="login graded">
+          <div class="band">
+            <div class="brandmark">
+              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a7 7 0 1 1 14 0c0 5.5-7 10-7 10z"/><circle cx="12" cy="11" r="2.6"/></svg>
+            </div>
+            <div class="welcome" style="margin-top:18px">
+              <div class="hi">Selamat datang kembali</div>
+              <h2>Masuk ke Presensiku</h2>
+              <p>Gunakan username atau email terdaftar untuk melanjutkan.</p>
+            </div>
+          </div>
+
+          <form onsubmit="return false">
+            <div class="field">
+              <label>Username / Email</label>
+              <div class="inp">
+                <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
+                <input type="text" placeholder="nama@email.com">
+              </div>
+              <span class="hint">Format: <b>username@kode-instansi</b> atau email terdaftar.</span>
+            </div>
+
+            <div class="field">
+              <label>Password</label>
+              <div class="inp">
+                <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                <input type="password" placeholder="Masukkan password" value="password">
+              </div>
+            </div>
+
+            <div class="row-between">
+              <div class="check"><span class="box"></span>Ingat Saya</div>
+              <a class="link-blue" href="#">Lupa password?</a>
+            </div>
+
+            <button class="submit" type="button">Masuk
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+
+            <div class="otp-note">
+              <svg viewBox="0 0 24 24"><path d="M12 8v5"/><circle cx="12" cy="16.5" r=".6" fill="#2F8BF8"/><path d="M12 3 3 7v6c0 5 4.5 7.5 9 8 4.5-.5 9-3 9-8V7z"/></svg>
+              <p>Perangkat baru memerlukan verifikasi <b>OTP via email</b> dan persetujuan admin.</p>
+            </div>
+          </form>
+
+          <div class="foot">
+            <div class="place">Presensiku</div>
+            <div class="ver">v1.8.4 — Presensiku</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Palet dipakai (token DESIGN.md)</b><br>
+    <span class="sw"><i style="background:#2F8BF8"></i>#2F8BF8 brand</span>
+    <span class="sw"><i style="background:#39C0DF"></i>#39C0DF turquoise</span>
+    <span class="sw"><i style="background:#32ACFB"></i>#32ACFB biru cerah</span>
+    <span class="sw"><i style="background:#3F93FD"></i>#3F93FD biru</span>
+    <span class="sw"><i style="background:#4A7CFB"></i>#4A7CFB indigo</span>
+    <span class="sw"><i style="background:#EEF6FF"></i>#EEF6FF tint</span>
+    <span class="sw"><i style="background:#0B3A66"></i>#0B3A66 teks tombol</span>
+    <br><br>
+    <b>Bedanya dengan login sekarang</b> — layout ini dibuat baru, bukan tiruan:
+    <ul>
+      <li>Menampilkan sapaan berjenjang (eyebrow → judul besar → deskripsi) alih-alih kartu ungu bertumpuk.</li>
+      <li>Setiap input punya ikon di dalam kotak, fokus biru, dan label huruf kapital kecil di atasnya.</li>
+      <li>Penjelasan format login (username@kode-instansi) ditulis sebagai bantuan di bawah input, bukan dialog terpisah.</li>
+      <li>Catatan OTP jadi kotak biru lembut, bukan teks kecil yang mudah terlewat.</li>
+      <li>Tombol Masuk memakai gradasi biru dengan bayangan biru.</li>
+    </ul>
+    <br>
+    <b>Catatan:</b> ini murni preview. Field, validasi, OTP, dan alur login di aplikasi tidak diubah.
+  </div>
+
+</body>
+</html>
