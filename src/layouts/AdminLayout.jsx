@@ -55,7 +55,7 @@ function AdminLayout() {
       <div
         className="fixed inset-0 pointer-events-none hidden-only-employee"
         style={{
-          background: "radial-gradient(circle at 22% 18%, rgba(191,0,255,0.10), transparent 34%), radial-gradient(circle at 86% 10%, rgba(255,0,153,0.06), transparent 30%), radial-gradient(circle at 70% 84%, rgba(112,102,237,0.05), transparent 34%)",
+          background: "radial-gradient(circle at 22% 18%, rgba(47,139,248,0.10), transparent 34%), radial-gradient(circle at 86% 10%, rgba(57,192,223,0.06), transparent 30%), radial-gradient(circle at 70% 84%, rgba(74,124,251,0.05), transparent 34%)",
         }}
       ></div>
       <div className="fixed inset-0 professional-grid-bg opacity-45 pointer-events-none hidden-only-employee"></div>

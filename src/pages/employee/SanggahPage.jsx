@@ -12,7 +12,7 @@ import EmployeeAppBar from "../../components/EmployeeAppBar";
 // Token light-mode, sama dengan halaman pegawai lain
 const T = {
   bg: '#F4F2FB', surface: '#FFFFFF', border: 'rgba(31,41,55,0.08)', text: '#0F172A',
-  textSec: '#475569', textMuted: '#94A3B8', sub: '#6B7280', iconBg: '#F5F3FF',
+  textSec: '#475569', textMuted: '#94A3B8', sub: '#6B7280', iconBg: '#EEF6FF',
   shadow: '0 4px 16px rgba(15,23,42,0.06)',
 };
 
@@ -108,14 +108,14 @@ export default function SanggahPage() {
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-28" style={{ background: T.bg, color: T.text }}>
-      {/* Header — app bar ungu (panah kembali + judul di tengah) */}
+      {/* Header — app bar biru (panah kembali + judul di tengah) */}
       <EmployeeAppBar title="Sanggahan" />
 
       <div className="max-w-md mx-auto space-y-4 px-4 mt-5">
         {/* Info */}
-        <div className="flex items-start gap-3 rounded-2xl p-3.5" style={{ background: 'rgba(191,0,255,0.05)', border: '1px solid rgba(191,0,255,0.15)' }}>
+        <div className="flex items-start gap-3 rounded-2xl p-3.5" style={{ background: 'rgba(47,139,248,0.05)', border: '1px solid rgba(47,139,248,0.15)' }}>
           <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
-            <Info size={14} style={{ color: '#BF00FF' }} />
+            <Info size={14} style={{ color: '#2F8BF8' }} />
           </div>
           <p className="text-[11px] leading-relaxed" style={{ color: T.textSec }}>
             Ada catatan absen yang salah (Alpha/Terlambat) atau lupa absen pulang? Ajukan sanggah
@@ -127,13 +127,13 @@ export default function SanggahPage() {
         {/* ── Form pengajuan ── */}
         <div className="rounded-3xl p-5" style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
           <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-1 h-4 rounded-full" style={{ background: "linear-gradient(180deg, #BF00FF, #3B82F6)" }} />
+            <div className="w-1 h-4 rounded-full" style={{ background: "linear-gradient(180deg, #2F8BF8, #3B82F6)" }} />
             <span className="text-xs font-bold" style={{ color: T.text }}>Ajukan Sanggahan</span>
           </div>
 
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 size={22} className="animate-spin text-[#BF00FF]" />
+              <Loader2 size={22} className="animate-spin text-[#2F8BF8]" />
             </div>
           ) : disputable.length === 0 ? (
             <p className="text-[11px] text-center py-6" style={{ color: T.textMuted }}>
@@ -153,8 +153,8 @@ export default function SanggahPage() {
                       key={item.id} type="button" disabled={hasPending}
                       onClick={() => { setSelectedDate(selected ? null : item.date); setFile(null); }}
                       className={`w-full text-left rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-3 transition-all duration-200 disabled:opacity-60
-                        ${selected ? "ring-2 ring-[#BF00FF] bg-[#F5F3FF]" : "hover:bg-slate-50"}`}
-                      style={{ border: `1px solid ${selected ? '#BF00FF' : T.border}` }}
+                        ${selected ? "ring-2 ring-[#2F8BF8] bg-[#EEF6FF]" : "hover:bg-slate-50"}`}
+                      style={{ border: `1px solid ${selected ? '#2F8BF8' : T.border}` }}
                     >
                       <div className="min-w-0">
                         <div className="text-[11px] font-bold">{fmtDateShort(item.date)}</div>
@@ -168,7 +168,7 @@ export default function SanggahPage() {
                           <Hourglass size={9} /> Menunggu review
                         </span>
                       ) : (
-                        <span className={`text-[9px] font-bold px-2 py-1 rounded-full ${selected ? "bg-[#BF00FF] text-white" : "text-[#BF00FF]"}`}
+                        <span className={`text-[9px] font-bold px-2 py-1 rounded-full ${selected ? "bg-[#2F8BF8] text-white" : "text-[#2F8BF8]"}`}
                           style={selected ? {} : { background: T.iconBg }}>
                           {selected ? "Dipilih" : "Pilih"}
                         </span>
@@ -203,7 +203,7 @@ export default function SanggahPage() {
                   <button
                     type="submit" disabled={submitting}
                     className="w-full mt-4 py-3 rounded-full text-sm font-bold text-white transition-all duration-200 active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
-                    style={{ background: 'linear-gradient(135deg, #BF00FF, #7B00E0)', boxShadow: '0 6px 18px rgba(191,0,255,0.3)' }}
+                    style={{ background: 'linear-gradient(135deg, #2F8BF8, #1F74E0)', boxShadow: '0 6px 18px rgba(47,139,248,0.3)' }}
                   >
                     {submitting ? <Loader2 size={16} className="animate-spin" /> : <MessageSquareWarning size={16} />}
                     {submitting ? "Mengirim..." : "Kirim Sanggahan"}
@@ -217,7 +217,7 @@ export default function SanggahPage() {
         {/* ── Riwayat sanggahan ── */}
         <div className="rounded-3xl p-5" style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
           <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-1 h-4 rounded-full" style={{ background: "linear-gradient(180deg, #BF00FF, #3B82F6)" }} />
+            <div className="w-1 h-4 rounded-full" style={{ background: "linear-gradient(180deg, #2F8BF8, #3B82F6)" }} />
             <span className="text-xs font-bold" style={{ color: T.text }}>Sanggahan Saya</span>
           </div>
           {!loading && sanggahan.length === 0 ? (
@@ -255,7 +255,7 @@ export default function SanggahPage() {
                     <div className="flex items-center justify-between mt-2.5">
                       {s.attachment_url ? (
                         <a href={s.attachment_url} target="_blank" rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-[10px] font-medium underline" style={{ color: '#BF00FF' }}>
+                          className="inline-flex items-center gap-1 text-[10px] font-medium underline" style={{ color: '#2F8BF8' }}>
                           <ImageIcon size={10} /> Lihat bukti
                         </a>
                       ) : <span />}
@@ -276,7 +276,7 @@ export default function SanggahPage() {
         <div className="flex items-start gap-2 p-3.5 rounded-xl bg-white border text-[11px]"
           style={{ background: T.surface, borderColor: T.border, color: T.textSec, boxShadow: T.shadow }}>
           <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
-            <Clock size={13} style={{ color: '#BF00FF' }} />
+            <Clock size={13} style={{ color: '#2F8BF8' }} />
           </div>
           <p>Sanggahan ditinjau oleh admin. Pastikan alasan dan bukti jelas agar cepat diproses.</p>
         </div>

@@ -25,7 +25,7 @@ const T = {
   textMuted: '#94A3B8',
   sub: '#6B7280',
   shadow: '0 4px 16px rgba(15,23,42,0.06)',
-  iconBg: '#F5F3FF',
+  iconBg: '#EEF6FF',
 };
 
 const STATUS = {
@@ -168,13 +168,13 @@ export default function OvertimeRequestPage() {
   const statCards = [
     { label: "Menunggu", value: stats.pending, color: "#F59E0B" },
     { label: "Disetujui", value: stats.approved, color: "#10B981" },
-    { label: "Total Uang", value: rupiah(stats.totalPay), color: "#BF00FF", small: true },
+    { label: "Total Uang", value: rupiah(stats.totalPay), color: "#2F8BF8", small: true },
   ];
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg, color: T.text }}>
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
-      {/* ── HEADER — app bar ungu ── */}
+      {/* ── HEADER — app bar biru ── */}
       <EmployeeAppBar title="Lembur" />
 
       <div className="max-w-md mx-auto px-4 mt-6 space-y-4">
@@ -196,7 +196,7 @@ export default function OvertimeRequestPage() {
         {/* ─── FORM AJUKAN ─── */}
         <div className="rounded-3xl p-6" style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, paddingBottom: 14, borderBottom: `1px solid ${T.div}` }}>
-            <div style={{ width: 3, height: 18, borderRadius: 2, background: "linear-gradient(180deg, #BF00FF, #9900CC)" }} />
+            <div style={{ width: 3, height: 18, borderRadius: 2, background: "linear-gradient(180deg, #2F8BF8, #1F74E0)" }} />
             <span style={{ fontSize: 15, fontWeight: 700, color: T.text }}>Ajukan Lembur</span>
           </div>
 
@@ -223,7 +223,7 @@ export default function OvertimeRequestPage() {
             </div>
 
             {durationLabel && !durationLabel.error && (
-              <div className="rounded-2xl px-4 py-3" style={{ background: T.iconBg, border: "1px solid rgba(191,0,255,0.15)" }}>
+              <div className="rounded-2xl px-4 py-3" style={{ background: T.iconBg, border: "1px solid rgba(47,139,248,0.15)" }}>
                 <p style={{ fontSize: 12, color: T.text }}>
                   <b>Durasi:</b> {durationLabel.label}
                 </p>
@@ -242,7 +242,7 @@ export default function OvertimeRequestPage() {
             <button type="submit" disabled={loading}
               style={{
                 width: "100%", padding: "14px", border: "none", borderRadius: 14,
-                background: "linear-gradient(135deg, #BF00FF, #9900CC)", color: "#fff",
+                background: "linear-gradient(135deg, #2F8BF8, #1F74E0)", color: "#fff",
                 fontSize: 14, fontWeight: 700, cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1,
               }}>
               {loading ? "Mengirim…" : "Kirim Pengajuan"}
@@ -253,7 +253,7 @@ export default function OvertimeRequestPage() {
         {/* ─── RIWAYAT ─── */}
         <div className="rounded-3xl p-6" style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, paddingBottom: 14, borderBottom: `1px solid ${T.div}` }}>
-            <div style={{ width: 3, height: 18, borderRadius: 2, background: "linear-gradient(180deg, #BF00FF, #9900CC)" }} />
+            <div style={{ width: 3, height: 18, borderRadius: 2, background: "linear-gradient(180deg, #2F8BF8, #1F74E0)" }} />
             <span style={{ fontSize: 15, fontWeight: 700, color: T.text }}>Riwayat Lembur</span>
           </div>
 

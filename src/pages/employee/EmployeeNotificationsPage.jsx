@@ -128,7 +128,7 @@ export default function EmployeeNotificationsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen pb-20" style={{ background: "#F4F2FB" }}>
-        <Clock size={20} className="animate-spin text-[#BF00FF]" />
+        <Clock size={20} className="animate-spin text-[#2F8BF8]" />
       </div>
     );
   }
@@ -136,13 +136,13 @@ export default function EmployeeNotificationsPage() {
   const T = {
     bg: "#F4F2FB", surface: "#FFFFFF", border: "rgba(31,41,55,0.08)",
     div: "#F1F5F9", text: "#0F172A", textSec: "#475569", textMuted: "#94A3B8",
-    sub: "#6B7280", accent: "#BF00FF",
+    sub: "#6B7280", accent: "#2F8BF8",
   };
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg }}>
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
-      {/* HEADER — app bar ungu; "Baca Semua" di kanan, jumlah belum dibaca jadi subjudul */}
+      {/* HEADER — app bar biru; "Baca Semua" di kanan, jumlah belum dibaca jadi subjudul */}
       <EmployeeAppBar
         title="Notifikasi"
         right={
@@ -211,7 +211,7 @@ export default function EmployeeNotificationsPage() {
         <div className="rounded-3xl overflow-hidden border bg-white"
           style={{ borderColor: T.border }}>
           <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: T.border }}>
-            <Megaphone size={14} className="text-[#BF00FF]" />
+            <Megaphone size={14} className="text-[#2F8BF8]" />
             <h2 className="font-semibold text-sm" style={{ color: T.text }}>Pengumuman</h2>
           </div>
           {announcements.length === 0 ? (
@@ -230,11 +230,11 @@ export default function EmployeeNotificationsPage() {
                     onClick={() => { handleMarkRead(a.id); setDetail(a); }}
                   >
                     <div className="flex gap-3 items-start">
-                      <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${isRead ? "bg-transparent" : "bg-[#BF00FF]"}`} />
+                      <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${isRead ? "bg-transparent" : "bg-[#2F8BF8]"}`} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 justify-between">
-                          <h4 className={`text-xs font-semibold truncate ${isRead ? "" : "text-[#BF00FF]"}`}
-                            style={{ color: isRead ? T.text : "#BF00FF" }}>
+                          <h4 className={`text-xs font-semibold truncate ${isRead ? "" : "text-[#2F8BF8]"}`}
+                            style={{ color: isRead ? T.text : "#2F8BF8" }}>
                             {a.title}
                           </h4>
                           {!isRead && (

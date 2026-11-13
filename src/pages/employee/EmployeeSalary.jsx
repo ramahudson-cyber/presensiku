@@ -223,14 +223,14 @@ function EmployeeSalaryPage() {
               value={pickPeriod.slice(0, 7)}
               max={currentPeriod().slice(0, 7)}
               onChange={(e) => e.target.value && setPickPeriod(e.target.value + "-01")}
-              className="w-full px-3 py-2 rounded-2xl border text-sm text-slate-800 focus:outline-none focus:border-electric-violet"
+              className="w-full px-3 py-2 rounded-2xl border text-sm text-slate-800 focus:outline-none focus:border-[#2F8BF8]"
               style={{ borderColor: T_BORDER }}
             />
           </div>
           <button
             onClick={openPickedSlip}
             disabled={ensuring}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-electric-violet text-white text-xs font-semibold hover:brightness-110 disabled:opacity-50 transition-all shrink-0"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#2F8BF8] text-white text-xs font-semibold hover:brightness-110 disabled:opacity-50 transition-all shrink-0"
           >
             {ensuring ? <Loader2 size={13} className="animate-spin" /> : <CalendarSearch size={13} />}
             Buka
@@ -255,7 +255,7 @@ function EmployeeSalaryPage() {
                 </div>
                 <button
                   onClick={() => downloadSlip(line)}
-                  className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full bg-electric-violet/10 text-electric-violet hover:bg-electric-violet/20 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full bg-[#2F8BF8]/10 text-[#2F8BF8] hover:bg-[#2F8BF8]/20 transition-colors"
                 >
                   <Download size={12} /> Unduh PDF
                 </button>

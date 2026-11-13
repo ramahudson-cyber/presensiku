@@ -21,11 +21,11 @@ export default function PullToRefreshIndicator({ pullDistance, isRefreshing }) {
     >
       <div className="w-10 h-10 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center">
         {isRefreshing ? (
-          <Loader2 size={18} className="animate-spin text-electric-violet" />
+          <Loader2 size={18} className="animate-spin text-[#2F8BF8]" />
         ) : (
           <ArrowDown
             size={18}
-            className="text-electric-violet"
+            className="text-[#2F8BF8]"
             style={{ transform: `rotate(${Math.min(pullDistance / 55, 1) * 180}deg)` }}
           />
         )}

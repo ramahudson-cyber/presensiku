@@ -15,7 +15,7 @@ const T = {
   textMuted: '#94A3B8',
   sub: '#6B7280',
   shadow: '0 4px 16px rgba(15,23,42,0.06)',
-  iconBg: '#F5F3FF',
+  iconBg: '#EEF6FF',
 };
 
 export default function EmployeeEditProfile() {
@@ -153,7 +153,7 @@ export default function EmployeeEditProfile() {
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg, color: T.text }}>
-      {/* ── HEADER — app bar ungu ── */}
+      {/* ── HEADER — app bar biru ── */}
       <EmployeeAppBar title="Edit Profil" />
 
       {/* Form */}
@@ -162,7 +162,7 @@ export default function EmployeeEditProfile() {
         <div className="text-center mb-8">
           <div
             className="relative w-24 h-24 mx-auto rounded-full p-[3px]"
-            style={{ background: "linear-gradient(135deg, #BF00FF, #9900CC, #7066ed)" }}
+            style={{ background: "linear-gradient(135deg, #2F8BF8, #1F74E0)" }}
           >
             <div
               className="w-full h-full rounded-full flex items-center justify-center text-3xl font-extrabold overflow-hidden"
@@ -171,13 +171,13 @@ export default function EmployeeEditProfile() {
               {preview ? (
                 <img src={preview} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <span style={{ color: '#BF00FF' }}>{initials}</span>
+                <span style={{ color: '#2F8BF8' }}>{initials}</span>
               )}
             </div>
           </div>
           <div className="mt-3">
             <label htmlFor="avatar-upload" className="text-[11px] font-semibold cursor-pointer px-4 py-1.5 rounded-full inline-flex items-center gap-1.5"
-              style={{ background: T.iconBg, color: '#BF00FF', border: "1px solid rgba(191,0,255,0.2)" }}>
+              style={{ background: T.iconBg, color: '#2F8BF8', border: "1px solid rgba(47,139,248,0.2)" }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                 <circle cx="12" cy="13" r="4" />
@@ -209,7 +209,7 @@ export default function EmployeeEditProfile() {
               value={form.full_name}
               onChange={handleChange}
               placeholder="Nama lengkap Anda"
-              className="w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none transition-all duration-200 focus:ring-2 focus:ring-[#BF00FF]/30"
+              className="w-full px-4 py-3.5 rounded-2xl text-sm font-medium outline-none transition-all duration-200 focus:ring-2 focus:ring-[#2F8BF8]/30"
               style={{
                 background: T.surface,
                 border: `1px solid ${T.border}`,
@@ -270,9 +270,9 @@ export default function EmployeeEditProfile() {
               disabled={saving}
               className="w-full py-3.5 rounded-2xl text-sm font-semibold text-pure-white transition-all duration-200 active:scale-[0.98]"
               style={{
-                background: "linear-gradient(135deg, #BF00FF, #9900CC)",
+                background: "linear-gradient(135deg, #2F8BF8, #1F74E0)",
                 color: "#ffffff",
-                boxShadow: "0 4px 16px rgba(191,0,255,0.3)",
+                boxShadow: "0 4px 16px rgba(47,139,248,0.3)",
                 opacity: saving ? 0.7 : 1,
               }}
             >

@@ -2,11 +2,11 @@ import { ChevronLeft } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 /**
- * App bar ungu untuk halaman menu pegawai.
+ * App bar biru untuk halaman menu pegawai.
  *
  * Pola: panah kembali di kiri, judul di tengah, slot kanan opsional
  * (mis. tombol aksi). Warna memakai identitas aplikasi
- * (gradasi #BF00FF → #9900CC), bukan biru bawaan iOS.
+ * (gradasi #2F8BF8 → #1F74E0), bukan warna bawaan iOS.
  *
  * Catatan tata letak:
  *  - Halaman pegawai memakai `absolute top-0`, jadi app bar menempel ke tepi
@@ -35,7 +35,7 @@ export default function EmployeeAppBar({ title, right = null, onBack }) {
     <header
       className="relative w-full"
       style={{
-        background: "linear-gradient(135deg, #BF00FF 0%, #9900CC 100%)",
+        background: "linear-gradient(135deg, #2F8BF8 0%, #1F74E0 100%)",
         color: "#FFFFFF",
         // +28px memberi ruang dari status bar / tepi atas layar.
         paddingTop: "calc(env(safe-area-inset-top, 0px) + 28px)",

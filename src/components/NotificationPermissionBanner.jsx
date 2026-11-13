@@ -73,9 +73,9 @@ export default function NotificationPermissionBanner() {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-3xl border border-electric-violet/25 bg-electric-violet/[0.06] p-4 mb-5">
-      <div className="p-2.5 rounded-2xl bg-electric-violet/15 shrink-0">
-        <Bell size={18} className="text-electric-violet" />
+    <div className="flex flex-wrap items-center gap-3 rounded-3xl border border-[#2F8BF8]/25 bg-[#2F8BF8]/[0.06] p-4 mb-5">
+      <div className="p-2.5 rounded-2xl bg-[#2F8BF8]/15 shrink-0">
+        <Bell size={18} className="text-[#2F8BF8]" />
       </div>
       <div className="flex-1 min-w-[180px] text-xs" style={{ color: "#334155" }}>
         <p className="font-bold text-slate-800">Aktifkan notifikasi real-time</p>
@@ -84,7 +84,7 @@ export default function NotificationPermissionBanner() {
       <button
         onClick={handleEnable}
         disabled={busy}
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-electric-violet text-white text-sm font-semibold hover:brightness-110 active:scale-[0.98] disabled:opacity-50 transition-all shrink-0"
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#2F8BF8] text-white text-sm font-semibold hover:brightness-110 active:scale-[0.98] disabled:opacity-50 transition-all shrink-0"
       >
         {busy ? <Loader2 size={14} className="animate-spin" /> : <Bell size={14} />}
         {busy ? "Memproses..." : "Aktifkan"}

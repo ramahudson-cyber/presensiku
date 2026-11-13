@@ -20,10 +20,10 @@ export default function ProfileAvatarButton({ user, initials, variant = "sm" }) 
       )
     ) : (
       avatarUrl ? (
-        <img src={avatarUrl} alt="" className="w-9 h-9 rounded-full object-cover border" style={{ borderColor: 'rgba(191,0,255,0.15)' }} />
+        <img src={avatarUrl} alt="" className="w-9 h-9 rounded-full object-cover border" style={{ borderColor: 'rgba(47,139,248,0.15)' }} />
       ) : (
         <div className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold"
-          style={{ background: '#F5F3FF', color: '#BF00FF', border: '1px solid rgba(191,0,255,0.15)' }}>
+          style={{ background: '#EEF6FF', color: '#2F8BF8', border: '1px solid rgba(47,139,248,0.15)' }}>
           {initials}
         </div>
       )
@@ -35,8 +35,8 @@ export default function ProfileAvatarButton({ user, initials, variant = "sm" }) 
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Menu foto profil"
-        className={`shrink-0 cursor-pointer rounded-full outline-none transition-all duration-200 active:scale-95 focus-visible:ring-2 focus-visible:ring-violet-400 ${
-          variant === "hero" ? "hover:ring-2 hover:ring-white/40" : "hover:ring-2 hover:ring-[rgba(191,0,255,0.25)]"
+        className={`shrink-0 cursor-pointer rounded-full outline-none transition-all duration-200 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#2F8BF8] ${
+          variant === "hero" ? "hover:ring-2 hover:ring-white/40" : "hover:ring-2 hover:ring-[rgba(47,139,248,0.25)]"
         }`}
       >
         {avatar}

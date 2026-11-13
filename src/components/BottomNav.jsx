@@ -90,7 +90,7 @@ export default function BottomNav({ hidden = false }) {
           type="button"
           onClick={() => setMoreOpen(true)}
           aria-label="Buka menu lainnya"
-          className="flex min-w-0 w-full h-full flex-col items-center justify-center gap-0.5 px-0.5 pt-2 text-slate-500 transition hover:text-electric-violet active:scale-[0.98]"
+          className="flex min-w-0 w-full h-full flex-col items-center justify-center gap-0.5 px-0.5 pt-2 text-slate-500 transition hover:text-[#2F8BF8] active:scale-[0.98]"
         >
           <span className="rounded-xl p-1">
             <Icon size={22} strokeWidth={2} />
@@ -109,13 +109,13 @@ export default function BottomNav({ hidden = false }) {
         end={item.end}
         className={({ isActive }) =>
           `flex min-w-0 w-full h-full flex-col items-center justify-center gap-0.5 px-0.5 pt-2 text-center transition active:scale-[0.98] ${
-            isActive ? "text-electric-violet" : "text-slate-500"
+            isActive ? "text-[#2F8BF8]" : "text-slate-500"
           }`
         }
       >
         {({ isActive }) => (
           <>
-            <span className={`rounded-xl p-1 transition-all relative ${isActive ? "bg-electric-violet/15 scale-110" : ""}`}>
+            <span className={`rounded-xl p-1 transition-all relative ${isActive ? "bg-[#2F8BF8]/15 scale-110" : ""}`}>
               <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
             </span>
             <span
@@ -143,7 +143,7 @@ export default function BottomNav({ hidden = false }) {
             to={centerPath}
             aria-label="Buka presensi"
             className="hero-card-bg flex h-16 w-16 items-center justify-center rounded-full border-4 border-white text-3xl shadow-lg shadow-black/10"
-            style={{ background: "linear-gradient(135deg, #BF00FF, #6366f1)", color: "#ffffff" }}
+            style={{ background: "linear-gradient(135deg, #2F8BF8, #1F74E0)", color: "#ffffff" }}
           >
             <FingerprintPattern size={28} className="text-white" />
           </NavLink>
@@ -191,7 +191,7 @@ export default function BottomNav({ hidden = false }) {
                 className={({ isActive }) =>
                   `flex flex-col items-center gap-2 rounded-3xl p-4 text-center transition-all ${
                     isActive
-                      ? "bg-electric-violet/10 text-electric-violet"
+                      ? "bg-[#2F8BF8]/10 text-[#2F8BF8]"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`
                 }

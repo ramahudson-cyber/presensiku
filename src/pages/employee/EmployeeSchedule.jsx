@@ -24,7 +24,7 @@ const T = {
   sub: '#6B7280',
   shadow: '0 4px 16px rgba(15,23,42,0.06)',
   rowBg: 'rgba(15,23,42,0.02)',
-  iconBg: '#F5F3FF',
+  iconBg: '#EEF6FF',
 };
 
 const SHIFTS = [
@@ -204,7 +204,7 @@ export default function EmployeeSchedule() {
 
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
-      {/* ── HEADER — app bar ungu ── */}
+      {/* ── HEADER — app bar biru ── */}
       <EmployeeAppBar title="Jadwal Shift" />
 
       <div className="max-w-md mx-auto px-4 mt-6 space-y-4">
@@ -247,7 +247,7 @@ export default function EmployeeSchedule() {
         {loading ? (
           <div className="flex items-center justify-center min-h-[40vh]">
             <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 border-2 border-[#BF00FF] border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-[#2F8BF8] border-t-transparent rounded-full animate-spin" />
               <p className="text-sm" style={{ color: T.textMuted }}>Memuat jadwal...</p>
             </div>
           </div>
@@ -275,18 +275,18 @@ export default function EmployeeSchedule() {
                   <div key={i}
                     className={`relative aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-200 cursor-default select-none
                       ${!day ? "invisible" : ""}
-                      ${isToday ? "bg-white ring-2 ring-[#BF00FF] ring-offset-1 ring-offset-white shadow-[0_0_14px_rgba(191,0,255,0.25)]"
+                      ${isToday ? "bg-white ring-2 ring-[#2F8BF8] ring-offset-1 ring-offset-white shadow-[0_0_14px_rgba(47,139,248,0.25)]"
                         : shiftInfo ? shiftInfo.badgeClass
                         : isWeekend ? "bg-slate-100" : "bg-slate-50"}
                     `}>
                     <span className={`text-[10px] font-bold leading-none ${
-                      isToday ? "text-[#BF00FF]"
+                      isToday ? "text-[#2F8BF8]"
                         : shiftInfo ? "" : isWeekend ? "text-slate-400" : "text-slate-600"
                     }`}>
                       {day}
                     </span>
                     {ShiftIcon && (
-                      <ShiftIcon size={9} className={`mt-0.5 ${isToday ? "text-[#BF00FF]" : ""}`} />
+                      <ShiftIcon size={9} className={`mt-0.5 ${isToday ? "text-[#2F8BF8]" : ""}`} />
                     )}
                     {!shiftInfo && isWeekend && (
                       <span className="text-[5px] text-slate-400 mt-0.5 leading-none">Libur</span>
@@ -318,8 +318,8 @@ export default function EmployeeSchedule() {
                 <span style={{ color: T.textSec }}>Jadwal hari ini: </span>
                 <span style={{ color: T.text }}>
                   {nowD.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                  {' '}<span style={{ color: '#BF00FF' }}>({shiftInfo.name})</span>
-                  {jamText && <span style={{ color: '#BF00FF' }}>{jamText} {getZonaWaktuLabel()}</span>}
+                  {' '}<span style={{ color: '#2F8BF8' }}>({shiftInfo.name})</span>
+                  {jamText && <span style={{ color: '#2F8BF8' }}>{jamText} {getZonaWaktuLabel()}</span>}
                 </span>
               </span>
             </div>
@@ -353,7 +353,7 @@ export default function EmployeeSchedule() {
         <div className="flex items-center gap-2 p-3.5 rounded-xl bg-white border text-[11px]"
           style={{ background: T.surface, borderColor: T.border, color: T.textSec, boxShadow: T.shadow }}>
           <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
-            <Info size={13} style={{ color: '#BF00FF' }} />
+            <Info size={13} style={{ color: '#2F8BF8' }} />
           </div>
           <p>Jadwal ini ditetapkan oleh admin. Hubungi admin jika ada perubahan shift.</p>
         </div>
@@ -383,9 +383,9 @@ export default function EmployeeSchedule() {
               return (
                 <button key={i} onClick={() => selectMonth(i)}
                   className={`p-3 rounded-2xl text-sm font-semibold transition-all active:scale-95
-                    ${isActive ? "bg-[#BF00FF] text-white hero-card-bg shadow-lg"
+                    ${isActive ? "bg-[#2F8BF8] text-white hero-card-bg shadow-lg"
                       : "bg-white border text-slate-600 hover:bg-slate-50"}`}
-                  style={isActive ? { boxShadow: '0 8px 20px rgba(191,0,255,0.3)' } : { borderColor: T.border, background: T.surface }}>
+                  style={isActive ? { boxShadow: '0 8px 20px rgba(47,139,248,0.3)' } : { borderColor: T.border, background: T.surface }}>
                   {name.substring(0, 3)}
                 </button>
               );

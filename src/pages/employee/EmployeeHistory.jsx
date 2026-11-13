@@ -24,7 +24,7 @@ const T = {
   shadow: '0 4px 16px rgba(15,23,42,0.06)',
   rowBg: 'rgba(15,23,42,0.02)',
   rowShadow: '0 1px 3px rgba(0,0,0,0.06)',
-  iconBg: '#F5F3FF',
+  iconBg: '#EEF6FF',
   donutTrack: 'rgba(0,0,0,0.06)',
   donutText: '#111827',
   donutSub: '#475563',
@@ -254,7 +254,7 @@ export default function EmployeeHistory() {
       }}
     >
       <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#BF00FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F8BF8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           {label === "Hadir" && <polyline points="20 6 9 17 4 12"/>}
           {label === "Izin" && <><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></>}
           {label === "Sakit" && <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>}
@@ -281,7 +281,7 @@ export default function EmployeeHistory() {
       <div className="px-6">
         <div className="flex items-center justify-center gap-3.5 mt-6">
           <button onClick={() => navigateMonth(-1)} aria-label="Bulan sebelumnya"
-            className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:text-[#BF00FF] hover:shadow-sm active:scale-90"
+            className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:text-[#2F8BF8] hover:shadow-sm active:scale-90"
             style={{ color: T.textMuted }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
@@ -290,13 +290,13 @@ export default function EmployeeHistory() {
           <div className="text-center min-w-[130px]">
             <div className="text-sm font-semibold" style={{ color: T.text }}>{MONTHS[month]} {year}</div>
             {isCurrentMonth && (
-              <div className="text-[9px] font-semibold uppercase tracking-[0.5px] mt-0.5" style={{ color: '#BF00FF' }}>
+              <div className="text-[9px] font-semibold uppercase tracking-[0.5px] mt-0.5" style={{ color: '#2F8BF8' }}>
                 Bulan Ini
               </div>
             )}
           </div>
           <button onClick={() => navigateMonth(1)} aria-label="Bulan berikutnya"
-            className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:text-[#BF00FF] hover:shadow-sm active:scale-90"
+            className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:text-[#2F8BF8] hover:shadow-sm active:scale-90"
             style={{ color: T.textMuted }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9 18 15 12 9 6" />
@@ -308,7 +308,7 @@ export default function EmployeeHistory() {
       <div className="max-w-md mx-auto px-4 mt-6 space-y-4">
         {loading ? (
           <div className="flex justify-center py-16">
-            <div className="w-8 h-8 border-2 border-[#BF00FF] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#2F8BF8] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : fetchError ? (
           <div className="flex flex-col items-center py-16">
@@ -319,7 +319,7 @@ export default function EmployeeHistory() {
             </div>
             <div className="text-red-600 text-xs font-medium text-center max-w-[200px]">{fetchError}</div>
             <button onClick={fetchData}
-              className="mt-3 px-6 py-2 bg-[#BF00FF] hover:bg-[#a000e6] text-white hero-card-bg text-xs font-semibold rounded-full transition-all duration-200 shadow-md">
+              className="mt-3 px-6 py-2 bg-[#2F8BF8] hover:bg-[#1F74E0] text-white hero-card-bg text-xs font-semibold rounded-full transition-all duration-200 shadow-md">
               Coba Lagi
             </button>
           </div>
@@ -330,7 +330,7 @@ export default function EmployeeHistory() {
               style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
               <div className="flex items-center justify-between px-1 pt-1 pb-1">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-1 h-4 rounded-full shrink-0" style={{ background: "linear-gradient(180deg, #BF00FF, #3B82F6)" }} />
+                  <div className="w-1 h-4 rounded-full shrink-0" style={{ background: "linear-gradient(180deg, #2F8BF8, #3B82F6)" }} />
                   <span className="text-xs font-bold tracking-wide" style={{ color: T.text }}>Ringkasan Kehadiran</span>
                 </div>
                 <span className="text-[10px] font-medium" style={{ color: T.sub }}>{MONTHS[month]} {year}</span>
@@ -341,8 +341,8 @@ export default function EmployeeHistory() {
                   <svg width="100" height="100" viewBox="0 0 100 100">
                     <defs>
                       <linearGradient id="dg" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#BF00FF"/>
-                        <stop offset="100%" stopColor="#7066ed"/>
+                        <stop offset="0%" stopColor="#2F8BF8"/>
+                        <stop offset="100%" stopColor="#39C0DF"/>
                       </linearGradient>
                     </defs>
                     <circle cx="50" cy="50" r="42" fill="none" stroke={T.donutTrack} strokeWidth="8"/>
@@ -362,7 +362,7 @@ export default function EmployeeHistory() {
                   </div>
                   <div className="flex gap-3 mt-2.5">
                     <div className="flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full" style={{ background: "linear-gradient(135deg, #BF00FF, #7066ed)" }} />
+                      <span className="w-2 h-2 rounded-full" style={{ background: "linear-gradient(135deg, #2F8BF8, #39C0DF)" }} />
                       <span className="text-[8px]" style={{ color: T.sub }}>Hadir</span>
                     </div>
                     <div className="flex items-center gap-1">
@@ -401,7 +401,7 @@ export default function EmployeeHistory() {
               style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
               <div className="flex items-center justify-between px-1 pt-1 pb-2">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-1 h-4 rounded-full shrink-0" style={{ background: "linear-gradient(180deg, #BF00FF, #3B82F6)" }} />
+                  <div className="w-1 h-4 rounded-full shrink-0" style={{ background: "linear-gradient(180deg, #2F8BF8, #3B82F6)" }} />
                   <span className="text-xs font-bold tracking-wide" style={{ color: T.text }}>Daftar Absensi</span>
                 </div>
                 <span className="text-[10px] font-medium" style={{ color: T.sub }}>{history.length} hari</span>
@@ -472,7 +472,7 @@ export default function EmployeeHistory() {
                               </div>
                             )}
                             {item.shift_code && (
-                              <div className="text-[9px] font-semibold" style={{ color: "#BF00FF" }}>
+                              <div className="text-[9px] font-semibold" style={{ color: "#2F8BF8" }}>
                                 Shift : {shiftLabel(item.shift_code, shiftNameMap[item.shift_code])}
                               </div>
                             )}

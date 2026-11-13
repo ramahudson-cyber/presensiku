@@ -289,13 +289,13 @@ export default function EmployeeDashboard() {
             </div>
             <div className="text-red-600 text-xs font-medium text-center max-w-[200px]">{fetchError}</div>
             <button onClick={retryFetchData}
-              className="mt-3 px-6 py-2 bg-[#BF00FF] hover:bg-[#a000e6] text-white hero-card-bg text-xs font-semibold rounded-full transition-all duration-200 shadow-md">
+              className="mt-3 px-6 py-2 bg-[#2F8BF8] hover:bg-[#1F74E0] text-white hero-card-bg text-xs font-semibold rounded-full transition-all duration-200 shadow-md">
               Coba Lagi
             </button>
           </>
         ) : (
           <>
-            <div className="w-10 h-10 border-4 border-[#BF00FF] border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-10 h-10 border-4 border-[#2F8BF8] border-t-transparent rounded-full animate-spin"></div>
             <div className="text-gray-500 text-xs tracking-widest uppercase">Memuat...</div>
           </>
         )}
@@ -328,7 +328,7 @@ export default function EmployeeDashboard() {
           emp-hero-drop: animasi masuk (turun pelan) — hanya transform/opacity,
           tampilan akhirnya identik tanpa animasi. */}
       <div className="w-full p-8 pt-12 shadow-lg rounded-b-[32px] text-white hero-card-bg emp-hero-drop"
-        style={{ background: 'linear-gradient(160deg, #C44DFF 0%, #BF00FF 30%, #8A00CC 60%, #4A0099 100%)' }}>
+        style={{ background: 'linear-gradient(160deg, #39C0DF 0%, #32ACFB 30%, #3F93FD 62%, #4A7CFB 100%)' }}>
         <div className="max-w-md mx-auto">
           {/* Icon notifikasi & keluar di paling atas, tanpa background */}
           <div className="flex items-center justify-end gap-5 mb-2">
@@ -339,7 +339,7 @@ export default function EmployeeDashboard() {
             >
               <Bell size={20} className="text-white" />
               {announcements.some((a) => !ackedIds.has(a.id)) && (
-                <span className="absolute top-0 right-0 w-2 h-2 bg-rose-400 rounded-full ring-2 ring-[#8A00CC]" />
+                <span className="absolute top-0 right-0 w-2 h-2 bg-rose-400 rounded-full ring-2 ring-[#1F74E0]" />
               )}
             </Link>
             <button
@@ -371,7 +371,7 @@ export default function EmployeeDashboard() {
                 {shift ? shift : "Tidak ada jadwal hari ini"}
               </div>
             </div>
-            <Link to="/employee/attendance" className="bg-white text-[#8A00CC] px-8 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200">
+            <Link to="/employee/attendance" className="bg-white text-[#1F74E0] px-8 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200">
               Absen <ArrowRight size={16} />
             </Link>
           </div>
@@ -382,7 +382,7 @@ export default function EmployeeDashboard() {
         {/* SECTION TITLE: Status hari ini — bar + judul, pola sama dengan header "Menu".
             emp-status-title: judul memudar halus (tanpa membesar). */}
         <div className="emp-status-title flex items-center gap-3 mb-4">
-          <div className="w-1 h-4 rounded-full shrink-0" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+          <div className="w-1 h-4 rounded-full shrink-0" style={{ background: 'linear-gradient(180deg, #2F8BF8, #3B82F6)' }} />
           <div>
             <div className="text-lg font-extrabold tracking-tight" style={{ color: T.text }}>Status hari ini</div>
             <div className="text-[10px] mt-0.5 font-normal" style={{ color: T.textMuted }}>Pantau waktu kehadiran anda</div>
@@ -529,7 +529,7 @@ export default function EmployeeDashboard() {
 
         {/* MENU UTAMA — judul + grid 3 kolom (Slip Gaji & Profil turun ke baris 2) */}
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+          <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #2F8BF8, #3B82F6)' }} />
           <h3 className="text-lg font-extrabold tracking-tight" style={{ color: T.text }}>Menu</h3>
         </div>
         <div className="grid grid-cols-3 gap-x-2 gap-y-4">
@@ -543,8 +543,8 @@ export default function EmployeeDashboard() {
             { to: "/employee/profile", icon: User, label: "Profil" },
           ].map((item) => (
             <Link key={item.to} to={item.to} className="flex flex-col items-center gap-2.5 py-1 group">
-              <span className="hero-card-bg relative w-16 h-16 rounded-[22px] flex items-center justify-center shadow-[0_6px_16px_rgba(191,0,255,0.28)] transition-transform group-hover:-translate-y-0.5 group-active:scale-95"
-                style={{ background: 'linear-gradient(135deg, #BF00FF 0%, #8A00CC 100%)' }}>
+              <span className="hero-card-bg relative w-16 h-16 rounded-[22px] flex items-center justify-center shadow-[0_6px_16px_rgba(47,139,248,0.28)] transition-transform group-hover:-translate-y-0.5 group-active:scale-95"
+                style={{ background: 'linear-gradient(135deg, #2F8BF8 0%, #1F74E0 100%)' }}>
                 <item.icon size={30} strokeWidth={2} className="text-white" />
                 {item.badge && unreadNotif > 0 && (
                   <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold grid place-items-center shadow">

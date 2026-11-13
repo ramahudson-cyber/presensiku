@@ -33,10 +33,10 @@ const T = {
   shadow: '0 4px 16px rgba(15,23,42,0.06)',
   rowBg: 'rgba(15,23,42,0.02)',
   rowShadow: '0 1px 3px rgba(0,0,0,0.06)',
-  iconBg: '#F5F3FF',
+  iconBg: '#EEF6FF',
 };
 
-// ── Lucide-compatible inline SVGs (stroke #BF00FF) ──
+// ── Lucide-compatible inline SVGs (stroke #2F8BF8) ──
 const icons = {
   user:       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
   atSign:     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 .6 2.2l1.6 1.6a4 4 0 0 1-2.8 1.2H17"/></svg>,
@@ -54,7 +54,7 @@ const icons = {
 // ── Indicator bar ──
 const IndicatorBar = () => (
   <div className="w-1 h-4 rounded-full shrink-0"
-    style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+    style={{ background: 'linear-gradient(180deg, #2F8BF8, #3B82F6)' }} />
 );
 
 // ── Card Header ──
@@ -75,14 +75,14 @@ const InfoRow = ({ icon, label, desc, value, active = true }) => (
   <div
     className="flex items-start gap-3 rounded-xl px-4 py-3.5 transition-all duration-300 hover:translate-x-1"
     style={{
-      background: active ? `linear-gradient(90deg, #BF00FF10, transparent)` : "transparent",
-      borderLeft: `2px solid ${active ? "transparent" : "#BF00FF33"}`,
+      background: active ? `linear-gradient(90deg, #2F8BF810, transparent)` : "transparent",
+      borderLeft: `2px solid ${active ? "transparent" : "#2F8BF833"}`,
       opacity: active ? 1 : 0.5,
       boxShadow: T.rowShadow,
     }}
   >
     <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
-      <div style={{ color: '#BF00FF' }}>{icon}</div>
+      <div style={{ color: '#2F8BF8' }}>{icon}</div>
     </div>
     <div className="flex-1 min-w-0">
       <div className="text-sm font-semibold leading-tight" style={{ color: T.text }}>{label}</div>
@@ -102,7 +102,7 @@ const MenuRow = ({ icon, title, desc, right, onClick }) => (
     onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
   >
     <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
-      <div style={{ color: '#BF00FF' }}>{icon}</div>
+      <div style={{ color: '#2F8BF8' }}>{icon}</div>
     </div>
     <div className="flex-1 min-w-0">
       <div className="text-sm font-semibold" style={{ color: T.text }}>{title}</div>
@@ -128,7 +128,7 @@ const Card = ({ children }) => (
 const PrivacySection = ({ icon: Icon, title, children }) => (
   <div className="flex gap-3">
     <div className="w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
-      <Icon size={15} strokeWidth={2} color="#BF00FF" />
+      <Icon size={15} strokeWidth={2} color="#2F8BF8" />
     </div>
     <div className="min-w-0 flex-1 pb-5">
       <div className="text-[12px] font-bold leading-snug mb-1" style={{ color: T.text }}>{title}</div>
@@ -140,7 +140,7 @@ const PrivacySection = ({ icon: Icon, title, children }) => (
 // ── Kotak data terkumpul (dipakai di Kebijakan Privasi) ──
 const DataItem = ({ icon: Icon, nama, isi }) => (
   <div className="flex items-start gap-2.5 py-2">
-    <Icon size={14} strokeWidth={2} className="shrink-0 mt-0.5" color="#BF00FF" />
+    <Icon size={14} strokeWidth={2} className="shrink-0 mt-0.5" color="#2F8BF8" />
     <div className="min-w-0">
       <span className="text-[11px] font-bold" style={{ color: T.text }}>{nama}</span>
       <p className="text-[11px] leading-relaxed" style={{ color: T.textSec }}>{isi}</p>
@@ -174,7 +174,7 @@ export default function EmployeeProfile() {
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg, color: T.text }}>
-      {/* ── HEADER — app bar ungu ── */}
+      {/* ── HEADER — app bar biru ── */}
       <EmployeeAppBar title="Profil Saya" />
 
       {/* Content */}
@@ -185,13 +185,13 @@ export default function EmployeeProfile() {
           <div className="flex items-center gap-4 px-5 pt-5 pb-4">
             {/* Avatar */}
             <div className="relative w-20 h-20 shrink-0 rounded-2xl p-[2.5px]"
-              style={{ background: 'linear-gradient(135deg, #BF00FF, #9900CC, #7066ed)' }}>
+              style={{ background: 'linear-gradient(135deg, #2F8BF8, #1F74E0)' }}>
               <div className="w-full h-full rounded-[14px] flex items-center justify-center overflow-hidden"
                 style={{ background: avatarUrl ? 'transparent' : T.iconBg }}>
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-[26px] font-extrabold" style={{ color: '#BF00FF' }}>{initial}</span>
+                  <span className="text-[26px] font-extrabold" style={{ color: '#2F8BF8' }}>{initial}</span>
                 )}
               </div>
             </div>
@@ -200,7 +200,7 @@ export default function EmployeeProfile() {
                 {user?.full_name || '-'}
               </h1>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-[0.5px] mt-1.5"
-                style={{ background: T.iconBg, border: '1px solid rgba(191,0,255,0.2)', color: '#BF00FF' }}>
+                style={{ background: T.iconBg, border: '1px solid rgba(47,139,248,0.2)', color: '#2F8BF8' }}>
                 {icons.shield}
                 {user?.role === 'pegawai' ? 'Pegawai' : user?.role || '-'}
               </div>
@@ -287,7 +287,7 @@ export default function EmployeeProfile() {
           <button
             type="button"
             onClick={() => setSheet('about')}
-            className="w-full border-t flex items-center justify-between px-5 py-3 transition-colors hover:bg-[rgba(191,0,255,0.03)]"
+            className="w-full border-t flex items-center justify-between px-5 py-3 transition-colors hover:bg-[rgba(47,139,248,0.03)]"
             style={{ borderColor: T.div }}
           >
             <span className="text-[9px] font-medium" style={{ color: T.sub }}>{APP.nama} v{APP.versi}</span>
@@ -324,7 +324,7 @@ export default function EmployeeProfile() {
               ["Pengajuan izin, sakit & cuti", "Diajukan lewat aplikasi, divalidasi admin"],
             ].map(([judul, ket]) => (
               <div key={judul} className="flex items-start gap-2.5">
-                <span className="mt-1 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: '#BF00FF' }} />
+                <span className="mt-1 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: '#2F8BF8' }} />
                 <div className="min-w-0">
                   <span className="text-[11px] font-semibold" style={{ color: T.text }}>{judul}</span>
                   <p className="text-[10px] leading-snug" style={{ color: T.sub }}>{ket}</p>
@@ -350,7 +350,7 @@ export default function EmployeeProfile() {
               admin instansi Anda.
             </p>
             <a href={APP.web} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 mt-2 text-[11px] font-bold" style={{ color: '#BF00FF' }}>
+              className="inline-flex items-center gap-1 mt-2 text-[11px] font-bold" style={{ color: '#2F8BF8' }}>
               {APP.web.replace('https://', '')}
             </a>
           </div>
