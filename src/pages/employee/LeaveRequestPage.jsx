@@ -10,7 +10,6 @@ import {
 } from "../../services/leaveService";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
-import ProfileAvatarButton from "../../components/ProfileAvatarButton";
 import EmployeeAppBar from "../../components/EmployeeAppBar";
 
 // Light-mode tokens — per DESIGN.md
@@ -178,7 +177,6 @@ export default function LeaveRequestPage() {
     return <div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", color: T.textMuted, background: T.bg }}>Silakan login terlebih dahulu.</div>;
   }
 
-  const initials = user?.full_name?.charAt(0)?.toUpperCase() || "P";
 
   const inputStyle = {
     width: "100%", background: T.surface,
@@ -200,17 +198,7 @@ export default function LeaveRequestPage() {
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg, color: T.text }}>
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* ── HEADER — app bar ungu ── */}
-      <EmployeeAppBar
-        title="Izin & Sakit"
-        right={
-          <div className="flex flex-col items-center gap-1">
-            <ProfileAvatarButton user={user} initials={initials} />
-            <span className="text-[9px] font-medium leading-none max-w-[72px] truncate text-center" style={{ color: "rgba(255,255,255,0.8)" }}>
-              {user?.position || user?.role || "Pegawai"}
-            </span>
-          </div>
-        }
-      />
+      <EmployeeAppBar title="Izin & Sakit" />
 
       <div className="max-w-md mx-auto px-4 mt-6 space-y-4">
 

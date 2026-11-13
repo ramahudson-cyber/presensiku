@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
-import ProfileAvatarButton from "../../components/ProfileAvatarButton";
 import EmployeeAppBar from "../../components/EmployeeAppBar";
 
 // Light-mode tokens — per DESIGN.md
@@ -155,17 +154,7 @@ export default function EmployeeEditProfile() {
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg, color: T.text }}>
       {/* ── HEADER — app bar ungu ── */}
-      <EmployeeAppBar
-        title="Edit Profil"
-        right={
-          <div className="flex flex-col items-center gap-1">
-            <ProfileAvatarButton user={user} initials={initials} />
-            <span className="text-[9px] font-medium leading-none max-w-[72px] truncate text-center" style={{ color: "rgba(255,255,255,0.8)" }}>
-              {user?.position || user?.role || "Pegawai"}
-            </span>
-          </div>
-        }
-      />
+      <EmployeeAppBar title="Edit Profil" />
 
       {/* Form */}
       <div className="max-w-md mx-auto px-4 mt-6">

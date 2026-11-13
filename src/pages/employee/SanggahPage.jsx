@@ -7,7 +7,6 @@ import {
   Image as ImageIcon, Paperclip, Info, Loader2
 } from "lucide-react";
 import { getMyDisputableAttendance, getMySanggahan, createSanggahan, cancelMySanggahan, uploadSanggahanEvidence } from "../../services/sanggahService";
-import ProfileAvatarButton from "../../components/ProfileAvatarButton";
 import EmployeeAppBar from "../../components/EmployeeAppBar";
 
 // Token light-mode, sama dengan halaman pegawai lain
@@ -44,7 +43,6 @@ export default function SanggahPage() {
   const [reason, setReason] = useState("");
   const [file, setFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const initials = user?.full_name?.charAt(0)?.toUpperCase() || "P";
 
   const load = useCallback(async () => {
     if (!user?.id) return;
@@ -111,10 +109,7 @@ export default function SanggahPage() {
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-28" style={{ background: T.bg, color: T.text }}>
       {/* Header — app bar ungu (panah kembali + judul di tengah) */}
-      <EmployeeAppBar
-        title="Sanggahan"
-        right={<ProfileAvatarButton user={user} initials={initials} />}
-      />
+      <EmployeeAppBar title="Sanggahan" />
 
       <div className="max-w-md mx-auto space-y-4 px-4 mt-5">
         {/* Info */}

@@ -73,7 +73,10 @@ function AdminLayout() {
         </main>
       </div>
 
-      <BottomNav hidden={isAttendancePath} />
+      {/* Bottom nav hanya di beranda pegawai (/employee). Halaman menu pegawai
+          punya app bar sendiri dengan panah kembali, jadi bar bawah tidak
+          diperlukan dan justru menutupi konten. */}
+      <BottomNav hidden={isAttendancePath || (isEmployeePath && location.pathname !== "/employee")} />
     </div>
   );
 }
