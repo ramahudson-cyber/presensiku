@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   createLeaveRequest,
+  uploadLeaveAttachment,
   getMyLeaveRequests,
   cancelLeaveRequest,
   countLeaveDays,
@@ -98,6 +99,8 @@ export default function LeaveRequestPage() {
   const [reason, setReason] = useState("");
   const [activeTag, setActiveTag] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [attachment, setAttachment] = useState(null);
+  const fileInputRef = useRef(null);
   const [requests, setRequests] = useState([]);
   const [fetching, setFetching] = useState(true);
   const [fetchError, setFetchError] = useState("");
@@ -176,11 +179,17 @@ export default function LeaveRequestPage() {
 
     setLoading(true);
     try {
-      await createLeaveRequest({ userId: user.id, type: formType, startDate, endDate, reason });
+      let attachmentUrl = null;
+      if (attachment) {
+        attachmentUrl = await uploadLeaveAttachment(user.id, attachment);
+      }
+      await createLeaveRequest({ userId: user.id, type: formType, startDate, endDate, reason, attachmentUrl });
       toast.success("Permohonan terkirim — menunggu persetujuan admin.", { position: "bottom-center" });
       setStartDate("");
       setEndDate("");
       setReason("");
+      setAttachment(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
       setActiveTag(null);
       await loadRequests();
     } catch (err) {
@@ -503,7 +512,7 @@ export default function LeaveRequestPage() {
               </button>
             ))}
           </div>
-          <form id="leave-form" onSubmit={handleSubmit}>
+          <form id="leave-form" onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <textarea
               value={reason} onChange={handleReasonChange} rows="3"
               placeholder="Tuliskan detail kondisi atau alasan Anda..."
@@ -514,38 +523,89 @@ export default function LeaveRequestPage() {
                 boxShadow: T.shadow,
               }}
             />
+
+            {/* ── 4. Lampiran (opsional): foto / scan surat dokter ── */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 10 }}>
+              <SectionHeader
+                icon={
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 16V4m0 0L7 9m5-5 5 5" />
+                    <path d="M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3" />
+                  </svg>
+                }
+                title="Lampiran (opsional)"
+                subtitle="Foto / scan surat dokter"
+              />
+              <button
+                type="button" onClick={() => fileInputRef.current?.click()}
+                style={{
+                  display: "flex", alignItems: "center", gap: 13, width: "100%", padding: 15,
+                  border: "2px dashed rgba(31,41,55,0.16)", borderRadius: 18, cursor: "pointer",
+                  background: "rgba(248,250,253,0.6)", fontFamily: "inherit", textAlign: "left",
+                  transition: `all .25s ${T.ease}`,
+                }}
+              >
+                <span style={{
+                  width: 42, height: 42, borderRadius: 13, background: "#fff", border: `1px solid ${T.border}`,
+                  boxShadow: T.shadow, display: "flex", alignItems: "center", justifyContent: "center",
+                  color: T.blue, flexShrink: 0,
+                }}>
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 16V4m0 0L7 9m5-5 5 5" />
+                    <path d="M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3" />
+                  </svg>
+                </span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <b style={{ display: "block", fontSize: 11.5, fontWeight: 800, color: "#334155", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {attachment ? attachment.name : "Lampirkan foto / scan"}
+                  </b>
+                  <span style={{ display: "block", fontSize: 9.5, color: T.textMuted, marginTop: 2 }}>
+                    JPG, PNG · otomatis dikompres
+                  </span>
+                </span>
+                <span style={{
+                  flexShrink: 0, fontSize: 9, fontWeight: 800, color: T.blue, background: T.iconBg,
+                  borderRadius: 999, padding: "5px 10px",
+                }}>
+                  {attachment ? "Siap" : "Pilih"}
+                </span>
+              </button>
+              <input
+                ref={fileInputRef} type="file" accept="image/jpeg,image/png"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f && !["image/jpeg", "image/png"].includes(f.type)) {
+                    toast.error("Format harus JPG atau PNG", { position: "bottom-center" });
+                    e.target.value = "";
+                    return;
+                  }
+                  setAttachment(f || null);
+                }}
+              />
+
+              {/* ── Tombol kirim: aliran paling bawah (bukan sticky) ── */}
+              <button
+                type="submit" disabled={loading}
+                style={{
+                  width: "100%", border: "none", borderRadius: 16, padding: 14, marginTop: 12,
+                  cursor: loading ? "wait" : "pointer", fontFamily: "inherit", fontSize: 13,
+                  fontWeight: 800, color: "#fff",
+                  background: `linear-gradient(135deg,${T.blue},${T.blueDeep})`,
+                  boxShadow: "0 10px 24px -8px rgba(47,139,248,0.5)",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  transition: `transform .25s ${T.ease}, box-shadow .25s`, opacity: loading ? 0.7 : 1,
+                }}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 2 11 13M22 2 15 22l-4-9-9-4Z" />
+                </svg>
+                {loading ? "Mengirim..." : "Kirim Permohonan"}
+              </button>
+            </div>
           </form>
         </div>
       </main>
-
-      {/* ── Footer sticky: kirim (hanya di halaman form) ── */}
-      {view === "form" && (
-        <div
-          style={{
-            position: "sticky", bottom: 0, zIndex: 20,
-            padding: "12px 16px calc(env(safe-area-inset-bottom) + 12px)",
-            background: "rgba(244,242,251,0.9)", backdropFilter: "blur(14px)",
-            WebkitBackdropFilter: "blur(14px)", borderTop: `1px solid ${T.border}`,
-          }}
-        >
-          <button
-            type="submit" form="leave-form" disabled={loading}
-            style={{
-              width: "100%", border: "none", borderRadius: 16, padding: 14, cursor: loading ? "wait" : "pointer",
-              fontFamily: "inherit", fontSize: 13, fontWeight: 800, color: "#fff",
-              background: `linear-gradient(135deg,${T.blue},${T.blueDeep})`,
-              boxShadow: "0 10px 24px -8px rgba(47,139,248,0.5)",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              transition: `transform .25s ${T.ease}, box-shadow .25s`, opacity: loading ? 0.7 : 1,
-            }}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 2 11 13M22 2 15 22l-4-9-9-4Z" />
-            </svg>
-            {loading ? "Mengirim..." : "Kirim Permohonan"}
-          </button>
-        </div>
-      )}
 
       {/* ═══ HALAMAN RIWAYAT ═══ */}
       <div

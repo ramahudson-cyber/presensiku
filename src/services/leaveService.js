@@ -1,11 +1,12 @@
 import { supabase } from "../lib/supabase";
+import { compressImage } from "../lib/imageCompress";
 
 export const LEAVE_TYPES = [
   { value: "izin", label: "Izin" },
   { value: "sakit", label: "Sakit" },
 ];
 
-export async function createLeaveRequest({ userId, type, startDate, endDate, reason }) {
+export async function createLeaveRequest({ userId, type, startDate, endDate, reason, attachmentUrl = null }) {
   if (!userId) throw new Error("User tidak dikenali");
   if (!["izin", "sakit"].includes(type)) throw new Error("Jenis permohonan tidak valid");
   if (!startDate || !endDate) throw new Error("Tanggal wajib diisi");
@@ -21,12 +22,39 @@ export async function createLeaveRequest({ userId, type, startDate, endDate, rea
       start_date: startDate,
       end_date: endDate,
       reason: reason.trim(),
+      attachment_url: attachmentUrl,
     })
     .select()
     .single();
 
   if (error) throw error;
   return data;
+}
+
+// Upload lampiran izin/sakit (foto surat dokter) ke bucket 'sanggahan'.
+// Policy bucket mengizinkan insert authenticated user; cron retensi 365 hari
+// ikut menata file di bucket ini (pola sama dengan bukti sanggahan).
+export async function uploadLeaveAttachment(userId, file) {
+  const compressed = await compressImage(file, { maxSize: 1024, quality: 0.75 });
+  const ext = compressed.name.split(".").pop()?.toLowerCase() || "jpg";
+  const path = `${userId}/leave_${Date.now()}.${ext}`;
+  const { error } = await supabase.storage
+    .from("sanggahan")
+    .upload(path, compressed, {
+      upsert: true,
+      contentType: compressed.type || "image/jpeg",
+      cacheControl: "604800",
+    });
+  if (error) {
+    const msg = /size|too large/i.test(error.message)
+      ? "Ukuran foto melebihi 2MB"
+      : /mime|type/i.test(error.message)
+        ? "Format foto tidak didukung (JPG/PNG)"
+        : error.message;
+    throw new Error(msg);
+  }
+  const { data: { publicUrl } } = supabase.storage.from("sanggahan").getPublicUrl(path);
+  return publicUrl;
 }
 
 export async function getMyLeaveRequests(userId) {
