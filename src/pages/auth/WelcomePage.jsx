@@ -95,7 +95,9 @@ const PREMIUM_STYLES = `
     justify-content: center;
     padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px));
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background: linear-gradient(160deg, #BF00FF 0%, #9900CC 30%, #660099 70%, #33004D 100%);
+    /* Palet biru dari desain referensi: turquoise → biru → ungu-biru.
+       Hanya warna yang berubah; struktur, ukuran, jarak, dan animasi tetap. */
+    background: linear-gradient(160deg, #39C0DF 0%, #32ACFB 32%, #3F93FD 62%, #4A7CFB 100%);
     -webkit-font-smoothing: antialiased;
   }
   .premium-frame::before {
@@ -110,7 +112,7 @@ const PREMIUM_STYLES = `
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(circle farthest-side at 50% 115%, rgba(20,0,40,0.55), rgba(20,0,40,0) 60%);
+    background: radial-gradient(circle farthest-side at 50% 115%, rgba(6,24,48,0.5), rgba(6,24,48,0) 60%);
   }
 
   .orb {
@@ -124,13 +126,13 @@ const PREMIUM_STYLES = `
   .orb-a {
     width: 340px; height: 340px;
     top: -8%; left: -6%;
-    background: rgba(255,110,240,0.55);
+    background: rgba(110,255,196,0.42);
     animation: driftA 14s cubic-bezier(0.32,0.72,0,1) infinite alternate;
   }
   .orb-b {
     width: 300px; height: 300px;
     bottom: -10%; right: -8%;
-    background: rgba(150,40,255,0.6);
+    background: rgba(84,226,212,0.5);
     animation: driftB 18s cubic-bezier(0.32,0.72,0,1) infinite alternate;
   }
   @keyframes driftA { to { transform: translate3d(70px,50px,0) scale(1.15); } }
@@ -270,7 +272,7 @@ const PREMIUM_STYLES = `
     border: none;
     border-radius: 999px;
     background: #fff;
-    color: #2B0048;
+    color: #0B3A66;
     font-family: inherit;
     font-size: 16px;
     font-weight: 600;
@@ -297,9 +299,9 @@ const PREMIUM_STYLES = `
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #E93DFF 0%, #8B5CF6 100%);
+    background: linear-gradient(135deg, #54E2D4 0%, #2F8BF8 100%);
     color: #fff;
-    box-shadow: 0 4px 14px rgba(155,40,255,0.45);
+    box-shadow: 0 4px 14px rgba(47,139,248,0.45);
     transition: transform 0.45s cubic-bezier(0.32,0.72,0,1);
   }
   .btn:hover .ico { transform: translateX(3px); }
