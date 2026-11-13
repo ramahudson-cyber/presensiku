@@ -231,14 +231,10 @@ export default function LeaveRequestPage() {
   }
 
   const backBtn = {
-    width: 36, height: 36, marginLeft: -8, border: `1px solid ${T.border}`, background: T.surface,
-    color: T.textSec, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
+    width: 36, height: 36, marginLeft: -8, border: `1px solid rgba(255,255,255,0.3)`,
+    background: "rgba(255,255,255,0.15)", color: "#fff", borderRadius: 12,
+    display: "flex", alignItems: "center", justifyContent: "center",
     cursor: "pointer", flex: "none", transition: `transform .25s ${T.ease}, background .25s`, fontFamily: "inherit",
-  };
-  const riwayatBtn = {
-    border: "none", background: "transparent", fontFamily: "inherit", cursor: "pointer",
-    fontSize: 11, fontWeight: 700, color: T.blue, padding: "7px 10px", borderRadius: 10,
-    transition: "background .25s", flex: "none",
   };
   const typeCardBase = {
     position: "relative", textAlign: "left", padding: 14, borderRadius: 20, cursor: "pointer",
@@ -265,11 +261,10 @@ export default function LeaveRequestPage() {
       {/* ── TOPBAR sticky: kembali + judul dinamis + toggle Riwayat ── */}
       <header
         style={{
-          position: "sticky", top: 0, zIndex: 20, background: "rgba(244,242,251,0.9)",
-          backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
-          padding: "calc(env(safe-area-inset-top) + 10px) 16px 10px",
+          position: "sticky", top: 0, zIndex: 20, background: "#2F8BF8",
+          padding: "calc(env(safe-area-inset-top) + 10px) 16px 12px",
           display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
-          borderBottom: `1px solid ${T.border}`,
+          boxShadow: "0 4px 16px rgba(47,139,248,0.25)",
         }}
       >
         <button style={backBtn} aria-label="Kembali" onClick={() => navigate(-1)}>
@@ -277,13 +272,48 @@ export default function LeaveRequestPage() {
             <path d="M10 19l-7-7m0 0 7-7m-7 7h18" />
           </svg>
         </button>
-        <h1 style={{ fontSize: 14.5, fontWeight: 800, color: T.text, letterSpacing: "-0.01em", margin: 0 }}>
+        <h1 style={{ fontSize: 14.5, fontWeight: 800, color: "#fff", letterSpacing: "-0.01em", margin: 0 }}>
           {view === "form" ? "Pengajuan Izin & Sakit" : "Riwayat Pengajuan"}
         </h1>
-        <button style={riwayatBtn} onClick={toggleView}>
-          {view === "form" ? "Riwayat" : "Kembali"}
-        </button>
+        <div style={{ width: 28, flex: "none" }} />
       </header>
+
+      {/* ── Kartu toggle Riwayat (pindah dari header) ── */}
+      <div style={{ padding: "14px 16px 0" }}>
+        <button
+          onClick={toggleView}
+          style={{
+            width: "100%", display: "flex", alignItems: "center", gap: 11, padding: "13px 14px",
+            background: T.surface, border: `1px solid ${T.border}`, borderRadius: 18,
+            boxShadow: T.shadow, cursor: "pointer", fontFamily: "inherit", textAlign: "left",
+            transition: `transform .25s ${T.ease}, box-shadow .25s`,
+          }}
+        >
+          <span style={{
+            width: 34, height: 34, borderRadius: 12, background: T.iconBg, color: T.blue,
+            display: "flex", alignItems: "center", justifyContent: "center", flex: "none",
+          }}>
+            {view === "form" ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            )}
+          </span>
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <b style={{ display: "block", fontSize: 12, fontWeight: 800, color: T.text }}>
+              {view === "form" ? "Riwayat pengajuan" : "Kembali ke pengajuan"}
+            </b>
+            <span style={{ display: "block", fontSize: 9.5, color: T.textMuted, fontWeight: 500, marginTop: 1 }}>
+              {view === "form" ? "Lihat status semua permohonan Anda" : "Isi form permohonan baru"}
+            </span>
+          </span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none" }}>
+            {view === "form"
+              ? <path d="M9 18l6-6-6-6" />
+              : <path d="M15 18l-6-6 6-6" />}
+          </svg>
+        </button>
+      </div>
 
       {/* ═══ HALAMAN FORM ═══ */}
       <main
