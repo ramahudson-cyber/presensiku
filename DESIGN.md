@@ -50,7 +50,8 @@
 - **Font family:** Inter, system-ui, sans-serif (no Urbanist — use system geometric sans)
 - **Weights:** 400 (body), 500 (subtle), 600 (heading/label), 700 (bold), 800 (headline/extrabold)
 - **Sizes:** 7px, 8px, 9px, 10px, 11px, 13px, 14px, 16px, 20px, 22px, 28px, 32px
-- **Letter spacing:** `tracking-[0.2em]` for uppercase eyebrows/labels, `tracking-tight` for headlines, normal for body
+- **Letter spacing:** subtle tracking on small labels, `tracking-tight` for headlines, normal for body
+- **Text case — WAJIB:** ❌ JANGAN pakai huruf kapital semua (ALL CAPS / `text-transform: uppercase`) untuk teks apa pun — judul, label, eyebrow, badge, header tabel, status loading, semuanya. ✅ Gunakan **sentence case**: huruf besar hanya di awal kalimat/kata pertama (mis. "Riwayat absensi", "Mulai tanggal", "Memuat..."). Mikro-label tetap boleh tebal & kecil, tetapi bukan kapital semua.
 
 ## Tokens — Spacing & Shapes
 
@@ -95,7 +96,7 @@
 Full-bleed top section with `linear-gradient(160deg, #39C0DF 0%, #32ACFB 30%, #3F93FD 62%, #4A7CFB 100%)`. Bottom corners rounded 32px. Max-width 380px centered. Padding 32px top (pt-12), 32px sides (p-8).
 
 **Content (two rows):**
-- **Row 1:** Avatar (56px, `rounded-2xl`, `border border-white/30`, `shadow-md` if image; if no image use `bg-white/15` with letter initial) + greeting label (uppercase 11px, tracking 0.2em, `text-white` at 80%) + name (24px font-bold white) + role (12px, white at 75%)
+- **Row 1:** Avatar (56px, `rounded-2xl`, `border border-white/30`, `shadow-md` if image; if no image use `bg-white/15` with letter initial) + greeting label (11px font-semibold, `text-white` at 80%, sentence case — mis. "Presensiku") + name (24px font-bold white) + role (12px, white at 75%)
 - **Row 2:** Time (36px font-bold white, `toLocaleTimeString`) + date line (12px, white at 70%) + SHIFT pill (`bg-white/20 backdrop-blur-sm`, 10px font-semibold white, `border 1px solid rgba(255,255,255,0.25)`, `rounded-full`, "SHIFT: PAGI") — stacked on left; **Absen CTA** on right (`bg-white`, text `#0B3A66`, `rounded-2xl`, px-8 py-3, font-bold, shadow-lg, hover shadow-xl) with `ArrowRight` 16px icon
 
 ### Section Title
@@ -106,12 +107,12 @@ Full-bleed top section with `linear-gradient(160deg, #39C0DF 0%, #32ACFB 30%, #3
 ### MASUK Status Card
 **Role:** Check-in time card
 
-`linear-gradient(135deg, #32ACFB 0%, #3F93FD 100%)` background, 24px radius, shadow `0 6px 20px rgba(47,139,248,0.25)`. White text. "MASUK" label (9px uppercase tracking 0.2em, opacity 75%, Sun icon 13px). Large time (28px font-extrabold) or "Belum Absen" (16px font-bold) with "--:--" placeholder (20px, opacity 50%). Status badge: `bg-white/20 backdrop-blur-sm` rounded-full with emerald (on-time) or amber (late) dot.
+`linear-gradient(135deg, #32ACFB 0%, #3F93FD 100%)` background, 24px radius, shadow `0 6px 20px rgba(47,139,248,0.25)`. White text. "Masuk" label (9px font-bold, sentence case, opacity 75%, Sun icon 13px). Large time (28px font-extrabold) or "Belum Absen" (16px font-bold) with "--:--" placeholder (20px, opacity 50%). Status badge: `bg-white/20 backdrop-blur-sm` rounded-full with emerald (on-time) or amber (late) dot.
 
 ### PULANG Status Card
 **Role:** Clock-out time card
 
-`linear-gradient(135deg, #fbbf24 0%, #85c600 100%)` background, 24px radius, shadow `0 6px 20px rgba(133,198,0,0.20)`. Black text. "PULANG" label (9px uppercase tracking 0.2em, opacity 65%, Sunset icon 13px). Same structure as MASUK. "Selesai" badge: `bg-black/10`, emerald-500 dot.
+`linear-gradient(135deg, #fbbf24 0%, #85c600 100%)` background, 24px radius, shadow `0 6px 20px rgba(133,198,0,0.20)`. Black text. "Pulang" label (9px font-bold, sentence case, opacity 65%, Sunset icon 13px). Same structure as Masuk. "Selesai" badge: `bg-black/10`, emerald-500 dot.
 
 ### Stats Card (Donut + Ringkasan)
 **Role:** Monthly attendance summary with donut chart + stat rows
@@ -120,7 +121,7 @@ White card (`#FFFFFF`), 24px radius, border `rgba(31,41,55,0.08)`, shadow `0 4px
 
 **Header:** vertical gradient bar (1x16px, `linear-gradient(180deg, #2F8BF8, #3B82F6)`) + "Ringkasan Kehadiran" (12px font-bold, `#0F172A`) on left; month label (10px, `#6B7280`) on right.
 
-**Donut chart:** 100x100 SVG, track `rgba(0,0,0,0.06)`, stroke 8, gradient `#2F8BF8`→`#39C0DF`, rounded linecap. Center: percentage (22px font-extrabold, `#111827`, Urbanist font if available) + "HADIR" label (7px uppercase, `#475563`). Beside donut: "Kehadiran Bulan Ini" (11px font-semibold, `#0F172A`), "{hadir} hari hadir dari {jadwalCount} hari kerja" (9px, `#6B7280`). Legend: blue gradient dot (Hadir) + gray dot (Alpha).
+**Donut chart:** 100x100 SVG, track `rgba(0,0,0,0.06)`, stroke 8, gradient `#2F8BF8`→`#39C0DF`, rounded linecap. Center: percentage (22px font-extrabold, `#111827`, Urbanist font if available) + "Hadir" label (7px font-bold sentence case, `#475563`). Beside donut: "Kehadiran Bulan Ini" (11px font-semibold, `#0F172A`), "{hadir} hari hadir dari {jadwalCount} hari kerja" (9px, `#6B7280`). Legend: blue gradient dot (Hadir) + gray dot (Alpha).
 
 **Stat rows:** divider (`#F1F5F9`, 1px) then 4 rows: Hadir / Izin / Sakit / Alpha. Each row: icon container (36x36, `#EEF6FF` bg, blue SVG icon), label (14px font-semibold, `#0F172A`), description (9px, `#6B7280`), value (20px font-medium tabular, `#0F172A`), subtext (9px, `#6B7280`). Active rows: `linear-gradient(90deg, {color}12, transparent)` background, no left-border, opacity 1. Inactive rows: left-border `2px solid {color}33`, opacity 0.5. Shadow `0 1px 3px rgba(0,0,0,0.06)`.
 
@@ -131,7 +132,7 @@ White card (`#FFFFFF`), 24px radius, border `rgba(31,41,55,0.08)`, shadow `0 4px
 
 White card (same base as stats). Header: gradient bar + "Riwayat Absensi" (14px font-bold, `#0F172A`) left; "Lihat Semua" + History icon (10px font-semibold, `#2F8BF8`, Link) right.
 
-**Table:** grid-cols `[1fr_44px_44px_70px]` gap 12px. Header labels: TANGGAL / MASUK / PULANG / STATUS (9px uppercase tracking 0.15em font-bold, `#94A3B8`). Each row: 12px vertical padding, `rgba(15,23,42,0.02)` bg, 14px radius. Left-border: amber (late), red (alpha), blue (belum), transparent (on-time). Date label (11px font-bold, `#0F172A`), day (9px uppercase tracking wider, `#94A3B8`). Time cells (11px font-semibold tabular, `#475569`). Status text (10px font-bold): #10B981 (on-time), #F59E0B (late), #EF4444 (alpha), #3B82F6 (belum). Late: extra line showing minutes (9px, `#94A3B8`).
+**Table:** grid-cols `[1fr_44px_44px_70px]` gap 12px. Header labels: Tanggal / Masuk / Pulang / Status (9px font-bold sentence case, `#94A3B8`). Each row: 12px vertical padding, `rgba(15,23,42,0.02)` bg, 14px radius. Left-border: amber (late), red (alpha), blue (belum), transparent (on-time). Date label (11px font-bold, `#0F172A`), day (9px font-semibold, `#94A3B8`). Time cells (11px font-semibold tabular, `#475569`). Status text (10px font-bold): #10B981 (on-time), #F59E0B (late), #EF4444 (alpha), #3B82F6 (belum). Late: extra line showing minutes (9px, `#94A3B8`).
 
 Empty state: "Belum ada riwayat absensi." (12px, `#94A3B8`, centered, py-6).
 
@@ -145,7 +146,7 @@ Empty state: "Tidak ada pengumuman." (12px, `#94A3B8`, centered, py-6).
 ### Loading State
 **Role:** Initial data fetch overlay
 
-`fixed inset-0` on `#F4F2FB` bg. Spinner: 40px circle, 4px border, `#2F8BF8` border, transparent top (animate-spin). Text: "MEMUAT..." (12px, tracking-widest uppercase, `#94A3B8`).
+`fixed inset-0` on `#F4F2FB` bg. Spinner: 40px circle, 4px border, `#2F8BF8` border, transparent top (animate-spin). Text: "Memuat..." (12px, sentence case, `#94A3B8`).
 
 ### Error State
 **Role:** Failed data fetch
@@ -197,6 +198,7 @@ const T = {
 - Active stat rows: color-tinted gradient bg + no left border. Inactive: left color border + 0.5 opacity
 
 ### Don't
+- **Don't use ALL CAPS for any text** — no `text-transform: uppercase`, no "MASUK", "TANGGAL", "MEMUAT..." — always sentence case (capitalize first letter only, e.g. "Masuk", "Tanggal", "Memuat...")
 - **Don't use `darkMode` / `useTheme` in any new component** — the app is light mode only now
 - Don't use `rgba(255,255,255,...)` borders, glassmorphism, or backdrop-blur on cards — those were dark mode patterns
 - Don't use radial gradient orbs or glow effects
