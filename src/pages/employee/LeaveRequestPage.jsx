@@ -278,43 +278,6 @@ export default function LeaveRequestPage() {
         <div style={{ width: 28, flex: "none" }} />
       </header>
 
-      {/* ── Kartu toggle Riwayat (pindah dari header) ── */}
-      <div style={{ padding: "14px 16px 0" }}>
-        <button
-          onClick={toggleView}
-          style={{
-            width: "100%", display: "flex", alignItems: "center", gap: 11, padding: "13px 14px",
-            background: T.surface, border: `1px solid ${T.border}`, borderRadius: 18,
-            boxShadow: T.shadow, cursor: "pointer", fontFamily: "inherit", textAlign: "left",
-            transition: `transform .25s ${T.ease}, box-shadow .25s`,
-          }}
-        >
-          <span style={{
-            width: 34, height: 34, borderRadius: 12, background: T.iconBg, color: T.blue,
-            display: "flex", alignItems: "center", justifyContent: "center", flex: "none",
-          }}>
-            {view === "form" ? (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-            ) : (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-            )}
-          </span>
-          <span style={{ flex: 1, minWidth: 0 }}>
-            <b style={{ display: "block", fontSize: 12, fontWeight: 800, color: T.text }}>
-              {view === "form" ? "Riwayat pengajuan" : "Kembali ke pengajuan"}
-            </b>
-            <span style={{ display: "block", fontSize: 9.5, color: T.textMuted, fontWeight: 500, marginTop: 1 }}>
-              {view === "form" ? "Lihat status semua permohonan Anda" : "Isi form permohonan baru"}
-            </span>
-          </span>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none" }}>
-            {view === "form"
-              ? <path d="M9 18l6-6-6-6" />
-              : <path d="M15 18l-6-6 6-6" />}
-          </svg>
-        </button>
-      </div>
-
       {/* ═══ HALAMAN FORM ═══ */}
       <main
         style={{
@@ -344,7 +307,7 @@ export default function LeaveRequestPage() {
               <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
             </svg>
           </div>
-          <div style={{ position: "relative", zIndex: 1 }}>
+          <div style={{ position: "relative", zIndex: 1, flex: 1, minWidth: 0 }}>
             <span style={{ display: "block", fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.82)", letterSpacing: "0.03em" }}>
               Ringkasan pengajuan
             </span>
@@ -363,6 +326,22 @@ export default function LeaveRequestPage() {
               </div>
             </div>
           </div>
+          <button
+            onClick={toggleView}
+            aria-label="Riwayat"
+            style={{
+              position: "relative", zIndex: 1, flex: "none", display: "flex", alignItems: "center", gap: 6,
+              background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.22)",
+              borderRadius: 999, padding: "8px 13px", cursor: "pointer", fontFamily: "inherit",
+              fontSize: 10.5, fontWeight: 800, color: "#fff",
+              transition: `background .25s ${T.ease}, transform .25s ${T.ease}`,
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+            </svg>
+            Riwayat
+          </button>
         </div>
 
         {/* ── 1. Jenis Pengajuan ── */}
@@ -646,6 +625,24 @@ export default function LeaveRequestPage() {
           maxWidth: 430, margin: "0 auto",
         }}
       >
+        {/* Kembali ke form pengajuan */}
+        <button
+          onClick={toggleView}
+          style={{
+            display: "flex", alignItems: "center", gap: 10, padding: "12px 14px",
+            background: T.surface, border: `1px solid ${T.border}`, borderRadius: 16,
+            boxShadow: T.shadow, cursor: "pointer", fontFamily: "inherit", textAlign: "left",
+            transition: `transform .25s ${T.ease}`,
+          }}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none" }}>
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          <b style={{ flex: 1, fontSize: 12, fontWeight: 800, color: T.text }}>Kembali ke pengajuan</b>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </button>
         {fetchError ? (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
             <div style={{
