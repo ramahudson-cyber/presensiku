@@ -399,84 +399,50 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ background: "#F4F2FB" }}>
-      {/* Ambient lembut: dua sapuan biru sangat halus (tanpa orbs/blur berat) */}
+    <div className="min-h-dvh w-full flex flex-col overflow-hidden" style={{ background: "#F4F2FB" }}>
+      {/* ATAS +-35% — peta fokus + gelombang radius (Preview B) */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="relative flex items-center justify-center overflow-hidden"
         style={{
-          background:
-            "radial-gradient(circle at 10% -5%, rgba(57,192,223,0.16), transparent 45%), radial-gradient(circle at 95% 0%, rgba(47,139,248,0.13), transparent 42%)",
+          flex: "35 1 0%",
+          minHeight: 200,
+          background: "linear-gradient(160deg,#39C0DF 0%,#32ACFB 34%,#3F93FD 66%,#4A7CFB 100%)",
         }}
-      />
+      >
+        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.5) 1.2px, transparent 1.3px)", backgroundSize: "18px 18px", opacity: 0.45, maskImage: "radial-gradient(circle at 50% 45%, #000 25%, transparent 76%)", WebkitMaskImage: "radial-gradient(circle at 50% 45%, #000 25%, transparent 76%)" }} />
+        <svg viewBox="0 0 300 192" fill="none" className="relative" style={{ width: "100%", maxWidth: 280, height: 180 }}>
+          <g stroke="#fff" strokeOpacity="0.16" strokeWidth="1.6" strokeLinecap="round">
+            <path d="M8 38h88M120 26h72M202 42h90" />
+            <path d="M8 122h68M102 142h108M232 120h62" />
+            <path d="M58 10v38M162 10v32M252 12v30M38 142v42M140 150v34M242 132v50" />
+            <path d="M0 76h300M0 106h300" strokeOpacity="0.09" />
+          </g>
+          <g fill="#fff" fillOpacity="0.07">
+            <rect x="20" y="48" width="28" height="18" rx="5" />
+            <rect x="130" y="40" width="34" height="20" rx="5" />
+            <rect x="214" y="54" width="26" height="16" rx="5" />
+            <rect x="54" y="114" width="30" height="18" rx="5" />
+            <rect x="160" y="114" width="36" height="18" rx="5" />
+          </g>
+          <g stroke="#fff" strokeWidth="1.7">
+            <circle className="emp-radar" cx="150" cy="96" r="24" strokeOpacity="0.6" />
+            <circle className="emp-radar emp-radar-2" cx="150" cy="96" r="24" strokeOpacity="0.6" />
+            <circle className="emp-radar emp-radar-3" cx="150" cy="96" r="24" strokeOpacity="0.6" />
+          </g>
+          <g className="emp-pin-float">
+            <circle cx="150" cy="96" r="25" fill="#fff" fillOpacity="0.16" stroke="#fff" strokeOpacity="0.55" strokeWidth="1.6" />
+            <path d="M150 80c-6.1 0-11 4.7-11 10.5 0 7.3 11 17.5 11 17.5s11-10.2 11-17.5C161 84.7 156.1 80 150 80z" fill="#fff" />
+            <circle cx="150" cy="90.8" r="3.7" fill="#2F8BF8" />
+          </g>
+        </svg>
+      </div>
 
-      <div className="relative z-10 min-h-dvh flex items-center justify-center p-4 pt-[max(3vh,env(safe-area-inset-top))] sm:p-6">
-        <div className="w-full lg:max-w-[1000px] mx-auto flex flex-col lg:flex-row lg:items-center lg:gap-16">
-
-          {/* Hero — desktop only */}
-          <div className="hidden lg:block lg:flex-1">
-            <div className="text-left px-2">
-              <div
-                className="inline-flex items-center justify-center rounded-[22px] mb-6"
-                style={{
-                  width: 64,
-                  height: 64,
-                  background: "linear-gradient(135deg,#39C0DF 0%,#2F8BF8 55%,#4A7CFB 100%)",
-                  boxShadow: "0 12px 26px -8px rgba(47,139,248,0.5)",
-                }}
-              >
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 21s-7-4.5-7-10a7 7 0 1 1 14 0c0 5.5-7 10-7 10z" />
-                  <circle cx="12" cy="11" r="2.6" />
-                </svg>
-              </div>
-              <h1 className="text-4xl font-extrabold tracking-tight leading-none" style={{ color: "#0F172A" }}>
-                Presensiku
-              </h1>
-              <p className="text-base leading-relaxed mt-6" style={{ color: "#475569" }}>
-                Absen anti ribet, kerja makin greget!
-              </p>
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-5">
-                <span className="text-xs font-bold uppercase tracking-[0.22em]" style={{ color: "#2F8BF8" }}>Disiplin</span>
-                <span className="text-sm" style={{ color: "#CBD5E1" }}>•</span>
-                <span className="text-xs font-bold uppercase tracking-[0.22em]" style={{ color: "#2F8BF8" }}>Akurat</span>
-                <span className="text-sm" style={{ color: "#CBD5E1" }}>•</span>
-                <span className="text-xs font-bold uppercase tracking-[0.22em]" style={{ color: "#2F8BF8" }}>Optimal</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Form */}
-          <div className="w-full max-w-[420px] mx-auto lg:mx-0 lg:flex-1">
-
-            {/* Brand — mobile/tablet only */}
-            <div className="text-left mb-6 sm:mb-8 lg:hidden px-1">
-              <div
-                className="inline-flex items-center justify-center rounded-[20px] mb-4"
-                style={{
-                  width: 56,
-                  height: 56,
-                  background: "linear-gradient(135deg,#39C0DF 0%,#2F8BF8 55%,#4A7CFB 100%)",
-                  boxShadow: "0 10px 22px -8px rgba(47,139,248,0.5)",
-                }}
-              >
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 21s-7-4.5-7-10a7 7 0 1 1 14 0c0 5.5-7 10-7 10z" />
-                  <circle cx="12" cy="11" r="2.6" />
-                </svg>
-              </div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-none" style={{ color: "#0F172A" }}>
-                Presensiku
-              </h1>
-              <p className="text-sm leading-relaxed mt-4" style={{ color: "#475569" }}>
-                Absen anti ribet, kerja makin greget!
-              </p>
-            </div>
-
-            {/* Kartu form — putih, mengambang di atas latar lembut */}
-            <div
-              className="rounded-[26px] p-6 sm:p-8 border"
-              style={{ background: "#FFFFFF", borderColor: "rgba(31,41,55,0.08)", boxShadow: "0 10px 30px rgba(15,23,42,0.07)" }}
-            >
+      {/* SHEET +-65% — putih, sudut atas besar, bisa di-scroll */}
+      <div className="relative z-10 flex flex-col overflow-hidden" style={{ flex: "65 1 0%", minHeight: 0, marginTop: -22, background: "#FFFFFF", borderRadius: "32px 32px 0 0", boxShadow: "0 -10px 34px rgba(15,23,42,0.14)" }}>
+        <div className="flex justify-center pt-2.5 pb-1 shrink-0">
+          <span className="block rounded-full" style={{ width: 42, height: 5, background: "#E2E8F0" }} />
+        </div>
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 sm:px-7 pb-6">
             {/* LOGIN STEP */}
             {step === "login" && (
               <>
@@ -515,9 +481,6 @@ export default function SignInPage() {
                         style={{ color: "#0F172A" }}
                       />
                     </div>
-                    <p className="text-[9.5px] mt-1.5" style={{ color: "#94A3B8" }}>
-                      Format: <b style={{ color: "#2F8BF8" }}>username@kode-instansi</b> atau email terdaftar.
-                    </p>
                   </div>
                   <div>
                     <label className="block text-[9.5px] font-extrabold uppercase tracking-[0.13em] mb-1.5" style={{ color: "#94A3B8" }}>
@@ -781,14 +744,13 @@ export default function SignInPage() {
                 </div>
               </>
             )}
-          </div>
 
           {/* Footer */}
-          <p className="text-center text-[10px] mt-6 tracking-[0.65px]" style={{ color: "#94A3B8" }}>
+          <p className="text-center text-[10px] mt-5 tracking-[0.65px]" style={{ color: "#94A3B8" }}>
             Presensiku v{appVersion}
           </p>
         </div>
-
+      </div>
         {/* Modal premium: akun disuspend */}
         {showSuspendModal && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-fade-in">
@@ -811,8 +773,6 @@ export default function SignInPage() {
             </div>
           </div>
         )}
-      </div>
-    </div>
     </div>
   );
 }
