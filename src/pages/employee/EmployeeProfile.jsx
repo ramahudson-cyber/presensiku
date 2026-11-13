@@ -5,6 +5,7 @@ import { supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
 import BottomSheet from "../../components/BottomSheet";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
+import EmployeeAppBar from "../../components/EmployeeAppBar";
 import {
   Info, MapPin, FileText, Users, Database, Eye,
   Pencil, MessageCircle, Smartphone,
@@ -174,20 +175,18 @@ export default function EmployeeProfile() {
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg, color: T.text }}>
-      {/* ── HEADER — simple elegant (sama dengan Riwayat) ── */}
-      <div className="pt-14 px-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <span className="text-[17px] font-bold tracking-tight" style={{ color: T.text }}>Profil Saya</span>
-          </div>
+      {/* ── HEADER — app bar ungu ── */}
+      <EmployeeAppBar
+        title="Profil Saya"
+        right={
           <div className="flex flex-col items-center gap-1">
             <ProfileAvatarButton user={user} initials={initial?.charAt(0) || 'P'} />
-            <span className="text-[9px] font-medium leading-none max-w-[72px] truncate text-center" style={{ color: T.sub }}>
+            <span className="text-[9px] font-medium leading-none max-w-[72px] truncate text-center" style={{ color: "rgba(255,255,255,0.8)" }}>
               {user?.position || user?.role || "Pegawai"}
             </span>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Content */}
       <div className="max-w-md mx-auto space-y-4 px-4 mt-6 pb-6">

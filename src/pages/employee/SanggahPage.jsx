@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import {
   MessageSquareWarning, Clock, XCircle, CheckCircle2, Hourglass, RotateCcw,
-  Image as ImageIcon, Paperclip, Info, ChevronLeft, Loader2
+  Image as ImageIcon, Paperclip, Info, Loader2
 } from "lucide-react";
 import { getMyDisputableAttendance, getMySanggahan, createSanggahan, cancelMySanggahan, uploadSanggahanEvidence } from "../../services/sanggahService";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
+import EmployeeAppBar from "../../components/EmployeeAppBar";
 
 // Token light-mode, sama dengan halaman pegawai lain
 const T = {
@@ -37,7 +37,6 @@ const fmtDateShort = (dateKey) => {
 
 export default function SanggahPage() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [disputable, setDisputable] = useState([]);
   const [sanggahan, setSanggahan] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,18 +110,11 @@ export default function SanggahPage() {
 
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-28" style={{ background: T.bg, color: T.text }}>
-      {/* Header */}
-      <div className="pt-14 px-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <button onClick={() => navigate(-1)} className="p-1 -ml-1 rounded-lg hover:bg-black/5 transition" aria-label="Kembali">
-              <ChevronLeft size={20} style={{ color: T.text }} />
-            </button>
-            <span className="text-[17px] font-bold tracking-tight" style={{ color: T.text }}>Sanggahan</span>
-          </div>
-          <ProfileAvatarButton user={user} initials={initials} />
-        </div>
-      </div>
+      {/* Header — app bar ungu (panah kembali + judul di tengah) */}
+      <EmployeeAppBar
+        title="Sanggahan"
+        right={<ProfileAvatarButton user={user} initials={initials} />}
+      />
 
       <div className="max-w-md mx-auto space-y-4 px-4 mt-5">
         {/* Info */}

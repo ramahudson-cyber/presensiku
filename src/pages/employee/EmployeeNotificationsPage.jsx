@@ -4,12 +4,13 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { getWitaDateKey } from "../../lib/shiftTime";
 import { getShiftReminderInfo, getShiftEndReminderInfo, getUnreadCount, reminderToastKey, reminderToastEndKey } from "../../lib/notificationReminder";
-import { Bell, CalendarCheck, ArrowLeft, Check, CheckCheck, Clock, Megaphone, ChevronRight, Sunset } from "lucide-react";
+import { Bell, CalendarCheck, Check, CheckCheck, Clock, Megaphone, ChevronRight, Sunset } from "lucide-react";
 import { toast } from "react-toastify";
 import { scheduleShiftReminders, subscribeAnnouncementRealtime, notifyNewAnnouncement } from "../../services/pushNotificationService";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import BottomSheet from "../../components/BottomSheet";
+import EmployeeAppBar from "../../components/EmployeeAppBar";
 
 // Badge prioritas — konsisten dengan halaman admin
 const PRIORITY_BADGE = {
@@ -141,30 +142,22 @@ export default function EmployeeNotificationsPage() {
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg }}>
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
-      {/* HEADER — pola Profil / Izin & Sakit */}
-      <div className="pt-14 px-6">
-        <div className="flex items-center justify-between mb-5">
-          <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-white flex items-center justify-center shadow-sm border hover:bg-gray-50 active:scale-95 transition-all" style={{ borderColor: T.border }}>
-            <ArrowLeft size={16} style={{ color: T.text }} />
-          </button>
-          <div className="w-9 h-9 rounded-full bg-electric-violet/10 flex items-center justify-center">
-            <Bell size={16} className="text-electric-violet" />
-          </div>
-        </div>
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-[17px] font-bold tracking-tight" style={{ color: T.text }}>Notifikasi</h1>
-            <p className="text-xs mt-0.5" style={{ color: T.textMuted }}>
-              {unreadCount > 0 ? `${unreadCount} belum dibaca` : "Semua sudah dibaca"}
-            </p>
-          </div>
-          {unreadCount > 0 && (
+      {/* HEADER — app bar ungu; "Baca Semua" di kanan, jumlah belum dibaca jadi subjudul */}
+      <EmployeeAppBar
+        title="Notifikasi"
+        right={
+          unreadCount > 0 ? (
             <button onClick={handleMarkAllRead}
-              className="text-xs bg-electric-violet/10 hover:bg-electric-violet/20 text-electric-violet rounded-full px-3 py-1.5 transition-all flex items-center gap-1 font-semibold">
-              <CheckCheck size={12} /> Baca Semua
+              className="text-[10px] bg-white/20 hover:bg-white/30 text-white rounded-full px-2.5 py-1.5 transition-all flex items-center gap-1 font-semibold">
+              <CheckCheck size={11} /> Baca Semua
             </button>
-          )}
-        </div>
+          ) : null
+        }
+      />
+      <div className="max-w-md mx-auto px-4 pt-3">
+        <p className="text-[11px] font-medium" style={{ color: T.textMuted }}>
+          {unreadCount > 0 ? `${unreadCount} belum dibaca` : "Semua sudah dibaca"}
+        </p>
       </div>
 
       <div className="max-w-md mx-auto px-4 mt-6 space-y-4">

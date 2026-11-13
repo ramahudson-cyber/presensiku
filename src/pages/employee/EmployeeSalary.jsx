@@ -6,6 +6,7 @@ import { Wallet, Loader2, Download, Info, CalendarSearch } from "lucide-react";
 import { toast } from "react-toastify";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import EmployeeAppBar from "../../components/EmployeeAppBar";
 
 const rupiah = (n) => "Rp" + Number(n || 0).toLocaleString("id-ID");
 const currentPeriod = () => new Date().toISOString().slice(0, 7) + "-01";
@@ -179,9 +180,12 @@ function EmployeeSalaryPage() {
 
   if (enabled === null || loading) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-slate-50">
-        <div className="flex items-center gap-2 text-sm text-slate-500">
-          <Loader2 size={16} className="animate-spin" /> Memuat slip gaji...
+      <div className="min-h-screen w-full absolute top-0 left-0 right-0 bg-slate-50">
+        <EmployeeAppBar title="Slip Gaji" />
+        <div className="flex items-center justify-center py-16">
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <Loader2 size={16} className="animate-spin" /> Memuat slip gaji...
+          </div>
         </div>
       </div>
     );
@@ -189,10 +193,13 @@ function EmployeeSalaryPage() {
 
   if (!enabled) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 p-6">
-        <div className="bg-white rounded-3xl p-8 border text-center max-w-sm" style={{ borderColor: T_BORDER }}>
-          <Info size={26} className="mx-auto mb-3 text-slate-400" />
-          <p className="text-sm text-slate-600">Modul gaji belum diaktifkan untuk instansi Anda.</p>
+      <div className="min-h-screen w-full absolute top-0 left-0 right-0 bg-slate-50">
+        <EmployeeAppBar title="Slip Gaji" />
+        <div className="flex items-center justify-center p-6 py-12">
+          <div className="bg-white rounded-3xl p-8 border text-center max-w-sm" style={{ borderColor: T_BORDER }}>
+            <Info size={26} className="mx-auto mb-3 text-slate-400" />
+            <p className="text-sm text-slate-600">Modul gaji belum diaktifkan untuk instansi Anda.</p>
+          </div>
         </div>
       </div>
     );
@@ -201,11 +208,9 @@ function EmployeeSalaryPage() {
   return (
     <div className="min-h-screen w-full absolute top-0 left-0 right-0 pb-24 bg-slate-50">
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
-      <div className="max-w-md mx-auto p-4 pt-12 space-y-4">
-        <div className="text-center mb-2">
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Slip Gaji</h1>
-          <p className="text-xs text-slate-500 mt-0.5">Riwayat gaji berbasis kehadiran</p>
-        </div>
+      <EmployeeAppBar title="Slip Gaji" />
+      <div className="max-w-md mx-auto p-4 space-y-4">
+        <p className="text-xs text-slate-500 text-center">Riwayat gaji berbasis kehadiran</p>
 
         {/* Pilih bulan — bulan lampau dibuat otomatis dari data absensi */}
         <div className="bg-white rounded-3xl border p-4 flex items-end gap-2" style={{ borderColor: T_BORDER }}>

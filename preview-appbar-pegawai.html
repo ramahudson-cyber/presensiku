@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — App Bar Ungu Halaman Pegawai</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #E9ECF2; min-height: 100vh; color: #0F172A;
+    display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 24px 16px 40px;
+  }
+  .headline { font-size: 14px; font-weight: 800; color: #334155; }
+  .row { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+
+  .phone {
+    width: 330px; background: #F4F2FB; border-radius: 28px; overflow: hidden;
+    box-shadow: 0 22px 60px rgba(15,23,42,.2); border: 1px solid #E2E8F0;
+    display: flex; flex-direction: column;
+  }
+  .phone-label { font-size: 10.5px; font-weight: 700; color: #64748B; text-align: center; padding: 8px 0 10px; }
+
+  /* ===== APP BAR (yang diusulkan) ===== */
+  .appbar {
+    position: relative;
+    background: linear-gradient(135deg, #BF00FF 0%, #9900CC 100%);
+    color: #fff;
+    padding: 14px 12px;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 56px;
+    box-shadow: 0 2px 12px rgba(153,0,204,.28);
+  }
+  .appbar .back {
+    position: absolute; left: 6px; top: 50%; transform: translateY(-50%);
+    width: 40px; height: 40px; display: grid; place-items: center;
+    border-radius: 999px; background: transparent; border: 0; color: #fff; cursor: pointer;
+  }
+  .appbar .back:hover { background: rgba(255,255,255,.16); }
+  .appbar .back svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .appbar .title { font-size: 16px; font-weight: 700; letter-spacing: -.01em; }
+  .appbar .right { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; gap: 8px; align-items: center; }
+  .appbar .chip { width: 30px; height: 30px; border-radius: 999px; background: rgba(255,255,255,.18); display: grid; place-items: center; }
+  .appbar .chip svg { width: 15px; height: 15px; stroke: #fff; fill: none; stroke-width: 2; }
+
+  /* ===== KONTEN CONTOH ===== */
+  .content { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .card { background: #fff; border-radius: 20px; padding: 16px; border: 1px solid rgba(31,41,55,.08); box-shadow: 0 4px 16px rgba(15,23,42,.06); }
+  .card-title { font-size: 12px; font-weight: 800; margin-bottom: 8px; }
+  .line { height: 9px; border-radius: 999px; background: #EEF1F6; margin-bottom: 7px; }
+  .line.w70 { width: 70%; } .line.w45 { width: 45%; }
+  .pill { display: inline-block; font-size: 9px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: #F3E8FF; color: #8A00CC; }
+  .rowline { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #F1F5F9; }
+  .rowline:last-child { border-bottom: 0; }
+  .rowline span { font-size: 11px; color: #475569; font-weight: 600; }
+  .rowline b { font-size: 12px; color: #0F172A; }
+
+  /* ===== SEBELUM (pembanding) ===== */
+  .old-header { padding: 22px 20px 6px; display: flex; justify-content: space-between; align-items: flex-start; }
+  .old-header .t { font-size: 17px; font-weight: 700; color: #0F172A; }
+  .old-header .avatar { width: 32px; height: 32px; border-radius: 999px; background: linear-gradient(135deg,#BF00FF,#7066ed); display: grid; place-items: center; color: #fff; font-size: 12px; font-weight: 800; }
+
+  .note { width: 700px; max-width: 100%; background: #fff; border-radius: 18px; padding: 16px 18px; border: 1px solid #E2E8F0; font-size: 12px; color: #475569; line-height: 1.65; }
+  .note b { color: #0F172A; }
+  .note ul { margin: 8px 0 0 18px; }
+  .note li { margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+  <div class="headline">APP BAR UNGU — halaman menu pegawai</div>
+
+  <div class="row">
+    <!-- SEBELUM -->
+    <div class="phone">
+      <div class="phone-label">SEBELUM (judul biasa, tanpa panah)</div>
+      <div class="old-header">
+        <div class="t">Riwayat Absensi</div>
+        <div class="avatar">R</div>
+      </div>
+      <div class="content">
+        <div class="card">
+          <div class="card-title">November 2026</div>
+          <div class="line"></div><div class="line w70"></div><div class="line w45"></div>
+        </div>
+        <div class="card">
+          <div class="rowline"><span>Masuk</span><b>07:28</b></div>
+          <div class="rowline"><span>Pulang</span><b>14:02</b></div>
+          <div class="rowline"><span>Status</span><b>Tepat Waktu</b></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESUDAH -->
+    <div class="phone">
+      <div class="phone-label">SESUDAH (app bar ungu)</div>
+      <div class="appbar">
+        <button class="back" aria-label="Kembali">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="title">Riwayat Absensi</span>
+        <div class="right">
+          <span class="chip"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span>
+        </div>
+      </div>
+      <div class="content">
+        <div class="card">
+          <div class="card-title">November 2026</div>
+          <div class="line"></div><div class="line w70"></div><div class="line w45"></div>
+        </div>
+        <div class="card">
+          <div class="rowline"><span>Masuk</span><b>07:28</b></div>
+          <div class="rowline"><span>Pulang</span><b>14:02</b></div>
+          <div class="rowline"><span>Status</span><b>Tepat Waktu</b></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTOH LAIN -->
+    <div class="phone">
+      <div class="phone-label">Contoh halaman lain</div>
+      <div class="appbar">
+        <button class="back" aria-label="Kembali">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="title">Lembur</span>
+      </div>
+      <div class="content">
+        <div class="card">
+          <div class="card-title">Ajukan Lembur</div>
+          <div class="line w70"></div><div class="line w45"></div>
+          <div style="margin-top:10px"><span class="pill">+ Catat Lembur</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Riwayat</div>
+          <div class="rowline"><span>21 Okt · 2 jam</span><b>Rp40.000</b></div>
+          <div class="rowline"><span>22 Okt · 1 jam</span><b>Rp20.000</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Yang berubah:</b> setiap halaman menu pegawai mendapat app bar ungu di paling atas — <b>panah kembali di kiri</b>, <b>judul halaman di tengah</b>. Warna memakai identitas aplikasi: gradasi <b>#BF00FF → #9900CC</b>, teks putih.
+    <ul>
+      <li><b>Halaman:</b> Riwayat Absensi, Izin &amp; Sakit, Lembur, Sanggahan, Slip Gaji, Notifikasi, Jadwal Shift, Profil, Edit Profil (9 halaman).</li>
+      <li><b>Dashboard tidak diubah</b> — tetap dengan kartu hero ungu seperti sekarang, agar tidak ada dua area ungu bertumpuk.</li>
+      <li><b>Isi halaman tidak berubah</b> sama sekali: kartu, daftar, tombol, dan data tetap sama. Hanya judul lama diganti app bar.</li>
+      <li>Panah kembali memakai perilaku yang sudah ada di aplikasi (kembali ke halaman sebelumnya).</li>
+      <li>Elemen tambahan yang sudah ada di halaman tertentu — seperti avatar di kanan atau tombol "Baca Semua" — tetap dipertahankan di sisi kanan app bar.</li>
+      <li>App bar <b>ikut ter-scroll</b> (bukan menempel), supaya tidak mengganggu posisi konten yang sudah ada. Kalau Anda ingin menempel terus di atas, saya bisa buatkan variannya.</li>
+    </ul>
+  </div>
+
+</body>
+</html>

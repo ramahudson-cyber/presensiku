@@ -8,6 +8,7 @@ import { shiftLabel } from "../../lib/shiftName";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
+import EmployeeAppBar from "../../components/EmployeeAppBar";
 
 const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 
@@ -277,21 +278,19 @@ export default function EmployeeHistory() {
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg, color: T.text }}>
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
-      {/* ── HEADER — simple elegant ── */}
-      <div className="pt-14 px-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <span className="text-[17px] font-bold tracking-tight" style={{ color: T.text }}>Riwayat Absensi</span>
-          </div>
+      <EmployeeAppBar
+        title="Riwayat Absensi"
+        right={
           <div className="flex flex-col items-center gap-1">
             <ProfileAvatarButton user={user} initials={initials} />
-            <span className="text-[9px] font-medium leading-none max-w-[72px] truncate text-center" style={{ color: T.sub }}>
+            <span className="text-[9px] font-medium leading-none max-w-[72px] truncate text-center" style={{ color: "rgba(255,255,255,0.8)" }}>
               {user?.position || user?.role || "Pegawai"}
             </span>
           </div>
-        </div>
-
-        {/* Month nav */}
+        }
+      />
+      {/* ── Month nav ── */}
+      <div className="px-6">
         <div className="flex items-center justify-center gap-3.5 mt-6">
           <button onClick={() => navigateMonth(-1)} aria-label="Bulan sebelumnya"
             className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:text-[#BF00FF] hover:shadow-sm active:scale-90"
