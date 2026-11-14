@@ -140,7 +140,7 @@ export default function DashboardPage() {
     <div className="flex-1">
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* Hero Section — violet gradient, one-row compact, in-flow with margin (Variant B) */}
-      <div className="hero-card-bg mx-3 mt-3 sm:mx-4 sm:mt-4 md:mx-5 md:mt-5 lg:mx-6 lg:mt-6 xl:mx-8 xl:mt-8 bg-gradient-to-r from-[#C44DFF] via-[#BF00FF] to-[#8A00CC] rounded-[24px] shadow-xl ring-1 ring-violet-300/40">
+      <div className="hero-card-bg mx-3 mt-3 sm:mx-4 sm:mt-4 md:mx-5 md:mt-5 lg:mx-6 lg:mt-6 xl:mx-8 xl:mt-8 bg-gradient-to-r from-[#39C0DF] via-[#2F8BF8] to-[#4A7CFB] rounded-[24px] shadow-xl ring-1 ring-blue-300/40">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-3 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
           {/* Time block — tanggal pendek di mobile agar nama tidak terdesak */}
           <div className="shrink-0">
@@ -204,7 +204,7 @@ export default function DashboardPage() {
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1 sm:gap-1.5 group">
                     <span className="text-[10px] sm:text-xs text-slate-700 font-semibold tabular-nums">{val}</span>
-                    <div className={`w-full rounded-t-lg md:rounded-t-xl transition-all duration-300 group-hover:scale-105 ${isToday ? "bg-gradient-to-t from-electric-violet to-periwinkle-glow shadow-lg" : "bg-gradient-to-t from-violet-300 to-purple-200 group-hover:from-violet-400 group-hover:to-purple-300"}`} style={{ height: `${(val / maxWeekly) * 100}%`, minHeight: val > 0 ? "6px" : "0" }} />
+                    <div className={`w-full rounded-t-lg md:rounded-t-xl transition-all duration-300 group-hover:scale-105 ${isToday ? "bg-gradient-to-t from-electric-violet to-periwinkle-glow shadow-lg" : "bg-gradient-to-t from-blue-300 to-blue-200 group-hover:from-blue-400 group-hover:to-blue-300"}`} style={{ height: `${(val / maxWeekly) * 100}%`, minHeight: val > 0 ? "6px" : "0" }} />
                     <span className={`text-[10px] sm:text-xs ${isToday ? "font-bold text-electric-violet" : "text-slate-400"}`}>{DAYS[d.getDay()]}</span>
                   </div>
                 );
@@ -212,7 +212,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="design-card p-4 sm:p-5 md:p-6">
-            <div className="flex items-center justify-between mb-3 md:mb-4"><h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Pengumuman</h2><div className="p-1.5 rounded-lg bg-[#F5F3FF]"><Bell size={16} className="text-[#BF00FF]" /></div></div>
+            <div className="flex items-center justify-between mb-3 md:mb-4"><h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Pengumuman</h2><div className="p-1.5 rounded-lg bg-[#EEF6FF]"><Bell size={16} className="text-[#2F8BF8]" /></div></div>
             {loading ? <div className="space-y-3">{[1, 2, 3].map((i) => <div key={i} className="h-16 bg-slate-100 animate-pulse rounded-2xl" />)}</div>
             : announcements.length === 0 ? <div className="text-center py-6 sm:py-8 flex flex-col items-center gap-1.5 sm:gap-2"><div className="p-2 sm:p-3 rounded-2xl bg-slate-50"><BellOff size={18} className="sm:w-6 sm:h-6 text-slate-400" /></div><p className="text-slate-400 text-xs sm:text-sm">Belum ada pengumuman</p></div>
             : <div className="space-y-3">{announcements.map((a) => <div key={a.id} className="p-3 bg-slate-50/80 border border-slate-100 rounded-2xl hover:scale-[1.02] transition-all"><p className="text-sm font-semibold text-slate-900 line-clamp-1">{a.title}</p><p className="text-xs text-slate-600 mt-1 line-clamp-2">{a.content}</p><p className="text-xs text-[#7032c4] mt-1.5 font-medium">{new Date(a.created_at).toLocaleDateString("id-ID")}</p></div>)}</div>}

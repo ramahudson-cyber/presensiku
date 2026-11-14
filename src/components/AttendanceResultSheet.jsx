@@ -20,9 +20,9 @@ const cap = (s) => (s ? s.trim().charAt(0).toUpperCase() + s.trim().slice(1) : s
 function CalendarIcon() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="4" width="18" height="18" rx="2" fill="#BF00FF" opacity="0.2" />
-      <rect x="3" y="4" width="18" height="18" rx="2" stroke="#BF00FF" strokeWidth="1.5" />
-      <path d="M16 2v4M8 2v4M3 10h18" stroke="#BF00FF" strokeWidth="1.5" strokeLinecap="round" />
+      <rect x="3" y="4" width="18" height="18" rx="2" fill="#2F8BF8" opacity="0.2" />
+      <rect x="3" y="4" width="18" height="18" rx="2" stroke="#2F8BF8" strokeWidth="1.5" />
+      <path d="M16 2v4M8 2v4M3 10h18" stroke="#2F8BF8" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -30,10 +30,10 @@ function CalendarIcon() {
 function MapPinIcon() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-      <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 0116 0z" fill="#BF00FF" opacity="0.2" />
-      <circle cx="12" cy="10" r="5" fill="#BF00FF" />
+      <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 0116 0z" fill="#2F8BF8" opacity="0.2" />
+      <circle cx="12" cy="10" r="5" fill="#2F8BF8" />
       <circle cx="12" cy="10" r="2" fill="white" />
-      <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 0116 0z" stroke="#BF00FF" strokeWidth="1.5" />
+      <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 0116 0z" stroke="#2F8BF8" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -45,7 +45,7 @@ function Confetti({ id }) {
     const el = ref.current;
     if (!el) return;
     const spans = [];
-    const colors = ["#BF00FF", "#FF0099", "#ADFF2F", "#FBBF24", "#7B00E0", "#3B82F6"];
+    const colors = ["#2F8BF8", "#FF0099", "#ADFF2F", "#FBBF24", "#1F74E0", "#3B82F6"];
     for (let i = 0; i < 60; i++) {
       const l = (Math.random() * 100).toFixed(1);
       const w = (3 + Math.random() * 4).toFixed(1);
@@ -69,7 +69,7 @@ function Divider() {
 function IconBox({ children }) {
   return (
     <div style={{
-      width: 26, height: 26, background: "rgba(191,0,255,0.12)", border: "1px solid rgba(191,0,255,0.25)",
+      width: 26, height: 26, background: "rgba(47,139,248,0.12)", border: "1px solid rgba(47,139,248,0.25)",
       borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
     }}>
       {children}
@@ -117,7 +117,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
   const statusColor = isLate ? "#FBBF24" : "#ADFF2F";
   const badgeGrad = isLate
     ? "linear-gradient(145deg, #FBBF24 0%, #F59E0B 50%, #D97706 100%)"
-    : "linear-gradient(145deg, #FF0099 0%, #BF00FF 50%, #7B00E0 100%)";
+    : "linear-gradient(145deg, #FF0099 0%, #2F8BF8 50%, #1F74E0 100%)";
   // Lokasi sesuai jenis absen: masuk → location_in, pulang → location_out.
   // Nama dari record (di-enrich trigger DB saat absen) agar selalu lokasi
   // yang benar-benar dipakai, bukan lokasi alfabetis pertama.
@@ -158,9 +158,9 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
             style={{
               maxHeight: "93vh", width: "100%", maxWidth: 420,
               borderRadius: "28px 28px 0 0",
-              background: "linear-gradient(165deg, #8B00CC 0%, #7B00E0 20%, #4A0099 55%, #6600CC 100%)",
-              border: "1px solid rgba(255,0,153,0.4)",
-              boxShadow: "0 20px 60px rgba(76,29,149,0.45), 0 0 40px rgba(191,0,255,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
+              background: "linear-gradient(165deg, #4A7CFB 0%, #2F8BF8 25%, #1F74E0 60%, #39C0DF 100%)",
+              border: "1px solid rgba(47,139,248,0.4)",
+              boxShadow: "0 20px 60px rgba(76,29,149,0.45), 0 0 40px rgba(47,139,248,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
               position: "relative", overflow: "hidden",
             }}
             className="md:rounded-3xl mx-auto flex flex-col animate-slide-up z-[9999]"
@@ -187,7 +187,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
                 display: "flex", alignItems: "center", justifyContent: "center",
                 marginBottom: 16, position: "relative",
                 animation: `bb-${uid} 2s ease-in-out infinite`,
-                boxShadow: "0 10px 24px rgba(191,0,255,0.4), 0 4px 8px rgba(0,0,0,0.3), inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 3px 6px rgba(255,255,255,0.2)",
+                boxShadow: "0 10px 24px rgba(47,139,248,0.4), 0 4px 8px rgba(0,0,0,0.3), inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 3px 6px rgba(255,255,255,0.2)",
               }}>
                 <div style={{ position: "absolute", inset: -4, borderRadius: 22, background: badgeGrad, zIndex: -1, opacity: 0.35, filter: "blur(6px)" }} />
                 <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -293,10 +293,10 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
               <button onClick={() => { onClose(); navigate("/employee"); }}
                 style={{
                   width: "100%", padding: "14px 0", marginTop: 16,
-                  background: "linear-gradient(135deg, #BF00FF 0%, #9900CC 50%, #7B00E0 100%)",
+                  background: "linear-gradient(135deg, #2F8BF8 0%, #4A7CFB 50%, #1F74E0 100%)",
                   border: "none", borderRadius: 16, color: "white",
                   fontSize: 14, fontWeight: 700, cursor: "pointer", letterSpacing: 0.3,
-                  boxShadow: "0 8px 24px rgba(191,0,255,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
+                  boxShadow: "0 8px 24px rgba(47,139,248,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
                 }}
                 className="active:scale-[0.98]"
               >

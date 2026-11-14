@@ -31,7 +31,7 @@ const STATUS_OPTIONS = [
 const STATUS_STYLE = {
   hadir:  { bg: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30", icon: <CheckCircle2 size={11} /> },
   terlambat: { bg: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30", icon: <Clock size={11} /> },
-  sanggah: { bg: "bg-violet-500/15 text-violet-300 ring-violet-500/30", icon: <MessageSquareWarning size={11} /> },
+  sanggah: { bg: "bg-blue-500/15 text-blue-300 ring-blue-500/30", icon: <MessageSquareWarning size={11} /> },
   izin:   { bg: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",       icon: <Clock size={11} />         },
   sakit:  { bg: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",    icon: <AlertTriangle size={11} /> },
   cuti:   { bg: "bg-sky-500/15 text-sky-300 ring-sky-500/30",             icon: <Calendar size={11} />      },
@@ -81,7 +81,7 @@ const avatarGradient = (name = "") => {
     "from-emerald-500 to-teal-700",
     "from-green-yellow to-electric-violet",
     "from-rose-500 to-pink-700",
-    "from-fuchsia-500 to-purple-700",
+    "from-sky-500 to-blue-700",
   ];
   let sum = 0;
   for (let i = 0; i < name.length; i++) sum += name.charCodeAt(i);
@@ -256,12 +256,12 @@ function TodayMonitorPanel() {
                       <p className="text-[10px] text-slate-mist/80 truncate">{r.sub}</p>
                       {/* Lokasi absen masuk — aksen ungu */}
                       <p className="text-[10px] truncate flex items-center gap-1 mt-0.5">
-                        <MapPin size={10} className="text-violet-300 shrink-0" />
+                        <MapPin size={10} className="text-blue-300 shrink-0" />
                         {r.locName ? (
                           <>
-                            <span className="text-violet-300 font-medium truncate">{r.locName}</span>
+                            <span className="text-blue-300 font-medium truncate">{r.locName}</span>
                             {r.locDistance != null && (
-                              <span className="text-violet-300/60 shrink-0">· {Math.round(r.locDistance)} m</span>
+                              <span className="text-blue-300/60 shrink-0">· {Math.round(r.locDistance)} m</span>
                             )}
                           </>
                         ) : (

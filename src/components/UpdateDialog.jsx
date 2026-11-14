@@ -196,7 +196,7 @@ export default function UpdateDialog() {
               Versi baru tersedia. Refresh halaman untuk mendapatkan update.
             </p>
             <button onClick={handleRefresh}
-              className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-purple-600 text-white hover:shadow-lg active:scale-[0.98]">
+              className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-blue-600 text-white hover:shadow-lg active:scale-[0.98]">
               <RefreshCw size={16} /> Refresh Halaman
             </button>
           </div>
@@ -263,7 +263,7 @@ export default function UpdateDialog() {
               <div className="space-y-2">
                 <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-electric-violet to-purple-500 rounded-full transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-electric-violet to-blue-500 rounded-full transition-all duration-300"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -275,7 +275,7 @@ export default function UpdateDialog() {
                 )}
                 {done && !installerOpened && (
                   <button onClick={handleManualInstall}
-                    className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-purple-600 text-white hover:shadow-lg active:scale-[0.98]">
+                    className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-blue-600 text-white hover:shadow-lg active:scale-[0.98]">
                     <FileDown size={16} /> Buka Manual
                   </button>
                 )}
@@ -283,13 +283,13 @@ export default function UpdateDialog() {
             )}
             {!downloading && !done && !error && (
               <button onClick={handleUpdate}
-                className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-purple-600 text-white hover:shadow-lg active:scale-[0.98]">
+                className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-blue-600 text-white hover:shadow-lg active:scale-[0.98]">
                 <Download size={16} /> Update v{update.version}
               </button>
             )}
             {!downloading && error && !done && (
               <button onClick={handleUpdate}
-                className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-purple-600 text-white hover:shadow-lg active:scale-[0.98]">
+                className="w-full py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-electric-violet to-blue-600 text-white hover:shadow-lg active:scale-[0.98]">
                 <Download size={16} /> Coba Lagi
               </button>
             )}

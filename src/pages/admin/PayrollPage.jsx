@@ -66,7 +66,7 @@ export default function PayrollPage() {
       showCancelButton: true,
       confirmButtonText: "Aktifkan",
       cancelButtonText: "Batal",
-      confirmButtonColor: "#BF00FF",
+      confirmButtonColor: "#2F8BF8",
     });
     if (!result.isConfirmed) return;
     try {
@@ -507,7 +507,7 @@ function TabGaji({ user, period }) {
                 {employees.map((e) => (
                   <label key={e.id} className="flex items-center gap-2.5 px-3.5 py-2 cursor-pointer hover:bg-slate-50">
                     <input type="checkbox" checked={quickPicked.has(e.id)} onChange={() => toggleQuickPicked(e.id)}
-                      className="w-3.5 h-3.5 accent-[#BF00FF]" />
+                      className="w-3.5 h-3.5 accent-[#2F8BF8]" />
                     <span className="text-xs" style={{ color: T.text }}>{e.full_name}</span>
                   </label>
                 ))}

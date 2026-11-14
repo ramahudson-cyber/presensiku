@@ -122,7 +122,7 @@ export default function LocationPicker({
 
       const icon = L.divIcon({
         className: "",
-        html: `<div style="width:28px;height:28px;background:#BF00FF;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(191,0,255,0.4);font-size:14px;">📍</div>`,
+        html: `<div style="width:28px;height:28px;background:#2F8BF8;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(47,139,248,0.4);font-size:14px;">📍</div>`,
         iconSize: [28, 28],
         iconAnchor: [14, 14],
       });
@@ -362,7 +362,7 @@ export default function LocationPicker({
     onCancel();
   };
 
-  const inputBase = `w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#BF00FF]/50`;
+  const inputBase = `w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#2F8BF8]/50`;
   const ghostBtn = "flex-1 py-2.5 border border-gray-300 text-gray-600 rounded-full text-sm font-medium hover:bg-gray-50 transition-all";
 
   return (
@@ -377,7 +377,7 @@ export default function LocationPicker({
             placeholder="Cari alamat atau tempat..."
             className={`${inputBase} pl-9 pr-9`}
           />
-          {searching && <Loader2 size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#BF00FF] animate-spin" />}
+          {searching && <Loader2 size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#2F8BF8] animate-spin" />}
         </div>
 
         {showResults && searchResults.length > 0 && (
@@ -399,8 +399,8 @@ export default function LocationPicker({
       </div>
 
       {autoLocking && (
-        <div className="flex items-center gap-2.5 rounded-xl border border-[#BF00FF]/25 bg-[#BF00FF]/[0.06] px-3 py-2.5 text-xs text-gray-700">
-          <Loader2 size={15} className="animate-spin text-[#BF00FF] shrink-0" />
+        <div className="flex items-center gap-2.5 rounded-xl border border-[#2F8BF8]/25 bg-[#2F8BF8]/[0.06] px-3 py-2.5 text-xs text-gray-700">
+          <Loader2 size={15} className="animate-spin text-[#2F8BF8] shrink-0" />
           <span>
             <b>Mengunci GPS presisi…</b> Berdiri tetap di titik lokasi,
             {gpsAccuracy != null ? ` saat ini ±${gpsAccuracy} m` : " mencari sinyal…"} —
@@ -430,7 +430,7 @@ export default function LocationPicker({
               type="button"
               onClick={handleLocateMe}
               disabled={locating}
-              className="p-2.5 bg-white shadow-lg rounded-full text-[#BF00FF] border border-gray-200 hover:bg-gray-50 transition-all disabled:opacity-60"
+              className="p-2.5 bg-white shadow-lg rounded-full text-[#2F8BF8] border border-gray-200 hover:bg-gray-50 transition-all disabled:opacity-60"
               title="Pakai lokasi saya"
             >
               {locating ? <Loader2 size={16} className="animate-spin" /> : <Crosshair size={16} />}
@@ -515,7 +515,7 @@ export default function LocationPicker({
           onClick={handleConfirm}
           disabled={!canConfirm}
           title={!canConfirm ? "Pilih titik dulu: klik peta, seret marker, atau pakai GPS" : undefined}
-          className="flex-1 py-2.5 bg-[#BF00FF] hover:bg-[#a000e6] text-white rounded-full text-sm font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:hover:bg-[#BF00FF]"
+          className="flex-1 py-2.5 bg-[#2F8BF8] hover:bg-[#1F74E0] text-white rounded-full text-sm font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:hover:bg-[#2F8BF8]"
         >
           <Check size={14} /> Konfirmasi
         </button>

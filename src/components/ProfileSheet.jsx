@@ -12,7 +12,7 @@ const T = {
   text: '#0F172A',
   textSec: '#475569',
   textMuted: '#94A3B8',
-  iconBg: '#F5F3FF',
+  iconBg: '#EEF6FF',
 };
 
 // Sheet profil yang dibuka saat foto profil diklik: info akun + keluar.
@@ -45,13 +45,13 @@ export default function ProfileSheet({ open, onClose }) {
         {/* Identitas */}
         <div className="flex items-center gap-4">
           <div className="relative w-16 h-16 shrink-0 rounded-2xl p-[2.5px]"
-            style={{ background: 'linear-gradient(135deg, #BF00FF, #9900CC, #7066ed)' }}>
+            style={{ background: 'linear-gradient(135deg, #2F8BF8, #4A7CFB, #39C0DF)' }}>
             <div className="w-full h-full rounded-[14px] flex items-center justify-center overflow-hidden"
               style={{ background: avatarUrl ? 'transparent' : T.iconBg }}>
               {avatarUrl ? (
                 <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-xl font-extrabold" style={{ color: '#BF00FF' }}>{initial}</span>
+                <span className="text-xl font-extrabold" style={{ color: '#2F8BF8' }}>{initial}</span>
               )}
             </div>
           </div>

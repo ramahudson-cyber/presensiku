@@ -120,7 +120,7 @@ export default function MasterDataManagementPage() {
                     className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm flex-1"
                   />
                   <button onClick={() => handleAdd(type)}
-                    className="bg-purple-600 hover:bg-purple-500 px-4 py-2 rounded-lg flex items-center gap-1.5 text-sm font-medium transition-all">
+                    className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg flex items-center gap-1.5 text-sm font-medium transition-all">
                     <Plus size={16} /> Tambah
                   </button>
                 </div>

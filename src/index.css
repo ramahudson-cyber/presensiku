@@ -1,16 +1,29 @@
-@import "tailwindcss";
+@import "tailwindcss" source("../");
+
+/* Batasi pemindaian kelas: HANYA folder src + index.html.
+   Tanpa ini Tailwind ikut memindai file preview HTML, salinan proyek di
+   folder siap-ampenan/, dan bundle lama — sehingga kelas ungu yang sudah
+   tidak dipakai aplikasi ikut masuk ke CSS produksi dan membebani kuota. */
+@source not "../**/*.html";
+@source not "../siap-ampenan/**";
+@source not "../Tixket.id/**";
+@source not "../android/**";
+@source not "../vercel-bundle.js";
+@source not "../preview-*.html";
+@source "../index.html";
+@source "./";
 
 /* Light-only design tokens. Dark variant disabled permanently. */
 
 @theme {
   --font-sans: 'Inter', sans-serif;
   --font-urbanist: 'Urbanist', sans-serif;
-  --color-electric-violet: #BF00FF;
-  --color-periwinkle-glow: #7066ed;
+  --color-electric-violet: #2F8BF8;
+  --color-periwinkle-glow: #39C0DF;
   --color-slate-mist: #64748b;
   --color-pure-white: #ffffff;
-  --color-deep-indigo: #9900CC;
-  --color-halo-violet: #4b39ef;
+  --color-deep-indigo: #4A7CFB;
+  --color-halo-violet: #3F93FD;
   --color-green-yellow: #adff2f;
 
   --radius-cards: 24px;
@@ -29,8 +42,8 @@
   --text-muted: #94a3b8;
   --border-color: #e2e8f0;
   --border-light: #f1f5f9;
-  --accent: #6366f1;
-  --accent-hover: #4f46e5;
+  --accent: #2F8BF8;
+  --accent-hover: #1F74E0;
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-lg: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.03);
@@ -42,7 +55,7 @@ html, body, #root {
   padding: 0;
   min-height: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #ffffff 0%, #fdf4ff 30%, #f5d0fe 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #eff6ff 30%, #dbeafe 100%);
   color: #0f172a;
   font-family: 'Inter', sans-serif;
   transition: background 0.4s, color 0.4s;
@@ -348,9 +361,9 @@ html, body, #root {
 .login-dark-bg span { color: #ffffff !important; }
 .login-dark-bg .text-slate-300 { color: #cbd5e1 !important; }
 .login-dark-bg .text-slate-500 { color: #94a3b8 !important; }
-.login-dark-bg .text-violet-300 { color: #c4b5fd !important; }
-.login-dark-bg .text-violet-400 { color: #a78bfa !important; }
-.login-dark-bg .text-violet-100 { color: #ddd6fe !important; }
+.login-dark-bg .text-blue-300 { color: #c4b5fd !important; }
+.login-dark-bg .text-blue-400 { color: #a78bfa !important; }
+.login-dark-bg .text-blue-100 { color: #DBEAFE !important; }
 .login-dark-bg .text-red-300 { color: #fca5a5 !important; }
 .login-dark-bg .text-red-400 { color: #fca5a5 !important; }
 .login-dark-bg .text-green-yellow { color: #adff2f !important; }
@@ -446,46 +459,46 @@ a.text-white { color: #ffffff !important; }
 .text-slate-500 { color: #94a3b8; }
 .text-slate-800 { color: var(--text-primary); }
 
-.text-violet-100,
-.text-violet-100\/90,
-.text-violet-100\/80,
-.text-violet-100\/70,
-.text-violet-100\/60,
-.text-violet-100\/65,
-.text-violet-100\/50,
-.text-violet-100\/40 { color: var(--text-secondary) !important; }
+.text-blue-100,
+.text-blue-100\/90,
+.text-blue-100\/80,
+.text-blue-100\/70,
+.text-blue-100\/60,
+.text-blue-100\/65,
+.text-blue-100\/50,
+.text-blue-100\/40 { color: var(--text-secondary) !important; }
 
-.text-violet-200,
-.text-violet-200\/90,
-.text-violet-200\/80,
-.text-violet-200\/70,
-.text-violet-200\/60,
-.text-violet-200\/50,
-.text-violet-200\/40 { color: var(--text-muted) !important; }
+.text-blue-200,
+.text-blue-200\/90,
+.text-blue-200\/80,
+.text-blue-200\/70,
+.text-blue-200\/60,
+.text-blue-200\/50,
+.text-blue-200\/40 { color: var(--text-muted) !important; }
 
-.text-violet-300,
-.text-violet-300\/90,
-.text-violet-300\/80,
-.text-violet-300\/70,
-.text-violet-300\/60,
-.text-violet-300\/50,
-.text-violet-300\/40 { color: #64748b !important; }
+.text-blue-300,
+.text-blue-300\/90,
+.text-blue-300\/80,
+.text-blue-300\/70,
+.text-blue-300\/60,
+.text-blue-300\/50,
+.text-blue-300\/40 { color: #64748b !important; }
 
-.text-violet-400 { color: var(--accent); }
-.text-violet-500 { color: var(--accent-hover); }
+.text-blue-400 { color: var(--accent); }
+.text-blue-500 { color: var(--accent-hover); }
 
 .text-green-yellow { color: #65a30d; }
 .text-sky-300 { color: #0284c7; }
 .text-rose-300 { color: #e11d48; }
-.text-purple-300 { color: #7c3aed; }
+.text-blue-300 { color: #7c3aed; }
 .text-rose-400 { color: #e11d48; }
 
-.bg-violet-500\/10 { background-color: #eef2ff; }
-.bg-violet-500\/15 { background-color: #eef2ff; }
+.bg-blue-500\/10 { background-color: #eef2ff; }
+.bg-blue-500\/15 { background-color: #eef2ff; }
 .bg-green-yellow\/15 { background-color: #f7ffd6; }
 .bg-sky-500\/15 { background-color: #f0f9ff; }
 .bg-rose-500\/15 { background-color: #fef2f2; }
-.bg-purple-500\/15 { background-color: #f5f3ff; }
+.bg-blue-500\/15 { background-color: #EEF6FF; }
 .bg-rose-500\/10 { background-color: #fef2f2; }
 
 .border-white\/5,
@@ -499,8 +512,8 @@ a.text-white { color: #ffffff !important; }
 .border-white\/\[0\.2\] { border-color: var(--border-color) !important; }
 .divide-white\/5 { border-color: var(--border-color); }
 
-.border-violet-500\/20 { border-color: #c7d2fe; }
-.border-violet-500\/50 { border-color: #a5b4fc; }
+.border-blue-500\/20 { border-color: #c7d2fe; }
+.border-blue-500\/50 { border-color: #a5b4fc; }
 
 /* Border gradient utility */
 .border-gradient {
@@ -515,7 +528,7 @@ a.text-white { color: #ffffff !important; }
   inset: 0;
   border-radius: inherit;
   padding: 2px;
-  background: linear-gradient(to right, var(--accent), #8b5cf6);
+  background: linear-gradient(to right, var(--accent), #3F93FD);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -523,22 +536,20 @@ a.text-white { color: #ffffff !important; }
 }
 
 /* Buttons with gradient/solid background keep white text */
-button.bg-gradient-to-r.from-violet-600.to-purple-700,
-.bg-gradient-to-r.from-violet-600.to-purple-700,
-.bg-purple-700,
-.bg-purple-600,
-.bg-violet-600,
+button.bg-gradient-to-r.from-blue-600.to-blue-700,
+.bg-gradient-to-r.from-blue-600.to-blue-700,
+.bg-blue-700,
+.bg-blue-600,
 .bg-red-500,
 .bg-red-600,
 .bg-green-600,
 .bg-green-500,
-.bg-blue-600,
-/* Tombol ungu solid arbitrary: bg tetap gelap, teks jangan dipaksa gelap */
-.bg-\[\#BF00FF\].text-white,
-button.bg-\[\#BF00FF\],
+/* Tombol biru solid arbitrary: bg tetap gelap, teks jangan dipaksa gelap */
+.bg-\[\#2F8BF8\].text-white,
+button.bg-\[\#2F8BF8\],
 /* Gradien gelap arbitrary: teks + anak terang tetap putih */
-.bg-gradient-to-br.from-\[\#BF00FF\],
-.bg-gradient-to-br.from-\[\#BF00FF\] .text-white,
+.bg-gradient-to-br.from-\[\#2F8BF8\],
+.bg-gradient-to-br.from-\[\#2F8BF8\] .text-white,
 .bg-gradient-to-t.from-electric-violet,
 /* Tombol gradien ungu (UpdateDialog): teks putih */
 button.bg-gradient-to-r.from-electric-violet,
@@ -546,11 +557,11 @@ button.bg-gradient-to-r.from-electric-violet,
   color: #ffffff !important;
 }
 /* Anak terang di dalam gradien gelap arbitrary + ungu (avatar, icon chip, FAB) */
-.bg-gradient-to-br.from-\[\#BF00FF\] .text-pure-white,
+.bg-gradient-to-br.from-\[\#2F8BF8\] .text-pure-white,
 .bg-gradient-to-br.from-electric-violet .text-white,
 .bg-gradient-to-r.from-electric-violet .text-white,
 .bg-gradient-to-t.from-electric-violet .text-white,
-.bg-gradient-to-br.from-fuchsia-500 .text-white,
+.bg-gradient-to-br.from-sky-500 .text-white,
 .admin-light .bg-gradient-to-br .text-pure-white,
 .admin-light .bg-gradient-to-br .text-white {
   color: #ffffff !important;
@@ -565,10 +576,10 @@ button.bg-gradient-to-r.from-electric-violet,
 .cal-badge-si, .cal-badge-si * { color: #1a2e05 !important; }
 
 /* Shadows */
-.shadow-violet-950\/20 { box-shadow: var(--shadow-md); }
-.shadow-violet-900\/30,
-.shadow-violet-900\/20 { box-shadow: var(--shadow-sm); }
-.shadow-2xl.shadow-purple-950\/50 { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.04); }
+.shadow-blue-950\/20 { box-shadow: var(--shadow-md); }
+.shadow-blue-900\/30,
+.shadow-blue-900\/20 { box-shadow: var(--shadow-sm); }
+.shadow-2xl.shadow-blue-950\/50 { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.04); }
 .ring-white { --tw-ring-color: #ffffff; }
 
 /* Info box */
@@ -591,13 +602,13 @@ button.bg-gradient-to-r.from-electric-violet,
 .sidebar-gradient a.border-gradient,
 .sidebar-gradient button.border-gradient.text-pure-white {
   background-color: #eef2ff !important;
-  color: #4f46e5 !important;
+  color: #1F74E0 !important;
 }
-.sidebar-gradient .text-violet-100\/70,
-.sidebar-gradient .text-violet-100\/60,
-.sidebar-gradient .text-violet-100\/40,
-.sidebar-gradient .text-violet-100\/65 { color: #64748b !important; }
-.sidebar-gradient .text-violet-300 { color: #64748b; }
+.sidebar-gradient .text-blue-100\/70,
+.sidebar-gradient .text-blue-100\/60,
+.sidebar-gradient .text-blue-100\/40,
+.sidebar-gradient .text-blue-100\/65 { color: #64748b !important; }
+.sidebar-gradient .text-blue-300 { color: #64748b; }
 .sidebar-gradient .hover\:text-white:hover { color: #0f172a; }
 .sidebar-gradient .text-red-400\/80 { color: #ef4444; }
 .sidebar-gradient .text-red-400\/80:hover { color: #dc2626; }
@@ -609,8 +620,8 @@ button.bg-gradient-to-r.from-electric-violet,
 .sidebar-gradient a:hover { color: #0f172a; background-color: #f1f5f9; }
 .sidebar-gradient a.hover\:bg-white\/10:hover { background-color: #f1f5f9; }
 .sidebar-gradient a span { color: inherit; }
-.sidebar-gradient a.bg-gradient-to-r.from-violet-600.to-purple-700 {
-  background: linear-gradient(to right, #6366f1, #8b5cf6);
+.sidebar-gradient a.bg-gradient-to-r.from-blue-600.to-blue-700 {
+  background: linear-gradient(to right, #2F8BF8, #3F93FD);
 }
 
 
@@ -635,11 +646,11 @@ button.hover\:bg-slate-100:hover { background-color: #f1f5f9; }
 }
 .hover\:shadow-violet-900\/20:hover { box-shadow: var(--shadow-lg) !important; }
 .text-2xl.font-bold.text-white.tabular-nums { color: var(--text-primary); }
-.bg-gradient-to-t.from-violet-700\/60.to-purple-500\/40 {
+.bg-gradient-to-t.from-blue-700\/60.to-blue-500\/40 {
   background: linear-gradient(to top, rgba(99,102,241,0.4), rgba(139,92,246,0.25));
 }
-.bg-gradient-to-t.from-violet-500.to-purple-400 {
-  background: linear-gradient(to top, #6366f1, #a78bfa);
+.bg-gradient-to-t.from-blue-500.to-blue-400 {
+  background: linear-gradient(to top, #2F8BF8, #a78bfa);
 }
 
 /* ===================================================================
@@ -657,7 +668,7 @@ button.hover\:bg-slate-100:hover { background-color: #f1f5f9; }
   background-color: rgba(255,255,255,0.92) !important;
 }
 nav .text-slate-500 { color: #94a3b8; }
-nav a.text-violet-400 { color: var(--accent); }
+nav a.text-blue-400 { color: var(--accent); }
 .bg-\[\#1a0d2e\] .text-white { color: var(--text-primary); }
 .bg-\[\#1a0d2e\] .text-slate-300 { color: var(--text-secondary); }
 .bg-\[\#1a0d2e\] .text-slate-400 { color: var(--text-muted); }
@@ -750,7 +761,7 @@ textarea::placeholder { color: #94a3b8; }
 .admin-light .design-input::placeholder { color: #94a3b8; }
 .admin-light .design-input:focus {
   border-color: #b98eff;
-  box-shadow: 0 0 0 2px rgba(191, 0, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(47,139,248, 0.15);
 }
 .admin-light .design-label { color: #475569; }
 .admin-light .design-btn-ghost {
@@ -794,11 +805,11 @@ textarea::placeholder { color: #94a3b8; }
 .admin-light .text-emerald-300 { color: #059669 !important; }
 .admin-light .text-rose-300 { color: #e11d48 !important; }
 .admin-light .text-sky-300 { color: #0284c7 !important; }
-.admin-light .text-violet-300 { color: #7c3aed !important; }
-.admin-light .text-violet-400 { color: #8c00cc !important; }
+.admin-light .text-blue-300 { color: #7c3aed !important; }
+.admin-light .text-blue-400 { color: #8c00cc !important; }
 .admin-light .text-green-yellow { color: #65a30d !important; }
 .admin-light .text-periwinkle-glow { color: #5f4ff7 !important; }
-.admin-light .text-electric-violet { color: #bf00ff !important; }
+.admin-light .text-electric-violet { color: #2F8BF8 !important; }
 
 /* Surface containers */
 .admin-light .bg-white\/\[0\.02\],
@@ -815,8 +826,8 @@ textarea::placeholder { color: #94a3b8; }
 .admin-light .bg-obsidian,
 .admin-light .bg-onyx\/98,
 .admin-light .bg-onyx\/95 { background-color: #ffffff !important; }
-.admin-light .bg-electric-violet\/15 { background-color: #f5f0ff !important; }
-.admin-light .bg-electric-violet\/\/10 { background-color: #faf5ff !important; }
+.admin-light .bg-electric-violet\/15 { background-color: #eff6ff !important; }
+.admin-light .bg-electric-violet\/\/10 { background-color: #eff6ff !important; }
 
 /* Borders & dividers */
 .admin-light .border-white\/\[0\.04\],
@@ -837,12 +848,12 @@ textarea::placeholder { color: #94a3b8; }
 .admin-light .bg-emerald-500\/15 { background-color: #ecfdf5 !important; }
 .admin-light .bg-rose-500\/15 { background-color: #fef2f2 !important; }
 .admin-light .bg-sky-500\/15 { background-color: #f0f9ff !important; }
-.admin-light .bg-violet-500\/15 { background-color: #f5f3ff !important; }
+.admin-light .bg-blue-500\/15 { background-color: #EEF6FF !important; }
 .admin-light .bg-green-yellow\/15 { background-color: #f7fee7 !important; }
 .admin-light .ring-emerald-500\/30 { --tw-ring-color: #a7f3d0; }
 .admin-light .ring-rose-500\/30 { --tw-ring-color: #fecaca; }
 .admin-light .ring-sky-500\/30 { --tw-ring-color: #bae6fd; }
-.admin-light .ring-violet-500\/30 { --tw-ring-color: #ddd6fe; }
+.admin-light .ring-blue-500\/30 { --tw-ring-color: #DBEAFE; }
 .admin-light .ring-green-yellow\/30 { --tw-ring-color: #d9f99d; }
 
 /* Inputs / select options */
@@ -886,7 +897,7 @@ textarea::placeholder { color: #94a3b8; }
    Bayangan tombol: dikurangi di seluruh aplikasi (permintaan pemilik).
    Aturan ini menimpa kelas shadow Tailwind DAN box-shadow inline pada elemen
    <button>/[role="button"]. Yang paling menonjol dihilangkan: glow warna
-   (mis. ungu `0 6px 18px rgba(191,0,255,.3)`) dan bayangan tebal. Diganti
+   (mis. ungu `0 6px 18px rgba(47,139,248,.3)`) dan bayangan tebal. Diganti
    satu bayangan sangat tipis yang cukup untuk memisahkan tombol dari latar
    putih. Link biasa TIDAK tersentuh (tidak diberi bayangan buatan).
    ----------------------------------------------------------------------------
@@ -940,15 +951,15 @@ button:active,
 .admin-light .bg-rose-500\/10 { background-color: #ffe4e6 !important; }
 .admin-light .bg-red-500\/10 { background-color: #fef2f2 !important; }
 .admin-light .bg-emerald-500\/10 { background-color: #ecfdf5 !important; }
-.admin-light .bg-violet-500\/20,
-.admin-light .bg-violet-500\/15 { background-color: #f5f3ff !important; }
+.admin-light .bg-blue-500\/20,
+.admin-light .bg-blue-500\/15 { background-color: #EEF6FF !important; }
 .admin-light .hover\:bg-sky-500\/15:hover { background-color: #e0f2fe !important; }
 .admin-light .hover\:bg-rose-500\/15:hover { background-color: #ffe4e6 !important; }
 .admin-light .hover\:bg-red-500\/10:hover { background-color: #fef2f2 !important; }
 .admin-light .text-slate-200 { color: #475569 !important; }
-.admin-light .text-purple-300 { color: #9333ea !important; }
-.admin-light .bg-purple-500\/15 { background-color: #f5f3ff !important; }
-.admin-light .ring-purple-500\/30 { --tw-ring-color: #e9d5ff; }
+.admin-light .text-blue-300 { color: #2F8BF8 !important; }
+.admin-light .bg-blue-500\/15 { background-color: #EEF6FF !important; }
+.admin-light .ring-blue-500\/30 { --tw-ring-color: #bfdbfe; }
 /* Master Data tab (dalam .admin-light): kartu gelap peninggalan dark mode → terang */
 .admin-light .bg-black\/40 {
   background-color: #ffffff !important;
@@ -987,7 +998,7 @@ button:active,
 .cal-premium-pg { background: #1e40af !important; color: #ffffff !important; }
 .cal-premium-si { background: #adff2f !important; color: #1a2e05 !important; }
 .cal-premium-sr { background: #f97316 !important; color: #ffffff !important; }
-.cal-premium-ml { background: #8b5cf6 !important; color: #ffffff !important; }
+.cal-premium-ml { background: #3F93FD !important; color: #ffffff !important; }
 
 .cal-today-premium { border-color: #000 !important; }
 
@@ -995,7 +1006,7 @@ button:active,
 .cal-badge-pg { background: #1e40af !important; color: #ffffff !important; }
 .cal-badge-si { background: #adff2f !important; color: #1a2e05 !important; }
 .cal-badge-sr { background: #f97316 !important; color: #ffffff !important; }
-.cal-badge-ml { background: #8b5cf6 !important; color: #ffffff !important; }
+.cal-badge-ml { background: #3F93FD !important; color: #ffffff !important; }
 .cal-badge-neutral { background: #64748b !important; color: #ffffff !important; }
 
 /* --- DASHBOARD LIGHT MODE PROTECTION --- */
@@ -1017,13 +1028,13 @@ button:active,
   font-size: 12px;
   font-weight: 700;
   line-height: 1.3;
-  color: #BF00FF;
+  color: #2F8BF8;
 }
 .badge-simple-time {
   font-size: 10px;
   font-weight: 600;
   line-height: 1.2;
-  color: rgba(191, 0, 255, 0.65);
+  color: rgba(47,139,248, 0.65);
 }
 
 /* ===================================================================
@@ -1036,8 +1047,8 @@ button:active,
 .stats-card .bg-grid {
   position: absolute; inset: 0;
   background-image:
-    linear-gradient(rgba(191,0,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(191,0,255,0.04) 1px, transparent 1px);
+    linear-gradient(rgba(47,139,248,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47,139,248,0.04) 1px, transparent 1px);
   background-size: 32px 32px;
   mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.4), transparent 70%);
   -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.4), transparent 70%);
@@ -1046,7 +1057,7 @@ button:active,
 .stats-card .bg-orb-1 {
   position: absolute; top: -25%; right: -10%;
   width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(191,0,255,0.1), transparent 70%);
+  background: radial-gradient(circle, rgba(47,139,248,0.1), transparent 70%);
   border-radius: 50%; filter: blur(40px); pointer-events: none;
 }
 .stats-card .bg-orb-2 {
@@ -1092,8 +1103,8 @@ button:active,
 
 /* Icon glow variation */
 @keyframes fingerprintGlow {
-  0%, 100% { filter: drop-shadow(0 0 8px rgba(191,0,255,0.3)); }
-  50% { filter: drop-shadow(0 0 18px rgba(191,0,255,0.6)); }
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(47,139,248,0.3)); }
+  50% { filter: drop-shadow(0 0 18px rgba(47,139,248,0.6)); }
 }
 
 /* Ripple rings expanding outward */
@@ -1155,10 +1166,10 @@ button:active,
 /* Logo glow pulse */
 @keyframes logoGlow {
   0%, 100% {
-    filter: drop-shadow(0 0 8px rgba(191,0,255,0.1));
+    filter: drop-shadow(0 0 8px rgba(47,139,248,0.1));
   }
   50% {
-    filter: drop-shadow(0 0 16px rgba(191,0,255,0.25));
+    filter: drop-shadow(0 0 16px rgba(47,139,248,0.25));
   }
 }
 
@@ -1297,7 +1308,7 @@ button:active,
 }
 .pz-chip[data-type="success"] { background: rgba(16, 185, 129, 0.12); color: #059669; box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.22); }
 .pz-chip[data-type="error"]   { background: rgba(244, 63, 94, 0.11);  color: #e11d48; box-shadow: inset 0 0 0 1px rgba(244, 63, 94, 0.22); }
-.pz-chip[data-type="info"]    { background: rgba(191, 0, 255, 0.10);  color: #a800e0; box-shadow: inset 0 0 0 1px rgba(191, 0, 255, 0.24); }
+.pz-chip[data-type="info"]    { background: rgba(47,139,248, 0.10);  color: #1F74E0; box-shadow: inset 0 0 0 1px rgba(47,139,248, 0.24); }
 .pz-chip[data-type="warning"] { background: rgba(245, 158, 11, 0.13); color: #b45309; box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.26); }
 
 /* Halo lembut lewat pseudo terpisah agar ring inset per tipe tidak tertimpa */
@@ -1382,10 +1393,10 @@ button:active,
   border-radius: 999px;
 }
 /* theme--light ditulis lebih dulu agar rule tipe menang; tipe default → gradasi info */
-.Toastify__toast .Toastify__progress-bar-theme--light { background: linear-gradient(90deg, #e19bff, #a800e0); }
+.Toastify__toast .Toastify__progress-bar-theme--light { background: linear-gradient(90deg, #e19bff, #1F74E0); }
 .Toastify__toast .Toastify__progress-bar--success { background: linear-gradient(90deg, #34d399, #059669); }
 .Toastify__toast .Toastify__progress-bar--error   { background: linear-gradient(90deg, #fb7185, #e11d48); }
-.Toastify__toast .Toastify__progress-bar--info    { background: linear-gradient(90deg, #e19bff, #a800e0); }
+.Toastify__toast .Toastify__progress-bar--info    { background: linear-gradient(90deg, #e19bff, #1F74E0); }
 .Toastify__toast .Toastify__progress-bar--warning { background: linear-gradient(90deg, #fcd34d, #d97706); }
 
 /* Redefinisi keyframes dist (nama persis v11): scaleX → erosi clip-path (GPU aman) */

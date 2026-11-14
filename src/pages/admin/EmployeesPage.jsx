@@ -237,8 +237,8 @@ const EmployeesPage = () => {
   const roleBadge = (role) => {
     const map = {
       super_admin: 'bg-rose-500/15 text-rose-300 ring-rose-500/30',
-      admin: 'bg-purple-500/15 text-purple-300 ring-purple-500/30',
-      admin_puskesmas: 'bg-purple-500/15 text-purple-300 ring-purple-500/30',
+      admin: 'bg-blue-500/15 text-blue-300 ring-blue-500/30',
+      admin_puskesmas: 'bg-blue-500/15 text-blue-300 ring-blue-500/30',
       kepala_unit: 'bg-sky-500/15 text-sky-300 ring-sky-500/30',
       pegawai: 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30',
     };
@@ -270,7 +270,7 @@ const EmployeesPage = () => {
       'from-emerald-500 to-teal-700',
       'from-green-yellow to-electric-violet',
       'from-rose-500 to-pink-700',
-      'from-fuchsia-500 to-purple-700',
+      'from-sky-500 to-blue-700',
     ];
     let sum = 0;
     for (let i = 0; i < name.length; i++) sum += name.charCodeAt(i);
@@ -330,7 +330,7 @@ const EmployeesPage = () => {
               style={{ background: 'rgba(244,242,251,0.95)', borderBottom: '1px solid rgba(31,41,55,0.08)' }}
             >
               <div className="flex items-center gap-2.5">
-                <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+                <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #2F8BF8, #3B82F6)' }} />
                 <span className="text-sm font-bold" style={{ color: '#0F172A' }}>
                   {formData.id ? 'Edit Pegawai' : 'Tambah Pegawai Baru'}
                 </span>
@@ -351,7 +351,7 @@ const EmployeesPage = () => {
                 style={{ background: '#FFFFFF', border: '1px solid rgba(31,41,55,0.08)', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' }}
               >
                 <div className="flex items-center gap-2.5 mb-3">
-                  <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+                  <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #2F8BF8, #3B82F6)' }} />
                   <span className="text-xs font-bold" style={{ color: '#0F172A' }}>1. Akun & Akses</span>
                 </div>
                 <div className="space-y-3">
@@ -410,7 +410,7 @@ const EmployeesPage = () => {
                 style={{ background: '#FFFFFF', border: '1px solid rgba(31,41,55,0.08)', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' }}
               >
                 <div className="flex items-center gap-2.5 mb-3">
-                  <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #BF00FF, #3B82F6)' }} />
+                  <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #2F8BF8, #3B82F6)' }} />
                   <span className="text-xs font-bold" style={{ color: '#0F172A' }}>2. Data Pegawai</span>
                 </div>
                 <div className="space-y-3">
@@ -480,7 +480,7 @@ const EmployeesPage = () => {
                 <button
                   type="submit" disabled={loading}
                   className="flex-1 py-2.5 rounded-full text-sm font-bold text-white transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
-                  style={{ background: 'linear-gradient(135deg, #BF00FF, #7B00E0)', boxShadow: '0 6px 18px rgba(191,0,255,0.3)' }}
+                  style={{ background: 'linear-gradient(135deg, #2F8BF8, #1F74E0)', boxShadow: '0 6px 18px rgba(47,139,248,0.3)' }}
                 >
                   {loading && <RefreshCwIconSpinning />}
                   {loading ? 'Menyimpan...' : formData.id ? 'Update' : 'Simpan'}
@@ -495,7 +495,7 @@ const EmployeesPage = () => {
         <div className="design-card overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16 gap-3">
-            <div className="animate-spin rounded-full h-6 w-6 border-2 border-violet-500/30 border-t-violet-400"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-500/30 border-t-violet-400"></div>
             <span className="text-slate-mist text-sm">Memuat data...</span>
           </div>
         ) : filtered.length === 0 ? (

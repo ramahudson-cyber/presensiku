@@ -54,7 +54,7 @@ const avatarGradient = (name = "") => {
     "from-emerald-500 to-teal-700",
     "from-green-yellow to-electric-violet",
     "from-rose-500 to-pink-700",
-    "from-fuchsia-500 to-purple-700",
+    "from-sky-500 to-blue-700",
   ];
   let sum = 0;
   for (let i = 0; i < name.length; i++) sum += name.charCodeAt(i);
@@ -661,7 +661,7 @@ export default function OvertimeManagementPage() {
                     type="checkbox"
                     checked={createUsers.includes(m.id)}
                     onChange={() => setCreateUsers((p) => (p.includes(m.id) ? p.filter((x) => x !== m.id) : [...p, m.id]))}
-                    className="accent-[#BF00FF] w-3.5 h-3.5 shrink-0"
+                    className="accent-[#2F8BF8] w-3.5 h-3.5 shrink-0"
                   />
                   <span className="flex-1 min-w-0 truncate font-medium">{m.full_name}</span>
                   {m.position && <span className="text-[9px] text-slate-mist/70 truncate max-w-[45%]">{m.position}</span>}

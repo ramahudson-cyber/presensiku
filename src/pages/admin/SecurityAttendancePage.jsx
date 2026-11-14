@@ -100,7 +100,7 @@ const avatarGradient = (name = "") => {
     "from-emerald-500 to-teal-700",
     "from-green-yellow to-electric-violet",
     "from-rose-500 to-pink-700",
-    "from-fuchsia-500 to-purple-700",
+    "from-sky-500 to-blue-700",
   ];
   let sum = 0;
   for (let i = 0; i < name.length; i++) sum += name.charCodeAt(i);

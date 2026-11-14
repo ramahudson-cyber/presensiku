@@ -222,7 +222,7 @@ export default function AnnouncementsPage() {
             <input
               type="checkbox" checked={form.is_active}
               onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
-              className="w-4 h-4 accent-[#BF00FF]"
+              className="w-4 h-4 accent-[#2F8BF8]"
             />
             <span className="text-sm" style={{ color: T.text }}>Aktifkan (tampilkan di dashboard pegawai)</span>
           </label>

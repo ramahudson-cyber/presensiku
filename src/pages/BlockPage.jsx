@@ -10,7 +10,7 @@ export default function BlockPage() {
       <div className="text-center p-8 max-w-md">
         {device === "android" ? (
           <>
-            <Smartphone size={64} className="mx-auto text-purple-600 mb-4" />
+            <Smartphone size={64} className="mx-auto text-blue-600 mb-4" />
             <h1 className="text-2xl font-bold text-slate-800 mb-2">
               Akses Terbatas
             </h1>
@@ -23,7 +23,7 @@ export default function BlockPage() {
           </>
         ) : (
           <>
-            <Monitor size={64} className="mx-auto text-purple-600 mb-4" />
+            <Monitor size={64} className="mx-auto text-blue-600 mb-4" />
             <h1 className="text-2xl font-bold text-slate-800 mb-2">
               Akses Terbatas
             </h1>

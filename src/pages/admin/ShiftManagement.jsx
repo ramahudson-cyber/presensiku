@@ -17,7 +17,7 @@ const SHIFT_META = {
   PG: { icon: Sun, color: "text-green-yellow", bg: "bg-green-yellow/15", ring: "ring-green-yellow/30" },
   SR: { icon: Sunset, color: "text-green-yellow", bg: "bg-green-yellow/15", ring: "ring-green-yellow/30" },
   SI: { icon: CloudSun, color: "text-sky-400", bg: "bg-sky-500/15", ring: "ring-sky-500/30" },
-  ML: { icon: Moon, color: "text-violet-400", bg: "bg-violet-500/15", ring: "ring-violet-500/30" },
+  ML: { icon: Moon, color: "text-blue-400", bg: "bg-blue-500/15", ring: "ring-blue-500/30" },
 };
 
 export default function TabShift() {
@@ -214,9 +214,9 @@ export default function TabShift() {
               </div>
 
               {/* Keterangan cara pakai */}
-              <div className="mx-4 mt-3 rounded-xl px-3 py-2 border border-violet-500/20 bg-violet-500/[0.06]">
+              <div className="mx-4 mt-3 rounded-xl px-3 py-2 border border-blue-500/20 bg-blue-500/[0.06]">
                 <p className="text-[10px] text-slate-mist leading-relaxed">
-                  <b className="text-violet-300">Lintas Malam:</b> ketuk icon <ArrowRightLeft size={10} className="inline -mt-0.5" /> di samping jam — jadi ungu saat aktif. Jam pulang dihitung besok (contoh: Malam 20:00 → 07:00). Lintas malam untuk kode <b className="text-violet-300">ML</b> aktif otomatis.
+                  <b className="text-blue-300">Lintas Malam:</b> ketuk icon <ArrowRightLeft size={10} className="inline -mt-0.5" /> di samping jam — jadi ungu saat aktif. Jam pulang dihitung besok (contoh: Malam 20:00 → 07:00). Lintas malam untuk kode <b className="text-blue-300">ML</b> aktif otomatis.
                 </p>
               </div>
 
@@ -238,7 +238,7 @@ export default function TabShift() {
                           <button onClick={() => update(shift.code, i, "crosses_midnight", !sched?.crosses_midnight)}
                             className={`inline-flex items-center gap-1 px-2 py-1.5 rounded-full transition-all shrink-0 text-[9px] font-bold ${
                               sched?.crosses_midnight
-                                ? "bg-violet-500/25 text-violet-300 ring-1 ring-violet-400/40"
+                                ? "bg-blue-500/25 text-blue-300 ring-1 ring-blue-400/40"
                                 : "bg-white/5 text-slate-mist hover:bg-white/10"
                             }`}
                             title={sched?.crosses_midnight ? "Lintas malam aktif — jam pulang besok (klik untuk matikan)" : "Klik untuk aktifkan lintas malam"}>

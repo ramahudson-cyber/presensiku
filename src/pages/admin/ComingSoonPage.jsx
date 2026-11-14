@@ -20,7 +20,7 @@ export default function ComingSoonPage() {
     <div className="flex flex-col items-center justify-center min-h-[60vh] p-8 text-center">
       {/* Icon */}
       <div className="w-24 h-24 rounded-3xl bg-onyx flex items-center justify-center mb-6">
-        <Construction size={48} className="text-violet-500" />
+        <Construction size={48} className="text-blue-500" />
       </div>
 
       {/* Title */}

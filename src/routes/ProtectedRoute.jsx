@@ -30,14 +30,14 @@ function ProtectedRoute({ children, allowedRoles }) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
 <p className="mt-4 text-gray-600">
             {stuck ? "Lama memuat..." : "Memuat..."}
           </p>
           {stuck && (
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-5 py-2 rounded-full bg-purple-600 text-white text-sm hover:bg-purple-700 transition-colors"
+              className="mt-4 px-5 py-2 rounded-full bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors"
             >
               Muat Ulang
             </button>
@@ -59,7 +59,7 @@ function ProtectedRoute({ children, allowedRoles }) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
         <div className="text-center max-w-xs px-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Memuat profil...</p>
           {profileError && (
             <p className="mt-2 text-xs text-red-500">Gagal memuat profil — periksa koneksi Anda.</p>
@@ -67,7 +67,7 @@ function ProtectedRoute({ children, allowedRoles }) {
           <div className="mt-4 flex flex-col gap-2 items-center">
             <button
               onClick={() => retryProfile()}
-              className="px-5 py-2 rounded-full bg-purple-600 text-white text-sm hover:bg-purple-700 transition-colors"
+              className="px-5 py-2 rounded-full bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors"
             >
               Coba Lagi
             </button>

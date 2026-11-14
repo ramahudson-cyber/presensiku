@@ -3,8 +3,8 @@
 // exceljs di-import lazy — chunk hanya dimuat saat tombol export diklik.
 
 const BRAND = {
-  primary: "BF00FF",      // electric-violet (src/index.css)
-  primaryLight: "F5F0FF", // fill baris TOTAL
+  primary: "2F8BF8",      // brand blue (DESIGN.md)
+  primaryLight: "EFF6FF", // fill baris TOTAL
   text900: "37352F",      // teks utama
   text600: "8C8A84",      // caption
   line: "E9E9E8",         // garis bawah header / atas total

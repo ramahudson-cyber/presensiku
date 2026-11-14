@@ -36,7 +36,7 @@ function Header() {
 
   return (
     <div style={{ paddingTop: "calc(env(safe-area-inset-top) + 0.75rem)" }}>
-      <div className="hero-card-bg mx-3 sm:mx-4 md:mx-5 lg:mx-6 xl:mx-8 bg-gradient-to-r from-[#C44DFF] via-[#BF00FF] to-[#8A00CC] rounded-[24px] shadow-xl ring-1 ring-violet-300/40">
+      <div className="hero-card-bg mx-3 sm:mx-4 md:mx-5 lg:mx-6 xl:mx-8 bg-gradient-to-r from-[#39C0DF] via-[#2F8BF8] to-[#4A7CFB] rounded-[24px] shadow-xl ring-1 ring-blue-300/40">
         <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
           {/* Icon chip */}
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center shrink-0 shadow-md">

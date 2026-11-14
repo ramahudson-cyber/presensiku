@@ -292,7 +292,7 @@ export default function SanggahanPage() {
         <button
           onClick={openCreateModal}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white shadow-lg transition-all active:scale-[0.98]"
-          style={{ background: 'linear-gradient(135deg, #BF00FF, #7B00E0)' }}
+          style={{ background: 'linear-gradient(135deg, #2F8BF8, #1F74E0)' }}
         >
           <UserPlus size={13} /> Sanggahkan Pegawai
         </button>
@@ -413,7 +413,7 @@ export default function SanggahanPage() {
                 {OLD_STATUS_LABEL[approveModal.old_status] || approveModal.old_status || "-"}
               </span>
               <ChevronRight size={12} className="text-slate-400" />
-              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-600">
+              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600">
                 Sanggah
               </span>
               <span className="text-[10px] text-slate-500 ml-auto">tanpa potongan gaji</span>
@@ -531,9 +531,9 @@ export default function SanggahanPage() {
             <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Foto bukti (opsional)</label>
             <input type="file" accept="image/jpeg,image/png,image/webp"
               onChange={(e) => setCreateFile(e.target.files?.[0] || null)}
-              className="w-full text-[10px] text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-violet-100 file:text-violet-700 cursor-pointer mb-4" />
+              className="w-full text-[10px] text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-blue-100 file:text-blue-700 cursor-pointer mb-4" />
 
-            <div className="rounded-xl px-3 py-2 border border-violet-100 bg-violet-50 mb-4">
+            <div className="rounded-xl px-3 py-2 border border-blue-100 bg-blue-50 mb-4">
               <p className="text-[10px] text-slate-600 leading-relaxed">
                 Semua hari dalam rentang diproses langsung disetujui. Hari masa depan yang punya jadwal ditandai sebagai hari bebas (Sanggah). Hari yang sudah hadir, sudah disanggahkan, tanpa jadwal, atau lebih dari 62 hari ke depan dilewati otomatis.
               </p>

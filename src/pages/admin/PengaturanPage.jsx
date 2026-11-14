@@ -44,7 +44,7 @@ const avatarGradient = (name = "") => {
     "from-emerald-500 to-teal-700",
     "from-green-yellow to-electric-violet",
     "from-rose-500 to-pink-700",
-    "from-fuchsia-500 to-purple-700",
+    "from-sky-500 to-blue-700",
   ];
   let sum = 0;
   for (let i = 0; i < name.length; i++) sum += name.charCodeAt(i);
@@ -454,7 +454,7 @@ function TabProfilPuskesmas() {
                 type="checkbox"
                 checked={formData.is_active}
                 onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                className="w-4 h-4 rounded accent-[#BF00FF]"
+                className="w-4 h-4 rounded accent-[#2F8BF8]"
               />
               <span className="text-sm text-gray-800">
                 Jadikan lokasi aktif (untuk absensi)
@@ -470,7 +470,7 @@ function TabProfilPuskesmas() {
               </button>
               <button
                 type="submit" disabled={saving}
-                className="flex-1 py-2.5 bg-[#BF00FF] hover:bg-[#a000e6] text-white rounded-full text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-[#2F8BF8] hover:bg-[#1F74E0] text-white rounded-full text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {saving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
                 {editingId ? "Update" : "Simpan"}
@@ -792,7 +792,7 @@ function TabManajemenUser() {
           <button onClick={() => setResetModal({ show: false, user: null, password: "" })}
             className="flex-1 py-2.5 rounded-full border border-gray-300 text-gray-600 text-sm hover:bg-gray-50 transition-all">Batal</button>
           <button onClick={confirmResetPassword}
-            className="flex-1 py-2.5 rounded-full bg-[#BF00FF] hover:bg-[#a000e6] text-white text-sm font-semibold transition-all">Konfirmasi</button>
+            className="flex-1 py-2.5 rounded-full bg-[#2F8BF8] hover:bg-[#1F74E0] text-white text-sm font-semibold transition-all">Konfirmasi</button>
         </div>
       </BottomSheet>
 
@@ -1375,7 +1375,7 @@ function TabAuditLog() {
       CLOCK_IN: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
       CLOCK_OUT: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",
       RESET_PASSWORD: "bg-green-yellow/15 text-green-yellow ring-green-yellow/30",
-      UPDATE_SETTING: "bg-purple-500/15 text-purple-300 ring-purple-500/30",
+      UPDATE_SETTING: "bg-blue-500/15 text-blue-300 ring-blue-500/30",
       SET_ACTIVE_LOCATION: "bg-cyan-500/15 text-cyan-300 ring-cyan-500/30",
     };
 
@@ -1548,7 +1548,7 @@ function TabModul() {
     <div className="space-y-5">
       <div className={`${cardBase} p-4 flex items-center justify-between gap-4`}>
         <div className="flex items-start gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-violet-600/20 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-blue-600/20 flex items-center justify-center shrink-0">
             <Wallet size={18} className="text-periwinkle-glow" />
           </div>
           <div className="min-w-0">
@@ -1577,7 +1577,7 @@ function TabModul() {
         </button>
       </div>
 
-      <div className="rounded-xl px-3 py-2 border border-violet-500/30 bg-violet-600/10">
+      <div className="rounded-xl px-3 py-2 border border-blue-500/30 bg-blue-600/10">
         <p className="text-[10px] text-slate-mist leading-relaxed">
           Pengaturan berlaku untuk instansi aktif saat ini. Sidebar dan menu pegawai menyesuaikan
           setelah halaman dimuat ulang.
@@ -1587,7 +1587,7 @@ function TabModul() {
       {/* ── PENGATURAN LEMBUR ── */}
       <div className={`${cardBase} p-4 space-y-4`}>
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-violet-600/20 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-blue-600/20 flex items-center justify-center shrink-0">
             <Clock size={18} className="text-periwinkle-glow" />
           </div>
           <div className="min-w-0">
@@ -1698,7 +1698,7 @@ if (!["super_admin", "admin", "admin_puskesmas"].includes(user?.role)) {
               onClick={() => setActiveTab(tab.id)}
               className={`w-[92px] md:w-auto flex-shrink-0 flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all ${
                 isActive
-                  ? "bg-violet-600/20 border-violet-500/50 text-pure-white shadow-lg"
+                  ? "bg-blue-600/20 border-blue-500/50 text-pure-white shadow-lg"
                   : "bg-white/5 border-white/[0.06] text-slate-mist hover:bg-white/[0.03]"
               }`}
             >

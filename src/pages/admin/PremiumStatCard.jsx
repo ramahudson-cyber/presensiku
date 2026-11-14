@@ -33,11 +33,11 @@ const PhotoStack = ({ users = [], max = 4 }) => {
 
 export function PremiumStatCard({ title, sub, value, users, trendValue, trendDirection, loading }) {
   const meta = {
-    "Total Pegawai": { icon: UsersRound, accent: "from-[#BF00FF] to-[#8A00CC]", note: `${value || 0} akun terdaftar` },
+    "Total Pegawai": { icon: UsersRound, accent: "from-[#2F8BF8] to-[#4A7CFB]", note: `${value || 0} akun terdaftar` },
     "Hadir Hari Ini": { icon: CircleCheckBig, accent: "from-emerald-500 to-teal-600", note: value > 0 ? `${value} sudah check-in` : "Menunggu presensi pertama" },
     "Izin / Sakit": { icon: HeartPulse, accent: "from-amber-500 to-orange-600", note: value > 0 ? `${value} perlu dipantau` : "Semua aman" },
     "Alpha": { icon: UserX, accent: "from-rose-500 to-red-600", note: value > 0 ? `${value} tanpa keterangan` : "Tidak ada alpha" },
-  }[title] || { icon: UsersRound, accent: "from-[#BF00FF] to-[#8A00CC]", note: sub };
+  }[title] || { icon: UsersRound, accent: "from-[#2F8BF8] to-[#4A7CFB]", note: sub };
   const Icon = meta.icon;
   let trendIcon = null;
   let trendClass = 'bg-slate-100 text-slate-500 border-slate-200';
@@ -61,8 +61,8 @@ export function PremiumStatCard({ title, sub, value, users, trendValue, trendDir
   }
 
   return (
-    <div className="relative min-h-[178px] rounded-[28px] border border-slate-200/70 bg-white p-5 overflow-hidden shadow-[0_4px_16px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#BF00FF]/30 hover:shadow-[0_12px_32px_rgba(191,0,255,0.12)] font-['Inter',ui-sans-serif,system-ui]">
-      <div className="absolute -right-12 -top-14 h-36 w-36 rounded-full bg-gradient-to-br from-[#BF00FF]/8 to-transparent blur-2xl"></div>
+    <div className="relative min-h-[178px] rounded-[28px] border border-slate-200/70 bg-white p-5 overflow-hidden shadow-[0_4px_16px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#2F8BF8]/30 hover:shadow-[0_12px_32px_rgba(47,139,248,0.12)] font-['Inter',ui-sans-serif,system-ui]">
+      <div className="absolute -right-12 -top-14 h-36 w-36 rounded-full bg-gradient-to-br from-[#2F8BF8]/8 to-transparent blur-2xl"></div>
       <div className="relative z-10 flex justify-between items-start">
         <div>
           <div className="text-[11px] font-black text-slate-900 uppercase tracking-[0.18em]">{title}</div>

@@ -100,7 +100,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
   return (
     <>
       <aside
-        className={`fixed top-0 left-0 h-full w-[260px] sidebar-gradient flex flex-col z-40 border-r border-white/15 shadow-2xl shadow-violet-950/20 transition-transform duration-300
+        className={`fixed top-0 left-0 h-full w-[260px] sidebar-gradient flex flex-col z-40 border-r border-white/15 shadow-2xl shadow-blue-950/20 transition-transform duration-300
         ${menuOpen ? "translate-x-0" : "-translate-x-full xl:translate-x-0"}`}
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >

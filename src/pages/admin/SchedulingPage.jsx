@@ -22,8 +22,8 @@ const SHIFT_VISUALS = {
   SR: { icon: Sunset, premiumClass: "cal-premium-sr", badgeClass: "cal-badge-sr", color: "text-orange-500" },
   SI: { icon: CloudSun, premiumClass: "cal-premium-si", badgeClass: "cal-badge-si", color: "text-sky-500" },
   SG: { icon: CloudSun, premiumClass: "cal-premium-si", badgeClass: "cal-badge-si", color: "text-sky-500" },
-  ML: { icon: Moon, premiumClass: "cal-premium-ml", badgeClass: "cal-badge-ml", color: "text-indigo-400" },
-  MLM: { icon: Moon, premiumClass: "cal-premium-ml", badgeClass: "cal-badge-ml", color: "text-indigo-400" },
+  ML: { icon: Moon, premiumClass: "cal-premium-ml", badgeClass: "cal-badge-ml", color: "text-blue-400" },
+  MLM: { icon: Moon, premiumClass: "cal-premium-ml", badgeClass: "cal-badge-ml", color: "text-blue-400" },
 };
 const shiftVisual = (code) => SHIFT_VISUALS[code] ||
   { icon: Clock, premiumClass: "cal-premium-si", badgeClass: "cal-badge-si", color: "text-slate-500" };
@@ -176,7 +176,7 @@ export default function SchedulingPage() {
             ) : selectedUsers.length > 1 ? (
               <>
                 <span className="flex-1 truncate font-medium">{selectedUsers.length} pegawai dipilih</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#BF00FF]/20 text-[#BF00FF] font-semibold">multi</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#2F8BF8]/20 text-[#2F8BF8] font-semibold">multi</span>
               </>
             ) : (
               <span className="text-slate-mist flex-1">Pilih pegawai...</span>
@@ -281,13 +281,13 @@ export default function SchedulingPage() {
                   <button key={i} onClick={() => handleDayClick(day)} disabled={!day}
                     className={`group relative aspect-square md:aspect-[4/3] rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 text-xs
                       ${!day ? "invisible" : "cursor-pointer active:scale-95"}
-                      ${isToday ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-white" : ""}
+                      ${isToday ? "ring-2 ring-blue-500 ring-offset-2 ring-offset-white" : ""}
                       ${!shiftInfo
                         ? "bg-white/[0.02] hover:bg-white/[0.06] hover:shadow-lg"
                         : `${shiftInfo.premiumClass} hover:brightness-110 hover:shadow-lg`
                       }
                     `}>
-                    <span className={`text-[11px] font-bold leading-none ${isToday ? "text-violet-300" : "text-slate-mist"}`}>{day}</span>
+                    <span className={`text-[11px] font-bold leading-none ${isToday ? "text-blue-300" : "text-slate-mist"}`}>{day}</span>
                     {shiftInfo && (
                       <div className="flex items-center gap-0.5 mt-0.5">
                         <shiftInfo.icon size={9} />
@@ -313,12 +313,12 @@ export default function SchedulingPage() {
             return (
               <button key={s.code} onClick={() => assignShift(s.code)}
                 className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all text-sm
-                  ${isActive ? "bg-[#BF00FF]/10 border border-[#BF00FF]/40 text-gray-900 shadow-sm" : "bg-gray-50 border border-transparent text-gray-600 hover:bg-gray-100 hover:border-gray-200"}`}>
+                  ${isActive ? "bg-[#2F8BF8]/10 border border-[#2F8BF8]/40 text-gray-900 shadow-sm" : "bg-gray-50 border border-transparent text-gray-600 hover:bg-gray-100 hover:border-gray-200"}`}>
                 <div className={`w-8 h-8 rounded-2xl flex items-center justify-center ${s.badgeClass}`}>
                   <Icon size={16} />
                 </div>
                 <span className="flex-1 text-left font-medium">{s.name}</span>
-                {isActive && <CheckCircle2 size={16} className="text-[#BF00FF]" />}
+                {isActive && <CheckCircle2 size={16} className="text-[#2F8BF8]" />}
               </button>
             );
           })}
@@ -361,7 +361,7 @@ export default function SchedulingPage() {
         confirmText="Ya, Hapus" onConfirm={confirmClearMonth} />
 
       {/* FOOTER INFO */}
-      <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-gradient-to-r from-sky-500/5 to-violet-500/5 border border-sky-500/10 text-[11px] text-slate-mist">
+      <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-gradient-to-r from-sky-500/5 to-blue-500/5 border border-sky-500/10 text-[11px] text-slate-mist">
           <div className="w-6 h-6 rounded-2xl bg-sky-500/10 flex items-center justify-center shrink-0">
           <UserCheck size={13} className="text-sky-400" />
         </div>
@@ -505,24 +505,24 @@ function EmployeeSearchContent({ employees, selectedIds, onToggle, onToggleAll, 
         <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input ref={inputRef} value={q} onChange={e => setQ(e.target.value)}
           placeholder="Ketik nama pegawai..."
-          className="w-full pl-9 pr-3 py-2.5 text-sm rounded-2xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#BF00FF]/40 transition-all" />
+          className="w-full pl-9 pr-3 py-2.5 text-sm rounded-2xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2F8BF8]/40 transition-all" />
       </div>
       <div className="flex items-center justify-between px-1">
         <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
           Pegawai ({selectedIds.length} dipilih)
         </span>
         <button onClick={() => onToggleAll(filtered.map(e => e.id), allFilteredSelected)}
-          className="text-[10px] font-semibold text-[#BF00FF] hover:text-[#a000e6] transition-all">
+          className="text-[10px] font-semibold text-[#2F8BF8] hover:text-[#1F74E0] transition-all">
           {allFilteredSelected ? "Hapus semua" : "Pilih semua"}
         </button>
       </div>
       <div className="max-h-56 overflow-y-auto space-y-0.5 -mx-1 px-1">
         {filtered.map(emp => (
           <label key={emp.id}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm text-left cursor-pointer transition-all ${selectedIds.includes(emp.id) ? "bg-[#BF00FF]/10 text-gray-900 ring-1 ring-[#BF00FF]/40" : "text-gray-600 hover:bg-gray-50"}`}>
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm text-left cursor-pointer transition-all ${selectedIds.includes(emp.id) ? "bg-[#2F8BF8]/10 text-gray-900 ring-1 ring-[#2F8BF8]/40" : "text-gray-600 hover:bg-gray-50"}`}>
             <input type="checkbox" checked={selectedIds.includes(emp.id)} onChange={() => onToggle(emp.id)}
-              className="accent-[#BF00FF] w-4 h-4 shrink-0" />
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#BF00FF] to-[#7066ed] flex items-center justify-center text-xs font-bold text-white shrink-0">
+              className="accent-[#2F8BF8] w-4 h-4 shrink-0" />
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#2F8BF8] to-[#39C0DF] flex items-center justify-center text-xs font-bold text-white shrink-0">
               {emp.full_name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
@@ -534,7 +534,7 @@ function EmployeeSearchContent({ employees, selectedIds, onToggle, onToggleAll, 
         {!filtered.length && <p className="text-xs text-gray-400 text-center py-6">Tidak ditemukan</p>}
       </div>
       <button onClick={onDone}
-        className="w-full py-2.5 bg-[#BF00FF] hover:bg-[#a000e6] text-white rounded-full text-sm font-semibold shadow-lg active:scale-[0.98] transition-all">
+        className="w-full py-2.5 bg-[#2F8BF8] hover:bg-[#1F74E0] text-white rounded-full text-sm font-semibold shadow-lg active:scale-[0.98] transition-all">
         Selesai{selectedIds.length ? ` (${selectedIds.length} dipilih)` : ""}
       </button>
     </div>
@@ -584,8 +584,8 @@ function BulkAssignDialog({ employees, year, month, lastDay, shifts = [], onClos
       <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-lg shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto" data-no-ptr onClick={e => e.stopPropagation()}>
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-[#BF00FF]/10 flex items-center justify-center shadow-sm">
-              <Layers size={17} className="text-[#BF00FF]" />
+            <div className="w-9 h-9 rounded-2xl bg-[#2F8BF8]/10 flex items-center justify-center shadow-sm">
+              <Layers size={17} className="text-[#2F8BF8]" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-gray-900">Isi Cepat Jadwal</h3>
@@ -607,7 +607,7 @@ function BulkAssignDialog({ employees, year, month, lastDay, shifts = [], onClos
                 const Icon = s.icon;
                 return (
                   <button key={s.code} onClick={() => setShiftCode(s.code)}
-                    className={`flex items-center gap-2.5 px-3.5 py-3 rounded-2xl text-xs font-medium transition-all ${shiftCode === s.code ? "bg-[#BF00FF]/10 border border-[#BF00FF]/40 text-gray-900 shadow-sm" : "bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100"}`}>
+                    className={`flex items-center gap-2.5 px-3.5 py-3 rounded-2xl text-xs font-medium transition-all ${shiftCode === s.code ? "bg-[#2F8BF8]/10 border border-[#2F8BF8]/40 text-gray-900 shadow-sm" : "bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100"}`}>
                     <Icon size={16} className={s.color} /> {s.name}
                   </button>
                 );
@@ -624,14 +624,14 @@ function BulkAssignDialog({ employees, year, month, lastDay, shifts = [], onClos
                   <span className="text-[10px] text-gray-500 block mb-1">Dari</span>
                   <input type="number" min={1} max={lastDay} value={range.start}
                     onChange={e => setRange(p => ({ ...p, start: Math.max(1, Math.min(lastDay, Number(e.target.value)))}))}
-                    className="w-16 px-2 py-1.5 text-sm rounded-2xl bg-white border border-gray-200 text-gray-900 text-center font-mono focus:outline-none focus:ring-2 focus:ring-[#BF00FF]/50" />
+                    className="w-16 px-2 py-1.5 text-sm rounded-2xl bg-white border border-gray-200 text-gray-900 text-center font-mono focus:outline-none focus:ring-2 focus:ring-[#2F8BF8]/50" />
                 </div>
                 <span className="text-gray-400 mt-5">—</span>
                 <div className="text-center">
                   <span className="text-[10px] text-gray-500 block mb-1">Sampai</span>
                   <input type="number" min={1} max={lastDay} value={range.end}
                     onChange={e => setRange(p => ({ ...p, end: Math.max(1, Math.min(lastDay, Number(e.target.value)))}))}
-                    className="w-16 px-2 py-1.5 text-sm rounded-2xl bg-white border border-gray-200 text-gray-900 text-center font-mono focus:outline-none focus:ring-2 focus:ring-[#BF00FF]/50" />
+                    className="w-16 px-2 py-1.5 text-sm rounded-2xl bg-white border border-gray-200 text-gray-900 text-center font-mono focus:outline-none focus:ring-2 focus:ring-[#2F8BF8]/50" />
                 </div>
                 <span className="text-[10px] text-gray-400 mt-5 whitespace-nowrap">{MONTHS[month]} {year}</span>
               </div>
@@ -644,7 +644,7 @@ function BulkAssignDialog({ employees, year, month, lastDay, shifts = [], onClos
             <div className="flex flex-wrap gap-1.5">
               {DAY_SHORT.map((d, i) => (
                 <button key={i} onClick={() => setDays(p => p.includes(i) ? p.filter(x => x !== i) : [...p, i])}
-                  className={`px-3.5 py-2 rounded-full text-[10px] font-bold transition-all ${days.includes(i) ? "bg-[#BF00FF]/10 border border-[#BF00FF]/40 text-[#BF00FF] shadow-sm" : "bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100"}`}>
+                  className={`px-3.5 py-2 rounded-full text-[10px] font-bold transition-all ${days.includes(i) ? "bg-[#2F8BF8]/10 border border-[#2F8BF8]/40 text-[#2F8BF8] shadow-sm" : "bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100"}`}>
                   {d}
                 </button>
               ))}
@@ -656,13 +656,13 @@ function BulkAssignDialog({ employees, year, month, lastDay, shifts = [], onClos
             <div className="flex items-center justify-between mb-2">
               <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Pegawai ({selectedIds.length})</label>
               <button onClick={() => { if (selectAll) { setSelectedIds([]); setSelectAll(false); } else { setSelectedIds(employees.map(e => e.id)); setSelectAll(true); } }}
-                className="text-[10px] font-semibold text-[#BF00FF] hover:text-[#a000e6] transition-all">{selectAll ? "Hapus semua" : "Pilih semua"}</button>
+                className="text-[10px] font-semibold text-[#2F8BF8] hover:text-[#1F74E0] transition-all">{selectAll ? "Hapus semua" : "Pilih semua"}</button>
             </div>
             <div className="max-h-40 overflow-y-auto space-y-0.5 rounded-2xl bg-gray-50 border border-gray-200 p-1">
               {employees.map(emp => (
-                <label key={emp.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer text-xs transition-all ${selectedIds.includes(emp.id) ? "bg-[#BF00FF]/10 border border-[#BF00FF]/30" : "hover:bg-gray-100"}`}>
+                <label key={emp.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer text-xs transition-all ${selectedIds.includes(emp.id) ? "bg-[#2F8BF8]/10 border border-[#2F8BF8]/30" : "hover:bg-gray-100"}`}>
                   <input type="checkbox" checked={selectedIds.includes(emp.id)} onChange={() => toggle(emp.id)}
-                    className="accent-[#BF00FF] w-3.5 h-3.5" />
+                    className="accent-[#2F8BF8] w-3.5 h-3.5" />
                   <span className="text-gray-700 flex-1 font-medium">{emp.full_name}</span>
                   <span className="text-[9px] text-gray-500">{emp.role}</span>
                 </label>
@@ -672,7 +672,7 @@ function BulkAssignDialog({ employees, year, month, lastDay, shifts = [], onClos
 
           {/* Apply */}
           <button onClick={apply} disabled={saving}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-[#BF00FF] hover:bg-[#a000e0] text-white rounded-full text-sm font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg">
+            className="w-full flex items-center justify-center gap-2 py-3 bg-[#2F8BF8] hover:bg-[#a000e0] text-white rounded-full text-sm font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg">
             {saving ? <><Loader2 size={16} className="animate-spin" /> Menyimpan...</> : <><CheckCircle2 size={17} /> Terapkan Jadwal</>}
           </button>
         </div>

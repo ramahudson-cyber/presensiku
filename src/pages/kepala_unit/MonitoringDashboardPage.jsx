@@ -12,9 +12,9 @@ import {
   Sun, Moon, LogOut, Sunset, CloudSun,
 } from "lucide-react";
 
-function StatCard({ title, value, subtitle, icon: Icon, accent = "from-[#BF00FF] to-[#8A00CC]", loading }) {
+function StatCard({ title, value, subtitle, icon: Icon, accent = "from-[#2F8BF8] to-[#4A7CFB]", loading }) {
   return (
-    <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_4px_16px_rgba(15,23,42,0.06)] hover:scale-[1.02] hover:border-[#BF00FF]/30 transition-all duration-300">
+    <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_4px_16px_rgba(15,23,42,0.06)] hover:scale-[1.02] hover:border-[#2F8BF8]/30 transition-all duration-300">
       <div className="flex items-start justify-between gap-2 md:gap-3">
         <div className="min-w-0">
           <p className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider truncate">{title}</p>
@@ -58,7 +58,7 @@ const SHIFT_META = {
   PG: { icon: Sun, color: "text-[#65a30d]", bg: "bg-green-yellow/15", border: "border-green-yellow/25", badge: "bg-green-yellow/20" },
   SR: { icon: Sunset, color: "text-[#65a30d]", bg: "bg-green-yellow/15", border: "border-green-yellow/25", badge: "bg-green-yellow/20" },
   SI: { icon: CloudSun, color: "text-sky-600", bg: "bg-sky-500/15", border: "border-sky-500/25", badge: "bg-sky-500/20" },
-  ML: { icon: Moon, color: "text-violet-600", bg: "bg-violet-500/15", border: "border-violet-500/25", badge: "bg-violet-500/20" },
+  ML: { icon: Moon, color: "text-blue-600", bg: "bg-blue-500/15", border: "border-blue-500/25", badge: "bg-blue-500/20" },
 };
 
 const getWitaDateString = (date = new Date()) => {
@@ -260,7 +260,7 @@ export default function KepalaUnitDashboard() {
     <div className="flex-1">
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
       {/* ===== HERO — violet gradient, DESIGN.md ===== */}
-      <div className="hero-card-bg bg-gradient-to-r from-[#C44DFF] via-[#BF00FF] to-[#8A00CC] px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-5 rounded-b-[32px]">
+      <div className="hero-card-bg bg-gradient-to-r from-[#39C0DF] via-[#2F8BF8] to-[#4A7CFB] px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-5 rounded-b-[32px]">
         {/* Top Row: Clock + Date + Shift Badge | Action Icons */}
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -305,7 +305,7 @@ export default function KepalaUnitDashboard() {
               className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/15 flex items-center justify-center hover:bg-white/25 transition-colors"
             >
               <Bell size={17} className="text-white/80" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-white rounded-full ring-2 ring-[#8A00CC]"></span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-white rounded-full ring-2 ring-[#4A7CFB]"></span>
             </button>
             <button
               onClick={handleLogout}
@@ -373,7 +373,7 @@ export default function KepalaUnitDashboard() {
                       className={`w-full rounded-t-lg md:rounded-t-xl transition-all duration-300 group-hover:scale-105 ${
                         isToday
                           ? "bg-gradient-to-t from-electric-violet to-periwinkle-glow shadow-lg"
-                          : "bg-gradient-to-t from-violet-300 to-purple-200 group-hover:from-violet-400 group-hover:to-purple-300"
+                          : "bg-gradient-to-t from-blue-300 to-blue-200 group-hover:from-blue-400 group-hover:to-blue-300"
                       }`}
                       style={{ height: `${(val / maxWeekly) * 100}%`, minHeight: val > 0 ? "6px" : "0" }}
                     />
@@ -389,8 +389,8 @@ export default function KepalaUnitDashboard() {
           <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_4px_16px_rgba(15,23,42,0.06)]">
             <div className="flex items-center justify-between mb-3 md:mb-4">
               <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Pengumuman</h2>
-              <div className="p-1.5 rounded-lg bg-[#F5F3FF]">
-                <Bell size={16} className="text-[#BF00FF]" />
+              <div className="p-1.5 rounded-lg bg-[#EEF6FF]">
+                <Bell size={16} className="text-[#2F8BF8]" />
               </div>
             </div>
             {loading ? (

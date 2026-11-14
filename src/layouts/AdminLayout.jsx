@@ -22,12 +22,12 @@ function OrgSwitchBanner({ isAttendancePath }) {
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 py-2 bg-[#0F0214] text-[11px] sm:text-xs text-purple-200">
+    <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 py-2 bg-[#0F0214] text-[11px] sm:text-xs text-blue-200">
       <span className="inline-flex items-center gap-1.5">
         <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
         <b style={{ color: "#ffffff" }}>Mode Akses Instansi:</b> {switchedOrg.name}
       </span>
-      <span className="text-purple-300/50">—</span>
+      <span className="text-blue-300/50">—</span>
       <span>semua data yang tampil & tersimpan mengarah ke instansi ini</span>
       <button
         onClick={handleBack}
