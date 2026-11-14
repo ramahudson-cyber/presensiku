@@ -619,7 +619,6 @@ export default function SignInPage() {
                   )}
 
                   {/* Note for Ingat Saya removed from checkbox label */}
-                  {rememberMe && <p className="text-[10px] leading-relaxed -mt-2 mb-4 ml-[30px]" style={{ color: "#94A3B8" }}>Username &amp; password tersimpan untuk login cepat</p>}
 
                   <div
                     className="w-full py-3.5 sm:py-4 px-8 rounded-full text-pure-white font-bold text-sm flex items-center justify-center gap-2.5"
