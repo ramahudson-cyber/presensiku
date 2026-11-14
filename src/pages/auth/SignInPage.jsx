@@ -538,13 +538,26 @@ export default function SignInPage() {
                           onChange={(e) => setRememberMe(e.target.checked)}
                           className="peer sr-only"
                         />
+                        {/* Warna kotak memakai inline style yang digerakkan state.
+                            Kelas .bg-white dan .bg-electric-violet punya spesifisitas
+                            sama, dan urutan CSS di bundle membuat .bg-white menang —
+                            jadi kelas saling menimpa dan kotak selalu putih. */}
                         <div
-                          className="w-[18px] h-[18px] rounded-[6px] border transition-all duration-200 peer-checked:bg-electric-violet peer-checked:border-electric-violet"
-                          style={{ borderColor: "#CBD5E1", background: "#FFFFFF" }}
+                          className="w-[18px] h-[18px] rounded-[6px] border transition-all duration-200"
+                          style={
+                            rememberMe
+                              ? { background: "#2F8BF8", borderColor: "#2F8BF8" }
+                              : { background: "#FFFFFF", borderColor: "#CBD5E1" }
+                          }
                         />
                         <svg
-                          className="absolute inset-0 w-[18px] h-[18px] opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
-                          fill="none" viewBox="0 0 24 24" stroke="#FFFFFF" strokeWidth={3}
+                          className={`absolute inset-0 w-[18px] h-[18px] transition-opacity duration-200 pointer-events-none ${
+                            rememberMe ? "opacity-100" : "opacity-0"
+                          }`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="#FFFFFF"
+                          strokeWidth={3}
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
@@ -572,15 +585,26 @@ export default function SignInPage() {
                           type="checkbox"
                           checked={useBiometric}
                           onChange={(e) => setUseBiometric(e.target.checked)}
-                          className="peer sr-only"
+                          className="sr-only"
                         />
+                        {/* Inline style digerakkan state — kelas .bg-white menang
+                            atas .bg-electric-violet pada urutan CSS bundle. */}
                         <div
-                          className="w-[18px] h-[18px] rounded-[6px] border transition-all duration-200 peer-checked:bg-electric-violet peer-checked:border-electric-violet"
-                          style={{ borderColor: "#CBD5E1", background: "#FFFFFF" }}
+                          className="w-[18px] h-[18px] rounded-[6px] border transition-all duration-200"
+                          style={
+                            useBiometric
+                              ? { background: "#2F8BF8", borderColor: "#2F8BF8" }
+                              : { background: "#FFFFFF", borderColor: "#CBD5E1" }
+                          }
                         />
                         <svg
-                          className="absolute inset-0 w-[18px] h-[18px] opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
-                          fill="none" viewBox="0 0 24 24" stroke="#FFFFFF" strokeWidth={3}
+                          className={`absolute inset-0 w-[18px] h-[18px] transition-opacity duration-200 pointer-events-none ${
+                            useBiometric ? "opacity-100" : "opacity-0"
+                          }`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="#FFFFFF"
+                          strokeWidth={3}
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
