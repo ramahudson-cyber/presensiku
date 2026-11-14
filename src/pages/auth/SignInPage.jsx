@@ -399,18 +399,16 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-dvh w-full flex flex-col overflow-hidden" style={{ background: "#F4F2FB" }}>
-      {/* ATAS +-35% — peta fokus + gelombang radius (Preview B) */}
+    <div className="min-h-dvh w-full flex flex-col lg:flex-row overflow-hidden" style={{ background: "#F4F2FB" }}>
+      {/* ATAS/KIRI +-35% — peta fokus + gelombang radius (Preview B) */}
       <div
-        className="relative flex items-center justify-center overflow-hidden"
+        className="relative flex flex-col items-center justify-center overflow-hidden flex-[35_1_0%] min-h-[200px] lg:flex-1 lg:min-h-0 lg:h-screen lg:px-12"
         style={{
-          flex: "35 1 0%",
-          minHeight: 200,
           background: "linear-gradient(160deg,#39C0DF 0%,#32ACFB 34%,#3F93FD 66%,#4A7CFB 100%)",
         }}
       >
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.5) 1.2px, transparent 1.3px)", backgroundSize: "18px 18px", opacity: 0.45, maskImage: "radial-gradient(circle at 50% 45%, #000 25%, transparent 76%)", WebkitMaskImage: "radial-gradient(circle at 50% 45%, #000 25%, transparent 76%)" }} />
-        <svg viewBox="0 0 300 192" fill="none" className="relative" style={{ width: "100%", maxWidth: 280, height: 180 }}>
+        <svg viewBox="0 0 300 192" fill="none" className="relative w-full max-w-[280px] h-[180px] lg:max-w-[440px] lg:h-[290px]">
           <g stroke="#fff" strokeOpacity="0.16" strokeWidth="1.6" strokeLinecap="round">
             <path d="M8 38h88M120 26h72M202 42h90" />
             <path d="M8 122h68M102 142h108M232 120h62" />
@@ -435,14 +433,29 @@ export default function SignInPage() {
             <circle cx="150" cy="90.8" r="3.7" fill="#2F8BF8" />
           </g>
         </svg>
+        {/* Identitas — hanya desktop */}
+        <div className="hidden lg:flex flex-col items-center text-center">
+          <div className="text-[34px] font-extrabold tracking-[0.24em]" style={{ color: "#FFFFFF", textIndent: "0.24em" }}>
+            PRESENSIKU
+          </div>
+          <p className="text-sm mt-3" style={{ color: "rgba(255,255,255,0.85)" }}>
+            Absen lebih rapi, kerja lebih tenang.
+          </p>
+          <p className="text-[11px] font-bold mt-4 tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.6)" }}>
+            Disiplin · Akurat · Optimal
+          </p>
+        </div>
       </div>
 
-      {/* SHEET +-65% — putih, sudut atas besar, bisa di-scroll */}
-      <div className="relative z-10 flex flex-col overflow-hidden" style={{ flex: "65 1 0%", minHeight: 0, marginTop: -22, background: "#FFFFFF", borderRadius: "32px 32px 0 0", boxShadow: "0 -10px 34px rgba(15,23,42,0.14)" }}>
-        <div className="flex justify-center pt-2.5 pb-1 shrink-0">
+      {/* SHEET/KANAN +-65% — putih; mobile: sheet, desktop: panel kanan */}
+      <div
+        className="relative z-10 flex flex-col overflow-hidden flex-[65_1_0%] min-h-0 -mt-6 rounded-t-[32px] bg-white shadow-[0_-10px_34px_rgba(15,23,42,0.14)] lg:flex-1 lg:w-1/2 lg:h-screen lg:mt-0 lg:rounded-none"
+      >
+        <div className="flex justify-center pt-2.5 pb-1 shrink-0 lg:hidden">
           <span className="block rounded-full" style={{ width: 42, height: 5, background: "#E2E8F0" }} />
         </div>
-        <div className="flex-1 min-h-0 overflow-y-auto px-5 sm:px-7 pb-6">
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 sm:px-7 pb-6 lg:overflow-visible lg:px-14 lg:flex lg:flex-col lg:justify-center">
+          <div className="w-full lg:max-w-[400px] lg:mx-auto">
             {/* LOGIN STEP */}
             {step === "login" && (
               <>
@@ -744,6 +757,7 @@ export default function SignInPage() {
                 </div>
               </>
             )}
+          </div>
 
           {/* Footer */}
           <p className="text-center text-[10px] mt-5 tracking-[0.65px]" style={{ color: "#94A3B8" }}>
