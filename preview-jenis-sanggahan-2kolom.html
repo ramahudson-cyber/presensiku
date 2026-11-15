@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — Jenis Sanggahan 2 Kolom (tanpa full width)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #E9ECF2; min-height: 100vh; color: #0F172A;
+    display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 26px 16px 40px;
+  }
+  .headline { font-size: 14px; font-weight: 800; color: #334155; text-align: center; }
+  .row { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .case { display: flex; flex-direction: column; align-items: center; gap: 9px; }
+  .case-label { font-size: 10.5px; font-weight: 700; color: #64748B; }
+  .phone { width: 330px; background: #F4F2FB; border-radius: 24px; overflow: hidden; box-shadow: 0 22px 54px rgba(15,23,42,.2); border: 1px solid #E2E8F0; }
+  .sec { padding: 18px 16px 20px; }
+  .sec h4 { font-size: 13px; font-weight: 800; margin-bottom: 10px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tile { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px;
+    background: #fff; border: 1.5px solid rgba(31,41,55,.08); min-width: 0; }
+  .tile .ico { width: 26px; height: 26px; border-radius: 10px; background: #EEF6FF; color: #2F8BF8;
+    display: grid; place-items: center; flex-shrink: 0; }
+  .tile .ico svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tile b { font-size: 11.5px; font-weight: 800; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .tile.sel { background: linear-gradient(135deg, #2F8BF8, #1F74E0); border-color: rgba(47,139,248,.9);
+    box-shadow: 0 6px 16px -6px rgba(47,139,248,.5); }
+  .tile.sel .ico { background: rgba(255,255,255,.22); color: #fff; }
+  .tile.sel b { color: #fff; }
+  .tile.sel .check { width: 17px; height: 17px; border-radius: 999px; background: #fff; color: #2F8BF8;
+    display: grid; place-items: center; flex-shrink: 0; }
+  .tile.sel .check svg { width: 9px; height: 9px; stroke: currentColor; stroke-width: 3.4; }
+
+  .full { grid-column: span 2; }
+
+  .note { width: 700px; max-width: 100%; background: #fff; border-radius: 18px; padding: 16px 18px; border: 1px solid #E2E8F0; font-size: 11.5px; color: #64748B; line-height: 1.6; }
+  .note b { color: #0F172A; }
+</style>
+</head>
+<body>
+
+  <div class="headline">JENIS SANGGAHAN — TIDAK ABSEN PULANG TIDAK LAGI FULL WIDTH</div>
+
+  <div class="row">
+    <!-- SEBELUM -->
+    <div class="case">
+      <div class="phone">
+        <div class="sec">
+          <h4>Jenis Sanggahan</h4>
+          <div class="grid">
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><b>Keterlambatan</b></div>
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></span><b>Dinas Luar</b></div>
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/><path d="M9.5 14.5l5 5M14.5 14.5l-5 5"/></svg></span><b>Tidak Hadir</b></div>
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg></span><b>Kendala Sistem</b></div>
+            <div class="tile full"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3v9m0 0 4-4m-4 4-4-4"/><path d="M4.3 14.3A8 8 0 1 0 20 13"/></svg></span><b>Tidak Absen Pulang</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="case-label">SEBELUM — tile terakhir melintang penuh</div>
+    </div>
+
+    <!-- SESUDAH -->
+    <div class="case">
+      <div class="phone">
+        <div class="sec">
+          <h4>Jenis Sanggahan</h4>
+          <div class="grid">
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><b>Keterlambatan</b></div>
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></span><b>Dinas Luar</b></div>
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/><path d="M9.5 14.5l5 5M14.5 14.5l-5 5"/></svg></span><b>Tidak Hadir</b></div>
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg></span><b>Kendala Sistem</b></div>
+            <div class="tile sel"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3v9m0 0 4-4m-4 4-4-4"/><path d="M4.3 14.3A8 8 0 1 0 20 13"/></svg></span><b>Tidak Absen Pulang</b><span class="check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="case-label">SESUDAH — semua tile setengah lebar, rapi 2 kolom</div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Perubahan:</b> tile "Tidak Absen Pulang" tidak lagi memakai <b>col-span-2</b> (melintang dua kolom). Sekarang kelima jenis tampil seragam dalam grid 2 kolom — tile terakhir berada di kiri bawah, setengah lebar seperti lainnya.<br><br>
+    <b>Tidak berubah:</b> ikon, warna, animasi pilihan, label, alur pengajuan sanggahan, dan penyimpanan jenis ke database. Hanya lebar tile tersebut.
+  </div>
+
+</body>
+</html>
