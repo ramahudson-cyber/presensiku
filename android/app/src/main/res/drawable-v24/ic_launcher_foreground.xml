@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Vector drawable pin (BUKAN adaptive-icon; adaptive-icon hanya di mipmap-anydpi-v26).
+<!-- Vector drawable fingerprint (BUKAN adaptive-icon; adaptive-icon hanya di mipmap-anydpi-v26).
      File ini tidak direferensikan langsung (adaptive icon memakai @mipmap/ic_launcher_foreground),
      dipertahankan sebagai vector valid agar tidak memicu kegagalan linking resource. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -7,17 +7,64 @@
     android:height="108dp"
     android:viewportWidth="120"
     android:viewportHeight="120">
+    <group
+        android:translateX="19.200000000000003"
+        android:translateY="19.200000000000003"
+        android:scaleX="3.4"
+        android:scaleY="3.4">
     <path
-        android:pathData="M60,10 C38,10 22,26 22,46 C22,66 43,92 60,106 C77,92 98,66 98,46 C98,26 82,10 60,10 Z"
+        android:pathData="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="6"
+        android:strokeWidth="2"
         android:strokeLineJoin="round"
         android:strokeLineCap="round" />
     <path
-        android:pathData="M60,20 A26,26 0 1,1 59.99,20 Z"
+        android:pathData="M14 13.12c0 2.38 0 6.38-1 8.88"
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="4" />
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
     <path
-        android:pathData="M60,41 A5,5 0 1,1 59.99,41 Z"
-        android:fillColor="#FFFFFF" />
+        android:pathData="M17.29 21.02c.12-.6.43-2.3.5-3.02"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M2 12a10 10 0 0 1 18-6"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M2 16h.01"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M21.8 16c.2-2 .131-5.354 0-6"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M8.65 22c.21-.66.45-1.32.57-2"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M9 6.8a6 6 0 0 1 9 5.2v2"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+    </group>
 </vector>
