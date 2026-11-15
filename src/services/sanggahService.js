@@ -138,14 +138,33 @@ export async function getMyDisputableAttendance(userId) {
   }
 }
 
+// Nilai jenis sanggahan (whitelist server: kolom `jenis` di tabel sanggahan)
+const JENIS_VALUES = ["keterlambatan", "dinas_luar", "tidak_hadir", "kendala_sistem", "tidak_absen_pulang"];
+
+// Data absensi milik user pada satu tanggal (untuk kartu "Data Absensi" di
+// form sanggahan). Null bila tidak ada baris attendance pada tanggal itu.
+export async function getAttendanceByDate(userId, tanggal) {
+  if (!userId || !tanggal) return null;
+  const { data, error } = await supabase
+    .from("attendance")
+    .select("clock_in_time, clock_out_time, attendance_status, is_late, late_minutes")
+    .eq("user_id", userId)
+    .eq("date", tanggal)
+    .maybeSingle();
+  if (error) throw error;
+  return data || null;
+}
+
 // Ajukan sanggahan (RPC server-side: validasi tanggal, status, anti-double)
-export async function createSanggahan({ tanggal, reason, attachmentUrl = null }) {
+export async function createSanggahan({ tanggal, reason, attachmentUrl = null, jenis }) {
   if (!tanggal) throw new Error("Tanggal wajib dipilih");
   if (!reason?.trim()) throw new Error("Alasan wajib diisi");
+  if (!JENIS_VALUES.includes(jenis)) throw new Error("Pilih jenis sanggahan");
   const { data, error } = await supabase.rpc("create_sanggahan", {
     p_tanggal: tanggal,
     p_reason: reason.trim(),
     p_attachment_url: attachmentUrl,
+    p_jenis: jenis,
   });
   if (error) throw error;
   if (!data?.success) throw new Error(data?.error || "Gagal mengirim sanggahan");
