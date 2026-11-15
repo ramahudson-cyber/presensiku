@@ -15,39 +15,36 @@ export default function WelcomePage() {
       <div className="content">
         <div className="hero">
           {/* Logo: location pin premium — draw + ripple + core pulse */}
-          <div className="logo reveal d-logo" aria-hidden="true">
-            <div className="logo-glow" />
-            <svg viewBox="0 0 120 120" fill="none">
-              <defs>
-                <linearGradient id="pinStroke" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stopColor="#ffffff" />
-                  <stop offset="1" stopColor="rgba(255,255,255,0.45)" />
-                </linearGradient>
-              </defs>
+      <div className="logo reveal d-logo" aria-hidden="true">
+        <div className="logo-glow" />
+        <svg viewBox="0 0 120 120" fill="none">
+          <defs>
+            <linearGradient id="pinStroke" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="#ffffff" />
+              <stop offset="1" stopColor="rgba(255,255,255,0.45)" />
+            </linearGradient>
+          </defs>
 
-              {/* Ripple sonar — memancar dari pusat pin, loop halus */}
-              <ellipse className="ripple" cx="60" cy="66" rx="38" ry="26" style={{ "--delay": "0.6s" }} />
-              <ellipse className="ripple" cx="60" cy="66" rx="38" ry="26" style={{ "--delay": "2.1s" }} />
+          {/* Ripple sonar — memancar dari pusat logo */}
+          <ellipse className="ripple" cx="60" cy="66" rx="38" ry="26" style={{ "--delay": "1.3s" }} />
+          <ellipse className="ripple" cx="60" cy="66" rx="38" ry="26" style={{ "--delay": "2.5s" }} />
 
-              {/* Body pin */}
-              <path
-                className="draw pin"
-                d="M60 10 C38 10 22 26 22 46 C22 66 43 92 60 106 C77 92 98 66 98 46 C98 26 82 10 60 10 Z"
-                pathLength="100"
-                stroke="url(#pinStroke)"
-              />
+          {/* Fingerprint — alur menggambar diri (ikon FAB Presensi) */}
+          <g transform="translate(3 6) scale(4.75)" stroke="url(#pinStroke)" strokeWidth="0.55">
+            <path className="draw" pathLength="100" d="M2 12a10 10 0 0 1 18-6c.8 1.1 1.4 2.3 1.8 3.7" style={{ "--dur": "0.5s", "--delay": "0.1s" }} />
+            <path className="draw" pathLength="100" d="M21.85 16.4c.2-1.6.25-3 .12-4.6" style={{ "--dur": "0.5s", "--delay": "0.22s" }} />
+            <path className="draw" pathLength="100" d="M9 6.8a6 6 0 0 1 9 5.2c0 .8-.03 1.5-.1 2.2" style={{ "--dur": "0.5s", "--delay": "0.34s" }} />
+            <path className="draw" pathLength="100" d="M4.6 19.9C5.4 18.3 6 15.4 6 12a6 6 0 0 1 .34-2" style={{ "--dur": "0.5s", "--delay": "0.46s" }} />
+            <path className="draw" pathLength="100" d="M12 10a2 2 0 0 0-2 2c0 1.3-.12 2.9-.3 4.4" style={{ "--dur": "0.5s", "--delay": "0.58s" }} />
+            <path className="draw" pathLength="100" d="M14.1 13.1c-.05 2.5-.4 5.9-1.1 8.9" style={{ "--dur": "0.5s", "--delay": "0.7s" }} />
+            <path className="draw" pathLength="100" d="M17.35 21.1c.15-.6.4-2.2.47-3" style={{ "--dur": "0.5s", "--delay": "0.82s" }} />
+            <path className="draw" pathLength="100" d="M8.6 22.1c.25-.7.45-1.4.6-2.1" style={{ "--dur": "0.5s", "--delay": "0.94s" }} />
+          </g>
 
-              {/* Ring dalam */}
-              <circle className="draw inner-line" cx="60" cy="46" r="26" pathLength="100" />
-
-              {/* Celah inti (pop + pulse) */}
-              <g className="pop-in">
-                <circle className="core core-outer" cx="60" cy="46" r="17" />
-                <circle className="core core-mid" cx="60" cy="46" r="11" />
-                <circle className="core core-dot" cx="60" cy="46" r="5" />
-              </g>
-            </svg>
-          </div>
+          {/* Titik inti */}
+          <path className="core" d="M2 16h.01" transform="translate(3 6) scale(4.75)" stroke="#fff" strokeWidth="0.95" />
+        </svg>
+      </div>
 
           <h1 className="wordmark reveal d-word">PRESENSIKU</h1>
 
