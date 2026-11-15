@@ -330,7 +330,6 @@ export default function EmployeeHistory() {
               style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
               <div className="flex items-center justify-between px-1 pt-1 pb-1">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-1 h-4 rounded-full shrink-0" style={{ background: "linear-gradient(180deg, #2F8BF8, #3B82F6)" }} />
                   <span className="text-xs font-bold tracking-wide" style={{ color: T.text }}>Ringkasan Kehadiran</span>
                 </div>
                 <span className="text-[10px] font-medium" style={{ color: T.sub }}>{MONTHS[month]} {year}</span>
@@ -401,7 +400,6 @@ export default function EmployeeHistory() {
               style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
               <div className="flex items-center justify-between px-1 pt-1 pb-2">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-1 h-4 rounded-full shrink-0" style={{ background: "linear-gradient(180deg, #2F8BF8, #3B82F6)" }} />
                   <span className="text-xs font-bold tracking-wide" style={{ color: T.text }}>Daftar Absensi</span>
                 </div>
                 <span className="text-[10px] font-medium" style={{ color: T.sub }}>{history.length} hari</span>

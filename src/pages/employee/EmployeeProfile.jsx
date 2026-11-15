@@ -51,17 +51,11 @@ const icons = {
   chevron:    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>,
 };
 
-// ── Indicator bar ──
-const IndicatorBar = () => (
-  <div className="w-1 h-4 rounded-full shrink-0"
-    style={{ background: 'linear-gradient(180deg, #2F8BF8, #3B82F6)' }} />
-);
 
 // ── Card Header ──
 const CardHeader = ({ title, subtitle }) => (
   <div className="flex items-center justify-between px-5 pt-5 pb-1">
-    <div className="flex items-center gap-2.5">
-      <IndicatorBar />
+    <div className="flex items-center gap-2.5">
       <span className="text-xs font-bold tracking-wide" style={{ color: T.text }}>{title}</span>
     </div>
     <span className="text-[10px] font-medium" style={{ color: T.sub }}>{subtitle}</span>

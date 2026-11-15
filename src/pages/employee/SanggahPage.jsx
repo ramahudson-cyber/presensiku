@@ -128,11 +128,8 @@ const attachmentFileName = (url) => {
 };
 
 // Header section: chip ikon biru + judul (pola DESIGN.md, sentence case)
-const SecHead = ({ icon, title }) => (
-  <div className="flex items-center gap-2.5 mx-0.5 mb-3">
-    <div className="w-[30px] h-[30px] rounded-[10px] flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
-      {icon}
-    </div>
+const SecHead = ({ title }) => (
+  <div className="flex items-center mx-0.5 mb-3">
     <b className="text-sm font-extrabold" style={{ color: T.text, letterSpacing: "-0.01em" }}>{title}</b>
   </div>
 );
@@ -451,7 +448,6 @@ export default function SanggahPage() {
             <div className="mb-6">
               <SecHead
                 title="Jenis Sanggahan"
-                icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z" /><path d="m2 17 10 5 10-5M2 12l10 5 10-5" /></svg>}
               />
               <div className="grid grid-cols-2 gap-2.5">
                 {JENIS_OPTIONS.map((opt) => {
@@ -487,7 +483,6 @@ export default function SanggahPage() {
             <div className="mb-6">
               <SecHead
                 title="Alasan Sanggahan"
-                icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>}
               />
               <div
                 className="rounded-[18px] p-3.5 transition-colors duration-200 focus-within:border-[rgba(47,139,248,0.5)]"
@@ -510,7 +505,6 @@ export default function SanggahPage() {
             <div className="mb-6">
               <SecHead
                 title="Lampiran Bukti (Opsional)"
-                icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" /></svg>}
               />
               <label
                 className="flex flex-col items-center text-center gap-1.5 w-full px-4 py-[22px] rounded-[18px] cursor-pointer transition-all duration-200 hover:opacity-90"

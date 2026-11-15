@@ -69,7 +69,7 @@ function fmtShort(dateStr) {
 }
 
 // ─── Section header — pola DESIGN.md: kotak ikon 32px + judul + subteks ───
-function SectionHeader({ icon, title, subtitle, right }) {
+function SectionHeader({ title, subtitle, right }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
       <div style={{
@@ -364,12 +364,6 @@ export default function LeaveRequestPage() {
         {/* ── 1. Jenis Pengajuan ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <SectionHeader
-            icon={
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                <path d="M3.5 12h4l1.5-2.5 2.5 5 1.5-3h7.5" opacity="0.55" />
-              </svg>
-            }
             title="Jenis Pengajuan"
             subtitle="Pilih salah satu"
           />
@@ -466,12 +460,6 @@ export default function LeaveRequestPage() {
         {/* ── 2. Durasi ketidakhadiran ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <SectionHeader
-            icon={
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4.5" width="18" height="17" rx="3" />
-                <path d="M8 2.5v4M16 2.5v4M3 10h18" />
-              </svg>
-            }
             title="Durasi ketidakhadiran"
             right={
               <span style={{
@@ -515,11 +503,6 @@ export default function LeaveRequestPage() {
         {/* ── 3. Alasan / keterangan ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <SectionHeader
-            icon={
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V6a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z" />
-              </svg>
-            }
             title="Alasan / keterangan"
             subtitle="Wajib diisi"
           />
@@ -553,12 +536,6 @@ export default function LeaveRequestPage() {
             {/* ── 4. Lampiran (opsional): foto / scan surat dokter ── */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 10 }}>
               <SectionHeader
-                icon={
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 16V4m0 0L7 9m5-5 5 5" />
-                    <path d="M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3" />
-                  </svg>
-                }
                 title="Lampiran (opsional)"
                 subtitle="Foto / scan surat dokter"
               />

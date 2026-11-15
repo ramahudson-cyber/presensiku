@@ -196,7 +196,6 @@ export default function OvertimeRequestPage() {
         {/* ─── FORM AJUKAN ─── */}
         <div className="rounded-3xl p-6" style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, paddingBottom: 14, borderBottom: `1px solid ${T.div}` }}>
-            <div style={{ width: 3, height: 18, borderRadius: 2, background: "linear-gradient(180deg, #2F8BF8, #1F74E0)" }} />
             <span style={{ fontSize: 15, fontWeight: 700, color: T.text }}>Ajukan Lembur</span>
           </div>
 
@@ -253,7 +252,6 @@ export default function OvertimeRequestPage() {
         {/* ─── RIWAYAT ─── */}
         <div className="rounded-3xl p-6" style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, paddingBottom: 14, borderBottom: `1px solid ${T.div}` }}>
-            <div style={{ width: 3, height: 18, borderRadius: 2, background: "linear-gradient(180deg, #2F8BF8, #1F74E0)" }} />
             <span style={{ fontSize: 15, fontWeight: 700, color: T.text }}>Riwayat Lembur</span>
           </div>
 

@@ -382,7 +382,6 @@ export default function EmployeeDashboard() {
         {/* SECTION TITLE: Status hari ini — bar + judul, pola sama dengan header "Menu".
             emp-status-title: judul memudar halus (tanpa membesar). */}
         <div className="emp-status-title flex items-center gap-3 mb-4">
-          <div className="w-1 h-4 rounded-full shrink-0" style={{ background: 'linear-gradient(180deg, #2F8BF8, #3B82F6)' }} />
           <div>
             <div className="text-lg font-extrabold tracking-tight" style={{ color: T.text }}>Status hari ini</div>
             <div className="text-[10px] mt-0.5 font-normal" style={{ color: T.textMuted }}>Pantau waktu kehadiran anda</div>
@@ -529,7 +528,6 @@ export default function EmployeeDashboard() {
 
         {/* MENU UTAMA — judul + grid 3 kolom (Slip Gaji & Profil turun ke baris 2) */}
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #2F8BF8, #3B82F6)' }} />
           <h3 className="text-lg font-extrabold tracking-tight" style={{ color: T.text }}>Menu</h3>
         </div>
         <div className="grid grid-cols-3 gap-x-2 gap-y-4">
