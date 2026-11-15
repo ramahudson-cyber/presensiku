@@ -68,14 +68,10 @@ function fmtShort(dateStr) {
   return d.getDate() + " " + MONTHS_S[d.getMonth()] + " " + d.getFullYear();
 }
 
-// ─── Section header — pola DESIGN.md: kotak ikon 32px + judul + subteks ───
+// ─── Section header — judul + subteks saja (tanpa ikon) ───
 function SectionHeader({ title, subtitle, right }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <div style={{
-        width: 32, height: 32, borderRadius: 10, background: T.iconBg,
-        display: "flex", alignItems: "center", justifyContent: "center", flex: "none",
-      }}>{icon}</div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <b style={{ display: "block", fontSize: 13.5, fontWeight: 800, letterSpacing: "-0.01em", lineHeight: 1.2, color: T.text }}>{title}</b>
         {subtitle && (
