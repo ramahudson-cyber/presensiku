@@ -2,6 +2,7 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import BottomNav from "../components/BottomNav";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import { LogOut } from "lucide-react";
@@ -41,13 +42,22 @@ function OrgSwitchBanner({ isAttendancePath }) {
 
 function AdminLayout() {
   const location = useLocation();
+  const layoutRef = useRef(null);
   const isDashboard = location.pathname === "/admin";
   const isEmployeePath = location.pathname === "/employee" || location.pathname.startsWith("/employee/");
   const isAttendancePath = location.pathname === "/employee/attendance" || location.pathname === "/admin/attendance";
   const isAdminPath = location.pathname.startsWith("/admin");
 
+  // Reset scroll container ke paling atas setiap pindah halaman menu.
+  // Yang di-scroll adalah div root layout ini (bukan window — lihat komentar
+  // usePullToRefresh.js), dan ia tetap ter-mount antar route, sehingga tanpa
+  // ini posisi scroll halaman sebelumnya "nyangkut" di halaman baru.
+  useEffect(() => {
+    if (layoutRef.current) layoutRef.current.scrollTop = 0;
+  }, [location.pathname]);
+
   return (
-    <div className={`min-h-screen relative overflow-x-hidden transition-colors duration-500 ${isAdminPath ? "admin-light bg-[#F4F2FB]" : "bg-slate-50"}`}>
+    <div ref={layoutRef} className={`min-h-screen relative overflow-x-hidden transition-colors duration-500 ${isAdminPath ? "admin-light bg-[#F4F2FB]" : "bg-slate-50"}`}>
       {/* Admin = light ambient (soft violet-tinted canvas, DESIGN.md) */}
       <div className="fixed inset-0 pointer-events-none professional-ambient-bg hidden-only-admin"></div>
       <div className="fixed inset-0 pointer-events-none professional-grid-bg opacity-60 hidden-only-admin"></div>

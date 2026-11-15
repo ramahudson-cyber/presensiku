@@ -101,6 +101,7 @@ export default function LeaveRequestPage() {
   const [loading, setLoading] = useState(false);
   const [attachment, setAttachment] = useState(null);
   const fileInputRef = useRef(null);
+  const rootRef = useRef(null);
   const [requests, setRequests] = useState([]);
   const [fetching, setFetching] = useState(true);
   const [fetchError, setFetchError] = useState("");
@@ -141,9 +142,24 @@ export default function LeaveRequestPage() {
 
   const { pullDistance, isRefreshing } = usePullToRefresh(loadRequests);
 
+  // Reset scroll container aktual (div AdminLayout, bukan window) ke paling
+  // atas — dipakai saat toggle form ↔ riwayat karena tidak ganti pathname.
+  const resetScroll = () => {
+    let el = rootRef.current;
+    while (el && el !== document.body && el !== document.documentElement) {
+      const overflowY = window.getComputedStyle(el).overflowY;
+      if ((overflowY === "auto" || overflowY === "scroll") && el.scrollHeight > el.clientHeight + 1) {
+        el.scrollTop = 0;
+        return;
+      }
+      el = el.parentElement;
+    }
+    window.scrollTo(0, 0);
+  };
+
   const toggleView = () => {
     setView((v) => (v === "form" ? "riwayat" : "form"));
-    window.scrollTo(0, 0);
+    resetScroll();
   };
 
   const handleTypeChange = (t) => {
@@ -254,6 +270,7 @@ export default function LeaveRequestPage() {
   return (
     <div
       className="min-h-screen w-full font-sans absolute top-0 left-0 right-0"
+      ref={rootRef}
       style={{ background: T.bg, color: T.text }}
     >
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
