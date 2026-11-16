@@ -360,12 +360,7 @@ export default function EmployeeHistory() {
               {/* RINGKASAN KEHADIRAN — judul di luar card, sejajar gaya
                   "Statistik Tambahan", dengan badge predikat di kanan */}
               <div className="flex items-center justify-between mb-2.5">
-                <div className="flex items-center gap-1.5">
-                  <svg width="15" height="15" viewBox="0 0 20 20" fill="#2F8BF8">
-                    <rect x="2" y="9.5" width="4" height="8.5" rx="1.2" />
-                    <rect x="8" y="3" width="4" height="15" rx="1.2" />
-                    <rect x="14" y="6.5" width="4" height="11.5" rx="1.2" />
-                  </svg>
+                <div className="flex items-center">
                   <h2 className="text-[14px] font-extrabold text-slate-900 tracking-tight">Ringkasan Kehadiran</h2>
                 </div>
                 <span className="inline-flex items-center gap-1 pl-1 pr-2.5 py-0.5 rounded-full text-[11.5px] font-bold"
@@ -431,9 +426,6 @@ export default function EmployeeHistory() {
               {/* STATISTIK TAMBAHAN */}
               <div className="mt-2">
                 <div className="flex items-center gap-1.5 mb-2">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0F172A" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 8v4l2.5 2.5M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
-                  </svg>
                   <h3 className="text-[14px] font-extrabold text-slate-900 tracking-tight">Statistik Tambahan</h3>
                 </div>
 
@@ -475,26 +467,19 @@ export default function EmployeeHistory() {
 
               {/* RIWAYAT */}
               <div className="mt-3.5">
-                <div className="overflow-hidden" style={CARD}>
-                  <div className="flex items-center justify-between px-3.5 pt-3.5 pb-2.5">
-                    <div className="flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-[8px] flex items-center justify-center" style={{ background: "#EEF6FF", color: "#2F8BF8" }}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
-                        </svg>
-                      </span>
-                      <h3 className="text-[14px] font-extrabold text-slate-900 tracking-tight">Riwayat Absensi Terbaru</h3>
-                    </div>
-                    <Link to="/employee/history/all" className="inline-flex items-center gap-0.5 text-[12px] font-bold shrink-0" style={{ color: "#2F8BF8" }}>
-                      Lihat Semua
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                  </div>
+                <div className="flex items-center justify-between mb-2.5">
+                  <h3 className="text-[14px] font-extrabold text-slate-900 tracking-tight">Riwayat Absensi Terbaru</h3>
+                  <Link to="/employee/history/all" className="inline-flex items-center gap-0.5 text-[12px] font-bold shrink-0" style={{ color: "#2F8BF8" }}>
+                    Lihat Semua
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
 
+                <div className="overflow-hidden" style={CARD}>
                   {rows.length === 0 ? (
-                    <div className="px-4 pb-7 pt-3 text-center border-t border-slate-100">
+                    <div className="px-4 py-7 text-center">
                       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-2 opacity-70">
                         <rect x="3" y="4" width="18" height="18" rx="3" />
                         <path d="M16 2v4M8 2v4M3 10h18" />
@@ -504,11 +489,11 @@ export default function EmployeeHistory() {
                     </div>
                   ) : (
                     <div>
-                      {rows.map((r) => {
+                      {rows.map((r, i) => {
                         const c = COLORS[r.styleKey] || COLORS.alpha;
                         return (
                           <Link key={r.key} to="/employee/history/all"
-                            className="flex items-center gap-2 px-3.5 py-2.5 border-t border-slate-100 active:bg-slate-50 transition">
+                            className={"flex items-center gap-2 px-3.5 py-2.5 active:bg-slate-50 transition" + (i > 0 ? " border-t border-slate-100" : "")}>
                             <span className="w-8 text-center leading-tight shrink-0">
                               <span className="block text-[9.5px] font-medium text-slate-400">{r.dayShort}</span>
                               <span className="block text-[16px] font-extrabold text-slate-900 my-0.5 tracking-tight">{r.dateNum}</span>
