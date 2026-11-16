@@ -1,0 +1,414 @@
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { supabase } from "../../lib/supabase";
+import { getAttendanceHistory } from "../../services/attendanceService";
+import {
+  getShiftDefinition, getWitaParts, isShiftEnded, formatDuration, getEarlyLeaveInfo,
+} from "../../lib/shiftTime";
+import { shiftLabel } from "../../lib/shiftName";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
+import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+
+/**
+ * Halaman "Riwayat Absensi" lengkap — dibuka dari tombol "Lihat Semua"
+ * pada ringkasan kehadiran. Desain mengikuti referensi: header gradien biru
+ * dengan judul + periode, filter pill, daftar kartu per tanggal, dan sheet
+ * detail saat kartu ditekan.
+ *
+ * Data & logika memakai sumber yang sama dengan EmployeeHistory
+ * (getAttendanceHistory + employee_schedules + shift_schedules), jadi angka
+ * dan statusnya konsisten dengan halaman ringkasan.
+ */
+
+const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+  "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+const FILTERS = ["Semua", "Hadir", "Izin", "Sakit", "Alpha"];
+
+/** Turunkan baris alpha (jadwal kerja lewat tanpa absen) — sama dengan EmployeeHistory. */
+function deriveAlphaRows(attRows, schedules, shiftDefinitions, serverNow, userId) {
+  const attended = new Set((attRows || []).map((r) => r.date));
+  return (schedules || [])
+    .filter((s) => !attended.has(s.date) && isShiftEnded(s.date, getShiftDefinition(shiftDefinitions, s), serverNow))
+    .map((s) => ({
+      id: `alpha-${s.date}`,
+      user_id: userId,
+      date: s.date,
+      shift_code: s.shift_code,
+      attendance_status: "alpha",
+      is_late: false,
+      late_minutes: 0,
+      clock_in_time: null,
+      clock_out_time: null,
+      location_in: null,
+    }));
+}
+
+/** Kelas & warna ikon per status. */
+const STATUS_STYLE = {
+  hadir:     { bg: "#2F8BF8", chip: "rgba(47,139,248,0.12)", text: "#2F8BF8", icon: "check" },
+  terlambat: { bg: "#F59E0B", chip: "rgba(245,158,11,0.14)", text: "#D97706", icon: "clock" },
+  izin:      { bg: "#F59E0B", chip: "rgba(245,158,11,0.14)", text: "#D97706", icon: "clock" },
+  sakit:     { bg: "#10B981", chip: "rgba(16,185,129,0.14)", text: "#059669", icon: "plus" },
+  alpha:     { bg: "#EF4444", chip: "rgba(239,68,68,0.12)",  text: "#DC2626", icon: "close" },
+};
+
+function StatusIcon({ kind, size = 15 }) {
+  const p = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2.8, strokeLinecap: "round", strokeLinejoin: "round" };
+  if (kind === "clock") return <svg {...p}><circle cx="12" cy="12" r="8.5" /><path d="M12 7v5l3 2" /></svg>;
+  if (kind === "plus") return <svg {...p}><path d="M12 6v12M6 12h12" /></svg>;
+  if (kind === "close") return <svg {...p}><path d="M6 18L18 6M6 6l12 12" /></svg>;
+  return <svg {...p}><path d="M5 13l4 4L19 7" /></svg>;
+}
+
+function formatTime(iso) {
+  if (!iso) return "-";
+  return new Date(iso).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Makassar" }).replace(":", ".");
+}
+
+export default function EmployeeHistoryAll() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const nowParts = getWitaParts(new Date());
+  const [year, setYear] = useState(nowParts.year);
+  const [month, setMonth] = useState(nowParts.month - 1);
+  const [history, setHistory] = useState([]);
+  const [schedList, setSchedList] = useState([]);
+  const [shiftDefs, setShiftDefs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [filter, setFilter] = useState("Semua");
+  const [detail, setDetail] = useState(null);
+
+  const periodLabel = `${MONTHS[month]} ${year}`;
+
+  const load = async () => {
+    if (!user?.id) return;
+    setLoading(true);
+    setError("");
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    const dateFrom = `${year}-${String(month + 1).padStart(2, "0")}-01`;
+    const dateTo = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+    const todayKey = getWitaParts(new Date()).dateKey;
+
+    try {
+      const [{ data: timeData }, attRes, schedRes, shiftRes] = await Promise.all([
+        supabase.rpc("get_server_time"),
+        getAttendanceHistory(user.id, null, dateFrom, dateTo),
+        supabase.from("employee_schedules").select("date, shift_code")
+          .eq("user_id", user.id).gte("date", dateFrom)
+          .lte("date", month === new Date().getMonth() && year === new Date().getFullYear() ? todayKey : dateTo),
+        supabase.from("shift_schedules")
+          .select("shift_code, day_of_week, end_time, crosses_midnight, is_working_day"),
+      ]);
+
+      const defs = shiftRes.data || [];
+      const serverNow = new Date(timeData || Date.now());
+      const rows = [
+        ...(attRes.data || []),
+        ...deriveAlphaRows(attRes.data, schedRes.data || [], defs, serverNow, user.id),
+      ].sort((a, b) => b.date.localeCompare(a.date));
+
+      setHistory(rows);
+      setSchedList(schedRes.data || []);
+      setShiftDefs(defs);
+    } catch (e) {
+      setError(e.message || "Gagal memuat riwayat absensi");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // setTimeout: muat lewat task terpisah — setState tidak sinkron di dalam
+    // body effect (pola yang sama dipakai halaman pegawai lainnya).
+    const kick = setTimeout(load, 0);
+    return () => clearTimeout(kick);
+  }, [user?.id, year, month]);
+
+  const { pullDistance, isRefreshing } = usePullToRefresh(load);
+
+  /** Baris yang sudah siap render (status, jam, label, warna). */
+  const rows = useMemo(() => {
+    return history.map((item) => {
+      const st = item.attendance_status || "alpha";
+      const isSanggah = (item.notes || "").toLowerCase().includes("dikoreksi via sanggahan");
+      const isLate = st === "terlambat" && !isSanggah;
+      const isLeave = st === "izin" || st === "sakit";
+      const isHadir = st === "hadir";
+      const isAlpha = st === "alpha";
+
+      const inStr = isLeave || isSanggah ? "-" : formatTime(item.clock_in_time);
+      const outStr = isLeave || isSanggah || !item.clock_out_time ? "-" : formatTime(item.clock_out_time);
+
+      const d = new Date(item.date + "T00:00:00");
+      const dayShort = d.toLocaleDateString("id-ID", { weekday: "short" });
+      const dateNum = String(d.getDate());
+      const monthShort = d.toLocaleDateString("id-ID", { month: "short" });
+
+      // Label status utama + badge
+      let label = "Alpha";
+      let badge = "Alpha";
+      if (isSanggah) { label = "Sanggahan"; badge = "Sanggahan"; }
+      else if (isLate) { label = "Terlambat"; badge = `Terlambat ${item.late_minutes || 0} menit`; }
+      else if (isHadir) {
+        const sched = schedList.find((s) => s.date === item.date);
+        const def = getShiftDefinition(shiftDefs, { date: item.date, shift_code: item.shift_code || sched?.shift_code });
+        const early = getEarlyLeaveInfo(item.clock_out_time, item.date, def, 0);
+        label = early ? "Pulang Cepat" : "Hadir";
+        badge = early ? `Pulang cepat ${formatDuration(early.earlyMinutes)}` : "Tepat waktu";
+      } else if (st === "izin") { label = "Izin"; badge = "Izin"; }
+      else if (st === "sakit") { label = "Sakit"; badge = "Sakit"; }
+      else if (st === "terlambat") { label = "Terlambat"; badge = "Terlambat"; }
+
+      const styleKey = isSanggah ? "hadir" : isLate ? "terlambat" : isHadir ? "hadir" : isAlpha ? "alpha" : st;
+
+      return {
+        key: item.id || `${item.date}-${label}`,
+        date: item.date, dayShort, dateNum, monthShort, label, badge, key2: styleKey,
+        time: `${inStr} – ${outStr}`,
+        clockIn: inStr, clockOut: outStr,
+        location: item.location_in?.matched_location_name || "—",
+        note: item.notes || "",
+        shift: item.shift_code ? shiftLabel(item.shift_code, null) : "",
+      };
+    });
+  }, [history, schedList, shiftDefs]);
+
+  const filtered = useMemo(() => {
+    if (filter === "Semua") return rows;
+    const map = { Hadir: ["hadir", "terlambat"], Izin: ["izin"], Sakit: ["sakit"], Alpha: ["alpha"] };
+    const keys = map[filter] || [];
+    return rows.filter((r) => keys.includes(r.key2));
+  }, [rows, filter]);
+
+  return (
+    <div className="min-h-screen w-full absolute top-0 left-0 right-0 flex flex-col" style={{ background: "#F6F8FC" }}>
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
+
+      {/* HEADER */}
+      <header
+        className="relative shrink-0 px-4 text-white"
+        style={{
+          background: "linear-gradient(155deg, #2F8BF8 0%, #3F93FD 55%, #4A7CFB 100%)",
+          paddingTop: "calc(env(safe-area-inset-top, 0px) + 16px)",
+          paddingBottom: 26,
+          borderBottomLeftRadius: 28,
+          borderBottomRightRadius: 28,
+        }}
+      >
+        <svg className="absolute bottom-0 left-0 w-full pointer-events-none" style={{ height: 48, opacity: 0.15 }} viewBox="0 0 390 48" preserveAspectRatio="none">
+          <path d="M0,28 C120,52 260,6 390,26 L390,48 L0,48 Z" fill="#FFFFFF" />
+        </svg>
+
+        <div className="relative flex items-center justify-between">
+          <button type="button" onClick={() => navigate(-1)} aria-label="Kembali"
+            className="w-10 h-10 rounded-full active:scale-95 transition"
+            style={{ background: "rgba(255,255,255,0.18)" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#fff", display: "block", margin: "auto" }}>
+              <path d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <div className="text-center">
+            <h1 className="text-[18px] font-bold tracking-tight leading-tight" style={{ color: "#FFFFFF" }}>
+              Riwayat Absensi
+            </h1>
+            <p className="text-[11px] font-medium mt-0.5" style={{ color: "rgba(255,255,255,0.85)" }}>
+              {periodLabel}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <button type="button" onClick={() => navigateMonth(-1)} aria-label="Bulan sebelumnya"
+              className="w-10 h-10 rounded-full active:scale-95 transition flex items-center justify-center"
+              style={{ background: "rgba(255,255,255,0.18)", color: "#fff" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+            </button>
+            <button type="button" onClick={() => navigateMonth(1)} aria-label="Bulan berikutnya"
+              className="w-10 h-10 rounded-full active:scale-95 transition flex items-center justify-center"
+              style={{ background: "rgba(255,255,255,0.18)", color: "#fff" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* FILTER PILL */}
+      <div className="shrink-0 px-4 pt-4 pb-3">
+        <div className="flex items-center gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+          {FILTERS.map((f) => (
+            <button key={f} type="button" onClick={() => setFilter(f)}
+              className="shrink-0 px-4 py-2 rounded-full text-[12.5px] font-semibold transition"
+              style={filter === f
+                ? { background: "#2F8BF8", color: "#FFFFFF", boxShadow: "0 4px 12px -2px rgba(47,139,248,0.35)" }
+                : { background: "#E9EEF7", color: "#334155" }}>
+              {f}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* DAFTAR */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-8">
+        {loading ? (
+          <div className="flex justify-center py-16">
+            <div className="w-8 h-8 border-2 border-[#2F8BF8] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center py-14 px-6 text-center">
+            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mb-3">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <p className="text-xs text-red-600 font-medium">{error}</p>
+            <button onClick={load} className="mt-4 px-6 py-2 rounded-full text-white text-xs font-semibold"
+              style={{ background: "#2F8BF8" }}>
+              Coba Lagi
+            </button>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="bg-white rounded-2xl p-8 text-center border border-slate-100">
+            <p className="text-sm font-bold text-slate-800">Tidak ada data {filter === "Semua" ? "" : filter} di bulan ini</p>
+            <p className="text-[11.5px] text-slate-400 mt-1">Periode {periodLabel}</p>
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {filtered.map((r) => {
+              const st = STATUS_STYLE[r.key2] || STATUS_STYLE.alpha;
+              return (
+                <button
+                  key={r.key}
+                  type="button"
+                  onClick={() => setDetail(r)}
+                  className="w-full text-left bg-white rounded-2xl px-3.5 py-3 flex items-center justify-between gap-3 border border-slate-100 transition active:scale-[0.99]"
+                  style={{ boxShadow: "0 3px 14px -2px rgba(15,23,42,0.045)" }}
+                >
+                  <span className="flex items-center gap-3 min-w-0">
+                    <span className="w-9 text-center leading-tight shrink-0 block">
+                      <span className="block text-[10px] text-slate-400 font-medium">{r.dayShort}</span>
+                      <span className="block text-[16px] font-extrabold text-slate-800 my-0.5">{r.dateNum}</span>
+                      <span className="block text-[10px] text-slate-400 font-medium">{r.monthShort}</span>
+                    </span>
+
+                    <span className="w-px h-9 shrink-0 block" style={{ background: "#E2E8F0" }} />
+
+                    <span className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center" style={{ background: st.bg, color: "#fff" }}>
+                      <StatusIcon kind={st.icon} size={14} />
+                    </span>
+
+                    <span className="min-w-0 flex-1 block">
+                      <span className="block text-[13.5px] font-bold text-slate-800 leading-tight truncate">{r.label}</span>
+                      <span className="block text-[11.5px] text-slate-400 font-medium mt-0.5 truncate">{r.time}</span>
+                    </span>
+                  </span>
+
+                  <span className="flex items-center gap-2 shrink-0">
+                    <span className="px-3 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap"
+                      style={{ background: st.chip, color: st.text }}>
+                      {r.badge}
+                    </span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* KETERANGAN */}
+        {!loading && !error && (
+          <div className="mt-3 rounded-2xl p-4 border flex items-start gap-3" style={{ background: "#EBF2FF", borderColor: "rgba(47,139,248,0.18)" }}>
+            <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[12px] font-bold"
+              style={{ background: "#2F8BF8", color: "#fff" }}>
+              i
+            </div>
+            <div className="min-w-0">
+              <p className="text-[13px] font-bold text-slate-800">Keterangan</p>
+              <p className="text-[11.5px] text-slate-600 leading-relaxed mt-0.5">
+                Data menampilkan riwayat absensi pada periode {periodLabel}. Tekan salah satu baris untuk melihat detail kehadiran.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* SHEET DETAIL */}
+      {detail && (
+        <div className="fixed inset-0 z-[60] flex items-end justify-center">
+          <div className="absolute inset-0" style={{ background: "rgba(15,23,42,0.35)" }} onClick={() => setDetail(null)} />
+          <div className="relative w-full bg-white animate-slide-up" style={{ borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingBottom: "calc(20px + env(safe-area-inset-bottom, 0px))" }}>
+            <div className="flex justify-center pt-2.5 pb-3">
+              <span className="block rounded-full" style={{ width: 40, height: 5, background: "#CBD5E1" }} />
+            </div>
+
+            <div className="px-5 pb-5">
+              <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                    style={{ background: (STATUS_STYLE[detail.key2] || STATUS_STYLE.alpha).bg, color: "#fff" }}>
+                    <StatusIcon kind={(STATUS_STYLE[detail.key2] || STATUS_STYLE.alpha).icon} size={18} />
+                  </div>
+                  <div>
+                    <p className="text-[15.5px] font-bold text-slate-800">Status: {detail.label}</p>
+                    <p className="text-[11.5px] text-slate-500 font-medium">
+                      {detail.dayShort}, {detail.dateNum} {MONTHS[month]} {year}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2.5 my-4">
+                <div className="rounded-2xl p-3 border border-slate-100" style={{ background: "#F6F8FC" }}>
+                  <p className="text-[11px] text-slate-400 font-medium">Jam Masuk</p>
+                  <p className="text-[15px] font-extrabold text-slate-800 mt-0.5">{detail.clockIn === "-" ? "—" : `${detail.clockIn} WITA`}</p>
+                </div>
+                <div className="rounded-2xl p-3 border border-slate-100" style={{ background: "#F6F8FC" }}>
+                  <p className="text-[11px] text-slate-400 font-medium">Jam Pulang</p>
+                  <p className="text-[15px] font-extrabold text-slate-800 mt-0.5">{detail.clockOut === "-" ? "—" : `${detail.clockOut} WITA`}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2.5 text-[12.5px]">
+                <div className="flex items-start justify-between gap-4 py-1.5 border-b border-slate-100">
+                  <span className="text-slate-400 font-medium shrink-0">Lokasi absen</span>
+                  <span className="text-slate-700 font-semibold text-right">{detail.location}</span>
+                </div>
+                {detail.shift && (
+                  <div className="flex items-start justify-between gap-4 py-1.5 border-b border-slate-100">
+                    <span className="text-slate-400 font-medium shrink-0">Shift</span>
+                    <span className="text-slate-700 font-semibold text-right">{detail.shift}</span>
+                  </div>
+                )}
+                <div className="flex items-start justify-between gap-4 py-1.5">
+                  <span className="text-slate-400 font-medium shrink-0">Catatan</span>
+                  <span className="text-slate-700 font-medium text-right">{detail.note || "—"}</span>
+                </div>
+              </div>
+
+              <button type="button" onClick={() => setDetail(null)}
+                className="mt-5 w-full py-3 rounded-full text-white text-[13.5px] font-semibold"
+                style={{ background: "#2F8BF8" }}>
+                Tutup Detail
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  function navigateMonth(delta) {
+    let m = month + delta;
+    let y = year;
+    if (m < 0) { m = 11; y--; }
+    if (m > 11) { m = 0; y++; }
+    setMonth(m);
+    setYear(y);
+  }
+}

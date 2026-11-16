@@ -15,6 +15,7 @@ import EmployeeNotificationsPage from "../pages/employee/EmployeeNotificationsPa
 import EmployeeSchedule from "../pages/employee/EmployeeSchedule";
 import EmployeeProfile from "../pages/employee/EmployeeProfile";
 import EmployeeHistory from "../pages/employee/EmployeeHistory";
+import EmployeeHistoryAll from "../pages/employee/EmployeeHistoryAll";
 import EmployeeEditProfile from "../pages/employee/EmployeeEditProfile";
 import SchedulingPage from "../pages/admin/SchedulingPage";
 import LeaveManagementPage from "../pages/admin/LeaveManagementPage";
@@ -136,6 +137,7 @@ function AppRoutes() {
         <Route path="profile" element={<EmployeeProfile />} />
         <Route path="profile/edit" element={<EmployeeEditProfile />} />
         <Route path="history" element={<EmployeeHistory />} />
+        <Route path="history/all" element={<EmployeeHistoryAll />} />
         <Route path="leave" element={<LeaveRequestPage />} />
         <Route path="sanggah" element={<SanggahPage />} />
         <Route path="overtime" element={<OvertimeRequestPage />} />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getAttendanceHistory } from "../../services/attendanceService";
 import { supabase } from "../../lib/supabase";
@@ -402,7 +402,16 @@ export default function EmployeeHistory() {
                 <div className="flex items-center gap-2.5">
                   <span className="text-xs font-bold tracking-wide" style={{ color: T.text }}>Daftar Absensi</span>
                 </div>
-                <span className="text-[10px] font-medium" style={{ color: T.sub }}>{history.length} hari</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-medium" style={{ color: T.sub }}>{history.length} hari</span>
+                  <Link to="/employee/history/all"
+                    className="inline-flex items-center gap-1 text-[10.5px] font-bold text-[#2F8BF8] hover:text-[#1F74E0] transition-colors">
+                    Lihat Semua
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
               </div>
 
               {history.length === 0 ? (
