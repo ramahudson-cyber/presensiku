@@ -472,7 +472,7 @@ export default function SignInPage() {
                 )}
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-[9.5px] font-extrabold uppercase tracking-[0.13em] mb-1.5" style={{ color: "#94A3B8" }}>
+                    <label className="block text-[11px] font-extrabold tracking-tight mb-1.5" style={{ color: "#94A3B8" }}>
                       Username / Email
                     </label>
                     <div
@@ -496,7 +496,7 @@ export default function SignInPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[9.5px] font-extrabold uppercase tracking-[0.13em] mb-1.5" style={{ color: "#94A3B8" }}>
+                    <label className="block text-[11px] font-extrabold tracking-tight mb-1.5" style={{ color: "#94A3B8" }}>
                       Password
                     </label>
                     <div
