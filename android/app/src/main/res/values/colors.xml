@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Latar boot window: senada splash & welcome page (#660099) supaya
-         cold-start tidak berkedip putih sebelum WebView memuat HTML. -->
-    <color name="bootPurple">#660099</color>
+    <!-- Latar boot window: senada welcome page (#39C0DF) supaya cold-start
+         tidak berkedip putih sebelum WebView memuat HTML. -->
+    <color name="bootBlue">#39C0DF</color>
 </resources>
