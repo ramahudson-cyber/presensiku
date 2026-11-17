@@ -357,23 +357,24 @@ export default function EmployeeHistory() {
             </div>
           ) : (
             <>
-              {/* RINGKASAN KEHADIRAN — judul di luar card, sejajar gaya
-                  "Statistik Tambahan", dengan badge predikat di kanan */}
-              <div className="flex items-center justify-between mb-2.5">
-                <div className="flex items-center">
-                  <h2 className="text-[14px] font-extrabold text-slate-900 tracking-tight">Ringkasan Kehadiran</h2>
-                </div>
-                <span className="inline-flex items-center gap-1 pl-1 pr-2.5 py-0.5 rounded-full text-[11.5px] font-bold"
-                  style={{ background: predikat.bg, color: predikat.color }}>
-                  <span className="w-4 h-4 rounded-full text-white flex items-center justify-center"
-                    style={{ background: predikat.color }}>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
-                  </span>
-                  {predikat.label}
-                </span>
+              {/* RINGKASAN KEHADIRAN — judul di luar card; badge predikat
+                  diletakkan di dalam card (kanan atas) */}
+              <div className="flex items-center mb-2.5">
+                <h2 className="text-[14px] font-extrabold text-slate-900 tracking-tight">Ringkasan Kehadiran</h2>
               </div>
 
               <section className="p-4" style={CARD}>
+                <div className="flex items-center justify-end mb-1">
+                  <span className="inline-flex items-center gap-1 pl-1 pr-2.5 py-0.5 rounded-full text-[11.5px] font-bold"
+                    style={{ background: predikat.bg, color: predikat.color }}>
+                    <span className="w-4 h-4 rounded-full text-white flex items-center justify-center"
+                      style={{ background: predikat.color }}>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
+                    </span>
+                    {predikat.label}
+                  </span>
+                </div>
+
                 <div className="flex items-center justify-between gap-2 py-2">
                   <div className="relative shrink-0" style={{ width: 118, height: 118 }}>
                     <svg viewBox="0 0 120 120" width="118" height="118" style={{ transform: "rotate(-90deg)" }}>
@@ -424,7 +425,7 @@ export default function EmployeeHistory() {
               </section>
 
               {/* STATISTIK TAMBAHAN */}
-              <div className="mt-2">
+              <div className="mt-6">
                 <div className="flex items-center gap-1.5 mb-2">
                   <h3 className="text-[14px] font-extrabold text-slate-900 tracking-tight">Statistik Tambahan</h3>
                 </div>
@@ -466,7 +467,7 @@ export default function EmployeeHistory() {
               </div>
 
               {/* RIWAYAT */}
-              <div className="mt-3.5">
+              <div className="mt-6">
                 <div className="flex items-center justify-between mb-2.5">
                   <h3 className="text-[14px] font-extrabold text-slate-900 tracking-tight">Riwayat Absensi Terbaru</h3>
                   <Link to="/employee/history/all" className="inline-flex items-center gap-0.5 text-[12px] font-bold shrink-0" style={{ color: "#2F8BF8" }}>

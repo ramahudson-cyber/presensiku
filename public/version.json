@@ -1,10 +1,10 @@
 {
   "version": "1.8.4",
   "versionCode": 31,
-  "webVersionCode": 62,
+  "webVersionCode": 63,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.4/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
-  "changelog": "Perbaikan tampilan: kilatan warna ungu saat aplikasi dibuka diganti menjadi biru senada desain sekarang.",
+  "changelog": "Perbaikan tampilan Riwayat Absensi: jarak antar section dilapisi lega dan badge predikat pindah ke dalam card ringkasan.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }
