@@ -106,16 +106,16 @@
   .sect-title { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
   .sect-title h3 { font-size: 14px; font-weight: 800; letter-spacing: -.02em; color: #0F172A; }
   .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .stat { border-radius: 16px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; }
+  .stat, .statv { border-radius: 16px; }
+  .statv { padding: 12px 14px; display: flex; flex-direction: column; align-items: flex-start; }
   .stat-blue { background: #EDF4FF; }
   .stat-purple { background: #F2EEFF; }
-  .stat i { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-  .stat-blue i { background: #D8E7FF; color: #2F8BF8; }
-  .stat-purple i { background: #E3D9FF; color: #7C5CFA; }
-  .stat .txt { min-width: 0; flex: 1; }
-  .stat .txt p { font-size: 11.5px; font-weight: 800; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .stat .txt small { display: block; font-size: 10px; color: #64748B; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .stat .txt em { display: block; font-style: normal; font-size: 12px; font-weight: 800; line-height: 1.2; margin-top: 2px; color: #2F8BF8; }
+  .statv i { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .stat-blue i, .statv.stat-blue i { background: #D8E7FF; color: #2F8BF8; }
+  .stat-purple i, .statv.stat-purple i { background: #E3D9FF; color: #7C5CFA; }
+  .statv p { font-size: 11.5px; font-weight: 800; color: #0F172A; margin-top: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .statv small { display: block; font-size: 10px; color: #64748B; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .statv em { display: block; font-style: normal; font-size: 12px; font-weight: 800; line-height: 1.2; margin-top: 4px; color: #2F8BF8; }
   .hist-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 10px; }
   .hist-head .t { display: flex; align-items: center; gap: 8px; }
   .hist-head .t i { width: 24px; height: 24px; border-radius: 8px; background: #EEF6FF; color: #2F8BF8; display: flex; align-items: center; justify-content: center; }
@@ -225,22 +225,16 @@
             <h3>Statistik Tambahan</h3>
           </div>
           <div class="stat-grid">
-            <div class="stat stat-blue">
+            <div class="statv stat-blue">
               <i><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.5l2.3 1.4M9.5 2h5M12 2v2.5"/></svg></i>
-              <div class="txt">
-                <p>Tepat Waktu</p>
-                <small>17 dari 18 Kehadiran</small>
-                <em>94%</em>
-              </div>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M9 5l7 7-7 7"/></svg>
+              <p>Tepat Waktu</p>
+              <small>17 dari 18 Kehadiran</small>
+              <em>94%</em>
             </div>
-            <div class="stat stat-purple">
+            <div class="statv stat-purple">
               <i><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7M21 3l-8 8M10 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg></i>
-              <div class="txt">
-                <p>Pulang Cepat</p>
-                <small>1 Hari</small>
-              </div>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M9 5l7 7-7 7"/></svg>
+              <p>Pulang Cepat</p>
+              <small>1 Hari</small>
             </div>
           </div>
         </div>

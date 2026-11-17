@@ -431,37 +431,28 @@ export default function EmployeeHistory() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2.5">
-                  <div className="rounded-[16px] px-3 py-2.5 flex items-center gap-2" style={{ background: "#EDF4FF" }}>
-                    <span className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+                  {/* Ikon di atas teks supaya judul tidak terpotong di layar sempit */}
+                  <div className="rounded-[16px] px-3 py-3" style={{ background: "#EDF4FF" }}>
+                    <span className="w-9 h-9 rounded-full flex items-center justify-center"
                       style={{ background: "#D8E7FF", color: "#2F8BF8" }}>
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="13.5" r="7.5" /><path d="M12 10v3.5l2.3 1.4M9.5 2h5M12 2v2.5" />
                       </svg>
                     </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[11.5px] font-extrabold text-slate-900 truncate">Tepat Waktu</p>
-                      <p className="text-[10px] text-slate-500 truncate mt-0.5">{hadir} dari {totalHadir} Kehadiran</p>
-                      <p className="text-[12px] font-extrabold leading-tight mt-0.5" style={{ color: "#2F8BF8" }}>{onTimePct}%</p>
-                    </div>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                      <path d="M9 5l7 7-7 7" />
-                    </svg>
+                    <p className="text-[11.5px] font-extrabold text-slate-900 mt-2.5 truncate">Tepat Waktu</p>
+                    <p className="text-[10px] text-slate-500 truncate mt-0.5">{hadir} dari {totalHadir} Kehadiran</p>
+                    <p className="text-[12px] font-extrabold leading-tight mt-1" style={{ color: "#2F8BF8" }}>{onTimePct}%</p>
                   </div>
 
-                  <div className="rounded-[16px] px-3 py-2.5 flex items-center gap-2" style={{ background: "#F2EEFF" }}>
-                    <span className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+                  <div className="rounded-[16px] px-3 py-3" style={{ background: "#F2EEFF" }}>
+                    <span className="w-9 h-9 rounded-full flex items-center justify-center"
                       style={{ background: "#E3D9FF", color: "#7C5CFA" }}>
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M14 3h7v7M21 3l-8 8M10 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
                       </svg>
                     </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[11.5px] font-extrabold text-slate-900 truncate">Pulang Cepat</p>
-                      <p className="text-[10px] text-slate-500 truncate mt-0.5">{earlyCount} Hari</p>
-                    </div>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                      <path d="M9 5l7 7-7 7" />
-                    </svg>
+                    <p className="text-[11.5px] font-extrabold text-slate-900 mt-2.5 truncate">Pulang Cepat</p>
+                    <p className="text-[10px] text-slate-500 truncate mt-0.5">{earlyCount} Hari</p>
                   </div>
                 </div>
               </div>
