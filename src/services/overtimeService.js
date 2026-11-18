@@ -63,6 +63,17 @@ export async function getMyOvertimeRequests() {
   return data || [];
 }
 
+// Detail satu pengajuan milik sendiri (RLS membatasi ke user yang login).
+export async function getMyOvertimeRequest(id) {
+  const { data, error } = await supabase
+    .from("overtime_requests")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
 export async function cancelOvertimeRequest(requestId) {
   const { data, error } = await supabase.rpc("cancel_overtime_request", {
     p_request_id: requestId,

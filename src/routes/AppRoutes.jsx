@@ -8,7 +8,11 @@ import AttendancePage from "../pages/attendance/AttendancePage";
 import AttendanceHistoryPage from "../pages/admin/AttendanceHistoryPage";
 import SecurityAttendancePage from "../pages/admin/SecurityAttendancePage";
 import OvertimeManagementPage from "../pages/admin/OvertimeManagementPage";
-import OvertimeRequestPage from "../pages/employee/OvertimeRequestPage";
+import OvertimeDashboard from "../pages/employee/overtime/OvertimeDashboard";
+import OvertimeFormPage from "../pages/employee/overtime/OvertimeFormPage";
+import OvertimeHistoryPage from "../pages/employee/overtime/OvertimeHistoryPage";
+import OvertimeDetailPage from "../pages/employee/overtime/OvertimeDetailPage";
+import OvertimeRulesPage from "../pages/employee/overtime/OvertimeRulesPage";
 import PengaturanPage from "../pages/admin/PengaturanPage";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import EmployeeNotificationsPage from "../pages/employee/EmployeeNotificationsPage";
@@ -140,7 +144,11 @@ function AppRoutes() {
         <Route path="history/all" element={<EmployeeHistoryAll />} />
         <Route path="leave" element={<LeaveRequestPage />} />
         <Route path="sanggah" element={<SanggahPage />} />
-        <Route path="overtime" element={<OvertimeRequestPage />} />
+        <Route path="overtime" element={<OvertimeDashboard />} />
+        <Route path="overtime/request" element={<OvertimeFormPage />} />
+        <Route path="overtime/history" element={<OvertimeHistoryPage />} />
+        <Route path="overtime/rules" element={<OvertimeRulesPage />} />
+        <Route path="overtime/:id" element={<OvertimeDetailPage />} />
         <Route path="salary" element={<EmployeeSalary />} />
       </Route>
 

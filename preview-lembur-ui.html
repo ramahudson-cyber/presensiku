@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Preview - Modul Lembur (6 layar)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #E3E9F4;
+    padding: 40px 24px;
+    -webkit-font-smoothing: antialiased;
+    display: flex; flex-wrap: wrap; gap: 36px; justify-content: center;
+  }
+  .shot { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .shot-label { font-size: 13px; font-weight: 800; color: #0F172A; }
+  .shot-sub { font-size: 11px; color: #475569; margin-top: -6px; }
+
+  .phone {
+    width: 375px; height: 812px;
+    background: #F4F2FB;
+    border-radius: 40px; overflow: hidden; position: relative;
+    display: flex; flex-direction: column;
+    box-shadow: 0 24px 60px -24px rgba(23,32,51,.4), 0 0 0 9px #101828, 0 0 0 11px #2a3342;
+  }
+  .statusbar { padding: 16px 24px 0; display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: #0F172A; }
+
+  /* ── shared ── */
+  .appbar { display: flex; align-items: center; gap: 12px; padding: 16px 16px 8px; }
+  .backbtn {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    background: #fff; border: 1px solid rgba(31,41,55,0.08);
+    display: flex; align-items: center; justify-content: center; color: #0F172A;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .appbar h1 { font-size: 16px; font-weight: 800; color: #0F172A; letter-spacing: -.01em; flex: 1; text-align: center; }
+  .iconbtn {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    background: #fff; border: 1px solid rgba(31,41,55,0.08);
+    display: flex; align-items: center; justify-content: center; color: #475569; position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .dot-red { position: absolute; top: 9px; right: 10px; width: 8px; height: 8px; border-radius: 50%; background: #EF4444; border: 2px solid #fff; }
+
+  .body { flex: 1; min-height: 0; overflow: hidden; padding: 8px 16px 20px; }
+
+  .card { background: #fff; border: 1px solid rgba(31,41,55,0.08); border-radius: 24px; padding: 20px; box-shadow: 0 4px 16px rgba(15,23,42,0.06); }
+  .card + .card { margin-top: 12px; }
+
+  .sect { display: flex; align-items: center; justify-content: space-between; margin: 16px 0 8px; }
+  .sect b { font-size: 14px; font-weight: 800; color: #0F172A; letter-spacing: -.01em; }
+  .sect a { font-size: 13px; font-weight: 700; color: #2F8BF8; text-decoration: none; display: inline-flex; align-items: center; gap: 2px; }
+
+  .btn-primary {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    height: 48px; border-radius: 16px; border: none; width: 100%; min-height: 48px;
+    background: linear-gradient(135deg, #2F8BF8, #1F74E0);
+    color: #fff; font-family: inherit; font-size: 16px; font-weight: 700;
+    box-shadow: 0 4px 16px rgba(15,23,42,0.06);
+  }
+  .btn-cancel {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    height: 50px; border-radius: 16px; width: 100%;
+    background: #fff; border: 1px solid #F6C6C6; color: #EF4444;
+    font-family: inherit; font-size: 14px; font-weight: 700;
+  }
+
+  .icon-tile {
+    width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+    background: #EEF6FF; color: #2F8BF8;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .badge { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+  .b-green { background: #E9F7F0; color: #059669; }
+  .b-blue  { background: #EEF6FF; color: #2273D6; }
+  .b-red   { background: #FDECEC; color: #EF4444; }
+
+  .banner-info {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: #EEF6FF; border-radius: 16px; padding: 12px 14px;
+  }
+  .banner-info p { font-size: 13px; line-height: 1.5; color: #2F8BF8; font-weight: 600; }
+
+  /* ── screen 1: dashboard ── */
+  .hero {
+    display: flex; align-items: center; justify-content: space-between;
+    border-radius: 24px; padding: 20px; margin-top: 12px;
+    background: #EEF6FF;
+    border: 1px solid #DCE9FC;
+  }
+  .hero .hi { font-size: 11px; font-weight: 600; color: #475569; }
+  .hero h2 { font-size: 16px; font-weight: 800; color: #0F172A; line-height: 1.3; margin-top: 3px; letter-spacing: -.01em; }
+  .hero p { font-size: 11px; color: #475569; line-height: 1.45; margin-top: 5px; max-width: 205px; }
+
+  .total-jam { display: flex; align-items: flex-end; gap: 4px; }
+  .total-jam b { font-size: 32px; font-weight: 800; color: #0F172A; letter-spacing: -.03em; line-height: 1; }
+  .total-jam span { font-size: 13px; font-weight: 700; color: #475569; padding-bottom: 3px; }
+  .stat-mini { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 16px; }
+  .stat-mini > div { background: rgba(15,23,42,0.02); border: 1px solid rgba(31,41,55,0.08); border-radius: 14px; padding: 8px; text-align: center; }
+  .stat-mini i { width: 22px; height: 22px; border-radius: 50%; color: #fff; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+  .stat-mini b { display: block; font-size: 16px; font-weight: 800; color: #0F172A; }
+  .stat-mini span { font-size: 10px; font-weight: 600; color: #475569; }
+
+  .row-item {
+    display: flex; align-items: center; gap: 12px;
+    background: #fff; border: 1px solid rgba(31,41,55,0.08); border-radius: 14px;
+    padding: 9px 16px; margin-top: 8px;
+    box-shadow: 0 4px 16px rgba(15,23,42,0.06);
+  }
+  .row-check { width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; }
+  .row-item .txt { flex: 1; min-width: 0; }
+  .row-item .txt b { display: block; font-size: 13px; font-weight: 700; color: #0F172A; }
+  .row-item .txt span { display: block; font-size: 11px; color: #475569; margin-top: 2px; }
+  .chev { color: #94A3B8; flex-shrink: 0; }
+
+  .datebox { width: 44px; text-align: center; flex-shrink: 0; line-height: 1.1; }
+  .datebox b { display: block; font-size: 20px; font-weight: 800; color: #0F172A; letter-spacing: -.02em; }
+  .datebox span { font-size: 11px; font-weight: 600; color: #94A3B8; }
+
+  .nav {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: #fff; border-top: 1px solid #F1F5F9;
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 8px 22px;
+  }
+  .nav .n { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-weight: 600; color: #94A3B8; width: 64px; }
+  .nav .n.active { color: #2F8BF8; }
+  .nav .n.active .nline { width: 18px; height: 3px; border-radius: 2px; background: #2F8BF8; margin-top: 2px; }
+
+  /* ── screen 2: form ── */
+  .field {
+    display: flex; align-items: center; gap: 12px;
+    background: #fff; border: 1px solid rgba(31,41,55,0.08); border-radius: 14px;
+    padding: 12px 16px; margin-top: 10px;
+    box-shadow: 0 4px 16px rgba(15,23,42,0.06);
+  }
+  .field .f-txt { flex: 1; min-width: 0; }
+  .field .f-txt small { display: block; font-size: 11px; font-weight: 600; color: #94A3B8; }
+  .field .f-txt b { display: block; font-size: 14px; font-weight: 700; color: #0F172A; margin-top: 2px; }
+  .textarea { border: 1px solid rgba(31,41,55,0.08); border-radius: 14px; background: #fff; padding: 12px 16px; margin-top: 10px; box-shadow: 0 4px 16px rgba(15,23,42,0.06); }
+  .textarea p { font-size: 13px; color: #94A3B8; }
+  .textarea .counter { text-align: right; font-size: 10px; color: #94A3B8; margin-top: 10px; font-weight: 600; }
+  .dropzone {
+    border: 1.6px dashed rgba(47,139,248,0.35); border-radius: 14px; background: #FBFDFF;
+    padding: 18px; text-align: center; margin-top: 10px;
+  }
+  .dropzone b { display: block; font-size: 13px; font-weight: 700; color: #0F172A; margin-top: 7px; }
+  .dropzone span { display: block; font-size: 11px; color: #94A3B8; margin-top: 3px; }
+  .lbl { font-size: 13px; font-weight: 700; color: #0F172A; margin: 16px 2px 0; }
+  .lbl small { color: #94A3B8; font-weight: 600; }
+  .durasi-chip {
+    display: flex; align-items: center; gap: 8px; margin-top: 10px;
+    background: #EEF6FF; border-radius: 14px; padding: 10px 14px;
+  }
+  .durasi-chip b { font-size: 13px; color: #2F8BF8; }
+
+  /* ── screen 3/5: status banner ── */
+  .status-hero { border-radius: 24px; padding: 20px; display: flex; align-items: center; justify-content: space-between; overflow: hidden; position: relative; }
+  .sh-green { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); }
+  .sh-blue  { background: #EEF6FF; border: 1px solid rgba(47,139,248,0.15); }
+  .status-hero .ttl { font-size: 16px; font-weight: 800; color: #0F172A; margin-top: 9px; letter-spacing: -.01em; }
+  .status-hero p { font-size: 11px; color: #475569; margin-top: 3px; line-height: 1.45; max-width: 200px; }
+
+  .info-row { display: flex; gap: 12px; align-items: flex-start; padding: 11px 0; }
+  .info-row + .info-row { border-top: 1px solid #F1F5F9; }
+  .info-row .r-txt { flex: 1; min-width: 0; }
+  .info-row small { display: block; font-size: 11px; font-weight: 600; color: #94A3B8; }
+  .info-row b { display: block; font-size: 13px; font-weight: 700; color: #0F172A; margin-top: 2px; line-height: 1.4; }
+
+  .tl { display: flex; gap: 12px; position: relative; padding-bottom: 18px; }
+  .tl:last-child { padding-bottom: 0; }
+  .tl .line { position: absolute; left: 13px; top: 30px; bottom: 0; width: 2px; background: #10B981; border-radius: 2px; }
+  .tl.pending .line { background: #CBD5E1; }
+  .tl-dot { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; position: relative; z-index: 1; }
+  .tl .t-txt b { display: block; font-size: 13px; font-weight: 700; color: #0F172A; }
+  .tl .t-txt span { display: block; font-size: 11px; color: #475569; margin-top: 2px; }
+  .tl .t-txt em { display: block; font-size: 11px; font-style: normal; color: #94A3B8; margin-top: 1px; }
+
+  .thumb { display: flex; align-items: center; gap: 12px; background: rgba(15,23,42,0.02); border: 1px solid rgba(31,41,55,0.08); border-radius: 14px; padding: 10px; }
+  .thumb img { width: 56px; height: 44px; object-fit: cover; border-radius: 12px; }
+  .thumb .t-cap b { display: block; font-size: 13px; font-weight: 700; color: #0F172A; }
+  .thumb .t-cap span { font-size: 11px; color: #94A3B8; }
+
+  .illus {
+    border-radius: 24px; background: #EEF6FF;
+    border: 1px solid #DCE9FC; height: 150px;
+    display: flex; align-items: center; justify-content: center; margin-top: 12px;
+  }
+  .steps { counter-reset: st; }
+  .step { display: flex; gap: 12px; align-items: flex-start; padding: 9px 0; }
+  .step + .step { border-top: 1px solid #F1F5F9; }
+  .step i {
+    counter-increment: st; width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    background: #EEF6FF; color: #2F8BF8; font-style: normal;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800;
+  }
+  .step i::before { content: counter(st); }
+  .step p { font-size: 13px; line-height: 1.5; color: #475569; padding-top: 3px; }
+
+  /* ── layar 1 (revisi): hero biru + sheet putih ── */
+  .hero-lg {
+    position: relative; flex-shrink: 0;
+    background: linear-gradient(160deg, #39C0DF 0%, #32ACFB 30%, #3F93FD 62%, #4A7CFB 100%);
+    padding: 18px 20px 48px;
+    overflow: hidden;
+  }
+  .hg-top {
+    display: grid; grid-template-columns: 34px 1fr 34px; align-items: center; gap: 8px;
+    position: relative; z-index: 1; margin-bottom: 14px;
+  }
+  .hg-back {
+    width: 34px; height: 34px; flex-shrink: 0;
+    background: none; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hg-page-title { font-size: 16px; font-weight: 800; letter-spacing: -.01em; color: #fff; text-align: center; }
+  .hg-title { font-size: 20px; font-weight: 800; letter-spacing: -.01em; color: #fff; line-height: 1.32; max-width: 238px; }
+  .hg-sub { font-size: 13px; line-height: 1.45; color: rgba(255,255,255,0.82); margin-top: 8px; max-width: 210px; }
+  .hg-bell {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    background: #fff; color: #2F8BF8;
+    display: flex; align-items: center; justify-content: center; position: relative;
+    box-shadow: 0 4px 16px rgba(15,23,42,0.12);
+  }
+  .hg-illus { position: absolute; right: -2px; bottom: 22px; opacity: .95; }
+  .hg-band {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(118deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.05) 34%, rgba(255,255,255,0) 58%);
+  }
+  .hg-deco { position: absolute; border-radius: 50%; pointer-events: none; }
+
+  .sheet {
+    position: relative; flex: 1; min-height: 0; overflow-y: auto;
+    margin-top: -28px; background: #fff;
+    border-radius: 32px 32px 0 0;
+    padding: 16px 16px 96px;
+  }
+  .sheet::-webkit-scrollbar { width: 0; }
+
+  .sum { display: flex; align-items: center; gap: 16px; }
+  .donut-lg { position: relative; width: 112px; height: 112px; flex-shrink: 0; }
+  .donut-c { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .donut-c b { font-size: 28px; font-weight: 800; letter-spacing: -.03em; color: #0F172A; line-height: 1; }
+  .donut-c span { font-size: 10px; font-weight: 700; color: #475569; margin-top: 3px; }
+  .donut-c .mut { font-weight: 600; color: #94A3B8; margin-top: 1px; }
+  .sum-div { width: 1px; align-self: stretch; background: #F1F5F9; margin: 12px 0; }
+  .sum-r { flex: 1; min-width: 0; }
+  .ratio { display: flex; align-items: baseline; gap: 6px; }
+  .ratio b { font-size: 28px; font-weight: 800; letter-spacing: -.03em; color: #0F172A; line-height: 1; }
+  .ratio em { font-style: normal; font-size: 22px; font-weight: 700; color: #CBD5E1; line-height: 1; }
+  .ratio span { font-size: 22px; font-weight: 800; color: #0F172A; line-height: 1; }
+  .ratio-l { font-size: 11px; font-weight: 600; color: #475569; margin-top: 4px; }
+  .badge-ok {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px 5px 5px; border-radius: 999px;
+    background: rgba(16,185,129,0.10); color: #10B981;
+    font-size: 11px; font-weight: 700; margin-top: 10px;
+  }
+  .badge-ok i { width: 18px; height: 18px; border-radius: 50%; background: #10B981; display: flex; align-items: center; justify-content: center; }
+
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px; }
+  .tile { border-radius: 14px; padding: 8px 6px; text-align: center; }
+  .tile i { width: 22px; height: 22px; border-radius: 50%; color: #fff; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+  .tile b { display: block; font-size: 16px; font-weight: 800; color: #0F172A; line-height: 1.1; }
+  .tile span { display: block; font-size: 10px; font-weight: 600; color: #475569; margin-top: 1px; }
+  .tile em { display: block; font-style: normal; font-size: 10px; font-weight: 700; margin-top: 2px; }
+
+  /* ringkasan lembur (uang + hitungan) */
+  .money { padding-top: 2px; }
+  .m-head { display: flex; align-items: center; justify-content: space-between; }
+  .m-head > span:first-child { font-size: 13px; font-weight: 700; color: #0F172A; }
+  .m-period { font-size: 11px; font-weight: 600; color: #94A3B8; }
+  .m-val { font-size: 32px; font-weight: 800; letter-spacing: -.03em; color: #0F172A; line-height: 1; margin-top: 10px; }
+  .m-sub { font-size: 11px; font-weight: 600; color: #475569; margin-top: 6px; }
+  .m-div { height: 1px; background: #F1F5F9; margin: 16px 0 12px; }
+  .m-row { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .m-row > div { text-align: center; }
+  .m-row > div + div { border-left: 1px solid #F1F5F9; }
+  .m-row b { display: block; font-size: 16px; font-weight: 800; color: #0F172A; line-height: 1.1; }
+  .m-row span { display: block; font-size: 10px; font-weight: 600; color: #475569; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════ LAYAR 1 - DASHBOARD LEMBUR ══════════ -->
+<div class="shot">
+  <div class="phone">
+    <div class="hero-lg">
+      <div class="hg-band"></div>
+      <span class="hg-deco" style="width:240px;height:240px;right:-84px;top:-104px;background:rgba(255,255,255,0.10)"></span>
+      <span class="hg-deco" style="width:170px;height:170px;left:-70px;bottom:-84px;background:rgba(255,255,255,0.07)"></span>
+
+      <div class="statusbar" style="color:#fff;padding:0;margin-bottom:16px;position:relative;z-index:1"><span>9:41</span><span>▮▮▮ ⌁ ▉</span></div>
+
+      <div class="hg-top">
+        <span class="hg-back" aria-label="Kembali">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+        </span>
+        <div class="hg-page-title">Lembur</div>
+        <span></span>
+      </div>
+
+      <div class="hg-title">Kerja lebih produktif, semua lembur tercatat.</div>
+      <p class="hg-sub">Ajukan lembur dengan mudah dan pantau statusnya di sini.</p>
+
+      <svg class="hg-illus" width="132" height="104" viewBox="0 0 132 104" fill="none" aria-hidden="true">
+        <!-- jam di samping tas kerja -->
+        <circle cx="38" cy="40" r="27" fill="rgba(255,255,255,0.18)"/>
+        <circle cx="38" cy="40" r="21" fill="#FFFFFF"/>
+        <path d="M38 29v11l7 4" stroke="#2F8BF8" stroke-width="3" stroke-linecap="round"/>
+        <rect x="66" y="46" width="38" height="26" rx="6" fill="#1E5FB8"/>
+        <path d="M77 46v-5a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v5" stroke="#1E5FB8" stroke-width="4"/>
+        <path d="M66 57h38" stroke="#2F8BF8" stroke-width="2" opacity="0.55"/>
+        <!-- pot kecil di samping -->
+        <path d="M108 78h18l-2.5 12h-13z" fill="#8FE9CC"/>
+        <path d="M117 78c0-7 3-11 8-13" stroke="#8FE9CC" stroke-width="2.6" stroke-linecap="round"/>
+        <ellipse cx="123" cy="65" rx="5.5" ry="3.6" transform="rotate(-25 123 65)" fill="#8FE9CC"/>
+        <ellipse cx="112" cy="68" rx="5" ry="3.4" transform="rotate(25 112 68)" fill="#8FE9CC"/>
+      </svg>
+    </div>
+
+    <div class="sheet">
+      <div class="money">
+        <div class="m-head">
+          <span>Total uang lembur</span>
+          <span class="m-period" style="color:#2F8BF8;font-weight:700;display:inline-flex;align-items:center;gap:4px">
+            November 2026
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+        </div>
+        <div class="m-val">Rp 112.500</div>
+        <div class="m-sub">dari 7,5 jam lembur yang disetujui</div>
+
+        <div class="m-div"></div>
+
+        <div class="m-row">
+          <div><b>4</b><span>Pengajuan</span></div>
+          <div><b>2</b><span>Disetujui</span></div>
+          <div><b>1</b><span>Menunggu</span></div>
+        </div>
+      </div>
+
+      <button class="btn-primary" style="margin-top:16px">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
+        Ajukan Lembur
+      </button>
+
+      <div class="sect" style="margin-top:16px">
+        <b>Riwayat Terbaru</b>
+        <a href="#">Lihat Semua
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="row-item" style="margin-top:0">
+        <span class="row-check" style="background:#10B981"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
+        <span class="txt"><b>12 Sep 2026</b><span>17.00 - 19.00 (2 jam)</span></span>
+        <span class="badge b-green">Disetujui</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </div>
+      <div class="row-item">
+        <span class="row-check" style="background:#3B82F6"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg></span>
+        <span class="txt"><b>5 Sep 2026</b><span>18.00 - 20.00 (2 jam)</span></span>
+        <span class="badge b-blue">Menunggu</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </div>
+      <div class="row-item">
+        <span class="row-check" style="background:#EF4444"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M6 18L18 6M6 6l12 12"/></svg></span>
+        <span class="txt"><b>28 Agu 2026</b><span>17.00 - 18.30 (1,5 jam)</span></span>
+        <span class="badge b-red">Ditolak</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+
+    <div class="nav">
+      <div class="n"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Beranda</div>
+      <div class="n"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3.4"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Absensi</div>
+      <div class="n active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 9.5v3.5l2.3 1.4M9.5 2.5h5M12 2.5v2"/></svg>Lembur<div class="nline"></div></div>
+      <div class="n"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Profil</div>
+    </div>
+  </div>
+  <div class="shot-label">1. Dashboard Lembur</div>
+  <div class="shot-sub">Header biru + ringkasan kehadiran + statistik + riwayat</div>
+</div>
+
+<!-- ══════════ LAYAR 2 - AJUKAN LEMBUR ══════════ -->
+<div class="shot">
+  <div class="phone">
+    <div class="statusbar"><span>9:41</span><span>▮▮▮ ⌁ ▉</span></div>
+    <div class="appbar">
+      <span class="backbtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></span>
+      <h1>Ajukan Lembur</h1>
+      <span style="width:40px;flex-shrink:0"></span>
+    </div>
+
+    <div class="body">
+      <div class="banner-info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#2F8BF8" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 10.5v6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1.3" fill="#fff"/></svg>
+        <p>Pengajuan lembur akan diproses oleh atasan sesuai ketentuan yang berlaku.</p>
+      </div>
+
+      <div class="field">
+        <span class="icon-tile"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3.4"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+        <span class="f-txt"><small>Tanggal Lembur</small><b>12 Nov 2026</b></span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </div>
+      <div class="field">
+        <span class="icon-tile"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg></span>
+        <span class="f-txt"><small>Waktu Mulai</small><b>17.00</b></span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </div>
+      <div class="field">
+        <span class="icon-tile"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l-3 2"/></svg></span>
+        <span class="f-txt"><small>Waktu Selesai</small><b>19.00</b></span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </div>
+
+      <div class="durasi-chip">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2F8BF8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4l2.5 1.5"/></svg>
+        <b>Estimasi durasi: 2 jam</b>
+      </div>
+
+      <div class="textarea">
+        <p style="font-size: 11px;font-weight:600;color:#94A3B8">Alasan Lembur</p>
+        <p style="margin-top:5px">Masukkan alasan lembur…</p>
+        <div class="counter">0/500</div>
+      </div>
+
+      <p class="lbl">Dokumentasi Kegiatan <small>(Opsional)</small></p>
+      <div class="dropzone">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <b>Tambah Foto</b>
+        <span>Format JPG, PNG (maks. 5MB)</span>
+      </div>
+
+      <div style="margin-top:18px"><button class="btn-primary">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
+        Kirim Pengajuan
+      </button></div>
+    </div>
+  </div>
+  <div class="shot-label">2. Ajukan Lembur</div>
+  <div class="shot-sub">Form: tanggal, waktu, alasan, dokumentasi</div>
+</div>
+
+<!-- ══════════ LAYAR 3 - DETAIL PENGAJUAN ══════════ -->
+<div class="shot">
+  <div class="phone">
+    <div class="statusbar"><span>9:41</span><span>▮▮▮ ⌁ ▉</span></div>
+    <div class="appbar">
+      <span class="backbtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></span>
+      <h1>Detail Pengajuan</h1>
+      <span class="iconbtn" style="width:36px;height:36px"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></span>
+    </div>
+
+    <div class="body">
+      <div class="status-hero sh-green">
+        <div style="position:relative;z-index:1">
+          <span class="badge b-green">Disetujui</span>
+          <div class="ttl">Lembur Kegiatan Pelayanan</div>
+          <p>Pelayanan kesehatan masyarakat di lingkungan kerja.</p>
+        </div>
+        <svg width="88" height="88" viewBox="0 0 88 88" fill="none" style="flex-shrink:0">
+          <circle cx="52" cy="42" r="26" fill="#D7F3E7"/>
+          <circle cx="52" cy="42" r="19" fill="#fff" stroke="#10B981" stroke-width="4"/>
+          <path d="M52 33v9l6 3.5" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
+          <rect x="14" y="54" width="22" height="4.5" rx="2.25" fill="#C3EFDC"/>
+          <rect x="17" y="61" width="18" height="4.5" rx="2.25" fill="#D7F3E7"/>
+          <path d="M22 36l4 4 7-8" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div class="card" style="margin-top:14px;padding:4px 16px">
+        <div class="info-row">
+          <span class="icon-tile" style="width:36px;height:36px;border-radius:11px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3.4"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+          <span class="r-txt"><small>Tanggal</small><b>12 Nov 2026</b></span>
+        </div>
+        <div class="info-row">
+          <span class="icon-tile" style="width:36px;height:36px;border-radius:11px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg></span>
+          <span class="r-txt"><small>Waktu</small><b>17.00 - 19.00 (2 jam)</b></span>
+        </div>
+        <div class="info-row">
+          <span class="icon-tile" style="width:36px;height:36px;border-radius:11px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></span>
+          <span class="r-txt"><small>Alasan</small><b>Menyelesaikan laporan kegiatan pelayanan harian.</b></span>
+        </div>
+        <div class="info-row" style="padding-bottom:14px">
+          <span class="icon-tile" style="width:36px;height:36px;border-radius:11px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
+          <span class="r-txt" style="flex:1"><small>Dokumentasi</small></span>
+        </div>
+        <div class="thumb" style="margin:-6px 0 12px 48px">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='44'%3E%3Crect width='56' height='44' fill='%23DCE9FC'/%3E%3Crect x='16' y='12' width='24' height='16' rx='3' fill='%239DBFF3'/%3E%3Crect x='19' y='15' width='10' height='7' rx='1.5' fill='%23F5F8FD'/%3E%3C/svg%3E" alt="Foto dokumentasi lembur">
+          <span class="t-cap"><b>foto-kegiatan.jpg</b><span>Ketuk untuk memperbesar</span></span>
+          <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><path d="M9 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <div class="sect"><b>Timeline Persetujuan</b></div>
+      <div class="card" style="margin-top:0;padding:16px 16px 6px">
+        <div class="tl">
+          <span class="line"></span>
+          <span class="tl-dot" style="background:#10B981"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
+          <span class="t-txt"><b>Diajukan</b><span>12 Nov 2026 • 16.45</span></span>
+        </div>
+        <div class="tl">
+          <span class="line"></span>
+          <span class="tl-dot" style="background:#10B981"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
+          <span class="t-txt"><b>Disetujui oleh Atasan</b><span>12 Nov 2026 • 17.10</span><em>dr. Ahmad Santoso</em></span>
+        </div>
+        <div class="tl">
+          <span class="tl-dot" style="background:#10B981"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
+          <span class="t-txt"><b>Selesai</b><span>12 Nov 2026 • 17.10</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="shot-label">3. Detail Pengajuan</div>
+  <div class="shot-sub">Status + info + timeline; tombol "Batalkan" muncul saat masih menunggu</div>
+</div>
+
+<!-- ══════════ LAYAR 4 - RIWAYAT LEMBUR ══════════ -->
+<div class="shot">
+  <div class="phone">
+    <div class="statusbar"><span>9:41</span><span>▮▮▮ ⌁ ▉</span></div>
+    <div class="appbar">
+      <span class="backbtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></span>
+      <h1>Riwayat Lembur</h1>
+      <span class="iconbtn" style="width:36px;height:36px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg></span>
+    </div>
+
+    <div class="body">
+      <div style="display:flex;gap:8px;overflow:hidden;margin-top:4px">
+        <span class="badge" style="background:#2F8BF8;color:#fff;padding:8px 16px;font-size: 13px">Semua</span>
+        <span class="badge" style="background:#fff;color:#475569;border:1px solid rgba(31,41,55,0.08);padding:8px 16px;font-size: 13px">Disetujui</span>
+        <span class="badge" style="background:#fff;color:#475569;border:1px solid rgba(31,41,55,0.08);padding:8px 16px;font-size: 13px">Menunggu</span>
+        <span class="badge" style="background:#fff;color:#475569;border:1px solid rgba(31,41,55,0.08);padding:8px 16px;font-size: 13px">Ditolak</span>
+      </div>
+
+      <div class="row-item" style="margin-top:14px">
+        <span class="datebox"><b>12</b><span>Nov</span></span>
+        <span class="txt"><b>Lembur Pelayanan</b><span>17.00 - 19.00 (2 jam)</span></span>
+        <span class="badge b-green">Disetujui</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </div>
+      <div class="row-item">
+        <span class="datebox"><b>7</b><span>Nov</span></span>
+        <span class="txt"><b>Lembur Administrasi</b><span>18.30 - 20.30 (2 jam)</span></span>
+        <span class="badge b-blue">Menunggu</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </div>
+      <div class="row-item">
+        <span class="datebox"><b>5</b><span>Nov</span></span>
+        <span class="txt"><b>Lembur Kegiatan</b><span>16.30 - 18.00 (1,5 jam)</span></span>
+        <span class="badge b-red">Ditolak</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </div>
+      <div class="row-item">
+        <span class="datebox"><b>3</b><span>Nov</span></span>
+        <span class="txt"><b>Lembur Pelayanan</b><span>17.00 - 19.00 (2 jam)</span></span>
+        <span class="badge b-green">Disetujui</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </div>
+      <div class="row-item">
+        <span class="datebox"><b>1</b><span>Nov</span></span>
+        <span class="txt"><b>Lembur Administrasi</b><span>17.00 - 19.00 (2 jam)</span></span>
+        <span class="badge b-green">Disetujui</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </div>
+
+      <div class="row-item" style="margin-top:14px;background:#F0F5FC;justify-content:center;box-shadow:none">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><rect x="3" y="4" width="18" height="18" rx="3.4"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span style="font-size: 13px;font-weight:700;color:#475569">Periode: 1 - 30 November 2026</span>
+        <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px"><path d="M9 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="shot-label">4. Riwayat Lembur</div>
+  <div class="shot-sub">Filter tab + daftar lengkap + pilih periode</div>
+</div>
+
+<!-- ══════════ LAYAR 5 - DETAIL RIWAYAT ══════════ -->
+<div class="shot">
+  <div class="phone">
+    <div class="statusbar"><span>9:41</span><span>▮▮▮ ⌁ ▉</span></div>
+    <div class="appbar">
+      <span class="backbtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></span>
+      <h1>Detail Riwayat</h1>
+      <span class="iconbtn" style="width:36px;height:36px"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></span>
+    </div>
+
+    <div class="body">
+      <div class="status-hero sh-green">
+        <div style="position:relative;z-index:1">
+          <span class="badge b-green">Disetujui</span>
+          <div class="ttl">Lembur Pelayanan</div>
+          <p>Pelayanan kesehatan masyarakat di lingkungan kerja.</p>
+        </div>
+        <svg width="82" height="82" viewBox="0 0 82 82" fill="none" style="flex-shrink:0">
+          <circle cx="50" cy="40" r="24" fill="#D7F3E7"/>
+          <circle cx="50" cy="40" r="17" fill="#fff" stroke="#10B981" stroke-width="4"/>
+          <path d="M50 32v8l5.5 3" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
+          <rect x="13" y="52" width="20" height="4" rx="2" fill="#C3EFDC"/>
+          <rect x="16" y="58" width="16" height="4" rx="2" fill="#D7F3E7"/>
+        </svg>
+      </div>
+
+      <div class="card" style="margin-top:14px;padding:4px 16px">
+        <div class="info-row">
+          <span class="icon-tile" style="width:36px;height:36px;border-radius:11px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3.4"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+          <span class="r-txt"><small>Tanggal</small><b>12 Nov 2026</b></span>
+        </div>
+        <div class="info-row">
+          <span class="icon-tile" style="width:36px;height:36px;border-radius:11px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg></span>
+          <span class="r-txt"><small>Waktu</small><b>17.00 - 19.00 (2 jam)</b></span>
+        </div>
+        <div class="info-row">
+          <span class="icon-tile" style="width:36px;height:36px;border-radius:11px;background:#E9F7F0;color:#059669"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span>
+          <span class="r-txt"><small>Disetujui oleh</small><b>dr. Ahmad Santoso<br><span style="font-size: 11px;font-weight:600;color:#475569">Kepala Puskesmas • 12 Nov 2026 • 17.10</span></b></span>
+        </div>
+        <div class="info-row" style="padding-bottom:14px">
+          <span class="icon-tile" style="width:36px;height:36px;border-radius:11px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          <span class="r-txt"><small>Catatan</small><b>Laporan kegiatan telah diselesaikan dengan baik.</b></span>
+        </div>
+      </div>
+
+      <div class="banner-info" style="margin-top:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#2F8BF8" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 10.5v6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1.3" fill="#fff"/></svg>
+        <p>Jam lembur yang disetujui akan masuk ke rekap kehadiran bulanan.</p>
+      </div>
+    </div>
+  </div>
+  <div class="shot-label">5. Detail Riwayat</div>
+  <div class="shot-sub">Status + persetujuan + catatan atasan</div>
+</div>
+
+<!-- ══════════ LAYAR 6 - KETENTUAN LEMBUR ══════════ -->
+<div class="shot">
+  <div class="phone">
+    <div class="statusbar"><span>9:41</span><span>▮▮▮ ⌁ ▉</span></div>
+    <div class="appbar">
+      <span class="backbtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></span>
+      <h1>Ketentuan Lembur</h1>
+      <span style="width:36px;flex-shrink:0"></span>
+    </div>
+
+    <div class="body">
+      <div class="illus">
+        <svg width="130" height="112" viewBox="0 0 130 112" fill="none">
+          <ellipse cx="65" cy="102" rx="46" ry="6" fill="#D8E7FC"/>
+          <rect x="38" y="20" width="52" height="72" rx="8" fill="#fff" stroke="#9DBFF3" stroke-width="3"/>
+          <rect x="52" y="13" width="24" height="12" rx="6" fill="#2F8BF8"/>
+          <path d="M46 40l4 4 7-8" stroke="#10B981" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M64 42h22" stroke="#C9DBF6" stroke-width="4" stroke-linecap="round"/>
+          <path d="M46 58l4 4 7-8" stroke="#10B981" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M64 60h22" stroke="#C9DBF6" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="94" cy="76" r="17" fill="#fff" stroke="#2F8BF8" stroke-width="3.6"/>
+          <path d="M94 67v9l6 3.5" stroke="#1F74E0" stroke-width="3" stroke-linecap="round"/>
+          <path d="M22 34c0 5-4 6-4 10s3 5 3 5" stroke="#BFDBFE" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <circle cx="104" cy="24" r="5" fill="#BFDBFE"/>
+        </svg>
+      </div>
+
+      <div class="sect"><b>Informasi Penting</b></div>
+      <div class="card steps" style="margin-top:0;padding:8px 16px">
+        <div class="step"><i></i><p>Pengajuan lembur dilakukan melalui aplikasi ini sebelum kegiatan dimulai.</p></div>
+        <div class="step"><i></i><p>Durasi lembur minimal 30 menit dan maksimal 4 jam per hari, sesuai pengaturan instansi.</p></div>
+        <div class="step"><i></i><p>Lembur harus sesuai dengan tugas dan kebutuhan organisasi, serta disetujui atasan.</p></div>
+        <div class="step"><i></i><p>Pastikan data yang diisi benar dan unggah dokumentasi kegiatan bila diminta.</p></div>
+      </div>
+
+      <div class="banner-info" style="margin-top:14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#2F8BF8" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 10.5v6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1.3" fill="#fff"/></svg>
+        <p>Jam lembur yang disetujui dihitung ke upah bulanan sesuai tarif berlaku. Jika ada kendala, silakan hubungi bagian kepegawaian.</p>
+      </div>
+    </div>
+  </div>
+  <div class="shot-label">6. Ketentuan Lembur</div>
+  <div class="shot-sub">Nomor durasi ambil dari pengaturan sistem (min 30 mnt, maks 4 jam)</div>
+</div>
+
+</body>
+</html>
