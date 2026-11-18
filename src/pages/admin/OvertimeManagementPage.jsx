@@ -466,7 +466,7 @@ export default function OvertimeManagementPage() {
                     {r.attachment_url && (
                       <a href={r.attachment_url} target="_blank" rel="noreferrer"
                         className="mt-1 inline-flex items-center gap-1.5 text-[10px] font-semibold text-sky-300 hover:underline">
-                        <img src={r.attachment_url} alt="Foto dokumentasi lembur"
+                        <img src={r.attachment_url} alt="Foto dokumentasi lembur" loading="lazy" decoding="async"
                           className="w-8 h-8 object-cover rounded-lg ring-1 ring-white/20" />
                         Lihat foto dokumentasi
                       </a>

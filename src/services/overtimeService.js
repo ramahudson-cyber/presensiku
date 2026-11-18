@@ -61,17 +61,21 @@ export async function createOvertimeRequest({ date, start_time, end_time, reason
 
 // Upload foto dokumentasi lembur ke bucket 'overtime' (folder per user).
 // Kompres dulu agar kuota storage tidak cepat penuh.
+// Anti-boros egress: nama file selalu unik + objek tidak pernah ditimpa,
+// sehingga aman di-cache CDN setahun penuh (cacheControl 1 tahun) —
+// dilihat berapa kali pun oleh siapa pun, origin tidak diunduh ulang.
 export async function uploadOvertimeEvidence(userId, file) {
   if (!userId) throw new Error("Pengguna belum terautentikasi");
   const compressed = await compressImage(file, { maxSize: 1024, quality: 0.75 });
   const ext = compressed.name.split(".").pop()?.toLowerCase() || "jpg";
-  const path = `${userId}/${Date.now()}.${ext}`;
+  const suffix = Math.random().toString(36).slice(2, 8);
+  const path = `${userId}/${Date.now()}-${suffix}.${ext}`;
   const { error } = await supabase.storage
     .from(OVERTIME_BUCKET)
     .upload(path, compressed, {
-      upsert: true,
+      upsert: false,
       contentType: compressed.type || "image/jpeg",
-      cacheControl: "604800",
+      cacheControl: "31536000",
     });
   if (error) {
     const msg = /size|too large/i.test(error.message)

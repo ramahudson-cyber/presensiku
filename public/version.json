@@ -1,10 +1,10 @@
 {
   "version": "1.8.4",
   "versionCode": 31,
-  "webVersionCode": 66,
+  "webVersionCode": 67,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.4/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
-  "changelog": "Pengajuan lembur kini lewat bottom sheet di dashboard, lengkap dengan unggah foto dokumentasi (opsional).",
+  "changelog": "Foto dokumentasi lembur kini lebih hemat kuota: dikompres dan di-cache lebih lama di server.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }

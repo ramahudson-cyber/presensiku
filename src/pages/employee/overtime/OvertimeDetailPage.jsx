@@ -136,7 +136,7 @@ export default function OvertimeDetailPage() {
                         <a href={req.attachment_url} target="_blank" rel="noreferrer"
                           className="inline-flex items-center gap-2"
                           style={{ color: OT.brand, textDecoration: "none" }}>
-                          <img src={req.attachment_url} alt="Foto dokumentasi lembur"
+                          <img src={req.attachment_url} alt="Foto dokumentasi lembur" loading="lazy" decoding="async"
                             style={{ width: 44, height: 36, objectFit: "cover", borderRadius: 8 }} />
                           <span style={{ fontSize: 12.5, fontWeight: 700 }}>Lihat foto</span>
                         </a>
