@@ -2,7 +2,10 @@
 // Wrapper RPC sistem lembur. Semua tulisan lewat RPC SECURITY DEFINER —
 // angka uang dihitung di server, klien tidak pernah mengirim nominal.
 import { supabase } from "../lib/supabase";
+import { compressImage } from "../lib/imageCompress";
 import { getSetting, setSettingValue } from "../lib/settings";
+
+const OVERTIME_BUCKET = "overtime";
 
 // ---- Settings lembur (custom oleh admin per instansi) ----------------
 export const DEFAULT_OVERTIME_CONFIG = {
@@ -41,15 +44,45 @@ function unwrap(data) {
 }
 
 // ---- Pegawai ----------------------------------------------------------
-export async function createOvertimeRequest({ date, start_time, end_time, reason }) {
-  const { data, error } = await supabase.rpc("create_overtime_request", {
+export async function createOvertimeRequest({ date, start_time, end_time, reason, attachmentUrl }) {
+  const params = {
     p_date: date,
     p_start_time: start_time,
     p_end_time: end_time,
     p_reason: reason || null,
-  });
+  };
+  // Kirim argumen foto hanya bila ada. Pengajuan tanpa foto tetap memakai
+  // RPC lama (4 arg), jadi tidak bergantung pada migration baru.
+  if (attachmentUrl) params.p_attachment_url = attachmentUrl;
+  const { data, error } = await supabase.rpc("create_overtime_request", params);
   if (error) throw error;
   return unwrap(data);
+}
+
+// Upload foto dokumentasi lembur ke bucket 'overtime' (folder per user).
+// Kompres dulu agar kuota storage tidak cepat penuh.
+export async function uploadOvertimeEvidence(userId, file) {
+  if (!userId) throw new Error("Pengguna belum terautentikasi");
+  const compressed = await compressImage(file, { maxSize: 1024, quality: 0.75 });
+  const ext = compressed.name.split(".").pop()?.toLowerCase() || "jpg";
+  const path = `${userId}/${Date.now()}.${ext}`;
+  const { error } = await supabase.storage
+    .from(OVERTIME_BUCKET)
+    .upload(path, compressed, {
+      upsert: true,
+      contentType: compressed.type || "image/jpeg",
+      cacheControl: "604800",
+    });
+  if (error) {
+    const msg = /size|too large/i.test(error.message)
+      ? "Ukuran foto melebihi 5MB"
+      : /mime|type/i.test(error.message)
+        ? "Format foto tidak didukung (JPG/PNG/WebP)"
+        : error.message;
+    throw new Error(msg);
+  }
+  const { data: { publicUrl } } = supabase.storage.from(OVERTIME_BUCKET).getPublicUrl(path);
+  return publicUrl;
 }
 
 export async function getMyOvertimeRequests() {

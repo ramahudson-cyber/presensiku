@@ -1,10 +1,11 @@
 // src/pages/employee/overtime/OvertimeDashboard.jsx
 // Dashboard modul Lembur: ringkasan uang lembur + hitungan status + riwayat terbaru.
 // Semua angka berasal dari tabel overtime_requests (RLS: hanya milik sendiri).
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { getMyOvertimeRequests } from "../../../services/overtimeService";
+import OvertimeRequestSheet from "./OvertimeRequestSheet";
 import {
   OT, Icon, StatusBadge, Loader, ErrorState, EmptyState,
   MonthMenu, monthOptions, currentMonthKey, monthKeyOf,
@@ -19,6 +20,7 @@ export default function OvertimeDashboard() {
   const [month, setMonth] = useState(currentMonthKey());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const load = async () => {
     if (!user?.id) return;
@@ -58,6 +60,7 @@ export default function OvertimeDashboard() {
   }, [monthRows]);
 
   const recent = monthRows.slice(0, 3);
+  const closeSheet = useCallback(() => setSheetOpen(false), []);
 
   return (
     <div className="absolute inset-x-0 top-0" style={{ minHeight: "100vh", background: OT.bg, color: OT.text }}>
@@ -160,7 +163,7 @@ export default function OvertimeDashboard() {
               ))}
             </div>
 
-            <button type="button" onClick={() => navigate("/employee/overtime/request")}
+            <button type="button" onClick={() => setSheetOpen(true)}
               className="w-full flex items-center justify-center gap-2 active:scale-[0.99] transition"
               style={{
                 marginTop: 16, height: 48, borderRadius: 16, border: "none",
@@ -226,6 +229,8 @@ export default function OvertimeDashboard() {
           </>
         )}
       </main>
+
+      <OvertimeRequestSheet open={sheetOpen} onClose={closeSheet} onSubmitted={load} />
     </div>
   );
 }

@@ -19,7 +19,7 @@ import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import BottomSheet from "../../components/BottomSheet";
 import {
-  Clock, Check, X, Plus, Download, Loader2, RefreshCw, Inbox, Search,
+  Check, X, Plus, Download, Loader2, RefreshCw, Inbox, Search,
   Settings2, Banknote, Trash2,
 } from "lucide-react";
 
@@ -463,6 +463,14 @@ export default function OvertimeManagementPage() {
                       )}
                     </p>
                     {r.reason && <p className="text-[10px] text-slate-mist/70 mt-0.5 italic truncate">"{r.reason}"</p>}
+                    {r.attachment_url && (
+                      <a href={r.attachment_url} target="_blank" rel="noreferrer"
+                        className="mt-1 inline-flex items-center gap-1.5 text-[10px] font-semibold text-sky-300 hover:underline">
+                        <img src={r.attachment_url} alt="Foto dokumentasi lembur"
+                          className="w-8 h-8 object-cover rounded-lg ring-1 ring-white/20" />
+                        Lihat foto dokumentasi
+                      </a>
+                    )}
                     {r.status === "rejected" && r.rejection_reason && (
                       <p className="text-[10px] text-rose-300/80 mt-0.5">Alasan tolak: {r.rejection_reason}</p>
                     )}
