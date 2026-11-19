@@ -1,10 +1,10 @@
 {
   "version": "1.8.4",
   "versionCode": 31,
-  "webVersionCode": 69,
+  "webVersionCode": 70,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.4/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
-  "changelog": "Filter status di Riwayat Absensi kini muat penuh tanpa terpotong, dengan pemilih periode rata kanan.",
+  "changelog": "Ikon kalender di header Riwayat Absensi dihapus; pilih periode cukup lewat pill bulan.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }

@@ -279,14 +279,9 @@ export default function EmployeeHistory() {
               </p>
             </div>
 
-            <button type="button" onClick={() => setMonthPicker((v) => !v)} aria-label="Pilih periode"
-              className="w-11 h-11 rounded-full active:scale-95 transition flex items-center justify-center shrink-0"
-              style={{ background: "rgba(255,255,255,0.22)", color: "#fff" }}>
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="3.4" />
-                <path d="M16 2v4M8 2v4M3 10h18" />
-              </svg>
-            </button>
+            {/* Spacer — ikon kalender di sini dihapus; pilih periode cukup
+                lewat pill bulan di bawah header. */}
+            <span className="w-11 shrink-0" />
           </div>
         </header>
 
