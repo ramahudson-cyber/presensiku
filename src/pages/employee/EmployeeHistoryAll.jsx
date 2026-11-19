@@ -9,6 +9,7 @@ import {
 import { shiftLabel } from "../../lib/shiftName";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import { MonthMenu, monthOptions, currentMonthKey } from "./overtime/overtimeUi";
 
 /**
  * Halaman "Riwayat Absensi" lengkap — dibuka dari tombol "Lihat Semua"
@@ -83,6 +84,12 @@ export default function EmployeeHistoryAll() {
   const [detail, setDetail] = useState(null);
 
   const periodLabel = `${MONTHS[month]} ${year}`;
+  const monthKey = `${year}-${String(month + 1).padStart(2, "0")}`;
+  const setMonthKey = (key) => {
+    const [y, m] = key.split("-").map(Number);
+    setYear(y);
+    setMonth(m - 1);
+  };
 
   const load = async () => {
     if (!user?.id) return;
@@ -185,54 +192,37 @@ export default function EmployeeHistoryAll() {
   }, [rows, filter]);
 
   return (
-    <div className="min-h-screen w-full absolute top-0 left-0 right-0 flex flex-col" style={{ background: "#F6F8FC" }}>
+    <div className="min-h-screen w-full absolute top-0 left-0 right-0 flex flex-col" style={{ background: "#FFFFFF" }}>
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
-      {/* HEADER */}
+      {/* HEADER - bersih: tanpa gelombang, tanpa radius, tanpa panah */}
       <header
         className="relative shrink-0 px-4 text-white"
         style={{
           background: "linear-gradient(155deg, #2F8BF8 0%, #3F93FD 55%, #4A7CFB 100%)",
           paddingTop: "calc(env(safe-area-inset-top, 0px) + 16px)",
-          paddingBottom: 26,
-          borderBottomLeftRadius: 28,
-          borderBottomRightRadius: 28,
+          paddingBottom: 20,
         }}
       >
-        <svg className="absolute bottom-0 left-0 w-full pointer-events-none" style={{ height: 48, opacity: 0.15 }} viewBox="0 0 390 48" preserveAspectRatio="none">
-          <path d="M0,28 C120,52 260,6 390,26 L390,48 L0,48 Z" fill="#FFFFFF" />
-        </svg>
-
         <div className="relative flex items-center justify-between">
           <button type="button" onClick={() => navigate(-1)} aria-label="Kembali"
-            className="w-10 h-10 rounded-full active:scale-95 transition"
-            style={{ background: "rgba(255,255,255,0.18)" }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#fff", display: "block", margin: "auto" }}>
+            className="w-10 h-10 active:scale-95 transition flex items-center justify-center"
+            style={{ background: "none", border: "none", color: "#fff", cursor: "pointer" }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
-          <div className="text-center">
-            <h1 className="text-[18px] font-bold tracking-tight leading-tight" style={{ color: "#FFFFFF" }}>
-              Riwayat Absensi
-            </h1>
-            <p className="text-[11px] font-medium mt-0.5" style={{ color: "rgba(255,255,255,0.85)" }}>
-              {periodLabel}
-            </p>
-          </div>
+          <h1 className="text-[18px] font-bold tracking-tight leading-tight text-center" style={{ color: "#FFFFFF" }}>
+            Riwayat Absensi
+          </h1>
 
-          <div className="flex items-center gap-1">
-            <button type="button" onClick={() => navigateMonth(-1)} aria-label="Bulan sebelumnya"
-              className="w-10 h-10 rounded-full active:scale-95 transition flex items-center justify-center"
-              style={{ background: "rgba(255,255,255,0.18)", color: "#fff" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
-            </button>
-            <button type="button" onClick={() => navigateMonth(1)} aria-label="Bulan berikutnya"
-              className="w-10 h-10 rounded-full active:scale-95 transition flex items-center justify-center"
-              style={{ background: "rgba(255,255,255,0.18)", color: "#fff" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
-            </button>
-          </div>
+          <span className="w-10 shrink-0" />
+        </div>
+
+        <div className="relative flex justify-center mt-1.5">
+          <MonthMenu value={monthKey} onChange={setMonthKey}
+            options={monthOptions(rows, currentMonthKey())} tone="onBrand" />
         </div>
       </header>
 
@@ -251,8 +241,8 @@ export default function EmployeeHistoryAll() {
         </div>
       </div>
 
-      {/* DAFTAR */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-8">
+      {/* DAFTAR - full-width tanpa kartu, hanya garis pemisah */}
+      <div className="flex-1 min-h-0 overflow-y-auto pb-8">
         {loading ? (
           <div className="flex justify-center py-16">
             <div className="w-8 h-8 border-2 border-[#2F8BF8] border-t-transparent rounded-full animate-spin" />
@@ -271,21 +261,21 @@ export default function EmployeeHistoryAll() {
             </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl p-8 text-center border border-slate-100">
+          <div className="flex flex-col items-center py-16 px-6 text-center">
             <p className="text-sm font-bold text-slate-800">Tidak ada data {filter === "Semua" ? "" : filter} di bulan ini</p>
             <p className="text-[11.5px] text-slate-400 mt-1">Periode {periodLabel}</p>
           </div>
         ) : (
-          <div className="space-y-2.5">
-            {filtered.map((r) => {
+          <div>
+            {filtered.map((r, i) => {
               const st = STATUS_STYLE[r.key2] || STATUS_STYLE.alpha;
               return (
                 <button
                   key={r.key}
                   type="button"
                   onClick={() => setDetail(r)}
-                  className="w-full text-left bg-white rounded-2xl px-3.5 py-3 flex items-center justify-between gap-3 border border-slate-100 transition active:scale-[0.99]"
-                  style={{ boxShadow: "0 3px 14px -2px rgba(15,23,42,0.045)" }}
+                  className="w-full text-left flex items-center justify-between gap-3 px-4 py-2.5 transition active:scale-[0.99] active:bg-slate-50"
+                  style={{ borderTop: i === 0 ? "none" : "1px solid #F1F5F9" }}
                 >
                   <span className="flex items-center gap-3 min-w-0">
                     <span className="w-9 text-center leading-tight shrink-0 block">
@@ -321,21 +311,6 @@ export default function EmployeeHistoryAll() {
           </div>
         )}
 
-        {/* KETERANGAN */}
-        {!loading && !error && (
-          <div className="mt-3 rounded-2xl p-4 border flex items-start gap-3" style={{ background: "#EBF2FF", borderColor: "rgba(47,139,248,0.18)" }}>
-            <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[12px] font-bold"
-              style={{ background: "#2F8BF8", color: "#fff" }}>
-              i
-            </div>
-            <div className="min-w-0">
-              <p className="text-[13px] font-bold text-slate-800">Keterangan</p>
-              <p className="text-[11.5px] text-slate-600 leading-relaxed mt-0.5">
-                Data menampilkan riwayat absensi pada periode {periodLabel}. Tekan salah satu baris untuk melihat detail kehadiran.
-              </p>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* SHEET DETAIL */}
@@ -364,11 +339,11 @@ export default function EmployeeHistoryAll() {
               </div>
 
               <div className="grid grid-cols-2 gap-2.5 my-4">
-                <div className="rounded-2xl p-3 border border-slate-100" style={{ background: "#F6F8FC" }}>
+                <div className="rounded-2xl p-3 border border-slate-100" style={{ background: "#FFFFFF" }}>
                   <p className="text-[11px] text-slate-400 font-medium">Jam Masuk</p>
                   <p className="text-[15px] font-extrabold text-slate-800 mt-0.5">{detail.clockIn === "-" ? "—" : `${detail.clockIn} WITA`}</p>
                 </div>
-                <div className="rounded-2xl p-3 border border-slate-100" style={{ background: "#F6F8FC" }}>
+                <div className="rounded-2xl p-3 border border-slate-100" style={{ background: "#FFFFFF" }}>
                   <p className="text-[11px] text-slate-400 font-medium">Jam Pulang</p>
                   <p className="text-[15px] font-extrabold text-slate-800 mt-0.5">{detail.clockOut === "-" ? "—" : `${detail.clockOut} WITA`}</p>
                 </div>
@@ -403,12 +378,4 @@ export default function EmployeeHistoryAll() {
     </div>
   );
 
-  function navigateMonth(delta) {
-    let m = month + delta;
-    let y = year;
-    if (m < 0) { m = 11; y--; }
-    if (m > 11) { m = 0; y++; }
-    setMonth(m);
-    setYear(y);
-  }
 }

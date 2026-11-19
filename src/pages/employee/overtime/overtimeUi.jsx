@@ -177,8 +177,10 @@ export function EmptyState({ title, subtitle, action }) {
   );
 }
 
-// Pemilih bulan: tombol teks biru + panah bawah, dropdown daftar bulan.
-export function MonthMenu({ value, onChange, options }) {
+// Pemilih bulan: tombol teks + panah bawah, dropdown daftar bulan.
+// tone "brand"   -> teks biru polos (di atas latar terang)
+// tone "onBrand" -> pill putih transparan (di atas header biru)
+export function MonthMenu({ value, onChange, options, tone = "brand" }) {
   const [open, setOpen] = useState(false);
   const boxRef = useRef(null);
 
@@ -193,13 +195,21 @@ export function MonthMenu({ value, onChange, options }) {
     };
   }, [open]);
 
+  const triggerStyle = tone === "onBrand"
+    ? {
+        display: "inline-flex", alignItems: "center", gap: 5,
+        background: "rgba(255,255,255,0.16)", color: "#fff",
+        fontSize: 11.5, fontWeight: 700,
+        padding: "6px 12px", borderRadius: 999, border: "none", cursor: "pointer",
+      }
+    : {
+        display: "inline-flex", alignItems: "center", gap: 4, border: "none", background: "none",
+        color: OT.brand, fontSize: 11.5, fontWeight: 700, cursor: "pointer", padding: 0,
+      };
+
   return (
     <div ref={boxRef} style={{ position: "relative" }}>
-      <button type="button" onClick={() => setOpen((v) => !v)}
-        style={{
-          display: "inline-flex", alignItems: "center", gap: 4, border: "none", background: "none",
-          color: OT.brand, fontSize: 11.5, fontWeight: 700, cursor: "pointer", padding: 0,
-        }}>
+      <button type="button" onClick={() => setOpen((v) => !v)} style={triggerStyle}>
         {monthLabel(value)}
         <Icon.down size={12} sw={2.6} />
       </button>
