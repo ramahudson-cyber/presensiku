@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
@@ -137,6 +137,28 @@ export default function EmployeeHistoryAll() {
 
   const { pullDistance, isRefreshing } = usePullToRefresh(load);
 
+  const chipsRef = useRef(null);
+  const fadeRef = useRef(null);
+  const activeChipRef = useRef(null);
+
+  // Fade tepi kanan hanya tampil bila rail chip benar-benar bisa digulir.
+  useEffect(() => {
+    const rail = chipsRef.current;
+    const fade = fadeRef.current;
+    if (!rail || !fade) return undefined;
+    const sync = () => { fade.style.display = rail.scrollWidth > rail.clientWidth + 1 ? "block" : "none"; };
+    sync();
+    if (typeof ResizeObserver === "undefined") return undefined;
+    const ro = new ResizeObserver(sync);
+    ro.observe(rail);
+    return () => ro.disconnect();
+  }, [filter]);
+
+  // Chip aktif otomatis digulir ke posisi terlihat saat filter berubah.
+  useEffect(() => {
+    activeChipRef.current?.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+  }, [filter]);
+
   /** Baris yang sudah siap render (status, jam, label, warna). */
   const rows = useMemo(() => {
     return history.map((item) => {
@@ -220,24 +242,37 @@ export default function EmployeeHistoryAll() {
           <span className="w-10 shrink-0" />
         </div>
 
-        <div className="relative flex justify-center mt-1.5">
-          <MonthMenu value={monthKey} onChange={setMonthKey}
-            options={monthOptions(rows, currentMonthKey())} tone="onBrand" />
-        </div>
       </header>
 
-      {/* FILTER PILL */}
-      <div className="shrink-0 px-4 pt-4 pb-3">
-        <div className="flex items-center gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-          {FILTERS.map((f) => (
-            <button key={f} type="button" onClick={() => setFilter(f)}
-              className="shrink-0 px-4 py-2 rounded-full text-[12.5px] font-semibold transition"
-              style={filter === f
-                ? { background: "#2F8BF8", color: "#FFFFFF", boxShadow: "0 4px 12px -2px rgba(47,139,248,0.35)" }
-                : { background: "#E9EEF7", color: "#334155" }}>
-              {f}
-            </button>
-          ))}
+      {/* PERIODE + FILTER PILL */}
+      <div className="shrink-0">
+        <div className="flex justify-end px-4 pt-3.5">
+          <MonthMenu value={monthKey} onChange={setMonthKey}
+            options={monthOptions(rows, currentMonthKey())} tone="soft" />
+        </div>
+
+        <div className="relative">
+          <div ref={chipsRef} className="flex items-center gap-1.5 overflow-x-auto pt-3 pb-2 px-4"
+            style={{ scrollbarWidth: "none", scrollSnapType: "x proximity", scrollPaddingLeft: 16 }}>
+            {FILTERS.map((f) => (
+              <button key={f} type="button" onClick={() => setFilter(f)}
+                ref={f === filter ? activeChipRef : undefined}
+                className="shrink-0 px-3.5 py-2 rounded-full text-[12px] font-semibold transition active:scale-[0.97]"
+                style={{
+                  scrollSnapAlign: "start",
+                  background: filter === f ? "#2F8BF8" : "#E9EEF7",
+                  color: filter === f ? "#FFFFFF" : "#334155",
+                  fontWeight: filter === f ? 700 : 600,
+                }}>
+                {f}
+              </button>
+            ))}
+          </div>
+          <div ref={fadeRef} className="pointer-events-none absolute"
+            style={{
+              display: "none", right: 0, top: 12, bottom: 8, width: 32,
+              background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, #FFFFFF 85%)",
+            }} />
         </div>
       </div>
 

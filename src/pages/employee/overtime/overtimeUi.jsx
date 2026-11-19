@@ -179,6 +179,7 @@ export function EmptyState({ title, subtitle, action }) {
 
 // Pemilih bulan: tombol teks + panah bawah, dropdown daftar bulan.
 // tone "brand"   -> teks biru polos (di atas latar terang)
+// tone "soft"    -> pill tint biru muda (di atas latar putih)
 // tone "onBrand" -> pill putih transparan (di atas header biru)
 export function MonthMenu({ value, onChange, options, tone = "brand" }) {
   const [open, setOpen] = useState(false);
@@ -202,10 +203,17 @@ export function MonthMenu({ value, onChange, options, tone = "brand" }) {
         fontSize: 11.5, fontWeight: 700,
         padding: "6px 12px", borderRadius: 999, border: "none", cursor: "pointer",
       }
-    : {
-        display: "inline-flex", alignItems: "center", gap: 4, border: "none", background: "none",
-        color: OT.brand, fontSize: 11.5, fontWeight: 700, cursor: "pointer", padding: 0,
-      };
+    : tone === "soft"
+      ? {
+          display: "inline-flex", alignItems: "center", gap: 5,
+          background: OT.iconBg, color: OT.brand,
+          fontSize: 11.5, fontWeight: 700,
+          padding: "6px 12px", borderRadius: 999, border: "none", cursor: "pointer",
+        }
+      : {
+          display: "inline-flex", alignItems: "center", gap: 4, border: "none", background: "none",
+          color: OT.brand, fontSize: 11.5, fontWeight: 700, cursor: "pointer", padding: 0,
+        };
 
   return (
     <div ref={boxRef} style={{ position: "relative" }}>
