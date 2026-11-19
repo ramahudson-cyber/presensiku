@@ -296,7 +296,7 @@ export default function LeaveRequestPage() {
         style={{
           display: view === "form" ? "flex" : "none",
           flexDirection: "column", gap: 20,
-          padding: "16px 16px calc(env(safe-area-inset-bottom) + 118px)",
+          padding: "16px 16px calc(env(safe-area-inset-bottom) + 32px)",
           maxWidth: 430, margin: "0 auto",
         }}
       >
