@@ -360,16 +360,13 @@ export default function EmployeeDashboard() {
               <ProfileAvatarButton user={user} initials={user?.full_name?.charAt(0)?.toUpperCase() || "R"} variant="hero" />
               <div className="min-w-0">
                 <div className="text-[13px] font-medium text-white/90">{getGreeting(serverTime.getHours())},</div>
-                <div className="text-xl font-extrabold tracking-tight leading-tight text-white">{user?.full_name || "Rama Hudson"}</div>
+                <div className="text-[17px] font-extrabold tracking-tight leading-tight text-white">{user?.full_name || "Rama Hudson"}</div>
                 <div className="flex items-center gap-1 text-[11px] text-white/85 mt-0.5 text-white">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
-                    <rect x="2.5" y="7" width="19" height="13" rx="2.5" /><path d="M8 7V5.5A2.5 2.5 0 0 1 10.5 3h3A2.5 2.5 0 0 1 16 5.5V7" /><path d="M2.5 12.5h19" />
-                  </svg>
                   <span className="truncate min-w-0">{[user?.role, user?.position].filter(Boolean).join(" · ") || "Pegawai"}</span>
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1 shrink-0">
               <Link to="/employee/notifications" aria-label="Pengumuman"
                 className="relative w-[42px] h-[42px] rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all">
                 <Bell size={20} className="text-white" />
@@ -406,7 +403,7 @@ export default function EmployeeDashboard() {
               </div>
               <Link to="/employee/attendance"
                 className="mt-3 w-full h-[42px] rounded-full flex items-center justify-center gap-1 whitespace-nowrap text-white text-[11px] font-extrabold active:scale-[0.98] transition"
-                style={{ background: 'linear-gradient(135deg, #2F8BF8 0%, #1F6FE8 100%)', boxShadow: '0 8px 18px rgba(47,139,248,0.38)', padding: '0 6px' }}>
+                style={{ background: 'linear-gradient(135deg, #2F8BF8 0%, #1F6FE8 100%)', boxShadow: '0 4px 10px rgba(47,139,248,0.25)', padding: '0 6px' }}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
                   <path d="M12 4.5a7.5 7.5 0 0 0-7.5 7.5v3" /><path d="M12 4.5A7.5 7.5 0 0 1 19.5 12v4.5" />
                   <path d="M12 8a4 4 0 0 0-4 4v5" /><path d="M12 8a4 4 0 0 1 4 4v5.5" />
@@ -419,13 +416,13 @@ export default function EmployeeDashboard() {
 
             <div className="min-w-0" style={{ padding: '15px 15px 14px 13px', borderLeft: '1px solid #EDF1F7' }}>
               <Link to="/employee/history"
-                className="w-full h-[30px] rounded-full flex items-center gap-1.5 px-2.5 text-[10.5px] font-extrabold"
+                className="w-full h-[30px] rounded-full flex items-center gap-1 px-2 text-[10px] font-extrabold whitespace-nowrap"
                 style={{ background: '#E8F1FE', color: '#1F6FE8' }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
                   <rect x="3" y="4.5" width="18" height="17" rx="3.5" /><path d="M16 2.5v4M8 2.5v4M3 10h18" />
                 </svg>
                 Status Bulan Ini
-                <ChevronRight size={13} className="ml-auto" />
+                <ChevronRight size={12} className="ml-auto shrink-0" />
               </Link>
               <div className="grid grid-cols-2 mt-1.5">
                 {[
