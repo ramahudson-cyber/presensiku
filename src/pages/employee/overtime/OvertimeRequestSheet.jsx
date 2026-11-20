@@ -138,6 +138,23 @@ export default function OvertimeRequestSheet({ open, onClose, onSubmitted }) {
 
   const fieldClass = "w-full h-11 mt-1.5 px-3.5 rounded-[13px] border border-[#E2E8F0] bg-white text-[13px] outline-none transition focus:border-[#2F8BF8] focus:ring-2 focus:ring-[#2F8BF8]/10";
 
+  // Pola kartu pemilih tanggal/waktu mengikuti halaman Pengajuan Izin & Sakit:
+  // label kecil di atas input transparan di dalam kartu lembut, bukan input kotak.
+  const pickerCard = {
+    background: "#F8FAFD", border: "1.5px solid rgba(31,41,55,0.08)",
+    borderRadius: 16, padding: "10px 12px", boxShadow: OT.shadow,
+  };
+  const pickerInput = {
+    width: "100%", border: "none", background: "transparent", fontFamily: "inherit",
+    fontSize: 12, fontWeight: 700, color: OT.text, outline: "none", padding: 0,
+  };
+  const pickerLabel = { display: "block", fontSize: 9.5, fontWeight: 700, color: OT.textMuted, marginBottom: 3 };
+  const durationReady = Boolean(duration && !duration.error
+    && duration.mins >= config.min_minutes && duration.mins / 60 <= config.max_hours_per_day);
+  const durationBadge = !startTime || !endTime
+    ? "Isi waktu"
+    : durationError ? "Periksa waktu" : durationLabel(duration.mins / 60);
+
   return (
     <div className={`fixed inset-0 z-50 flex items-end justify-center transition-opacity duration-200 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
       aria-hidden={!open} inert={!open}>
@@ -180,34 +197,41 @@ export default function OvertimeRequestSheet({ open, onClose, onSubmitted }) {
 
           <form id="ot-sheet-form" onSubmit={submit} noValidate>
             <div style={{ marginTop: 15 }}>
-              <label htmlFor="ot-sheet-date" style={{ fontSize: 12, fontWeight: 700, color: OT.text }}>Tanggal lembur</label>
-              <input id="ot-sheet-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className={fieldClass} />
-            </div>
+              <div className="flex items-center justify-between gap-2.5">
+                <span style={{ fontSize: 12, fontWeight: 800, color: OT.text }}>Waktu lembur</span>
+                <span style={{
+                  flex: "none", fontSize: 10, fontWeight: 800, color: "#FFFFFF",
+                  background: durationError ? "#EF4444" : durationReady ? "#10B981" : OT.brand,
+                  borderRadius: 999, padding: "5px 11px", whiteSpace: "nowrap",
+                  boxShadow: "0 4px 10px -3px rgba(47,139,248,0.45)",
+                }}>{durationBadge}</span>
+              </div>
 
-            <div style={{ marginTop: 15 }}>
-              <label style={{ fontSize: 12, fontWeight: 700, color: OT.text }}>Waktu lembur</label>
-              <div className="grid grid-cols-2 gap-2.5" style={{ marginTop: 7 }}>
-                <div>
-                  <span className="block" style={{ fontSize: 10.5, color: OT.textSec, marginBottom: 6 }}>Mulai</span>
-                  <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)}
-                    aria-label="Waktu mulai lembur" className={fieldClass} style={{ marginTop: 0 }} />
+              <div style={{ ...pickerCard, marginTop: 9 }}>
+                <label htmlFor="ot-sheet-date" style={pickerLabel}>Tanggal lembur</label>
+                <input id="ot-sheet-date" type="date" value={date}
+                  onChange={(e) => setDate(e.target.value)} style={pickerInput} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3" style={{ marginTop: 10 }}>
+                <div style={pickerCard}>
+                  <label htmlFor="ot-sheet-start" style={pickerLabel}>Mulai</label>
+                  <input id="ot-sheet-start" type="time" value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)} style={pickerInput} />
                 </div>
-                <div>
-                  <span className="block" style={{ fontSize: 10.5, color: OT.textSec, marginBottom: 6 }}>Selesai</span>
-                  <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)}
-                    aria-label="Waktu selesai lembur" className={fieldClass} style={{ marginTop: 0 }} />
+                <div style={pickerCard}>
+                  <label htmlFor="ot-sheet-end" style={pickerLabel}>Selesai</label>
+                  <input id="ot-sheet-end" type="time" value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)} style={pickerInput} />
                 </div>
               </div>
-              <div className="flex gap-2 items-start rounded-[13px] px-3 py-2.5"
-                style={{
-                  marginTop: 11,
-                  background: durationError ? "#FEF2F2" : duration?.mins >= config.min_minutes && !duration?.error ? OT.iconBg : "#F8FAFC",
-                  border: `1px solid ${durationError ? "#FECACA" : duration?.mins >= config.min_minutes && !duration?.error ? "rgba(47,139,248,0.22)" : "#EEF2F6"}`,
-                }}>
-                <span style={{ flex: "none", marginTop: 1, color: durationError ? "#B91C1C" : OT.brand }}><Icon.clock size={16} sw={1.7} /></span>
-                <p style={{ fontSize: 11.5, lineHeight: 1.5, color: durationError ? "#B91C1C" : duration?.mins >= config.min_minutes && !duration?.error ? "#0B3A66" : OT.textSec }}>
-                  {durationText}
-                </p>
+
+              <div className="flex gap-2 items-start" style={{ marginTop: 9 }}>
+                <span style={{ flex: "none", marginTop: 1, color: durationError ? "#DC2626" : OT.brand }}><Icon.clock size={15} sw={1.7} /></span>
+                <p style={{
+                  fontSize: 11, lineHeight: 1.5,
+                  color: durationError ? "#DC2626" : durationReady ? "#0B3A66" : OT.textSec,
+                }}>{durationText}</p>
               </div>
             </div>
 
@@ -257,9 +281,6 @@ export default function OvertimeRequestSheet({ open, onClose, onSubmitted }) {
             <span style={{ flex: "none", marginTop: 1, color: "#92400E" }}><Icon.info size={16} sw={1.7} /></span>
             <div style={{ fontSize: 11, lineHeight: 1.5, color: "#92400E" }}>
               <p>Uang lembur hanya dibayar bila Anda tetap melakukan absen pulang pada hari lembur.</p>
-              <p style={{ marginTop: 4 }}>
-                Minimal {config.min_minutes} menit, maksimal {config.max_hours_per_day} jam per hari. Lembur lintas tengah malam berakhir paling lambat pukul 06.00.
-              </p>
             </div>
           </div>
         </div>
