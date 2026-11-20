@@ -1,10 +1,10 @@
 // src/pages/employee/overtime/OvertimeRulesPage.jsx
-// Ketentuan lembur. Angka durasi & tarif dibaca dari pengaturan sistem
-// (overtime_min_minutes, overtime_max_hours_per_day, overtime_rate_per_hour).
+// Ketentuan lembur. Isi pernyataan statis dan tanpa card; config tetap dimuat
+// supaya perilaku halaman (loading/error) tidak berubah.
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getOvertimeConfig } from "../../../services/overtimeService";
-import { OT, Icon, LightAppBar, Loader, rupiah } from "./overtimeUi";
+import { OT, Icon, LightAppBar, Loader } from "./overtimeUi";
 
 export default function OvertimeRulesPage() {
   const navigate = useNavigate();
@@ -31,9 +31,9 @@ export default function OvertimeRulesPage() {
 
   const steps = config ? [
     "Pengajuan lembur dilakukan melalui aplikasi ini sebelum kegiatan dimulai.",
-    `Durasi lembur minimal ${config.min_minutes} menit dan maksimal ${config.max_hours_per_day} jam per hari, sesuai pengaturan instansi.`,
+    "Durasi lembur disesuaikan dengan kebutuhan kegiatan.",
     "Lembur harus sesuai dengan tugas dan kebutuhan organisasi, serta disetujui atasan.",
-    `Uang lembur dihitung ${rupiah(config.rate_per_hour)} per jam setelah pengajuan disetujui.`,
+    "Uang lembur ditentukan oleh admin.",
     "Uang lembur hanya dibayar bila Anda tetap melakukan absen pulang pada hari lembur.",
   ] : [];
 
@@ -71,22 +71,27 @@ export default function OvertimeRulesPage() {
               </div>
 
               <p style={{ fontSize: 14, fontWeight: 800, margin: "20px 0 8px" }}>Informasi Penting</p>
-              <div style={{
-                background: "#fff", border: `1px solid ${OT.border}`, borderRadius: 24,
-                padding: "8px 16px", boxShadow: OT.shadow, counterReset: "step",
-              }}>
-                {steps.map((text, i) => (
-                  <div key={text} style={{
-                    display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 0",
-                    borderTop: i === 0 ? "none" : `1px solid ${OT.divider}`,
-                  }}>
-                    <span className="flex items-center justify-center shrink-0" style={{
-                      width: 26, height: 26, borderRadius: "50%", background: OT.iconBg,
-                      color: OT.brand, fontSize: 12, fontWeight: 800,
-                    }}>{i + 1}</span>
-                    <p style={{ fontSize: 12.5, lineHeight: 1.55, color: OT.textSec, paddingTop: 3 }}>{text}</p>
-                  </div>
-                ))}
+              <div style={{ position: "relative" }}>
+                <span aria-hidden="true" style={{
+                  position: "absolute", left: 13, top: 14, bottom: 14, width: 1,
+                  background: "linear-gradient(to bottom, rgba(47,139,248,0.30), rgba(47,139,248,0.08))",
+                }} />
+                <ol style={{ listStyle: "none", margin: 0, padding: 0, position: "relative" }}>
+                  {steps.map((text, i) => (
+                    <li key={text} style={{
+                      display: "flex", gap: 14, alignItems: "flex-start",
+                      paddingBottom: i === steps.length - 1 ? 0 : 20,
+                    }}>
+                      <span className="flex items-center justify-center shrink-0" style={{
+                        position: "relative", zIndex: 1,
+                        width: 28, height: 28, borderRadius: "50%", background: "#fff",
+                        border: "1px solid rgba(47,139,248,0.24)", color: OT.brand,
+                        fontSize: 11, fontWeight: 800, boxShadow: "0 1px 3px rgba(15,23,42,0.05)",
+                      }}>{i + 1}</span>
+                      <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.6, color: OT.textSec, paddingTop: 4 }}>{text}</p>
+                    </li>
+                  ))}
+                </ol>
               </div>
 
               <div className="flex items-start gap-2.5" style={{
