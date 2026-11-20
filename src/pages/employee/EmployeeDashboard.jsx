@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
-import { getAttendanceHistory } from "../../services/attendanceService";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { History, Sun, Sunset, ArrowRight, Bell, ChevronRight, LogOut, ClipboardList, User, Wallet, MessageSquareWarning, Clock } from "lucide-react";
@@ -44,10 +43,10 @@ export default function EmployeeDashboard() {
     }
   };
   const [todayAttendance, setTodayAttendance] = useState(null);
-  const yesterdaySchedRef = useRef(null);
+  const [yesterdaySched, setYesterdaySched] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [ackedIds, setAckedIds] = useState(new Set());
-  const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0, jadwalCount: 0 });
+  const [stats, setStats] = useState({ hadir: 0, izin: 0, sakit: 0, alpha: 0, terlambat: 0, jadwalCount: 0 });
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [shift, setShift] = useState(null);
@@ -63,8 +62,6 @@ export default function EmployeeDashboard() {
 	  if (h >= 15 && h < 18) return "Selamat Sore";
 	  return "Selamat Malam";
 	};
-
-  useEffect(() => { fetchData(); }, []);
 
   // Push notification FCM + reminder shift terjadwal + realtime pengumuman
   useEffect(() => {
@@ -140,7 +137,7 @@ export default function EmployeeDashboard() {
           localStorage.setItem(key, "1");
         }
       }
-      const endR = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance, yesterdaySchedRef.current);
+      const endR = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance, yesterdaySched);
       if (endR.show) {
         const key = reminderToastEndKey(today, todaySched.shift_code);
         if (!localStorage.getItem(key)) {
@@ -152,7 +149,7 @@ export default function EmployeeDashboard() {
     showReminder();
     const id = setInterval(showReminder, 60000);
     return () => clearInterval(id);
-  }, [serverTime, todaySched, shiftDefinitions, todayAttendance]);
+  }, [serverTime, todaySched, shiftDefinitions, todayAttendance, yesterdaySched]);
 
   const fetchData = async () => {
     try {
@@ -170,7 +167,7 @@ export default function EmployeeDashboard() {
       // PENTING: urutan nama WAJIB sama dengan urutan query di bawah.
       // (Dulu tidak sejajar — shiftsMasterRes menunjuk ke hasil shift_schedules,
       // sehingga peta nama shift kosong dan badge menampilkan kode mentah "MLM".)
-      const [attRes, shiftRes, monthAttRes, annRes, ackRes, historyRes, schedRes, shiftSchedulesRes, shiftsMasterRes] = await withTimeout(Promise.all([
+      const [attRes, shiftRes, monthAttRes, annRes, ackRes, schedRes, shiftSchedulesRes, shiftsMasterRes] = await withTimeout(Promise.all([
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("attendance").select("date, attendance_status").eq("user_id", user.id).gte("date", monthStartStr).lte("date", today),
@@ -178,7 +175,6 @@ export default function EmployeeDashboard() {
           .or(`expires_at.is.null,expires_at.gte.${new Date().toISOString()}`)
           .order("created_at", { ascending: false }).limit(3),
         supabase.from("announcement_acks").select("announcement_id").eq("user_id", user.id),
-        getAttendanceHistory(user.id),
         supabase.from("employee_schedules").select("date, shift_code").eq("user_id", user.id).gte("date", monthStartStr).lte("date", monthEndStr),
         supabase.from("shift_schedules").select("shift_code, day_of_week, start_time, end_time, crosses_midnight, is_working_day"),
         supabase.from("shifts").select("code, name"),
@@ -211,7 +207,7 @@ export default function EmployeeDashboard() {
       {
         const { data: ySched } = await supabase.from("employee_schedules")
           .select("shift_code").eq("user_id", user.id).eq("date", yesterdayKey).maybeSingle();
-        yesterdaySchedRef.current = ySched?.shift_code ? { shift_code: ySched.shift_code, date: yesterdayKey } : null;
+        setYesterdaySched(ySched?.shift_code ? { shift_code: ySched.shift_code, date: yesterdayKey } : null);
       }
 
       setTodayAttendance(att);
@@ -225,8 +221,9 @@ export default function EmployeeDashboard() {
 
       scheduleShiftReminders(serverNow, shiftRes.data || null, shiftDefinitions, attRes.data || null);
 
-      const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0 };
+      const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0, terlambat: 0 };
       monthAttRes.data?.forEach(a => {
+        if (a.attendance_status === 'terlambat') s.terlambat++;
         const st = a.attendance_status === 'terlambat' ? 'hadir' : a.attendance_status;
         if (s[st] !== undefined) s[st]++;
       });
@@ -252,6 +249,13 @@ export default function EmployeeDashboard() {
       setFetchError(e.message?.includes('Timeout') ? 'Koneksi lambat. Coba lagi.' : 'Gagal memuat data. Periksa koneksi.');
     } finally { setLoading(false); }
   };
+
+  // Muat data saat halaman dibuka. Dipindah ke bawah deklarasi fetchData agar
+  // urutan deklarasi benar (react-hooks/immutability).
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { pullDistance, isRefreshing } = usePullToRefresh(fetchData);
 
@@ -322,61 +326,135 @@ export default function EmployeeDashboard() {
   return (
     <div className="min-h-screen w-full font-sans absolute top-0 left-0 pb-24" style={{ background: T.bg, color: T.text }}>
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
-      {/* HERO — vibrant violet gradient. hero-card-bg dipakai karena rule global
-          index.css `.text-white !important` memaksa teks gelap di light mode;
-          rule proteksi hero-card-bg mengembalikan teks jadi putih.
-          emp-hero-drop: animasi masuk (turun pelan) — hanya transform/opacity,
-          tampilan akhirnya identik tanpa animasi. */}
-      <div className="w-full p-8 pt-12 shadow-lg rounded-b-[32px] text-white hero-card-bg emp-hero-drop"
-        style={{ background: 'linear-gradient(160deg, #39C0DF 0%, #32ACFB 30%, #3F93FD 62%, #4A7CFB 100%)' }}>
-        <div className="max-w-md mx-auto">
-          {/* Icon notifikasi & keluar di paling atas, tanpa background */}
-          <div className="flex items-center justify-end gap-5 mb-2">
-            <Link
-              to="/employee/notifications"
-              aria-label="Pengumuman"
-              className="relative p-1 rounded-full hover:bg-white/10 active:scale-95 transition-all"
-            >
-              <Bell size={20} className="text-white" />
-              {announcements.some((a) => !ackedIds.has(a.id)) && (
-                <span className="absolute top-0 right-0 w-2 h-2 bg-rose-400 rounded-full ring-2 ring-[#1F74E0]" />
-              )}
-            </Link>
-            <button
-              onClick={handleLogout}
-              disabled={loggingOut}
-              aria-label="Keluar"
-              className="p-1 rounded-full hover:bg-white/10 active:scale-95 transition-all disabled:opacity-60"
-            >
-              {loggingOut
-                ? <div className="w-5 h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
-                : <LogOut size={20} className="text-white" />}
-            </button>
-          </div>
-          <div className="flex items-center gap-4 mb-8">
-            <ProfileAvatarButton user={user} initials={user?.full_name?.charAt(0)?.toUpperCase() || "R"} variant="hero" />
-            <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-medium opacity-90 text-white">{getGreeting(serverTime.getHours())},</div>
-              <div className="text-2xl font-bold text-white">{user?.full_name || "Rama Hudson"}</div>
-              <div className="text-xs opacity-75 mt-0.5 text-white">
-                {[user?.role, user?.position].filter(Boolean).join(" · ") || "Pegawai"}
+      {/* HERO — header biru dengan gelombang berlapis. Kartu ringkasan menimpa
+          tepi bawah header. Section Status Hari Ini & Menu sengaja tidak diubah. */}
+      <div className="w-full rounded-b-[34px] text-white hero-card-bg emp-hero-drop relative"
+        style={{ background: 'linear-gradient(150deg, #0B3FB8 0%, #1449D8 34%, #2F7BF0 68%, #3F93FD 100%)', paddingBottom: 74 }}>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-b-[34px]" aria-hidden="true">
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 390 230" preserveAspectRatio="none" fill="none">
+            <defs>
+              <linearGradient id="empWaveTop" x1="390" y1="0" x2="110" y2="220" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#7FCBFF" stopOpacity="0.72" />
+                <stop offset="1" stopColor="#2F7BF0" stopOpacity="0.10" />
+              </linearGradient>
+              <linearGradient id="empWaveMid" x1="390" y1="50" x2="170" y2="225" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#9EDFFF" stopOpacity="0.62" />
+                <stop offset="1" stopColor="#3B9BFB" stopOpacity="0.06" />
+              </linearGradient>
+              <linearGradient id="empWaveEdge" x1="390" y1="0" x2="100" y2="210" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#FFFFFF" stopOpacity="0.30" />
+                <stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path d="M390 0v196c-60-16-105-46-140-88-36-43-82-76-142-98C195 0 290 0 390 0Z" fill="url(#empWaveTop)" />
+            <path d="M390 52c-42 14-76 40-102 76-30 42-66 70-116 92h218V52Z" fill="url(#empWaveMid)" />
+            <path d="M390 118c-34 10-60 28-82 52-18 22-32 40-42 50h124v-102Z" fill="#7ED4FF" opacity="0.38" />
+            <path d="M390 0v196c-60-16-105-46-140-88-36-43-82-76-142-98" stroke="url(#empWaveEdge)" strokeWidth="2" />
+            <path d="M390 52c-42 14-76 40-102 76-30 42-66 70-116 92" stroke="url(#empWaveEdge)" strokeWidth="1.6" />
+          </svg>
+        </div>
+
+        <div className="relative max-w-md mx-auto" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 10px)' }}>
+          <div className="flex items-start justify-between gap-3 px-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <ProfileAvatarButton user={user} initials={user?.full_name?.charAt(0)?.toUpperCase() || "R"} variant="hero" />
+              <div className="min-w-0">
+                <div className="text-[13px] font-medium text-white/90">{getGreeting(serverTime.getHours())},</div>
+                <div className="text-xl font-extrabold tracking-tight truncate text-white">{user?.full_name || "Rama Hudson"}</div>
+                <div className="flex items-center gap-1 text-[11px] text-white/85 mt-0.5 text-white">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="2.5" y="7" width="19" height="13" rx="2.5" /><path d="M8 7V5.5A2.5 2.5 0 0 1 10.5 3h3A2.5 2.5 0 0 1 16 5.5V7" /><path d="M2.5 12.5h19" />
+                  </svg>
+                  {[user?.role, user?.position].filter(Boolean).join(" · ") || "Pegawai"}
+                </div>
               </div>
             </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Link to="/employee/notifications" aria-label="Pengumuman"
+                className="relative w-[42px] h-[42px] rounded-full flex items-center justify-center border border-white/25 bg-white/15 hover:bg-white/25 active:scale-95 transition-all">
+                <Bell size={19} className="text-white" />
+                {announcements.some((a) => !ackedIds.has(a.id)) && (
+                  <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-[#2A6BE8]" />
+                )}
+              </Link>
+              <button onClick={handleLogout} disabled={loggingOut} aria-label="Keluar"
+                className="w-[42px] h-[42px] rounded-full flex items-center justify-center border border-white/25 bg-white/15 hover:bg-white/25 active:scale-95 transition-all disabled:opacity-60">
+                {loggingOut
+                  ? <div className="w-5 h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
+                  : <LogOut size={19} className="text-white" />}
+              </button>
+            </div>
           </div>
-          <div className="flex justify-between items-end">
-            <div>
-              <div className="text-4xl font-bold text-white">{serverTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</div>
-              <div className="text-xs opacity-70 mt-1 text-white">{serverTime.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
-              <div className="text-[10px] mt-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full inline-block font-semibold" style={{ border: '1px solid rgba(255,255,255,0.25)' }}>
-                {shift ? shift : "Tidak ada jadwal hari ini"}
+
+          <div className="px-4 mt-3">
+            <span className="text-[10px] font-semibold bg-white/20 px-3 py-1 rounded-full inline-block"
+              style={{ border: '1px solid rgba(255,255,255,0.25)' }}>
+              {shift ? shift : "Tidak ada jadwal hari ini"}
+            </span>
+          </div>
+
+          {/* KARTU DI HEADER */}
+          <div className="mx-[14px] mt-3 bg-white rounded-[26px] grid grid-cols-2"
+            style={{ marginBottom: -130, boxShadow: '0 18px 40px rgba(9,33,84,0.20)', color: T.text }}>
+            <div className="min-w-0" style={{ padding: '15px 13px 14px 15px' }}>
+              <div className="text-[31px] font-extrabold leading-none tracking-[-0.045em] tabular-nums"
+                style={{ color: T.text }}>
+                {serverTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+              </div>
+              <div className="text-[9.5px] font-semibold mt-1.5" style={{ color: T.textMuted }}>
+                {serverTime.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+              </div>
+              <Link to="/employee/attendance"
+                className="mt-3 w-full h-[42px] rounded-full flex items-center justify-center gap-1.5 text-white text-[11.5px] font-extrabold active:scale-[0.98] transition"
+                style={{ background: 'linear-gradient(135deg, #2F8BF8 0%, #1F6FE8 100%)', boxShadow: '0 8px 18px rgba(47,139,248,0.38)', padding: '0 8px' }}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 4.5a7.5 7.5 0 0 0-7.5 7.5v3" /><path d="M12 4.5A7.5 7.5 0 0 1 19.5 12v4.5" />
+                  <path d="M12 8a4 4 0 0 0-4 4v5" /><path d="M12 8a4 4 0 0 1 4 4v5.5" />
+                  <path d="M12 11.5a1.2 1.2 0 0 0-1.2 1.2v6" /><path d="M12 11.5a1.2 1.2 0 0 1 1.2 1.2v6.5" />
+                </svg>
+                Absen Sekarang
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+
+            <div className="min-w-0" style={{ padding: '15px 15px 14px 13px', borderLeft: '1px solid #EDF1F7' }}>
+              <Link to="/employee/history"
+                className="w-full h-[30px] rounded-full flex items-center gap-1.5 px-2.5 text-[10.5px] font-extrabold"
+                style={{ background: '#E8F1FE', color: '#1F6FE8' }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="3" y="4.5" width="18" height="17" rx="3.5" /><path d="M16 2.5v4M8 2.5v4M3 10h18" />
+                </svg>
+                Status Bulan Ini
+                <ChevronRight size={13} className="ml-auto" />
+              </Link>
+              <div className="grid grid-cols-2 mt-1.5">
+                {[
+                  { label: 'Hadir', value: stats.hadir, color: '#10B981' },
+                  { label: 'Terlambat', value: stats.terlambat || 0, color: '#F59E0B' },
+                  { label: 'Izin', value: stats.izin, color: '#7C5CE0' },
+                  { label: 'Sakit', value: stats.sakit, color: '#94A3B8' },
+                ].map((item, i) => (
+                  <div key={item.label} style={{
+                    padding: '6px 0 2px 7px',
+                    borderTop: i >= 2 ? '1px solid #EDF1F7' : 'none',
+                    borderLeft: i % 2 === 1 ? '1px solid #EDF1F7' : 'none',
+                  }}>
+                    <div className="flex items-center gap-1 text-[9px] font-semibold" style={{ color: T.textSec }}>
+                      <span className="inline-block rounded-full shrink-0" style={{ width: 7, height: 7, background: item.color }} />
+                      {item.label}
+                    </div>
+                    <div className="text-[14px] font-extrabold tracking-tight mt-0.5" style={{ color: T.text }}>
+                      {item.value}<span className="text-[9px] font-bold ml-0.5" style={{ color: T.textSec }}> Hari</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-            <Link to="/employee/attendance" className="bg-white text-[#1F74E0] px-8 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200">
-              Absen <ArrowRight size={16} />
-            </Link>
           </div>
         </div>
       </div>
+
+      <div aria-hidden="true" style={{ height: 96 }} />
 
       <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
         {/* SECTION TITLE: Status hari ini — bar + judul, pola sama dengan header "Menu".
@@ -582,7 +660,7 @@ export default function EmployeeDashboard() {
 
         {/* Shift Reminder Banner — check-out */}
         {(() => {
-          const rEnd = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance, yesterdaySchedRef.current);
+          const rEnd = getShiftEndReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance, yesterdaySched);
           if (!rEnd.show) return null;
           return (
             <div className="rounded-3xl p-4 relative overflow-hidden border"
