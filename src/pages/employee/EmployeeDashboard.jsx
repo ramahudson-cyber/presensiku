@@ -346,11 +346,11 @@ export default function EmployeeDashboard() {
                 <stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
               </linearGradient>
             </defs>
-            <path d="M390 0v196c-60-16-105-46-140-88-36-43-82-76-142-98C195 0 290 0 390 0Z" fill="url(#empWaveTop)" />
-            <path d="M390 52c-42 14-76 40-102 76-30 42-66 70-116 92h218V52Z" fill="url(#empWaveMid)" />
-            <path d="M390 118c-34 10-60 28-82 52-18 22-32 40-42 50h124v-102Z" fill="#7ED4FF" opacity="0.38" />
-            <path d="M390 0v196c-60-16-105-46-140-88-36-43-82-76-142-98" stroke="url(#empWaveEdge)" strokeWidth="2" />
-            <path d="M390 52c-42 14-76 40-102 76-30 42-66 70-116 92" stroke="url(#empWaveEdge)" strokeWidth="1.6" />
+            <path d="M390 0V172C330 84 245 30 148 0Z" fill="url(#empWaveTop)" />
+            <path d="M390 60C305 108 258 160 236 230H390Z" fill="url(#empWaveMid)" />
+            <path d="M390 130C348 152 316 182 298 230H390Z" fill="#7ED4FF" opacity="0.38" />
+            <path d="M390 172C330 84 245 30 148 0" stroke="url(#empWaveEdge)" strokeWidth="2" />
+            <path d="M390 60C305 108 258 160 236 230" stroke="url(#empWaveEdge)" strokeWidth="1.6" />
           </svg>
         </div>
 
@@ -360,28 +360,28 @@ export default function EmployeeDashboard() {
               <ProfileAvatarButton user={user} initials={user?.full_name?.charAt(0)?.toUpperCase() || "R"} variant="hero" />
               <div className="min-w-0">
                 <div className="text-[13px] font-medium text-white/90">{getGreeting(serverTime.getHours())},</div>
-                <div className="text-xl font-extrabold tracking-tight truncate text-white">{user?.full_name || "Rama Hudson"}</div>
+                <div className="text-xl font-extrabold tracking-tight leading-tight text-white">{user?.full_name || "Rama Hudson"}</div>
                 <div className="flex items-center gap-1 text-[11px] text-white/85 mt-0.5 text-white">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
                     <rect x="2.5" y="7" width="19" height="13" rx="2.5" /><path d="M8 7V5.5A2.5 2.5 0 0 1 10.5 3h3A2.5 2.5 0 0 1 16 5.5V7" /><path d="M2.5 12.5h19" />
                   </svg>
-                  {[user?.role, user?.position].filter(Boolean).join(" · ") || "Pegawai"}
+                  <span className="truncate min-w-0">{[user?.role, user?.position].filter(Boolean).join(" · ") || "Pegawai"}</span>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Link to="/employee/notifications" aria-label="Pengumuman"
-                className="relative w-[42px] h-[42px] rounded-full flex items-center justify-center border border-white/25 bg-white/15 hover:bg-white/25 active:scale-95 transition-all">
-                <Bell size={19} className="text-white" />
+                className="relative w-[42px] h-[42px] rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all">
+                <Bell size={20} className="text-white" />
                 {announcements.some((a) => !ackedIds.has(a.id)) && (
-                  <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-[#2A6BE8]" />
+                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full" />
                 )}
               </Link>
               <button onClick={handleLogout} disabled={loggingOut} aria-label="Keluar"
-                className="w-[42px] h-[42px] rounded-full flex items-center justify-center border border-white/25 bg-white/15 hover:bg-white/25 active:scale-95 transition-all disabled:opacity-60">
+                className="w-[42px] h-[42px] rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all disabled:opacity-60">
                 {loggingOut
                   ? <div className="w-5 h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
-                  : <LogOut size={19} className="text-white" />}
+                  : <LogOut size={20} className="text-white" />}
               </button>
             </div>
           </div>
@@ -394,8 +394,8 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* KARTU DI HEADER */}
-          <div className="mx-[14px] mt-3 bg-white rounded-[26px] grid grid-cols-2"
-            style={{ marginBottom: -130, boxShadow: '0 18px 40px rgba(9,33,84,0.20)', color: T.text }}>
+          <div className="mx-[14px] mt-3 bg-white rounded-[26px] grid"
+            style={{ gridTemplateColumns: '1.08fr 0.92fr', marginBottom: -130, boxShadow: '0 18px 40px rgba(9,33,84,0.20)', color: T.text }}>
             <div className="min-w-0" style={{ padding: '15px 13px 14px 15px' }}>
               <div className="text-[31px] font-extrabold leading-none tracking-[-0.045em] tabular-nums"
                 style={{ color: T.text }}>
@@ -405,15 +405,15 @@ export default function EmployeeDashboard() {
                 {serverTime.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
               </div>
               <Link to="/employee/attendance"
-                className="mt-3 w-full h-[42px] rounded-full flex items-center justify-center gap-1.5 text-white text-[11.5px] font-extrabold active:scale-[0.98] transition"
-                style={{ background: 'linear-gradient(135deg, #2F8BF8 0%, #1F6FE8 100%)', boxShadow: '0 8px 18px rgba(47,139,248,0.38)', padding: '0 8px' }}>
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                className="mt-3 w-full h-[42px] rounded-full flex items-center justify-center gap-1 whitespace-nowrap text-white text-[11px] font-extrabold active:scale-[0.98] transition"
+                style={{ background: 'linear-gradient(135deg, #2F8BF8 0%, #1F6FE8 100%)', boxShadow: '0 8px 18px rgba(47,139,248,0.38)', padding: '0 6px' }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
                   <path d="M12 4.5a7.5 7.5 0 0 0-7.5 7.5v3" /><path d="M12 4.5A7.5 7.5 0 0 1 19.5 12v4.5" />
                   <path d="M12 8a4 4 0 0 0-4 4v5" /><path d="M12 8a4 4 0 0 1 4 4v5.5" />
                   <path d="M12 11.5a1.2 1.2 0 0 0-1.2 1.2v6" /><path d="M12 11.5a1.2 1.2 0 0 1 1.2 1.2v6.5" />
                 </svg>
                 Absen Sekarang
-                <ArrowRight size={14} />
+                <ArrowRight size={13} className="shrink-0" />
               </Link>
             </div>
 
@@ -454,7 +454,7 @@ export default function EmployeeDashboard() {
         </div>
       </div>
 
-      <div aria-hidden="true" style={{ height: 96 }} />
+      <div aria-hidden="true" style={{ height: 40 }} />
 
       <div className="max-w-md mx-auto space-y-6 p-4 mt-6">
         {/* SECTION TITLE: Status hari ini — bar + judul, pola sama dengan header "Menu".
