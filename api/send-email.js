@@ -51,41 +51,47 @@ export default async function handler(req, res) {
     },
   });
 
-  // Dark-mode-proof email HTML: meta color-scheme mencegah "smart invert"
-  // aplikasi email membalik teks putih jadi gelap; background-color solid
-  // (bukan hanya gradient) menjamin banner & tombol tetap berlatar di client
-  // yang tidak mendukung gradient; semua warna teks hex solid tanpa alpha.
+  // Email tema terang sesuai DESIGN.md (biru brand #2F8BF8, kartu putih).
+  // meta color-scheme "light" mencegah aplikasi email menginversi warna;
+  // semua warna hex solid + bgcolor attribute agar konsisten di semua client.
   const html = `<!DOCTYPE html>
-<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark"></head>
-<body style="margin:0; padding:0; background-color:#0f0214;">
-    <div style="font-family: Inter, Arial, sans-serif; max-width: 480px; margin: 0 auto; background-color: #0f0214; border-radius: 16px; overflow: hidden; border: 1px solid #2a1747;">
-      <div bgcolor="#0f0214" style="padding: 32px 24px; text-align: center; background-color: #0f0214; background-image: linear-gradient(135deg, #0f0214, #1a0533);">
-        <h1 style="color: #ffffff; font-size: 22px; margin: 0 0 4px;">${ORG_LABEL}</h1>
-        <p style="color: #b9b3c7; font-size: 13px; margin: 0;">Sistem Informasi Administrasi & Presensi</p>
-      </div>
-      <div bgcolor="#1a0a35" style="padding: 24px; background-color: #1a0a35;">
-        <p style="color: #ffffff; font-size: 14px; margin: 0 0 16px;">Yth. <strong>${safeFullName}</strong>,</p>
-        <p style="color: #cfc9dd; font-size: 13px; margin: 0 0 20px; line-height: 1.6;">
-          Akun Presensiku Anda telah dibuat. Silakan login dengan kredensial berikut:
-        </p>
-        <div bgcolor="#2d0a4e" style="background-color: #2d0a4e; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td style="color: #a49db8; font-size: 12px; padding: 6px 0;">Username</td>
-              <td style="color: #ffffff; font-size: 14px; padding: 6px 0; text-align: right; font-weight: 600;">${safeUsername}</td>
-            </tr>
-            <tr>
-              <td style="color: #a49db8; font-size: 12px; padding: 6px 0;">Password</td>
-              <td style="color: #a78bfa; font-size: 14px; padding: 6px 0; text-align: right; font-weight: 600;">${safePassword || 'Puskesmas@123'}</td>
-            </tr>
-          </table>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
+<body style="margin:0; padding:0; background-color:#F4F2FB;">
+    <div style="font-family: Inter, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px 16px;">
+      <div style="background-color: #FFFFFF; border-radius: 24px; overflow: hidden; border: 1px solid #E9EDF4;">
+        <div bgcolor="#2F8BF8" style="padding: 32px 24px; text-align: center; background-color: #2F8BF8; background-image: linear-gradient(160deg, #39C0DF 0%, #32ACFB 30%, #3F93FD 62%, #4A7CFB 100%);">
+          <h1 style="color: #ffffff; font-size: 22px; margin: 0 0 4px;">${ORG_LABEL}</h1>
+          <p style="color: #dbeafe; font-size: 13px; margin: 0;">Sistem Informasi Administrasi & Presensi</p>
         </div>
-        <a href="${APP_URL}" bgcolor="#8b5cf6" style="display: block; text-align: center; background-color: #8b5cf6; color: #ffffff; text-decoration: none; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; margin-bottom: 16px;">
-          Buka ${ORG_LABEL}
-        </a>
-        <p style="color: #a49db8; font-size: 11px; margin: 0; line-height: 1.5;">
-          Setelah login, Anda akan diminta mengganti password untuk keamanan akun Anda.
-        </p>
+        <div style="padding: 24px; background-color: #FFFFFF;">
+          <p style="color: #0F172A; font-size: 14px; margin: 0 0 6px;">Yth. <strong>${safeFullName}</strong>,</p>
+          <p style="color: #475569; font-size: 13px; margin: 0 0 20px; line-height: 1.6;">
+            Akun Presensiku Anda telah dibuat. Silakan login dengan kredensial berikut:
+          </p>
+          <div bgcolor="#F8FAFD" style="background-color: #F8FAFD; border: 1px solid #E9EDF4; border-radius: 16px; padding: 16px; margin-bottom: 20px;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="color: #94A3B8; font-size: 12px; padding: 6px 0;">Username</td>
+                <td style="color: #0F172A; font-size: 14px; padding: 6px 0; text-align: right; font-weight: 700;">${safeUsername}</td>
+              </tr>
+              <tr>
+                <td style="color: #94A3B8; font-size: 12px; padding: 6px 0; border-top: 1px solid #E9EDF4;">Password</td>
+                <td style="color: #1F74E0; font-size: 14px; padding: 6px 0; text-align: right; font-weight: 700; border-top: 1px solid #E9EDF4;">${safePassword || 'Puskesmas@123'}</td>
+              </tr>
+            </table>
+          </div>
+          <a href="${APP_URL}" bgcolor="#2F8BF8" style="display: block; text-align: center; background-color: #2F8BF8; background-image: linear-gradient(135deg, #2F8BF8 0%, #1F74E0 100%); color: #ffffff; text-decoration: none; padding: 14px; border-radius: 16px; font-size: 14px; font-weight: 700; margin-bottom: 16px;">
+            Buka ${ORG_LABEL}
+          </a>
+          <div bgcolor="#FFFBEB" style="background-color: #FFFBEB; border: 1px solid #FEF3C7; border-radius: 14px; padding: 12px 14px;">
+            <p style="color: #92400E; font-size: 11.5px; margin: 0; line-height: 1.55;">
+              <strong style="color: #0F172A;">Penting:</strong> setelah login pertama, Anda akan diminta mengganti password untuk keamanan akun Anda.
+            </p>
+          </div>
+        </div>
+        <div bgcolor="#F4F2FB" style="padding: 16px 24px; text-align: center; background-color: #F4F2FB; border-top: 1px solid #E9EDF4;">
+          <p style="color: #94A3B8; font-size: 10px; margin: 0;">${ORG_LABEL} &copy; ${new Date().getFullYear()}</p>
+        </div>
       </div>
     </div>
 </body>
