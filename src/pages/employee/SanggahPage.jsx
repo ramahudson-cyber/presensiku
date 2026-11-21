@@ -189,6 +189,32 @@ export default function SanggahPage() {
 
   const { pullDistance, isRefreshing } = usePullToRefresh(load);
 
+  // Chips filter: fade tepi hanya tampil bila rail bisa digulir,
+  // dan chip aktif otomatis digulir ke posisi terlihat (anti terpotong).
+  const chipsRef = useRef(null);
+  const fadeRef = useRef(null);
+  const activeChipRef = useRef(null);
+
+  useEffect(() => {
+    const rail = chipsRef.current;
+    const fade = fadeRef.current;
+    if (!rail || !fade) return undefined;
+    const sync = () => {
+      const over = rail.scrollWidth > rail.clientWidth + 1;
+      fade.style.display = over ? "block" : "none";
+      rail.style.scrollSnapType = over ? "x proximity" : "none";
+    };
+    sync();
+    if (typeof ResizeObserver === "undefined") return undefined;
+    const ro = new ResizeObserver(sync);
+    ro.observe(rail);
+    return () => ro.disconnect();
+  }, [view, filter]);
+
+  useEffect(() => {
+    activeChipRef.current?.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+  }, [filter, view]);
+
   // Reset scroll container aktual (div halaman absolute, bukan window) ke paling
   // atas — dipakai saat toggle form ↔ riwayat karena tidak ganti pathname.
   const resetScroll = () => {
@@ -550,25 +576,35 @@ export default function SanggahPage() {
         <div style={{ display: view === "riwayat" ? "block" : "none" }}>
 
           {/* ── Filter chips ── */}
-          <div className="sgg-chips flex gap-2 overflow-x-auto pt-4 pb-1 mb-4">
-            {FILTERS.map((f) => {
-              const on = filter === f.key;
-              return (
-                <button
-                  key={f.key} type="button" onClick={() => setFilter(f.key)}
-                  className="flex-none rounded-full px-[18px] py-[9px] text-[12px] font-bold transition-all duration-200"
-                  style={{
-                    fontFamily: "inherit", cursor: "pointer",
-                    border: `1px solid ${on ? T.blue : T.border}`,
-                    background: on ? T.blue : T.surface,
-                    color: on ? "#FFFFFF" : T.textSec,
-                    boxShadow: on ? "0 6px 14px -5px rgba(47,139,248,0.5)" : "none",
-                  }}
-                >
-                  {f.label}
-                </button>
-              );
-            })}
+          <div className="relative">
+            <div ref={chipsRef} className="sgg-chips flex gap-1.5 overflow-x-auto pt-4 pb-1 mb-4 px-4 -mx-4"
+              style={{ scrollSnapAlign: "start", scrollPaddingLeft: 16 }}>
+              {FILTERS.map((f) => {
+                const on = filter === f.key;
+                return (
+                  <button
+                    key={f.key} type="button" onClick={() => setFilter(f.key)}
+                    ref={on ? activeChipRef : undefined}
+                    className="flex-none rounded-full px-[14px] py-[8px] text-[12px] font-bold transition-all duration-200"
+                    style={{
+                      fontFamily: "inherit", cursor: "pointer",
+                      scrollSnapAlign: "start",
+                      border: `1px solid ${on ? T.blue : T.border}`,
+                      background: on ? T.blue : T.surface,
+                      color: on ? "#FFFFFF" : T.textSec,
+                      boxShadow: on ? "0 6px 14px -5px rgba(47,139,248,0.5)" : "none",
+                    }}
+                  >
+                    {f.label}
+                  </button>
+                );
+              })}
+            </div>
+            <div ref={fadeRef} className="pointer-events-none absolute"
+              style={{
+                display: "none", right: 0, top: 16, bottom: 4, width: 32,
+                background: "linear-gradient(90deg, rgba(244,242,251,0) 0%, #F4F2FB 85%)",
+              }} />
           </div>
 
           {/* ── Daftar riwayat ── */}
