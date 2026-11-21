@@ -1,10 +1,10 @@
 {
   "version": "1.8.4",
   "versionCode": 31,
-  "webVersionCode": 75,
+  "webVersionCode": 76,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.4/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
-  "changelog": "Filter status di Riwayat Sanggahan kini halus di tepi dan chip aktif selalu terlihat penuh.",
+  "changelog": "Judul halaman riwayat izin/sakit diperjelas menjadi Riwayat Izin & Sakit.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }
