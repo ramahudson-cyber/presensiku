@@ -58,6 +58,9 @@ export default function SchedulingPage() {
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [confirmClear, setConfirmClear] = useState(null);
   const [shifts, setShifts] = useState([]);
+  const inactiveShiftCodesRef = useRef(new Set());
+  // Kode shift nonaktif — ditolak saat import Excel (pola produksi:
+  // penugasan baru hanya boleh memakai shift aktif).
   const [shiftsLoading, setShiftsLoading] = useState(true);
   const fileInputRef = useRef(null);
 
@@ -66,11 +69,17 @@ export default function SchedulingPage() {
     let cancelled = false;
     (async () => {
       try {
-        const { data, error } = await supabase.from("shifts").select("code, name").order("code");
+        const { data, error } = await supabase.from("shifts").select("code, name, is_active").order("code");
         if (error) throw error;
+        // Hanya shift AKTIF yang bisa dipilih untuk penugasan baru.
         // Baris DB hanya code+name — visual (icon/badge/color) di-merge di sini
         // supaya legend, shift picker, dan bulk dialog punya komponen ikon yang valid.
-        if (!cancelled) setShifts((data || []).map(s => ({ ...s, ...shiftVisual(s.code) })));
+        if (!cancelled) {
+          setShifts((data || []).filter(s => s.is_active !== false).map(s => ({ ...s, ...shiftVisual(s.code) })));
+          inactiveShiftCodesRef.current = new Set(
+            (data || []).filter(s => s.is_active === false).map(s => s.code)
+          );
+        }
       } catch {
         if (!cancelled) setShifts([]);
       } finally {
@@ -422,6 +431,7 @@ export default function SchedulingPage() {
         const tgl = String(row.Tanggal || "").trim();
         const sc = String(row.Shift || "").toUpperCase();
         if (!nama || !tgl || !SHIFT_MAP[sc]) { fail++; continue; }
+        if (inactiveShiftCodesRef.current.has(sc)) { fail++; continue; }
         let pd; if (/^\d{4}-\d{2}-\d{2}$/.test(tgl)) pd = tgl;
         else if (/^\d{2}\/\d{2}\/\d{4}$/.test(tgl)) { const [d,m,y] = tgl.split("/"); pd = `${y}-${m}-${d}`; }
         else { fail++; continue; }

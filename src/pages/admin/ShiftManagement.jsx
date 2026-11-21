@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import TimeSelect from "../../components/TimeSelect";
 import {
   Clock, Save, RefreshCw, Sun, Moon, CloudSun,
-  Sunset, CheckCircle2, XCircle, Info, ArrowRightLeft, Plus
+  Sunset, CheckCircle2, XCircle, Info, ArrowRightLeft
 } from "lucide-react";
 
 const DAY_NAMES = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
@@ -26,8 +26,6 @@ export default function TabShift() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
-  const [showCreate, setShowCreate] = useState(false);
-  const [newShift, setNewShift] = useState({ code: "", name: "" });
 
   const fetchData = async () => {
     setLoading(true);
@@ -52,39 +50,28 @@ export default function TabShift() {
 
   useEffect(() => { fetchData(); }, []);
 
-  const createShift = async (event) => {
-    event.preventDefault();
-    const code = newShift.code.trim().toUpperCase();
-    const name = newShift.name.trim();
-    if (!/^[A-Z0-9_]{2,8}$/.test(code) || !name) {
-      toast.error("Kode shift 2-8 karakter dan nama wajib diisi");
+  // Empat shift tetap bawaan sistem — dedupe bila ada baris ganda,
+  // urut sesuai kode kanonik. Shift legacy non-sistem tidak ditampilkan.
+  const canonicalShifts = (() => {
+    const byCode = new Map();
+    (shifts || []).forEach((s) => {
+      if (!["PG", "SR", "SI", "ML"].includes(s.code)) return;
+      const cur = byCode.get(s.code);
+      if (!cur || (s.is_active && !cur.is_active)) byCode.set(s.code, s);
+    });
+    return ["PG", "SR", "SI", "ML"].map((c) => byCode.get(c)).filter(Boolean);
+  })();
+
+  const toggleActive = async (shift) => {
+    const next = !shift.is_active;
+    setShifts((prev) => prev.map((s) => (s.id === shift.id ? { ...s, is_active: next } : s)));
+    const { error } = await supabase.from("shifts").update({ is_active: next }).eq("id", shift.id);
+    if (error) {
+      setShifts((prev) => prev.map((s) => (s.id === shift.id ? { ...s, is_active: shift.is_active } : s)));
+      toast.error("Gagal mengubah status shift: " + error.message);
       return;
     }
-    setSaving(true);
-    try {
-      const { data: created, error } = await supabase.from("shifts").insert({ code, name }).select().single();
-      if (error) throw error;
-      const rows = DAY_NAMES.map((_, day_of_week) => ({
-        organization_id: created.organization_id,
-        shift_code: code,
-        day_of_week,
-        start_time: "08:00",
-        end_time: "17:00",
-        latest_check_in: sameAsStart("08:00"),
-        crosses_midnight: code === "ML",
-        is_working_day: day_of_week < 6,
-      }));
-      const { error: scheduleError } = await supabase.from("shift_schedules").insert(rows);
-      if (scheduleError) throw scheduleError;
-      setNewShift({ code: "", name: "" });
-      setShowCreate(false);
-      toast.success("Master shift berhasil dibuat");
-      await fetchData();
-    } catch (error) {
-      toast.error("Gagal membuat shift: " + error.message);
-    } finally {
-      setSaving(false);
-    }
+    toast.success(`${shift.name} ${next ? "diaktifkan" : "dinonaktifkan"}`);
   };
 
   const update = (code, day, field, value) => {
@@ -167,7 +154,7 @@ export default function TabShift() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold text-pure-white">Kelola Shift</h2>
-          <p className="text-sm text-slate-mist mt-0.5">Atur jam kerja setiap shift per hari</p>
+          <p className="text-sm text-slate-mist mt-0.5">Empat shift bawaan sistem - nyalakan/matikan sesuai kebutuhan instansi, lalu atur jam kerjanya</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={fetchData} className="bg-electric-violet text-pure-white p-2 rounded-full hover:brightness-110 active:brightness-90 transition-all duration-200">
@@ -185,20 +172,19 @@ export default function TabShift() {
 
       {/* Shift Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {shifts.length === 0 ? (
+        {canonicalShifts.length === 0 ? (
           <div className="md:col-span-2 design-card p-10 text-center">
             <Clock size={32} className="mx-auto mb-3 text-periwinkle-glow" />
-            <h3 className="text-base font-semibold text-pure-white">Belum ada master shift</h3>
+            <h3 className="text-base font-semibold text-pure-white">Belum ada data shift</h3>
             <p className="text-sm text-slate-mist mt-1">Instansi ini belum memiliki konfigurasi jam kerja.</p>
-            <button onClick={() => setShowCreate(true)} className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium"><Plus size={15} /> Tambah Shift</button>
           </div>
-        ) : shifts.map(shift => {
+        ) : canonicalShifts.map(shift => {
           const meta = SHIFT_META[shift.code];
           const Icon = meta?.icon || Clock;
           const shiftScheds = schedules.filter(s => s.shift_code === shift.code);
 
           return (
-            <div key={shift.code} className="design-card overflow-hidden hover:shadow-lg transition-all">
+            <div key={shift.code} className={`design-card overflow-hidden hover:shadow-lg transition-all ${shift.is_active ? "" : "opacity-75"}`}>
               {/* Card Header */}
               <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/[0.06] bg-gradient-to-r from-white/[0.03] to-transparent">
                 <div className={`w-10 h-10 rounded-2xl ${meta?.bg || "bg-onyx"} flex items-center justify-center ring-1 ${meta?.ring || "ring-white/10"}`}>
@@ -211,7 +197,20 @@ export default function TabShift() {
                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${meta?.bg || "bg-onyx"} ${meta?.color || "text-slate-mist"}`}>
                   {shiftScheds.filter(s => s.is_working_day).length}/7 hari
                 </span>
+                <button
+                  type="button"
+                  onClick={() => toggleActive(shift)}
+                  title={shift.is_active ? "Klik untuk menonaktifkan shift ini" : "Klik untuk mengaktifkan shift ini"}
+                  className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-all duration-200 ${shift.is_active ? "bg-emerald-500" : "bg-slate-600"}`}
+                >
+                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform duration-200 ${shift.is_active ? "translate-x-5" : "translate-x-1"}`} />
+                </button>
               </div>
+              {!shift.is_active && (
+                <div className="mx-4 mt-2 rounded-xl px-3 py-1.5 bg-amber-500/10 border border-amber-500/20">
+                  <p className="text-[9.5px] font-bold text-amber-300">Nonaktif - tidak bisa dipilih di jadwal pegawai sampai diaktifkan</p>
+                </div>
+              )}
 
               {/* Keterangan cara pakai */}
               <div className="mx-4 mt-3 rounded-xl px-3 py-2 border border-blue-500/20 bg-blue-500/[0.06]">
@@ -267,18 +266,6 @@ export default function TabShift() {
           );
         })}
       </div>
-
-      {shifts.length > 0 && <button onClick={() => setShowCreate(true)} className="inline-flex items-center gap-2 px-4 py-2.5 bg-electric-violet text-pure-white rounded-full text-sm font-medium"><Plus size={15} /> Tambah Shift</button>}
-      {showCreate && (
-        <form onSubmit={createShift} className="design-card p-4 space-y-3">
-          <h3 className="text-sm font-semibold text-pure-white">Tambah Master Shift</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input value={newShift.code} onChange={e => setNewShift(p => ({ ...p, code: e.target.value }))} placeholder="Kode, contoh PG" maxLength={8} className="design-input uppercase" />
-            <input value={newShift.name} onChange={e => setNewShift(p => ({ ...p, name: e.target.value }))} placeholder="Nama shift" className="design-input" />
-          </div>
-          <div className="flex gap-2"><button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 rounded-full border border-white/10 text-slate-mist text-sm">Batal</button><button type="submit" disabled={saving} className="px-4 py-2 rounded-full bg-electric-violet text-pure-white text-sm">Simpan</button></div>
-        </form>
-      )}
 
       {/* Info */}
       <div className="flex items-center gap-2 p-3.5 rounded-xl bg-electric-violet/5 border border-electric-violet/10 text-[11px] text-slate-mist">

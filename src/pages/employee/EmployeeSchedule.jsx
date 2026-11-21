@@ -81,7 +81,7 @@ export default function EmployeeSchedule() {
     (async () => {
       try {
         const [{ data }, { data: defs }] = await Promise.all([
-          supabase.from("shifts").select("code, name").order("code"),
+          supabase.from("shifts").select("code, name, is_active").order("code"),
           supabase.from("shift_schedules")
             .select("shift_code, day_of_week, start_time, end_time, crosses_midnight, is_working_day"),
         ]);
@@ -93,20 +93,28 @@ export default function EmployeeSchedule() {
     return () => { cancelled = true; };
   }, []);
 
+  // Legenda shift: hanya shift AKTIF instansi (is_active !== false).
+  // null = master belum termuat -> legend dirender sebagai skeleton,
+  // bukan fallback 4 jenis statis (mencegah kedip nama shift palsu).
   const shiftsList = useMemo(() => {
-    if (!shiftsMaster || shiftsMaster.length === 0) return SHIFTS;
-    // Dedupe per kode — tabel shifts bisa punya baris duplikat (dibuat ulang admin).
+    if (!shiftsMaster) return null;
     const seen = new Set();
     const out = [];
     shiftsMaster.forEach(s => {
+      if (s.is_active === false) return;
       if (!s.code || seen.has(s.code)) return;
       seen.add(s.code);
       const v = visualFor(s.code);
       out.push({ code: s.code, name: cap(s.name) || s.code, icon: v.icon, badgeClass: v.badgeClass });
     });
-    return out.length ? out : SHIFTS;
+    return out;
   }, [shiftsMaster]);
-  const shiftMap = useMemo(() => Object.fromEntries(shiftsList.map(s => [s.code, s])), [shiftsList]);
+  // Peta visual kalender: saat master belum termuat, pakai fallback statis
+  // (hanya warna/ikon, bukan legenda yang tampil ke pengguna).
+  const shiftMap = useMemo(
+    () => Object.fromEntries((shiftsList || SHIFTS).map(s => [s.code, s])),
+    [shiftsList]
+  );
 
   const days = getDaysInMonth(year, month);
   const lastDay = new Date(year, month + 1, 0).getDate();
@@ -233,14 +241,18 @@ export default function EmployeeSchedule() {
         {/* LEGEND */}
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-[8px] font-semibold uppercase tracking-wider mr-0.5" style={{ color: T.textSec }}>Shift</span>
-          {shiftsList.map(s => {
-            const Icon = s.icon;
-            return (
-              <span key={s.code} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold ${s.badgeClass}`}>
-                <Icon size={10} /> {s.name}
-              </span>
-            );
-          })}
+          {shiftsList === null
+            ? [0, 1].map(i => (
+                <span key={i} className="inline-block h-4 w-16 rounded-full bg-slate-200/80 animate-pulse" />
+              ))
+            : shiftsList.map(s => {
+                const Icon = s.icon;
+                return (
+                  <span key={s.code} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold ${s.badgeClass}`}>
+                    <Icon size={10} /> {s.name}
+                  </span>
+                );
+              })}
         </div>
 
         {/* CALENDAR */}

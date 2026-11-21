@@ -1,10 +1,10 @@
 {
   "version": "1.8.4",
   "versionCode": 31,
-  "webVersionCode": 71,
+  "webVersionCode": 72,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.4/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
-  "changelog": "Halaman pengajuan izin: ruang kosong berlebih di bawah tombol kirim dirapikan.",
+  "changelog": "Sistem shift baru: 4 jenis shift tetap (Pagi, Sore, Siang, Malam) yang bisa diaktifkan atau dimatikan admin sesuai kebutuhan instansi.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }

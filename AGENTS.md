@@ -49,7 +49,7 @@
 
 ## Database
 - Gunakan WITA (UTC+8) sebagai zona waktu
-- Tabel shifts: PG (Pagi), SR/Sore (Poli Sore), SI (Siang), ML (Malam)
+- **Shift tetap (sejak 2026-11-21)**: 4 jenis bawaan sistem — PG (Pagi), SR (Sore), SI (Siang), ML (Malam) dengan `is_system=true`. Admin instansi **tidak lagi membuat kode/nama shift**; hanya menyalakan/mematikan lewat kolom `shifts.is_active` (tab Kelola Shift) dan mengatur jam kerja di `shift_schedules`. Shift nonaktif tidak bisa dipilih untuk penugasan baru (SchedulingPage, Excel upload menolak). Kode legacy (mis. SNG) sudah dimigrasi ke kanonik (SNG→SI) dan dinonaktifkan.
 - Tabel shift_schedules: jadwal per hari (day_of_week 0=Senin..6=Minggu)
   - latest_check_in = start_time (tanpa toleransi; dipaksa trigger shift_schedule_time_guard)
   - crosses_midnight = true untuk shift ML (malam)
