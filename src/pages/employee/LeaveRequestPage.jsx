@@ -313,7 +313,7 @@ export default function LeaveRequestPage() {
           </svg>
         </button>
         <h1 style={{ fontSize: 14.5, fontWeight: 800, color: "#fff", letterSpacing: "-0.01em", margin: 0 }}>
-          {view === "form" ? "Pengajuan Izin & Sakit" : "Riwayat Izin & Sakit"}
+          {view === "form" ? "Izin & Sakit" : "Riwayat Izin & Sakit"}
         </h1>
         <div style={{ width: 28, flex: "none" }} />
       </header>
