@@ -11,6 +11,7 @@ import {
 } from "../../services/leaveService";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import { MonthMenu, monthOptions, currentMonthKey } from "./overtime/overtimeUi";
 
 // ─── Token light mode — DESIGN.md ───
 const T = {
@@ -39,7 +40,7 @@ const MONTHS_S = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","N
 
 // ─── Badge status riwayat (DESIGN.md) ───
 const STATUS = {
-  pending:  { label: "Menunggu",  color: T.amber,    bg: "rgba(245,158,11,0.12)" },
+  pending:  { label: "Menunggu",  color: "#3B82F6",  bg: "rgba(59,130,246,0.12)" },
   approved: { label: "Disetujui", color: T.emerald,  bg: "rgba(16,185,129,0.12)" },
   rejected: { label: "Ditolak",   color: T.red,      bg: "rgba(239,68,68,0.10)" },
 };
@@ -101,6 +102,8 @@ export default function LeaveRequestPage() {
   const [requests, setRequests] = useState([]);
   const [fetching, setFetching] = useState(true);
   const [fetchError, setFetchError] = useState("");
+  const [riwayatMonthKey, setRiwayatMonthKey] = useState(currentMonthKey());
+  const [riwayatFilter, setRiwayatFilter] = useState("all");
 
   // Statistik dari data riil (getMyLeaveRequests)
   const approvedCount = useMemo(() => requests.filter((r) => r.status === "approved").length, [requests]);
@@ -137,6 +140,30 @@ export default function LeaveRequestPage() {
   }, [user?.id]);
 
   const { pullDistance, isRefreshing } = usePullToRefresh(loadRequests);
+
+  // ─── Riwayat pengajuan: bulan + filter status (data real leave_requests) ───
+  const monthKeyOf = (dateStr) => (dateStr || "").slice(0, 7);
+  const monthOpts = monthOptions(requests.map((r) => ({ date: r.start_date })), currentMonthKey());
+  const monthRows = useMemo(
+    () => requests.filter((r) => monthKeyOf(r.start_date) === riwayatMonthKey),
+    [requests, riwayatMonthKey]
+  );
+  const riwayatCounts = useMemo(
+    () => ({
+      total: monthRows.length,
+      approved: monthRows.filter((r) => r.status === "approved").length,
+      pending: monthRows.filter((r) => r.status === "pending").length,
+      rejected: monthRows.filter((r) => r.status === "rejected").length,
+    }),
+    [monthRows]
+  );
+  const riwayatRows = useMemo(
+    () =>
+      monthRows
+        .filter((r) => riwayatFilter === "all" || r.status === riwayatFilter)
+        .sort((a, b) => (b.start_date || "").localeCompare(a.start_date || "")),
+    [monthRows, riwayatFilter]
+  );
 
   // Reset scroll container aktual (div AdminLayout, bukan window) ke paling
   // atas — dipakai saat toggle form ↔ riwayat karena tidak ganti pathname.
@@ -606,46 +633,106 @@ export default function LeaveRequestPage() {
         </div>
       </main>
 
-      {/* ═══ HALAMAN RIWAYAT ═══ */}
+      {/* ═══ HALAMAN RIWAYAT ═══ — card biru ringkasan + periode,
+          chips filter status, daftar lengkap flat full-width (tanpa kartu,
+          tanpa pindah halaman) — semua data real leave_requests ═══ */}
       <div
         style={{
           display: view === "riwayat" ? "flex" : "none",
-          flexDirection: "column", gap: 14,
-          padding: "16px 16px calc(env(safe-area-inset-bottom) + 26px)",
-          maxWidth: 430, margin: "0 auto",
+          flexDirection: "column",
+          padding: "14px 16px calc(env(safe-area-inset-bottom) + 26px)",
+          maxWidth: 430, margin: "0 auto", width: "100%",
         }}
       >
-        {/* Kembali ke form pengajuan */}
-        <button
-          onClick={toggleView}
-          style={{
-            display: "flex", alignItems: "center", gap: 10, padding: "12px 14px",
-            background: T.surface, border: `1px solid ${T.border}`, borderRadius: 16,
-            boxShadow: T.shadow, cursor: "pointer", fontFamily: "inherit", textAlign: "left",
-            transition: `transform .25s ${T.ease}`,
-          }}
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none" }}>
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-          <b style={{ flex: 1, fontSize: 12, fontWeight: 800, color: T.text }}>Kembali ke pengajuan</b>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-        </button>
+        {/* CARD BIRU: ringkasan + periode di dalamnya */}
+        <div style={{
+          position: "relative", overflow: "hidden", borderRadius: 24, padding: 16,
+          background: T.hero, color: "#fff",
+          boxShadow: "0 10px 26px -12px rgba(47,139,248,0.55)",
+        }}>
+          <div style={{
+            position: "absolute", right: -20, bottom: -30, width: 110, height: 110,
+            borderRadius: "50%", background: "rgba(255,255,255,0.12)", pointerEvents: "none",
+          }} />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, position: "relative" }}>
+            <b style={{ fontSize: 14, fontWeight: 800, letterSpacing: "-0.01em" }}>Ringkasan Pengajuan</b>
+            <MonthMenu value={riwayatMonthKey} onChange={setRiwayatMonthKey} options={monthOpts} tone="onBrand" />
+          </div>
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
+            background: "#F5F9FF", borderRadius: 16, padding: "12px 4px",
+            marginTop: 14, position: "relative",
+          }}>
+            {[
+              { label: "Pengajuan", value: riwayatCounts.total, bg: "#2F8BF8", icon: "list" },
+              { label: "Disetujui", value: riwayatCounts.approved, bg: "#10B981", icon: "check" },
+              { label: "Menunggu", value: riwayatCounts.pending, bg: "#F59E0B", icon: "clock" },
+              { label: "Ditolak", value: riwayatCounts.rejected, bg: "#EF4444", icon: "close" },
+            ].map((c, i) => (
+              <div key={c.label} style={{ textAlign: "center", padding: "0 4px", borderRight: i < 3 ? "1px solid #DCE7F8" : "none" }}>
+                <span style={{
+                  display: "inline-flex", width: 20, height: 20, borderRadius: "50%",
+                  background: c.bg, color: "#fff", alignItems: "center", justifyContent: "center", marginBottom: 6,
+                }}>
+                  {c.icon === "list" && (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+                  )}
+                  {c.icon === "check" && (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
+                  )}
+                  {c.icon === "clock" && (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8.5" /><path d="M12 7v5l3 2" /></svg>
+                  )}
+                  {c.icon === "close" && (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><path d="M6 18L18 6M6 6l12 12" /></svg>
+                  )}
+                </span>
+                <b style={{ display: "block", fontSize: 15, fontWeight: 800, color: T.text }}>{c.value}</b>
+                <span style={{ display: "block", fontSize: 10, fontWeight: 600, color: T.textSec, marginTop: 1 }}>{c.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* chips filter status */}
+        <div style={{ display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none", marginTop: 14 }}>
+          {[
+            { key: "all", label: "Semua" },
+            { key: "approved", label: "Disetujui" },
+            { key: "pending", label: "Menunggu" },
+            { key: "rejected", label: "Ditolak" },
+          ].map((f) => (
+            <button
+              key={f.key}
+              type="button"
+              onClick={() => setRiwayatFilter(f.key)}
+              className="shrink-0"
+              style={{
+                padding: "9px 16px", borderRadius: 9999, cursor: "pointer", fontFamily: "inherit",
+                border: riwayatFilter === f.key ? "none" : `1px solid ${T.border}`,
+                background: riwayatFilter === f.key ? T.blue : "#FFFFFF",
+                color: riwayatFilter === f.key ? "#fff" : "#334155",
+                fontSize: 12, fontWeight: riwayatFilter === f.key ? 700 : 600,
+                transition: `all .2s ${T.ease}`,
+              }}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        {/* daftar pengajuan — flat full-width, pemisah underline */}
         {fetchError ? (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
             <div style={{
-              width: 56, height: 56, borderRadius: "50%", background: "#FEF2F2",
+              width: 48, height: 48, borderRadius: "50%", background: "rgba(239,68,68,0.08)",
               display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px",
             }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={T.red} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
-            <div style={{ fontSize: 12, fontWeight: 500, color: "#DC2626", maxWidth: 200, margin: "0 auto 14px" }}>
+            <div style={{ fontSize: 12, fontWeight: 500, color: "#DC2626", maxWidth: 220, margin: "0 auto 14px" }}>
               {fetchError}
             </div>
             <button
@@ -664,66 +751,117 @@ export default function LeaveRequestPage() {
             <div className="mx-auto w-7 h-7 border-2 border-[#2F8BF8] border-t-transparent rounded-full animate-spin" />
             <div style={{ fontSize: 12, color: T.textMuted, marginTop: 10 }}>Memuat...</div>
           </div>
-        ) : requests.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "40px 0", color: T.textMuted, fontSize: 12 }}>
-            Belum ada pengajuan.
+        ) : riwayatRows.length === 0 ? (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "56px 28px 0" }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: "50%", background: T.iconBg, color: T.blue,
+              display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14,
+            }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <path d="M14 2v6h6M9 13h6M9 17h6" />
+              </svg>
+            </div>
+            <b style={{ fontSize: 14, fontWeight: 800, color: T.text }}>Belum ada pengajuan</b>
+            <p style={{ fontSize: 11.5, color: T.textMuted, lineHeight: 1.55, marginTop: 6 }}>
+              Permohonan izin atau sakit yang sudah dikirim akan tampil di sini.
+            </p>
+            <button
+              type="button"
+              onClick={() => setView("form")}
+              style={{
+                marginTop: 18, display: "inline-flex", alignItems: "center", gap: 7,
+                background: `linear-gradient(135deg,${T.blue},${T.blueDeep})`, color: "#fff",
+                border: "none", borderRadius: 9999, padding: "11px 22px",
+                fontSize: 12.5, fontWeight: 700, fontFamily: "inherit", cursor: "pointer",
+                boxShadow: "0 10px 24px -8px rgba(47,139,248,0.5)",
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Ajukan Sekarang
+            </button>
           </div>
         ) : (
-          requests.map((r) => {
-            const s = STATUS[r.status] || STATUS.pending;
-            const days = r.total_days || countLeaveDays(r.start_date, r.end_date);
-            const range =
-              r.start_date === r.end_date
+          <div>
+            {riwayatRows.map((r, i) => {
+              const st = STATUS[r.status] || STATUS.pending;
+              const days = r.total_days || countLeaveDays(r.start_date, r.end_date);
+              const range = r.start_date === r.end_date
                 ? fmtShort(r.start_date)
-                : fmtShort(r.start_date) + " – " + fmtShort(r.end_date);
-            return (
-              <div
-                key={r.id}
-                style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 20, padding: "14px 15px", boxShadow: T.shadow }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <b style={{ display: "block", fontSize: 12.5, fontWeight: 800, color: T.text }}>
-                      {TYPE_LABEL[r.leave_type] || "Izin"}
-                    </b>
-                    <span style={{ display: "block", fontSize: 10, fontWeight: 600, color: T.textMuted, marginTop: 2 }}>
-                      {range} · {days} hari
+                : fmtShort(r.start_date) + " - " + fmtShort(r.end_date);
+              const d = new Date(r.start_date + "T00:00:00");
+              const iconBg = r.status === "approved" ? "#10B981" : r.status === "rejected" ? "#EF4444" : "#3B82F6";
+              return (
+                <div key={r.id} style={{ padding: "11px 4px", borderBottom: i < riwayatRows.length - 1 ? "1px solid #EEF2F8" : "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 36, textAlign: "center", flexShrink: 0, lineHeight: 1.1 }}>
+                      <span style={{ display: "block", fontSize: 9.5, fontWeight: 500, color: T.textMuted }}>
+                        {d.toLocaleDateString("id-ID", { weekday: "short" })}
+                      </span>
+                      <b style={{ display: "block", fontSize: 16, fontWeight: 800, color: T.text, margin: "2px 0" }}>{d.getDate()}</b>
+                      <span style={{ display: "block", fontSize: 9.5, fontWeight: 500, color: T.textMuted }}>
+                        {d.toLocaleDateString("id-ID", { month: "short" })}
+                      </span>
+                    </div>
+                    <div style={{ width: 1, alignSelf: "stretch", background: "#E9EEF6", flexShrink: 0 }} />
+                    <div style={{
+                      width: 30, height: 30, borderRadius: "50%", flexShrink: 0, background: iconBg, color: "#fff",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      {r.status === "approved" && (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
+                      )}
+                      {r.status === "pending" && (
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8.5" /><path d="M12 7v5l3 2" /></svg>
+                      )}
+                      {r.status === "rejected" && (
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><path d="M6 18L18 6M6 6l12 12" /></svg>
+                      )}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <b style={{ display: "block", fontSize: 12.5, fontWeight: 800, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {TYPE_LABEL[r.leave_type] || "Izin"}
+                      </b>
+                      <span style={{ display: "block", fontSize: 10.5, fontWeight: 500, color: T.textMuted, marginTop: 2 }}>
+                        {range} · {days} hari
+                      </span>
+                      {r.status === "rejected" && r.rejection_reason && (
+                        <span style={{ display: "block", fontSize: 10, fontWeight: 600, color: "#DC2626", marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          Catatan admin: {r.rejection_reason}
+                        </span>
+                      )}
+                    </div>
+                    <span style={{
+                      flex: "none", fontSize: 9, fontWeight: 800, padding: "4px 10px",
+                      borderRadius: 9999, color: st.color, background: st.bg, whiteSpace: "nowrap",
+                    }}>
+                      {st.label}
                     </span>
                   </div>
-                  <span style={{
-                    flex: "none", fontSize: 9, fontWeight: 800, padding: "4px 10px",
-                    borderRadius: 9999, color: s.color, background: s.bg, whiteSpace: "nowrap",
-                  }}>
-                    {s.label}
-                  </span>
+                  {r.status === "pending" && (
+                    <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
+                      <button
+                        onClick={() => handleCancel(r.id)}
+                        style={{
+                          fontFamily: "inherit", fontSize: 10.5, fontWeight: 700,
+                          padding: "5px 14px", borderRadius: 9999, cursor: "pointer",
+                          border: "1px solid rgba(239,68,68,0.2)", background: "rgba(239,68,68,0.06)",
+                          color: T.red, transition: "background .2s",
+                        }}
+                      >
+                        Batalkan
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <div style={{ marginTop: 9, fontSize: 10.5, lineHeight: 1.55, color: T.textSec }}>
-                  <b style={{ color: T.text }}>Alasan:</b> {r.reason}
-                </div>
-                {r.status === "rejected" && r.rejection_reason && (
-                  <div style={{
-                    marginTop: 9, borderRadius: 11, padding: "8px 11px", fontSize: 10, lineHeight: 1.5,
-                    background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.16)", color: "#B91C1C",
-                  }}>
-                    <b>Catatan admin:</b> {r.rejection_reason}
-                  </div>
-                )}
-                {r.status === "pending" && (
-                  <button
-                    onClick={() => handleCancel(r.id)}
-                    style={{
-                      marginTop: 10, fontFamily: "inherit", fontSize: 10.5, fontWeight: 700,
-                      padding: "6px 14px", borderRadius: 9999, cursor: "pointer",
-                      border: "1px solid rgba(239,68,68,0.2)", background: "rgba(239,68,68,0.06)",
-                      color: T.red, transition: "background .2s",
-                    }}
-                  >
-                    Batalkan
-                  </button>
-                )}
-              </div>
-            );
-          })
+              );
+            })}
+            <p style={{ fontSize: 11, color: T.textMuted, textAlign: "center", marginTop: 14 }}>
+              Semua pengajuan periode ini tampil di halaman ini.
+            </p>
+          </div>
         )}
       </div>
     </div>

@@ -1,10 +1,10 @@
 {
   "version": "1.8.4",
   "versionCode": 31,
-  "webVersionCode": 73,
+  "webVersionCode": 74,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.4/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
-  "changelog": "Perbaikan tampilan: header biru halaman menu pegawai kini menempel penuh ke tepi atas layar.",
+  "changelog": "Riwayat Pengajuan izin/sakit tampil baru: ringkasan dalam card biru, filter status, dan daftar lengkap per bulan.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }
