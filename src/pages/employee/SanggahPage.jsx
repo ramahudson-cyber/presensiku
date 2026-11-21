@@ -328,7 +328,7 @@ export default function SanggahPage() {
     : sanggahan.filter((s) => s.status === FILTER_STATUS[filter]);
 
   return (
-    <div ref={rootRef} className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-28" style={{ background: T.bg, color: T.text }}>
+    <div ref={rootRef} className="min-h-screen w-full font-sans absolute top-0 left-0 right-0" style={{ background: T.bg, color: T.text }}>
       {/* Chip scroll horizontal disembunyikan (unique scope, hanya halaman ini) */}
       <style>{".sgg-chips::-webkit-scrollbar{height:0}.sgg-chips{scrollbar-width:none}"}</style>
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
@@ -353,7 +353,7 @@ export default function SanggahPage() {
         ) : null}
       />
 
-      <div className="max-w-md mx-auto px-4 pb-10">
+      <div className="max-w-md mx-auto px-4 pb-8">
 
         {/* ═══ HALAMAN FORM ═══ */}
         <div style={{ display: view === "form" ? "block" : "none" }}>
