@@ -45,7 +45,7 @@ const JENIS_OPTIONS = [
 
 // Label jenis untuk halaman riwayat (tanpa jenis → "Sanggahan")
 const jenisRiwayatLabel = (jenis) =>
-  JENIS_OPTIONS.find((o) => o.key === jenis)?.label || "Sanggahan";
+  JENIS_OPTIONS.find((o) => o.key === jenis)?.label || "Koreksi";
 
 // Ikon tile kartu riwayat (20px, bentuk sama dengan ikon form); tanpa jenis → tiga titik
 const RIWAYAT_ICONS = {
@@ -179,7 +179,7 @@ export default function SanggahPage() {
       setSelectedDate((prev) => prev ?? (att[0]?.date || null));
     } catch (err) {
       console.error(err);
-      toast.error("Gagal memuat sanggahan: " + (err.message || ""), { position: "bottom-center" });
+      toast.error("Gagal memuat koreksi: " + (err.message || ""), { position: "bottom-center" });
     } finally {
       setLoading(false);
     }
@@ -285,8 +285,8 @@ export default function SanggahPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedDate) { toast.warning("Pilih tanggal absensi terlebih dahulu", { position: "bottom-center" }); return; }
-    if (hasPendingForSelected) { toast.warning("Sudah ada sanggahan menunggu review untuk tanggal ini", { position: "bottom-center" }); return; }
-    if (!jenis) { toast.warning("Pilih jenis sanggahan", { position: "bottom-center" }); return; }
+    if (hasPendingForSelected) { toast.warning("Sudah ada koreksi menunggu review untuk tanggal ini", { position: "bottom-center" }); return; }
+    if (!jenis) { toast.warning("Pilih jenis koreksi", { position: "bottom-center" }); return; }
     if (!reason.trim()) { toast.warning("Alasan wajib diisi", { position: "bottom-center" }); return; }
     if (file && file.size > 2 * 1024 * 1024) { toast.warning("Ukuran foto melebihi 2MB", { position: "bottom-center" }); return; }
     setSubmitting(true);
@@ -294,21 +294,21 @@ export default function SanggahPage() {
       let attachmentUrl = null;
       if (file) attachmentUrl = await uploadSanggahanEvidence(user.id, file);
       await createSanggahan({ tanggal: selectedDate, reason, attachmentUrl, jenis });
-      toast.success("Sanggahan terkirim, menunggu review admin", { position: "bottom-center" });
+      toast.success("Koreksi terkirim, menunggu review admin", { position: "bottom-center" });
       setReason(""); setFile(null); setJenis(null);
       await load();
     } catch (err) {
-      toast.error(err.message || "Gagal mengirim sanggahan", { position: "bottom-center" });
+      toast.error(err.message || "Gagal mengirim koreksi", { position: "bottom-center" });
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleCancel = async (id) => {
-    if (!window.confirm("Batalkan sanggahan ini?")) return;
+    if (!window.confirm("Batalkan koreksi ini?")) return;
     try {
       await cancelMySanggahan(id);
-      toast.success("Sanggahan dibatalkan", { position: "bottom-center" });
+      toast.success("Koreksi dibatalkan", { position: "bottom-center" });
       await load();
     } catch (err) {
       toast.error(err.message || "Gagal membatalkan", { position: "bottom-center" });
@@ -335,7 +335,7 @@ export default function SanggahPage() {
 
       {/* Header — app bar biru: judul dinamis + pill Riwayat (hanya di form) */}
       <EmployeeAppBar
-        title={view === "form" ? "Sanggahan" : "Riwayat Sanggahan"}
+        title={view === "form" ? "Koreksi" : "Riwayat Koreksi"}
         onBack={view === "riwayat" ? toggleView : undefined}
         right={view === "form" ? (
           <button
@@ -362,7 +362,7 @@ export default function SanggahPage() {
           <div className="flex items-start justify-between gap-3 pt-3 px-1 pb-6">
             <div>
               <h2 className="text-[21px] font-extrabold" style={{ letterSpacing: "-0.02em", lineHeight: 1.22 }}>
-                Ajukan Sanggahan Absensi <em className="not-italic" style={{ color: T.blue }}>dengan Mudah</em>
+                Ajukan Koreksi Absensi <em className="not-italic" style={{ color: T.blue }}>dengan Mudah</em>
               </h2>
               <p className="text-[11.5px] mt-1.5 max-w-[230px]" style={{ lineHeight: 1.6, color: T.textSec }}>
                 Sampaikan alasan jika terdapat ketidaksesuaian data absensi Anda.
@@ -473,7 +473,7 @@ export default function SanggahPage() {
             {/* ── Jenis Sanggahan ── */}
             <div className="mb-6">
               <SecHead
-                title="Jenis Sanggahan"
+                title="Jenis Koreksi"
               />
               <div className="grid grid-cols-2 gap-2.5">
                 {JENIS_OPTIONS.map((opt) => {
@@ -508,7 +508,7 @@ export default function SanggahPage() {
             {/* ── Alasan Sanggahan ── */}
             <div className="mb-6">
               <SecHead
-                title="Alasan Sanggahan"
+                title="Alasan Koreksi"
               />
               <div
                 className="rounded-[18px] p-3.5 transition-colors duration-200 focus-within:border-[rgba(47,139,248,0.5)]"
@@ -567,7 +567,7 @@ export default function SanggahPage() {
               {submitting ? <Loader2 size={16} className="animate-spin" /> : (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2 11 13M22 2 15 22l-4-9-9-4Z" /></svg>
               )}
-              {submitting ? "Mengirim..." : "Kirim Sanggahan"}
+              {submitting ? "Mengirim..." : "Kirim Koreksi"}
             </button>
           </form>
         </div>
@@ -630,7 +630,7 @@ export default function SanggahPage() {
               </svg>
               <b className="block text-[14px] font-extrabold mt-3.5" style={{ color: T.text }}>Tidak ada riwayat pada filter ini</b>
               <p className="text-[11.5px] mt-1.5 max-w-[250px] mx-auto" style={{ lineHeight: 1.6, color: T.textMuted }}>
-                Pengajuan sanggahan Anda akan muncul di sini setelah dikirim.
+                Pengajuan koreksi Anda akan muncul di sini setelah dikirim.
               </p>
             </div>
           ) : (

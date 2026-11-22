@@ -507,7 +507,7 @@ export default function EmployeeDashboard() {
                 <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
                   <Sun size={13} /> Masuk
                 </div>
-                <div className="text-[22px] font-extrabold leading-none tracking-tight mb-2">SANGGAH</div>
+                <div className="text-[22px] font-extrabold leading-none tracking-tight mb-2">Koreksi</div>
                 <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full" style={{ border: '1px solid rgba(255,255,255,0.25)' }}>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-300" />
                   <span className="opacity-90">Disetujui</span>
@@ -518,7 +518,7 @@ export default function EmployeeDashboard() {
                 <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
                   <Sunset size={13} /> Pulang
                 </div>
-                <div className="text-[22px] font-extrabold leading-none tracking-tight mb-2">SANGGAH</div>
+                <div className="text-[22px] font-extrabold leading-none tracking-tight mb-2">Koreksi</div>
                 <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/10 px-2.5 py-1 rounded-full">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   Tidak perlu absen
@@ -608,7 +608,7 @@ export default function EmployeeDashboard() {
         <div className="grid grid-cols-3 gap-x-2 gap-y-4">
           {[
             { to: "/employee/leave", icon: ClipboardList, label: "Izin/Sakit" },
-            { to: "/employee/sanggah", icon: MessageSquareWarning, label: "Sanggah" },
+            { to: "/employee/sanggah", icon: MessageSquareWarning, label: "Koreksi" },
             { to: "/employee/overtime", icon: Clock, label: "Lembur" },
             { to: "/employee/history", icon: History, label: "Riwayat Kehadiran" },
             { to: "/employee/notifications", icon: Bell, label: "Notifikasi", badge: true },

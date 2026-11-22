@@ -3,7 +3,7 @@ import { compressImage } from "../lib/imageCompress";
 import { getShiftDefinition, isShiftEnded, getWitaDateKey } from "../lib/shiftTime";
 
 const SANGGAHAN_BUCKET = "sanggahan";
-const MIN_EARLY_NOTE = "Sanggahan hanya untuk status Alpha/Terlambat.";
+const MIN_EARLY_NOTE = "Koreksi hanya untuk status Alpha/Terlambat.";
 
 // ── Pegawai ────────────────────────────────────────────────────────────────
 
@@ -159,7 +159,7 @@ export async function getAttendanceByDate(userId, tanggal) {
 export async function createSanggahan({ tanggal, reason, attachmentUrl = null, jenis }) {
   if (!tanggal) throw new Error("Tanggal wajib dipilih");
   if (!reason?.trim()) throw new Error("Alasan wajib diisi");
-  if (!JENIS_VALUES.includes(jenis)) throw new Error("Pilih jenis sanggahan");
+  if (!JENIS_VALUES.includes(jenis)) throw new Error("Pilih jenis koreksi");
   const { data, error } = await supabase.rpc("create_sanggahan", {
     p_tanggal: tanggal,
     p_reason: reason.trim(),
@@ -167,7 +167,7 @@ export async function createSanggahan({ tanggal, reason, attachmentUrl = null, j
     p_jenis: jenis,
   });
   if (error) throw error;
-  if (!data?.success) throw new Error(data?.error || "Gagal mengirim sanggahan");
+  if (!data?.success) throw new Error(data?.error || "Gagal mengirim koreksi");
   return data;
 }
 
@@ -227,7 +227,7 @@ export async function approveSanggahan(id) {
     p_rejection_reason: null,
   });
   if (error) throw error;
-  if (!data?.success) throw new Error(data?.error || "Gagal menyetujui sanggahan");
+  if (!data?.success) throw new Error(data?.error || "Gagal menyetujui koreksi absensi");
   return data;
 }
 
@@ -240,7 +240,7 @@ export async function rejectSanggahan(id, rejectionReason) {
     p_rejection_reason: rejectionReason.trim(),
   });
   if (error) throw error;
-  if (!data?.success) throw new Error(data?.error || "Gagal menolak sanggahan");
+  if (!data?.success) throw new Error(data?.error || "Gagal menolak koreksi absensi");
   return data;
 }
 
@@ -271,6 +271,6 @@ export async function adminCreateSanggahan({ userId, dateFrom, dateTo, reason, a
     p_attachment_url: attachmentUrl,
   });
   if (error) throw error;
-  if (!data?.success) throw new Error(data?.error || "Gagal menyimpan sanggahan");
+  if (!data?.success) throw new Error(data?.error || "Gagal menyimpan koreksi absensi");
   return data;
 }

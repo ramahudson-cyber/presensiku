@@ -70,7 +70,7 @@ function SanggahanCard({ item, onApprove, onRejectClick, onCancelClick, processi
 
       <div className="mt-3 rounded-xl bg-onyx/60 border border-white/[0.05] p-3">
         <div className="flex items-center gap-2 mb-1.5">
-          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-mist">Status yang disanggah</span>
+          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-mist">Status yang dikoreksi</span>
           <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-300">
             {OLD_STATUS_LABEL[item.old_status] || item.old_status || "-"}
           </span>
@@ -79,7 +79,7 @@ function SanggahanCard({ item, onApprove, onRejectClick, onCancelClick, processi
         {item.attachment_url && (
           <a href={item.attachment_url} target="_blank" rel="noreferrer"
             className="mt-2.5 flex items-center gap-2 rounded-lg overflow-hidden border border-white/[0.08] hover:border-electric-violet/50 transition-all group">
-            <img src={item.attachment_url} alt="Bukti sanggahan" className="w-16 h-16 object-cover" loading="lazy" />
+            <img src={item.attachment_url} alt="Bukti koreksi absensi" className="w-16 h-16 object-cover" loading="lazy" />
             <span className="text-[10px] text-slate-mist group-hover:text-pure-white inline-flex items-center gap-1">
               <ImageIcon size={10} /> Lihat foto bukti <ChevronRight size={10} />
             </span>
@@ -197,18 +197,18 @@ export default function SanggahanPage() {
       const skipped = res.skipped || [];
       if (skipped.length > 0) {
         toast.info(
-          `${res.created_count} hari berhasil disanggahkan. Dilewati: ` +
+          `${res.created_count} hari berhasil dikoreksi. Dilewati: ` +
           skipped.map((s) => `${s.tanggal} (${s.alasan})`).join(", "),
           { autoClose: false, closeOnClick: true }
         );
       } else {
-        toast.success(`${res.created_count} hari berhasil disanggahkan`);
+        toast.success(`${res.created_count} hari berhasil dikoreksi`);
       }
       setCreateModal(null); setCreateFile(null);
       setActiveTab("all");
       await load();
     } catch (err) {
-      toast.error(err.message || "Gagal menyimpan sanggahan");
+      toast.error(err.message || "Gagal menyimpan koreksi absensi");
     } finally {
       setCreating(false);
     }
@@ -221,7 +221,7 @@ export default function SanggahanPage() {
       setRecords(data);
     } catch (err) {
       console.error(err);
-      toast.error("Gagal memuat sanggahan: " + (err.message || ""));
+      toast.error("Gagal memuat koreksi absensi: " + (err.message || ""));
     } finally {
       setLoading(false);
     }
@@ -235,11 +235,11 @@ export default function SanggahanPage() {
     setProcessing(true);
     try {
       await approveSanggahan(approveModal.id);
-      toast.success("Sanggahan disetujui — status dikoreksi menjadi Sanggah");
+      toast.success("Koreksi absensi disetujui — status dikoreksi menjadi Koreksi");
       setApproveModal(null);
       await load();
     } catch (err) {
-      toast.error(err.message || "Gagal menyetujui sanggahan");
+      toast.error(err.message || "Gagal menyetujui koreksi absensi");
     } finally {
       setProcessing(false);
     }
@@ -251,11 +251,11 @@ export default function SanggahanPage() {
     setProcessing(true);
     try {
       await rejectSanggahan(rejectModal.id, rejectionReason);
-      toast.success("Sanggahan ditolak");
+      toast.success("Koreksi absensi ditolak");
       setRejectModal(null); setRejectionReason("");
       await load();
     } catch (err) {
-      toast.error(err.message || "Gagal menolak sanggahan");
+      toast.error(err.message || "Gagal menolak koreksi absensi");
     } finally {
       setProcessing(false);
     }
@@ -294,7 +294,7 @@ export default function SanggahanPage() {
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white shadow-lg transition-all active:scale-[0.98]"
           style={{ background: 'linear-gradient(135deg, #2F8BF8, #1F74E0)' }}
         >
-          <UserPlus size={13} /> Sanggahkan Pegawai
+          <UserPlus size={13} /> Koreksi Pegawai
         </button>
       </div>
 
@@ -332,9 +332,9 @@ export default function SanggahanPage() {
         <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] py-14 flex flex-col items-center gap-2">
           {activeTab === "pending"
             ? <><div className="p-3 rounded-2xl bg-emerald-500/10"><CheckCircle2 size={24} className="text-emerald-300" /></div>
-                <p className="text-sm text-slate-mist">Tidak ada sanggahan menunggu review</p></>
+                <p className="text-sm text-slate-mist">Tidak ada koreksi absensi menunggu review</p></>
             : <><div className="p-3 rounded-2xl bg-white/5"><Inbox size={24} className="text-slate-mist" /></div>
-                <p className="text-sm text-slate-mist">Belum ada sanggahan</p></>}
+                <p className="text-sm text-slate-mist">Belum ada koreksi absensi</p></>}
         </div>
       ) : (
         <div className="space-y-3 pb-6">
@@ -361,7 +361,7 @@ export default function SanggahanPage() {
                 <MessageSquareWarning size={18} className="text-rose-500" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Tolak Sanggahan</h3>
+                <h3 className="text-sm font-bold text-slate-900">Tolak Koreksi</h3>
                 <p className="text-[10px] text-slate-500">Berikan alasan yang jelas untuk pegawai</p>
               </div>
             </div>
@@ -401,8 +401,8 @@ export default function SanggahanPage() {
                 <CheckCircle2 size={18} className="text-emerald-500" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Setujui Sanggahan?</h3>
-                <p className="text-[10px] text-slate-500">Status akan dikoreksi menjadi Sanggah</p>
+                <h3 className="text-sm font-bold text-slate-900">Setujui Koreksi?</h3>
+                <p className="text-[10px] text-slate-500">Status akan dikoreksi menjadi Koreksi</p>
               </div>
             </div>
             <p className="text-[11px] text-slate-500 mb-2">
@@ -414,7 +414,7 @@ export default function SanggahanPage() {
               </span>
               <ChevronRight size={12} className="text-slate-400" />
               <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600">
-                Sanggah
+                Koreksi
               </span>
               <span className="text-[10px] text-slate-500 ml-auto">tanpa potongan gaji</span>
             </div>
@@ -491,7 +491,7 @@ export default function SanggahanPage() {
                 <UserPlus size={18} className="text-electric-violet" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Sanggahkan Pegawai</h3>
+                <h3 className="text-sm font-bold text-slate-900">Koreksi Pegawai</h3>
                 <p className="text-[10px] text-slate-500">Koreksi absensi tanpa pengajuan pegawai</p>
               </div>
             </div>
@@ -535,7 +535,7 @@ export default function SanggahanPage() {
 
             <div className="rounded-xl px-3 py-2 border border-blue-100 bg-blue-50 mb-4">
               <p className="text-[10px] text-slate-600 leading-relaxed">
-                Semua hari dalam rentang diproses langsung disetujui. Hari masa depan yang punya jadwal ditandai sebagai hari bebas (Sanggah). Hari yang sudah hadir, sudah disanggahkan, tanpa jadwal, atau lebih dari 62 hari ke depan dilewati otomatis.
+                Semua hari dalam rentang diproses langsung disetujui. Hari masa depan yang punya jadwal ditandai sebagai hari bebas (Koreksi). Hari yang sudah hadir, sudah dikoreksi, tanpa jadwal, atau lebih dari 62 hari ke depan dilewati otomatis.
               </p>
             </div>
 

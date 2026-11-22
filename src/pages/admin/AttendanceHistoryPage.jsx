@@ -21,7 +21,7 @@ const STATUS_OPTIONS = [
   { value: "", label: "Semua Status" },
   { value: "hadir",  label: "Hadir"  },
   { value: "terlambat", label: "Terlambat" },
-  { value: "sanggah", label: "Sanggah" },
+  { value: "sanggah", label: "Koreksi" },
   { value: "izin",   label: "Izin"   },
   { value: "sakit",  label: "Sakit"  },
   { value: "cuti",   label: "Cuti"   },
@@ -89,12 +89,14 @@ const avatarGradient = (name = "") => {
 };
 
 // ── Sub-komponen ─────────────────────────────────────────────────────────────
+const STATUS_BADGE_LABEL = { sanggah: "Koreksi Absensi" };
+
 function StatusBadge({ status }) {
   const s = STATUS_STYLE[status] ?? { bg: "bg-white/5 text-slate-mist ring-white/10", icon: null };
   return (
     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ring-1 ${s.bg}`}>
       {s.icon}
-      {status?.toUpperCase() ?? "–"}
+      {(STATUS_BADGE_LABEL[status] || status)?.toUpperCase() ?? "–"}
     </span>
   );
 }
@@ -540,7 +542,7 @@ export default function AttendanceHistoryPage() {
           r.profiles?.position ?? "-",
           fmtTime(r.clock_in_time),
           fmtTime(r.clock_out_time),
-          isSanggahRow(r) ? "Sanggah" : cap(r.attendance_status),
+          isSanggahRow(r) ? "Koreksi" : cap(r.attendance_status),
           r.location_in?.matched_location_name ?? "-",
           Number(r.late_minutes ?? 0),
           r.early_leave ? formatDuration(r.early_leave) : "-",

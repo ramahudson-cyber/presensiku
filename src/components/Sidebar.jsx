@@ -38,7 +38,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
     { path: "/employee/attendance", label: "Absensi", icon: CalendarCheck },
     { path: "/employee/schedule", label: "Jadwal Shift", icon: CalendarDays },
     { path: "/employee/leave", label: "Izin / Sakit", icon: ClipboardList },
-    { path: "/employee/sanggah", label: "Sanggahan", icon: MessageSquareWarning },
+    { path: "/employee/sanggah", label: "Koreksi", icon: MessageSquareWarning },
     { path: "/employee/overtime", label: "Lembur", icon: Clock },
   ];
 
@@ -59,7 +59,7 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
       : []),
     { path: "/admin/schedules", label: "Jadwal Kerja", icon: CalendarDays },
     { path: "/admin/leave", label: "Cuti & Izin", icon: FileText },
-    { path: "/admin/sanggahan", label: "Sanggahan", icon: MessageSquareWarning },
+    { path: "/admin/sanggahan", label: "Koreksi Absensi", icon: MessageSquareWarning },
     { path: "/admin/overtime", label: "Lembur", icon: Clock },
     ...(payrollOn ? [{ path: "/admin/payroll", label: "Gaji", icon: Wallet }] : []),
     { path: "/admin/announcements", label: "Pengumuman", icon: Megaphone },

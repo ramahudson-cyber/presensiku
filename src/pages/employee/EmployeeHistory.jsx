@@ -171,7 +171,7 @@ export default function EmployeeHistory() {
 
     let label = "Alpha";
     let badge = "Alpha";
-    if (isSanggah) { label = "Sanggahan"; badge = "Sanggahan"; }
+    if (isSanggah) { label = "Koreksi"; badge = "Koreksi"; }
     else if (isLate) { label = "Terlambat"; badge = `Terlambat ${item.late_minutes || 0} menit`; }
     else if (isHadir) {
       const sched = schedList.find((s) => s.date === item.date);

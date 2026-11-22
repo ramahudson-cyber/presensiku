@@ -919,12 +919,12 @@ export default function AttendancePage() {
             <div className="pointer-events-auto flex flex-col items-center gap-3 mt-auto pb-16">
               <div className="w-[120px] h-[120px] rounded-full bg-gradient-to-br from-[#2F8BF8] via-[#1F74E0] to-[#1D6FD0] flex flex-col items-center justify-center shadow-[0_0_40px_rgba(47,139,248,0.35)]">
                 <span className="text-[22px] font-extrabold tracking-wide text-white hero-card-bg">
-                  SANGGAH
+                  Koreksi
                 </span>
                 <span className="text-[9px] text-white/70 mt-0.5">Disetujui</span>
               </div>
               <span className="text-[12px] font-semibold text-black text-center">
-                Absensi hari ini dikoreksi via sanggahan — tidak perlu absen
+                Absensi hari ini telah dikoreksi — tidak perlu absen
               </span>
             </div>
           )}

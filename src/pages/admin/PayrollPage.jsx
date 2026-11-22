@@ -731,7 +731,7 @@ function TabAturan({ period }) {
         <span>
           Potongan tidak absen pulang hanya dihitung untuk hari yang sudah lewat. Hari yang sedang
           berjalan, hari dengan keterangan izin/sakit, dan hari yang sedang dalam proses
-          <b> Sanggah</b> (menunggu atau disetujui admin) tidak dihitung. Nominal <b>Rp 0</b> =
+          <b> Koreksi Absensi</b> (menunggu atau disetujui admin) tidak dihitung. Nominal <b>Rp 0</b> =
           deteksi tetap berjalan tetapi tidak memotong. Aturan yang sama berlaku untuk potongan
           pulang cepat: hanya hari yang sudah lewat dengan absen pulang <b>lebih awal dari jam
           selesai shift</b> (tanpa toleransi) yang dihitung.

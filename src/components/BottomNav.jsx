@@ -52,7 +52,7 @@ export default function BottomNav({ hidden = false }) {
   const adminMore = [
     { path: "/admin/schedules", label: "Jadwal Kerja", icon: CalendarDays },
     { path: "/admin/leave", label: "Cuti & Izin", icon: FileText },
-    { path: "/admin/sanggahan", label: "Sanggahan", icon: MessageSquareWarning },
+    { path: "/admin/sanggahan", label: "Koreksi Absensi", icon: MessageSquareWarning },
     ...(canManageOvertime
       ? [
           { path: "/admin/overtime", label: "Lembur", icon: Clock },
