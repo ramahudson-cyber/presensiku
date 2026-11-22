@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
-import { Hourglass, Loader2 } from "lucide-react";
+import { supabase } from "../../lib/supabase";
+import { Loader2 } from "lucide-react";
 import {
   getMyDisputableAttendance, getMySanggahan, createSanggahan, cancelMySanggahan,
   uploadSanggahanEvidence, getAttendanceByDate,
@@ -9,7 +10,6 @@ import {
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import EmployeeAppBar from "../../components/EmployeeAppBar";
-import { getWitaDateKey } from "../../lib/shiftTime";
 
 // Token light-mode per DESIGN.md (biru #2F8BF8, bg #F4F2FB, kartu putih)
 const T = {
@@ -127,6 +127,12 @@ const attachmentFileName = (url) => {
   }
 };
 
+const BADGE_STYLE = {
+  alpha: { bg: "rgba(239,68,68,0.10)", color: "#DC2626" },
+  terlambat: { bg: "rgba(245,158,11,0.14)", color: "#B45309" },
+  tanpa_pulang: { bg: "rgba(47,139,248,0.12)", color: "#1D6FD0" },
+};
+
 // Header section: chip ikon biru + judul (pola DESIGN.md, sentence case)
 const SecHead = ({ title }) => (
   <div className="flex items-center mx-0.5 mb-3">
@@ -161,6 +167,9 @@ export default function SanggahPage() {
   const [reason, setReason] = useState("");
   const [file, setFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [shiftNames, setShiftNames] = useState({});
   const disputableRef = useRef([]);
   const rootRef = useRef(null);
 
@@ -168,10 +177,15 @@ export default function SanggahPage() {
     if (!user?.id) return;
     setLoading(true);
     try {
-      const [att, mySanggahan] = await Promise.all([
+      const [att, mySanggahan, shiftsMaster] = await Promise.all([
         getMyDisputableAttendance(user.id),
         getMySanggahan(),
+        supabase.from("shifts").select("code, name"),
       ]);
+      setDisputable(att);
+      disputableRef.current = att;
+      setSanggahan(mySanggahan);
+      setShiftNames(Object.fromEntries((shiftsMaster.data || []).map((s) => [s.code, s.name])));
       setDisputable(att);
       disputableRef.current = att;
       setSanggahan(mySanggahan);
@@ -265,25 +279,9 @@ export default function SanggahPage() {
   );
   const hasPendingForSelected = selectedDate ? pendingByDate.has(selectedDate) : false;
 
-  // Batas pilihan tanggal: 60 hari terakhir s/d hari ini (WITA)
-  const todayWita = getWitaDateKey();
-  const minDate = new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10);
 
-  // Badge status absensi dari data riil
-  const attStatus = (() => {
-    if (!attendanceInfo) return { kind: "none", label: "Tidak ada data absensi" };
-    if (attendanceInfo.is_late || attendanceInfo.attendance_status === "terlambat") {
-      const m = attendanceInfo.late_minutes > 0 ? ` (${attendanceInfo.late_minutes} mnt)` : "";
-      return { kind: "late", label: `Terlambat${m}` };
-    }
-    if (attendanceInfo.clock_in_time) return { kind: "ontime", label: "Tepat Waktu" };
-    const st = attendanceInfo.attendance_status;
-    if (st === "izin" || st === "sakit") return { kind: "none", label: st === "izin" ? "Izin" : "Sakit" };
-    return { kind: "none", label: "Tidak ada absen masuk" };
-  })();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!selectedDate) { toast.warning("Pilih tanggal absensi terlebih dahulu", { position: "bottom-center" }); return; }
     if (hasPendingForSelected) { toast.warning("Sudah ada koreksi menunggu review untuk tanggal ini", { position: "bottom-center" }); return; }
     if (!jenis) { toast.warning("Pilih jenis koreksi", { position: "bottom-center" }); return; }
@@ -294,9 +292,9 @@ export default function SanggahPage() {
       let attachmentUrl = null;
       if (file) attachmentUrl = await uploadSanggahanEvidence(user.id, file);
       await createSanggahan({ tanggal: selectedDate, reason, attachmentUrl, jenis });
-      toast.success("Koreksi terkirim, menunggu review admin", { position: "bottom-center" });
       setReason(""); setFile(null); setJenis(null);
       await load();
+      setSuccessOpen(true);
     } catch (err) {
       toast.error(err.message || "Gagal mengirim koreksi", { position: "bottom-center" });
     } finally {
@@ -322,6 +320,35 @@ export default function SanggahPage() {
     setFile(f);
   };
 
+  // Nama shift dari master DB (fallback kode)
+  const shiftLabel = (code) => {
+    if (!code) return "Tanpa shift";
+    return shiftNames[code] ? `Shift ${shiftNames[code]}` : `Shift ${code}`;
+  };
+
+  // Badge & deskripto status absensi yang bisa dikoreksi
+  const badgeFor = (item) => {
+    const st = BADGE_STYLE[item.attendance_status] || BADGE_STYLE.alpha;
+    const label = item.attendance_status === "terlambat"
+      ? `Terlambat ${item.late_minutes || 0} menit`
+      : item.attendance_status === "tanpa_pulang" ? "Tanpa Pulang" : "Alpha";
+    return { ...st, label };
+  };
+  const metaFor = (item) => {
+    if (item.attendance_status === "terlambat") return `Masuk terlambat ${item.late_minutes || 0} menit`;
+    if (item.attendance_status === "tanpa_pulang") return "Tidak absen pulang";
+    return "Tidak ada data absensi";
+  };
+
+  const openSheet = (item) => {
+    setSelectedDate(item.date);
+    setReason("");
+    setFile(null);
+    setJenis(null);
+    setSuccessOpen(false);
+    setSheetOpen(true);
+  };
+
   // Data riwayat sesuai filter aktif
   const filteredSanggahan = filter === "semua"
     ? sanggahan
@@ -333,243 +360,102 @@ export default function SanggahPage() {
       <style>{".sgg-chips::-webkit-scrollbar{height:0}.sgg-chips{scrollbar-width:none}"}</style>
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
-      {/* Header — app bar biru: judul dinamis + pill Riwayat (hanya di form) */}
+      {/* Header — app bar biru: judul dinamis (pill Riwayat pindah ke daftar) */}
       <EmployeeAppBar
-        title={view === "form" ? "Koreksi" : "Riwayat Koreksi"}
+        title={view === "form" ? "Koreksi Absensi" : "Riwayat Koreksi"}
         onBack={view === "riwayat" ? toggleView : undefined}
-        right={view === "form" ? (
-          <button
-            type="button" onClick={toggleView} aria-label="Riwayat"
-            className="flex items-center gap-1.5 rounded-full transition-all duration-200 active:scale-95"
-            style={{
-              background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.22)",
-              borderRadius: 999, padding: "6px 12px", cursor: "pointer", fontFamily: "inherit",
-              fontSize: 10.5, fontWeight: 800, color: "#FFFFFF",
-            }}
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
-            Riwayat
-          </button>
-        ) : null}
       />
 
       <div className="max-w-md mx-auto px-4 pb-8">
 
-        {/* ═══ HALAMAN FORM ═══ */}
+        {/* ═══ HALAMAN FORM: daftar absensi yang bisa dikoreksi ═══ */}
         <div style={{ display: view === "form" ? "block" : "none" }}>
-
-          {/* ── Hero ── */}
-          <div className="flex items-start justify-between gap-3 pt-3 px-1 pb-6">
-            <div>
-              <h2 className="text-[21px] font-extrabold" style={{ letterSpacing: "-0.02em", lineHeight: 1.22 }}>
-                Ajukan Koreksi Absensi <em className="not-italic" style={{ color: T.blue }}>dengan Mudah</em>
-              </h2>
-              <p className="text-[11.5px] mt-1.5 max-w-[230px]" style={{ lineHeight: 1.6, color: T.textSec }}>
-                Sampaikan alasan jika terdapat ketidaksesuaian data absensi Anda.
-              </p>
-            </div>
-            <div className="relative w-[120px] h-[104px] shrink-0" aria-hidden="true">
-              <div className="absolute" style={{ inset: "-8px -6px 0 auto", width: 104, height: 92, background: "#DCEDFB", borderRadius: "46% 54% 52% 48% / 55% 45% 55% 45%" }} />
-              <svg className="relative" width="120" height="104" viewBox="0 0 120 104" fill="none">
-                <defs>
-                  <linearGradient id="gCalSanggah" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#4A9BFF" />
-                    <stop offset="100%" stopColor="#2F8BF8" />
-                  </linearGradient>
-                  <linearGradient id="gBadgeSanggah" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#32ACFB" />
-                    <stop offset="100%" stopColor="#1F74E0" />
-                  </linearGradient>
-                </defs>
-                {/* kilau kuning */}
-                <path d="M22 20l-7-7" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
-                <path d="M14 32l-9-3" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
-                <path d="M28 10l-3-9" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
-                {/* bayangan lembut */}
-                <ellipse cx="62" cy="86" rx="33" ry="6.5" fill="#2F8BF8" opacity="0.12" />
-                {/* badan kalender */}
-                <rect x="32" y="26" width="60" height="52" rx="9" fill="#FFFFFF" />
-                <rect x="32" y="26" width="60" height="16" rx="8" fill="url(#gCalSanggah)" />
-                <rect x="32" y="34" width="60" height="8" fill="url(#gCalSanggah)" />
-                {/* ring pengikat */}
-                <rect x="45" y="18" width="7" height="15" rx="3.5" fill="#8FC1F3" />
-                <rect x="72" y="18" width="7" height="15" rx="3.5" fill="#8FC1F3" />
-                {/* grid tanggal */}
-                <rect x="41" y="48" width="11" height="9" rx="3" fill="#DCEDFB" />
-                <rect x="56" y="48" width="11" height="9" rx="3" fill="#DCEDFB" />
-                <rect x="71" y="48" width="11" height="9" rx="3" fill="#DCEDFB" />
-                <rect x="41" y="61" width="11" height="9" rx="3" fill="#DCEDFB" />
-                <rect x="56" y="61" width="11" height="9" rx="3" fill="#DCEDFB" />
-                {/* badge centang */}
-                <circle cx="92" cy="72" r="15" fill="url(#gBadgeSanggah)" />
-                <circle cx="92" cy="72" r="15" stroke="#fff" strokeWidth="2" />
-                <path d="M85.5 72.5l4.5 4.5 8-9" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
+          <div className="flex items-center justify-between gap-3 mb-3 px-0.5">
+            <b className="text-sm font-extrabold" style={{ color: T.text, letterSpacing: "-0.01em" }}>Data koreksi</b>
+            <button
+              type="button" onClick={toggleView} aria-label="Riwayat"
+              className="flex items-center gap-1.5 rounded-full transition-all duration-200 active:scale-95"
+              style={{
+                background: T.iconBg, border: "1px solid rgba(47,139,248,0.18)",
+                borderRadius: 999, padding: "7px 13px", cursor: "pointer", fontFamily: "inherit",
+                fontSize: 10.5, fontWeight: 800, color: T.blueDeep,
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+              Riwayat
+            </button>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            {/* ── Kartu Data Absensi ── */}
-            <div className="rounded-[20px] p-3.5 mb-6" style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
-              <div className="flex items-center gap-2 mb-3">
-                <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="3" /><path d="M8 2.5v4M16 2.5v4M3 10h18" /></svg>
-                <input
-                  type="date"
-                  value={selectedDate || ""}
-                  min={minDate}
-                  max={todayWita}
-                  onChange={(e) => setSelectedDate(e.target.value || null)}
-                  className="flex-1 min-w-0 border-none outline-none bg-transparent font-bold text-xs"
-                  style={{ fontFamily: "inherit", color: T.text }}
-                />
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-[46px] h-[46px] rounded-[14px] flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
-                  <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="3" /><path d="M8 2.5v4M16 2.5v4M3 10h18" /></svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="block text-[10px] font-semibold" style={{ color: T.textMuted }}>Data Absensi</span>
-                  <b className="block text-[14.5px] font-extrabold mt-0.5" style={{ letterSpacing: "-0.01em" }}>
-                    {selectedDate ? fmtDate(selectedDate) : "Pilih tanggal"}
-                  </b>
-                </div>
-              </div>
-              <div className="flex items-center gap-2.5 mt-2.5 flex-wrap" style={{ borderTop: `1px solid ${T.div}`, paddingTop: 11 }}>
-                {attLoading ? (
-                  <span className="text-[10.5px] font-semibold inline-flex items-center gap-1.5" style={{ color: T.textMuted }}>
-                    <Loader2 size={11} className="animate-spin" /> Memuat data absensi
-                  </span>
-                ) : (
-                  <>
-                    <div className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: T.textSec }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
-                      Masuk: <b className="font-extrabold" style={{ color: T.text }}>{attendanceInfo?.clock_in_time ? fmtTime(attendanceInfo.clock_in_time) : "--:--"}</b>
-                    </div>
-                    <span style={{ color: T.div }}>|</span>
-                    {attStatus.kind === "late" && (
-                      <span className="inline-flex items-center gap-1 text-[10.5px] font-bold rounded-full px-2.5 py-1" style={{ background: "rgba(239,68,68,0.1)", color: "#DC2626" }}>
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
-                        {attStatus.label}
-                      </span>
-                    )}
-                    {attStatus.kind === "ontime" && (
-                      <span className="inline-flex items-center gap-1 text-[10.5px] font-bold rounded-full px-2.5 py-1" style={{ background: "rgba(16,185,129,0.1)", color: "#059669" }}>
-                        {attStatus.label}
-                      </span>
-                    )}
-                    {attStatus.kind === "none" && (
-                      <span className="text-[10.5px] font-semibold" style={{ color: T.textMuted }}>{attStatus.label}</span>
-                    )}
-                    {hasPendingForSelected && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full" style={{ background: "rgba(245,158,11,0.12)", color: "#F59E0B" }}>
-                        <Hourglass size={10} /> Menunggu review
-                      </span>
-                    )}
-                  </>
-                )}
-              </div>
+          {disputable.length === 0 ? (
+            <div className="text-center pt-[46px] px-5 pb-2.5">
+              <svg width="120" height="80" viewBox="0 0 120 80" fill="none" aria-hidden="true" className="mx-auto">
+                <ellipse cx="60" cy="66" rx="34" ry="8" fill="#DCEDFB" />
+                <rect x="34" y="10" width="46" height="52" rx="7" fill="#FFFFFF" stroke="#BBD9F5" strokeWidth="2" />
+                <rect x="34" y="10" width="46" height="12" rx="6" fill="#BBD9F5" />
+                <rect x="41" y="28" width="30" height="5" rx="2.5" fill="#DCEDFB" />
+                <rect x="41" y="37" width="24" height="5" rx="2.5" fill="#DCEDFB" />
+                <rect x="41" y="46" width="28" height="5" rx="2.5" fill="#DCEDFB" />
+                <circle cx="78" cy="52" r="13" fill="#2F8BF8" stroke="#fff" strokeWidth="2.4" />
+                <path d="M72 52h4.5l2.5-4 3 8 2.5-4h4" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <b className="block text-[14px] font-extrabold mt-3.5" style={{ color: T.text }}>Semua absensi sudah sesuai</b>
+              <p className="text-[11.5px] mt-1.5 max-w-[260px] mx-auto" style={{ lineHeight: 1.6, color: T.textMuted }}>
+                Tidak ada data absensi yang perlu dikoreksi. Daftar ini terisi otomatis bila ada alpha, keterlambatan, atau absen tanpa pulang.
+              </p>
             </div>
-
-            {/* ── Jenis Sanggahan ── */}
-            <div className="mb-6">
-              <SecHead
-                title="Jenis Koreksi"
-              />
-              <div className="grid grid-cols-2 gap-2.5">
-                {JENIS_OPTIONS.map((opt) => {
-                  const on = jenis === opt.key;
-                  return (
-                    <button
-                      key={opt.key} type="button" onClick={() => setJenis(opt.key)}
-                      className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-200 text-left ${opt.span ? "col-span-2" : ""}`}
-                      style={{
-                        border: `1.5px solid ${on ? "rgba(47,139,248,0.9)" : T.border}`,
-                        background: on ? "linear-gradient(135deg, #2F8BF8, #1F74E0)" : T.surface,
-                        boxShadow: on ? "0 6px 16px -6px rgba(47,139,248,0.5)" : "none",
-                      }}
-                    >
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <div className="w-[26px] h-[26px] rounded-lg flex items-center justify-center shrink-0" style={{ background: on ? "rgba(255,255,255,0.22)" : T.iconBg, color: on ? "#fff" : T.blue }}>
-                          {opt.icon}
-                        </div>
-                        <b className="text-[11.5px] font-extrabold truncate" style={{ color: on ? "#fff" : T.text }}>{opt.label}</b>
-                      </div>
-                      {on && (
-                        <span className="w-[17px] h-[17px] rounded-full flex items-center justify-center shrink-0" style={{ background: "#fff", color: T.blue, boxShadow: "0 2px 6px rgba(47,139,248,0.4)" }}>
-                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
+          ) : (
+            <div>
+              {disputable.map((item) => {
+                const d = new Date(item.date + "T00:00:00");
+                const hasPending = pendingByDate.has(item.date);
+                const badge = badgeFor(item);
+                return (
+                  <div
+                    key={item.id}
+                    className="py-[13px] -mx-4 px-4"
+                    style={{ borderTop: "1px solid #E2E8F0" }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-[52px] h-[54px] flex-none rounded-[14px] flex flex-col items-center justify-center text-center shrink-0"
+                        style={{ background: T.iconBg, lineHeight: 1.1 }}>
+                        <b className="text-[19px] font-extrabold" style={{ letterSpacing: "-0.02em" }}>{d.getDate()}</b>
+                        <span className="text-[10px] font-bold mt-0.5" style={{ color: T.textMuted }}>
+                          {d.toLocaleDateString("id-ID", { month: "short" })}
                         </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12.5px] font-extrabold m-0" style={{ letterSpacing: "-0.01em" }}>
+                          {shiftLabel(item.shift_code)}
+                        </p>
+                        <p className="text-[10.5px] font-semibold mt-1 m-0" style={{ color: T.textMuted }}>
+                          {metaFor(item)}
+                        </p>
+                      </div>
+                      <span className="inline-flex items-center flex-none px-2.5 py-1 rounded-full text-[10px] font-extrabold whitespace-nowrap"
+                        style={hasPending
+                          ? { background: "rgba(245,158,11,0.14)", color: "#B45309" }
+                          : { background: badge.bg, color: badge.color }}>
+                        {hasPending ? "Diproses" : badge.label}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2.5 mt-2.5">
+                      <span className="text-[10px] font-semibold" style={{ color: T.textMuted }}>
+                        {hasPending ? "Menunggu review admin" : "Status perlu ditinjau admin"}
+                      </span>
+                      {!hasPending && (
+                        <button type="button" onClick={() => openSheet(item)}
+                          className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-extrabold text-white transition-all duration-200 active:scale-[0.97]"
+                          style={{ background: "linear-gradient(135deg, #2F8BF8, #1F74E0)" }}>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+                          Koreksi
+                        </button>
                       )}
-                    </button>
-                  );
-                })}
-              </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-
-            {/* ── Alasan Sanggahan ── */}
-            <div className="mb-6">
-              <SecHead
-                title="Alasan Koreksi"
-              />
-              <div
-                className="rounded-[18px] p-3.5 transition-colors duration-200 focus-within:border-[rgba(47,139,248,0.5)]"
-                style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}
-              >
-                <textarea
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  maxLength={500}
-                  rows={4}
-                  placeholder="Jelaskan alasan Anda dengan jelas..."
-                  className="w-full border-none outline-none resize-none bg-transparent text-[12.5px]"
-                  style={{ fontFamily: "inherit", color: T.text, lineHeight: 1.6, minHeight: 88 }}
-                />
-                <div className="text-right text-[10px] font-bold" style={{ color: T.textMuted }}>{reason.length}/500</div>
-              </div>
-            </div>
-
-            {/* ── Lampiran Bukti (Opsional) ── */}
-            <div className="mb-6">
-              <SecHead
-                title="Lampiran Bukti (Opsional)"
-              />
-              <label
-                className="flex flex-col items-center text-center gap-1.5 w-full px-4 py-[22px] rounded-[18px] cursor-pointer transition-all duration-200 hover:opacity-90"
-                style={{ border: "2px dashed rgba(47,139,248,0.35)", background: "rgba(47,139,248,0.045)" }}
-              >
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24" /><path d="M12 12v9" /><path d="m16 16-4-4-4 4" /></svg>
-                <b className="text-xs font-extrabold max-w-full truncate" style={{ color: T.blue }}>{file ? file.name : "Tap untuk unggah file"}</b>
-                <span className="text-[10.5px] font-medium" style={{ color: T.textSec, lineHeight: 1.5 }}>
-                  Foto, dokumen, atau bukti lainnya<br />(JPG, PNG · maks 2MB)
-                </span>
-                <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={onPickFile} />
-              </label>
-            </div>
-
-            {/* ── Informasi Penting ── */}
-            <div className="flex items-start gap-2.5 rounded-2xl p-3.5 mb-6" style={{ background: "rgba(47,139,248,0.07)", border: "1px solid rgba(47,139,248,0.16)", color: "#1D4E86" }}>
-              <div className="shrink-0 w-[26px] h-[26px] rounded-full flex items-center justify-center mt-0.5" style={{ background: T.blue, color: "#fff" }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M12 11.5V16" /></svg>
-              </div>
-              <div>
-                <b className="block text-[11.5px] font-extrabold mb-0.5">Informasi Penting</b>
-                <p className="text-[10.5px] font-medium" style={{ lineHeight: 1.55, color: "#3E5C82" }}>
-                  Pastikan data dan bukti yang Anda unggah sudah benar agar proses verifikasi berjalan lancar.
-                </p>
-              </div>
-            </div>
-
-            {/* ── Kirim ── */}
-            <button
-              type="submit" disabled={submitting || !selectedDate || hasPendingForSelected}
-              className="w-full border-none rounded-full py-[15px] text-sm font-extrabold text-white flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
-              style={{ background: "linear-gradient(135deg, #2F8BF8, #1F74E0)", boxShadow: "0 12px 28px -8px rgba(47,139,248,0.55)" }}
-            >
-              {submitting ? <Loader2 size={16} className="animate-spin" /> : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2 11 13M22 2 15 22l-4-9-9-4Z" /></svg>
-              )}
-              {submitting ? "Mengirim..." : "Kirim Koreksi"}
-            </button>
-          </form>
+          )}
         </div>
 
         {/* ═══ HALAMAN RIWAYAT ═══ */}
@@ -729,6 +615,172 @@ export default function SanggahPage() {
             </div>
           )}
         </div>
+
+      {/* ═══ BOTTOM SHEET: Ajukan Koreksi ═══ */}
+      {sheetOpen && (
+        <>
+          <div className="fixed inset-0 z-50" style={{ background: "rgba(15,23,42,0.46)" }} onClick={() => setSheetOpen(false)} aria-hidden="true" />
+          <div role="dialog" aria-modal="true" aria-labelledby="koreksi-sheet-title"
+            className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-md flex flex-col overflow-hidden"
+            style={{
+              height: "min(94dvh, 800px)", background: "#FFFFFF",
+              borderRadius: "28px 28px 0 0", boxShadow: "0 -10px 34px rgba(15,23,42,0.14)",
+            }}>
+            <div className="flex justify-center pt-2.5 pb-1 cursor-pointer" onClick={() => setSheetOpen(false)} aria-hidden="true">
+              <span className="rounded-full" style={{ width: 44, height: 5, background: "#E2E8F0" }} />
+            </div>
+            <header className="flex items-center gap-3 px-5" style={{ paddingTop: 6, paddingBottom: 14 }}>
+              <div className="flex-1 min-w-0">
+                <h2 id="koreksi-sheet-title" className="m-0 text-[17px] font-extrabold" style={{ letterSpacing: "-0.02em", color: T.text }}>Ajukan Koreksi</h2>
+                <p className="text-[11.5px] mt-1 m-0" style={{ color: T.textMuted }}>
+                  {selectedDate ? `${fmtDate(selectedDate)} · ${shiftLabel(disputable.find((d) => d.date === selectedDate)?.shift_code)}` : ""}
+                </p>
+              </div>
+              <button type="button" onClick={() => setSheetOpen(false)} aria-label="Tutup formulir"
+                className="w-[34px] h-[34px] flex-none rounded-full flex items-center justify-center border border-[#E2E8F0] bg-[#F8FAFC] hover:bg-[#F1F5F9] transition-colors"
+                style={{ color: T.textSec }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M6 6l12 12" /><path d="M18 6 6 18" /></svg>
+              </button>
+            </header>
+            <div className="flex-none h-px" style={{ background: T.div }} />
+            <div className="flex-1 min-h-0 overflow-y-auto px-5 py-3.5" style={{ overscrollBehavior: "contain" }}>
+              {/* Kartu data absensi (read-only, dari item yang dipilih) */}
+              <div className="rounded-[20px] p-3.5" style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-[46px] h-[46px] rounded-[14px] flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="3" /><path d="M8 2.5v4M16 2.5v4M3 10h18" /></svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="block text-[10px] font-semibold" style={{ color: T.textMuted }}>Data Absensi</span>
+                    <b className="block text-[14.5px] font-extrabold mt-0.5" style={{ letterSpacing: "-0.01em" }}>
+                      {selectedDate ? fmtDate(selectedDate) : "-"}
+                    </b>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2.5 mt-2.5 flex-wrap" style={{ borderTop: `1px solid ${T.div}`, paddingTop: 11 }}>
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: T.textSec }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                    Masuk:&nbsp;<b className="font-extrabold" style={{ color: T.text }}>
+                      {attLoading ? "Memuat..." : (attendanceInfo?.clock_in_time ? fmtTime(attendanceInfo.clock_in_time) : "--:--")}
+                    </b>
+                  </div>
+                  <span style={{ color: T.div }}>|</span>
+                  {(() => {
+                    const item = disputable.find((d) => d.date === selectedDate);
+                    if (!item) return null;
+                    const badge = badgeFor(item);
+                    return (
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10.5px] font-extrabold"
+                        style={{ background: badge.bg, color: badge.color }}>
+                        {badge.label}
+                      </span>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Jenis Koreksi */}
+              <div className="mt-4 mb-5">
+                <SecHead title="Jenis Koreksi" />
+                <div className="grid grid-cols-2 gap-2.5">
+                  {JENIS_OPTIONS.map((o) => (
+                    <button key={o.key} type="button" onClick={() => setJenis(o.key)}
+                      className="flex items-center gap-2.5 rounded-[16px] px-3 py-3 text-left transition-all duration-200 active:scale-[0.98]"
+                      style={{
+                        fontFamily: "inherit", cursor: "pointer",
+                        border: `1.5px solid ${jenis === o.key ? "rgba(47,139,248,0.55)" : T.border}`,
+                        background: jenis === o.key ? "rgba(47,139,248,0.07)" : T.surface,
+                        boxShadow: T.shadow, color: jenis === o.key ? T.blueDeep : T.text,
+                      }}>
+                      <span className="w-[30px] h-[30px] flex-none rounded-[10px] flex items-center justify-center shrink-0" style={{ background: T.iconBg, color: T.blue }}>
+                        {o.icon}
+                      </span>
+                      <span className="text-[11.5px] font-extrabold leading-tight">{o.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Alasan Koreksi */}
+              <div className="mb-5">
+                <SecHead title="Alasan Koreksi" />
+                <div className="rounded-[18px] p-3.5 transition-colors duration-200 focus-within:border-[rgba(47,139,248,0.5)]"
+                  style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
+                  <textarea
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    maxLength={500}
+                    rows={4}
+                    placeholder="Jelaskan alasan Anda dengan jelas..."
+                    className="w-full border-none outline-none resize-none bg-transparent text-[12.5px]"
+                    style={{ fontFamily: "inherit", color: T.text, lineHeight: 1.6, minHeight: 84 }}
+                  />
+                  <div className="text-right text-[10px] font-bold" style={{ color: T.textMuted }}>{reason.length}/500</div>
+                </div>
+              </div>
+
+              {/* Lampiran Bukti (Opsional) */}
+              <div className="mb-5">
+                <SecHead title="Lampiran Bukti (Opsional)" />
+                <label
+                  className="flex flex-col items-center text-center gap-1.5 w-full px-4 py-[22px] rounded-[18px] cursor-pointer transition-all duration-200 hover:opacity-90"
+                  style={{ border: "2px dashed rgba(47,139,248,0.35)", background: "rgba(47,139,248,0.045)" }}>
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24" /><path d="M12 12v9" /><path d="m16 16-4-4-4 4" /></svg>
+                  <b className="text-xs font-extrabold max-w-full truncate" style={{ color: T.blue }}>{file ? file.name : "Tap untuk unggah file"}</b>
+                  <span className="text-[10.5px] font-medium" style={{ color: T.textSec, lineHeight: 1.5 }}>
+                    Foto, dokumen, atau bukti lainnya<br />(JPG, PNG · maks 2MB)
+                  </span>
+                  <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={onPickFile} />
+                </label>
+              </div>
+
+              {/* Informasi Penting */}
+              <div className="flex items-start gap-2.5 rounded-2xl p-3.5" style={{ background: "rgba(47,139,248,0.07)", border: "1px solid rgba(47,139,248,0.16)", color: "#1D4E86" }}>
+                <div className="shrink-0 w-[26px] h-[26px] rounded-full flex items-center justify-center mt-0.5" style={{ background: T.blue, color: "#fff" }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M12 11.5V16" /></svg>
+                </div>
+                <div>
+                  <b className="block text-[11.5px] font-extrabold mb-0.5">Informasi Penting</b>
+                  <p className="text-[10.5px] font-medium" style={{ lineHeight: 1.55, color: "#3E5C82" }}>
+                    Pastikan data dan bukti yang Anda unggah sudah benar agar proses verifikasi berjalan lancar.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <footer className="flex-none px-5" style={{ paddingTop: 11, paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))", borderTop: `1px solid ${T.div}` }}>
+              <button
+                type="button" onClick={handleSubmit} disabled={submitting}
+                className="w-full border-none rounded-full py-[15px] text-sm font-extrabold text-white flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
+                style={{ background: "linear-gradient(135deg, #2F8BF8, #1F74E0)", boxShadow: "0 12px 28px -8px rgba(47,139,248,0.55)", fontFamily: "inherit" }}>
+                {submitting ? <Loader2 size={16} className="animate-spin" /> : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2 11 13M22 2 15 22l-4-9-9-4Z" /></svg>
+                )}
+                {submitting ? "Mengirim..." : "Kirim Koreksi"}
+              </button>
+            </footer>
+
+            {/* Sukses */}
+            <div
+              className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white px-7 text-center transition-opacity duration-200"
+              style={{ opacity: successOpen ? 1 : 0, pointerEvents: successOpen ? "auto" : "none", transform: successOpen ? "translateY(0)" : "translateY(8px)" }}
+              role="status" aria-live="polite">
+              <span className="w-[66px] h-[66px] rounded-full flex items-center justify-center" style={{ background: "rgba(16,185,129,0.12)", color: "#10B981" }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+              </span>
+              <h3 className="m-0 mt-4 text-[18px] font-extrabold" style={{ letterSpacing: "-0.02em", color: T.text }}>Koreksi terkirim</h3>
+              <p className="mt-2 mb-0 max-w-[250px] text-[12.5px] leading-relaxed" style={{ color: T.textSec }}>
+                Pengajuan Anda menunggu review admin. Status dapat dilihat di halaman Riwayat.
+              </p>
+              <button type="button" onClick={() => { setSuccessOpen(false); setSheetOpen(false); toast.success("Koreksi terkirim, menunggu review admin", { position: "bottom-center" }); }}
+                className="mt-5 w-full max-w-[250px] border-none rounded-full py-[15px] text-sm font-extrabold text-white flex items-center justify-center transition-all duration-200 active:scale-[0.98]"
+                style={{ background: "linear-gradient(135deg, #2F8BF8, #1F74E0)", fontFamily: "inherit" }}>
+                Selesai
+              </button>
+            </div>
+          </div>
+        </>
+      )}
       </div>
     </div>
   );
