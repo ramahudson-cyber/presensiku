@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { Loader2 } from "lucide-react";
 import {
@@ -9,7 +10,6 @@ import {
 } from "../../services/sanggahService";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
-import EmployeeAppBar from "../../components/EmployeeAppBar";
 
 // Token light-mode per DESIGN.md (biru #2F8BF8, bg #F4F2FB, kartu putih)
 const T = {
@@ -154,6 +154,7 @@ const autoJenis = (row, date, disputable) => {
 };
 
 export default function SanggahPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [disputable, setDisputable] = useState([]);
   const [sanggahan, setSanggahan] = useState([]);
@@ -360,11 +361,34 @@ export default function SanggahPage() {
       <style>{".sgg-chips::-webkit-scrollbar{height:0}.sgg-chips{scrollbar-width:none}"}</style>
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
-      {/* Header — app bar biru: judul dinamis (pill Riwayat pindah ke daftar) */}
-      <EmployeeAppBar
-        title={view === "form" ? "Koreksi Absensi" : "Riwayat Koreksi"}
-        onBack={view === "riwayat" ? toggleView : undefined}
-      />
+      {/* ── TOPBAR: tinggi & gaya persis halaman Izin & Sakit ── */}
+      <header
+        style={{
+          position: "sticky", top: 0, zIndex: 20, background: "#2F8BF8",
+          padding: "calc(env(safe-area-inset-top) + 10px) 16px 12px",
+          display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+          boxShadow: "0 4px 16px rgba(47,139,248,0.25)",
+        }}
+      >
+        <button
+          style={{
+            width: 36, height: 36, marginLeft: -8, border: "1px solid rgba(255,255,255,0.3)",
+            background: "rgba(255,255,255,0.15)", color: "#fff", borderRadius: 12,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: "pointer", flex: "none", fontFamily: "inherit",
+          }}
+          aria-label="Kembali"
+          onClick={() => (view === "riwayat" ? toggleView() : navigate(-1))}
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10 19l-7-7m0 0 7-7m-7 7h18" />
+          </svg>
+        </button>
+        <h1 style={{ fontSize: 14.5, fontWeight: 800, color: "#fff", letterSpacing: "-0.01em", margin: 0 }}>
+          {view === "form" ? "Koreksi Absensi" : "Riwayat Koreksi"}
+        </h1>
+        <div style={{ width: 28, flex: "none" }} />
+      </header>
 
       <div className="max-w-md mx-auto px-4 pb-8">
 
