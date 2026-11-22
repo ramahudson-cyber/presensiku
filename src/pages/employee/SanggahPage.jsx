@@ -390,7 +390,7 @@ export default function SanggahPage() {
         <div style={{ width: 28, flex: "none" }} />
       </header>
 
-      <div className="max-w-md mx-auto px-4 pb-8">
+      <div className="max-w-md mx-auto px-4 pb-8" style={{ paddingTop: 24 }}>
 
         {/* ═══ HALAMAN FORM: daftar absensi yang bisa dikoreksi ═══ */}
         <div style={{ display: view === "form" ? "block" : "none" }}>
