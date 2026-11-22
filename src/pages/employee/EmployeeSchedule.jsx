@@ -1,48 +1,28 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import BottomSheet from "../../components/BottomSheet";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
-import EmployeeAppBar from "../../components/EmployeeAppBar";
-import { getShiftDefinition, getZonaWaktuLabel } from "../../lib/shiftTime";
-import {
-  ChevronLeft, ChevronRight, ChevronDown, Calendar, Sun, Moon, Sunset, CloudSun,
-  Loader2, Info, Clock
-} from "lucide-react";
+import { getShiftDefinition, getWitaDateKey, getZonaWaktuLabel } from "../../lib/shiftTime";
+import { Clock } from "lucide-react";
 
-// Light-mode tokens — per DESIGN.md
+// Token light-mode per DESIGN.md
 const T = {
-  bg: '#F4F2FB',
-  surface: '#FFFFFF',
-  border: 'rgba(31,41,55,0.08)',
-  div: '#F1F5F9',
-  text: '#0F172A',
-  textSec: '#475569',
-  textMuted: '#94A3B8',
-  sub: '#6B7280',
-  shadow: '0 4px 16px rgba(15,23,42,0.06)',
-  rowBg: 'rgba(15,23,42,0.02)',
-  iconBg: '#EEF6FF',
+  border: "rgba(31,41,55,0.08)",
+  div: "#F1F5F9",
+  text: "#0F172A",
+  textSec: "#475569",
+  textMuted: "#94A3B8",
+  iconBg: "#EEF6FF",
 };
 
-const SHIFTS = [
-  { code: "PG", name: "Pagi", icon: Sun, badgeClass: "cal-badge-pg" },
-  { code: "SR", name: "Sore", icon: Sunset, badgeClass: "cal-badge-sr" },
-  { code: "SI", name: "Siang", icon: CloudSun, badgeClass: "cal-badge-si" },
-  { code: "ML", name: "Malam", icon: Moon, badgeClass: "cal-badge-ml" },
-];
-
-const SHIFT_MAP = Object.fromEntries(SHIFTS.map(s => [s.code, s]));
-const STATIC_BY_CODE = SHIFT_MAP;
-
-// Varian kode umum dipetakan ke visual shift yang setara; kode kustom lain
-// memakai visual netral (abu-abu) — master nama tetap dari tabel shifts.
-const CODE_ALIASES = { SG: "SI", MLM: "ML" };
-const NEUTRAL_VISUAL = { icon: Clock, badgeClass: "cal-badge-neutral" };
-const visualFor = (code) =>
-  STATIC_BY_CODE[code] || STATIC_BY_CODE[CODE_ALIASES[code]] || NEUTRAL_VISUAL;
+// Warna titik kalender per shift (satu aksen per shift)
+const SHIFT_COLORS = {
+  PG: "#10B981", SR: "#F59E0B", SI: "#3B82F6", ML: "#8B5CF6",
+};
+const NEUTRAL_COLOR = "#94A3B8";
+const colorFor = (code) => SHIFT_COLORS[code] || NEUTRAL_COLOR;
 
 const cap = (s) => (s ? s.trim().charAt(0).toUpperCase() + s.trim().slice(1) : s);
 
@@ -59,6 +39,11 @@ function getDaysInMonth(year, month) {
   return days;
 }
 
+const fmtJam = (def) => {
+  if (!def?.start_time || !def?.end_time) return null;
+  return ` ${def.start_time.slice(0, 5).replace(":", ".")} - ${def.end_time.slice(0, 5).replace(":", ".")} ${getZonaWaktuLabel()}`;
+};
+
 export default function EmployeeSchedule() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -66,16 +51,16 @@ export default function EmployeeSchedule() {
   const [month, setMonth] = useState(new Date().getMonth());
   const [schedules, setSchedules] = useState({});
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ total: 0, PG: 0, SR: 0, SI: 0, ML: 0 });
+  const [stats, setStats] = useState({ total: 0 });
   const [shiftsMaster, setShiftsMaster] = useState(null);
-  // Definisi shift instansi (jam mulai/selesai per hari Senin-0) — untuk
-  // menampilkan jam kerja pada teks "Jadwal hari ini"
+  // Definisi shift instansi (jam mulai/selesai per hari Senin-0)
   const [shiftDefs, setShiftDefs] = useState([]);
-  const [showMonthPicker, setShowMonthPicker] = useState(false);
-  const [pickerYear, setPickerYear] = useState(new Date().getFullYear());
+  const [selected, setSelected] = useState(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [todayShift, setTodayShift] = useState(null);
+  const animatingRef = useRef(false);
 
-  // Master shift instansi (RLS org-scoped) — agar kode kustom seperti MLM
-  // ikut mewarnai kalender & dihitung. Gagal/kosong → fallback array statis.
+  // Master shift instansi (RLS org-scoped) — nama shift aktif untuk legenda
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -93,9 +78,27 @@ export default function EmployeeSchedule() {
     return () => { cancelled = true; };
   }, []);
 
+  // Shift hari ini (real dari employee_schedules) — untuk kartu hitam
+  const todayWita = getWitaDateKey();
+  useEffect(() => {
+    let cancelled = false;
+    if (!user?.id) return undefined;
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("employee_schedules")
+          .select("date, shift_code")
+          .eq("user_id", user.id)
+          .eq("date", todayWita)
+          .maybeSingle();
+        if (!cancelled) setTodayShift(data || null);
+      } catch { if (!cancelled) setTodayShift(null); }
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id, todayWita]);
+
   // Legenda shift: hanya shift AKTIF instansi (is_active !== false).
-  // null = master belum termuat -> legend dirender sebagai skeleton,
-  // bukan fallback 4 jenis statis (mencegah kedip nama shift palsu).
+  // null = master belum termuat -> legend dirender sebagai skeleton.
   const shiftsList = useMemo(() => {
     if (!shiftsMaster) return null;
     const seen = new Set();
@@ -104,17 +107,10 @@ export default function EmployeeSchedule() {
       if (s.is_active === false) return;
       if (!s.code || seen.has(s.code)) return;
       seen.add(s.code);
-      const v = visualFor(s.code);
-      out.push({ code: s.code, name: cap(s.name) || s.code, icon: v.icon, badgeClass: v.badgeClass });
+      out.push({ code: s.code, name: cap(s.name) || s.code, color: colorFor(s.code) });
     });
     return out;
   }, [shiftsMaster]);
-  // Peta visual kalender: saat master belum termuat, pakai fallback statis
-  // (hanya warna/ikon, bukan legenda yang tampil ke pengguna).
-  const shiftMap = useMemo(
-    () => Object.fromEntries((shiftsList || SHIFTS).map(s => [s.code, s])),
-    [shiftsList]
-  );
 
   const days = getDaysInMonth(year, month);
   const lastDay = new Date(year, month + 1, 0).getDate();
@@ -150,32 +146,16 @@ export default function EmployeeSchedule() {
 
   useEffect(() => { loadSchedules(); }, [loadSchedules]);
 
-  const nav = (dir) => {
+  const changeMonth = useCallback((dir) => {
     let m = month + dir;
     let y = year;
     if (m < 0) { m = 11; y--; }
     if (m > 11) { m = 0; y++; }
+    const prevDay = selected ? Number(selected.slice(8, 10)) : 1;
+    const day = Math.min(prevDay, new Date(y, m + 1, 0).getDate());
     setMonth(m); setYear(y);
-  };
-
-  const goToday = () => {
-    setMonth(new Date().getMonth());
-    setYear(new Date().getFullYear());
-  };
-
-  const openMonthPicker = () => {
-    setPickerYear(year);
-    setShowMonthPicker(true);
-  };
-
-  const selectMonth = (m) => {
-    setMonth(m);
-    setYear(pickerYear);
-    setShowMonthPicker(false);
-  };
-
-  const now = new Date();
-  const isCurrentMonth = year === now.getFullYear() && month === now.getMonth();
+    setSelected(`${y}-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`);
+  }, [month, year, selected]);
 
   // Pull-to-refresh (page scroll)
   const handleRefresh = useCallback(async () => {
@@ -205,206 +185,355 @@ export default function EmployeeSchedule() {
 
   const { pullDistance, isRefreshing } = usePullToRefresh(handleRefresh);
 
+  // ── Geser kartu kalender untuk berpindah bulan (animasi tumpukan) ──
+  const calWrapRef = useRef(null);
+  const cardRef = useRef(null);
+  const stackOneRef = useRef(null);
+  const stackTwoRef = useRef(null);
+  let pdY = useRef(null);
+  let dragDist = useRef(0);
+  let suppressClick = useRef(false);
+
+  const applyDrag = (v) => {
+    if (cardRef.current) {
+      cardRef.current.style.transition = "none";
+      cardRef.current.style.transform = `translateY(${v * 0.45}px)`;
+    }
+    if (stackOneRef.current) {
+      stackOneRef.current.style.transition = "none";
+      stackOneRef.current.style.transform = `translateY(${v * 0.22}px)`;
+    }
+    if (stackTwoRef.current) {
+      stackTwoRef.current.style.transition = "none";
+      stackTwoRef.current.style.transform = `translateY(${v * 0.12}px)`;
+    }
+  };
+  const springBack = () => {
+    [cardRef, stackOneRef, stackTwoRef].forEach((ref) => {
+      if (!ref.current) return;
+      ref.current.style.transition = "transform .34s cubic-bezier(0.22, 1, 0.36, 1)";
+      ref.current.style.transform = "translateY(0)";
+    });
+  };
+  const changeMonthAnimated = (dir) => {
+    if (animatingRef.current) return;
+    animatingRef.current = true;
+    const ease = "transform .4s cubic-bezier(0.3, 0.7, 0.35, 1), opacity .4s ease";
+    if (cardRef.current) {
+      cardRef.current.style.transition = ease;
+      cardRef.current.style.transform = `translateY(${dir * -120}%)`;
+      cardRef.current.style.opacity = "0.25";
+    }
+    if (stackOneRef.current) {
+      stackOneRef.current.style.transition = ease;
+      stackOneRef.current.style.transform = `translateY(${dir * -44}px)`;
+    }
+    if (stackTwoRef.current) {
+      stackTwoRef.current.style.transition = ease;
+      stackTwoRef.current.style.transform = `translateY(${dir * -24}px)`;
+    }
+    window.setTimeout(() => {
+      changeMonth(dir);
+      if (cardRef.current) {
+        cardRef.current.style.transition = "none";
+        cardRef.current.style.transform = `translateY(${dir * 120}%)`;
+      }
+      if (stackOneRef.current) stackOneRef.current.style.transform = `translateY(${dir * 44}px)`;
+      if (stackTwoRef.current) stackTwoRef.current.style.transform = `translateY(${dir * 24}px)`;
+      void cardRef.current?.offsetHeight;
+      const easeIn = "transform .5s cubic-bezier(0.22, 1, 0.36, 1), opacity .5s ease";
+      if (cardRef.current) {
+        cardRef.current.style.transition = easeIn;
+        cardRef.current.style.transform = "translateY(0)";
+        cardRef.current.style.opacity = "1";
+      }
+      if (stackOneRef.current) stackOneRef.current.style.transform = "translateY(0)";
+      if (stackTwoRef.current) stackTwoRef.current.style.transform = "translateY(0)";
+      window.setTimeout(() => { animatingRef.current = false; }, 520);
+    }, 360);
+  };
+
+  const onWrapPointerDown = (e) => {
+    if (animatingRef.current) return;
+    pdY.current = e.clientY; dragDist.current = 0; suppressClick.current = false;
+    calWrapRef.current?.setPointerCapture(e.pointerId);
+  };
+  const onWrapPointerMove = (e) => {
+    if (pdY.current === null || animatingRef.current) return;
+    dragDist.current = e.clientY - pdY.current;
+    if (Math.abs(dragDist.current) > 12) suppressClick.current = true;
+    applyDrag(dragDist.current);
+  };
+  const onWrapPointerUp = () => {
+    if (pdY.current === null || animatingRef.current) { pdY.current = null; return; }
+    const d = dragDist.current;
+    pdY.current = null; dragDist.current = 0;
+    if (d < -90) changeMonthAnimated(1);
+    else if (d > 90) changeMonthAnimated(-1);
+    else springBack();
+  };
+  const onWrapPointerCancel = () => { pdY.current = null; springBack(); };
+  const onWrapClickCapture = (e) => {
+    if (suppressClick.current) { e.stopPropagation(); e.preventDefault(); suppressClick.current = false; }
+  };
+
+  // ── Bottom sheet detail tanggal ──
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const isCurrentMonth = year === now.getFullYear() && month === now.getMonth();
+  const todaySched = isCurrentMonth ? schedules[todayStr] : todayShift;
+  const todayDef = todaySched ? getShiftDefinition(shiftDefs, { date: todayStr, shift_code: todaySched.shift_code }) : null;
+  const todayJam = todayDef ? fmtJam(todayDef) : null;
+  const todayShiftName = todaySched
+    ? (shiftsList?.find((s) => s.code === todaySched.shift_code)?.name || cap(todaySched.shift_code))
+    : null;
+
+  // Jam legenda: definisi pertama shift tsb pada bulan tampil (dari jadwal riil)
+  const legendJamFor = (code) => {
+    const dates = Object.keys(schedules).filter((d) => schedules[d]?.shift_code === code).sort();
+    for (const date of dates) {
+      const jam = fmtJam(getShiftDefinition(shiftDefs, { date, shift_code: code }));
+      if (jam) return jam.trim();
+    }
+    return null;
+  };
+
+  const sheetSched = selected ? schedules[selected] : null;
+  const sheetDef = sheetSched ? getShiftDefinition(shiftDefs, { date: selected, shift_code: sheetSched.shift_code }) : null;
+  const sheetJam = sheetDef ? fmtJam(sheetDef) : null;
+  const sheetShiftName = sheetSched
+    ? (shiftsList?.find((s) => s.code === sheetSched.shift_code)?.name || cap(sheetSched.shift_code))
+    : null;
+
 
   return (
-    <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24"
-      style={{ background: T.bg, color: T.text }}>
-
+    <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24 overflow-hidden"
+      style={{ background: "linear-gradient(168deg, #1B54DE 0%, #2F8BF8 58%, #1F74E0 100%)", color: "#fff" }}>
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
-      {/* ── HEADER — app bar biru ── */}
-      <EmployeeAppBar title="Jadwal Shift" />
+      {/* ── TOPBAR — kembali tanpa background, judul di tengah ── */}
+      <div className="relative flex items-center" style={{ padding: "calc(env(safe-area-inset-top, 0px) + 12px) 16px 8px" }}>
+        <button type="button" onClick={() => navigate(-1)} aria-label="Kembali"
+          className="w-11 h-11 flex-none rounded-full grid place-items-center text-white hover:bg-white/10 active:scale-95 transition-all">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <h1 className="flex-1 text-center text-[19px] font-extrabold m-0" style={{ letterSpacing: "-0.02em", color: "#fff" }}>
+          Jadwal Kerja
+        </h1>
+        <span className="w-11 flex-none" />
+      </div>
 
-      <div className="max-w-md mx-auto px-4 mt-6 space-y-4">
-        {/* NAV + STATS */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <button onClick={openMonthPicker}
-            className="flex items-center gap-2 bg-white border rounded-2xl px-3.5 py-2 cursor-pointer transition-all active:scale-[0.97]"
-            style={{ background: T.surface, borderColor: T.border, boxShadow: T.shadow }}>
-            <Calendar size={15} className="shrink-0" style={{ color: T.textSec }} />
-            <span className="text-sm font-semibold select-none min-w-[100px] text-left" style={{ color: T.text }}>{MONTHS[month]} {year}</span>
-            <ChevronDown size={14} className="shrink-0" style={{ color: T.textMuted }} />
-          </button>
-          {!isCurrentMonth && (
-            <button onClick={goToday}
-              className="px-3 py-1.5 rounded-full border text-xs font-medium transition-all active:scale-95"
-              style={{ borderColor: T.border, background: T.surface, color: T.textSec, boxShadow: T.shadow }}>
-              Hari Ini
-            </button>
-          )}
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white border text-[11px] ml-auto"
-            style={{ background: T.surface, borderColor: T.border, color: T.textSec, boxShadow: T.shadow }}>
-            <span className="flex items-center gap-1"><Calendar size={12} /> {stats.total} hari</span>
+      {/* ── KALENDER TUMPUK ── */}
+      <div ref={calWrapRef}
+        onPointerDown={onWrapPointerDown}
+        onPointerMove={onWrapPointerMove}
+        onPointerUp={onWrapPointerUp}
+        onPointerCancel={onWrapPointerCancel}
+        onClickCapture={onWrapClickCapture}
+        className="relative mx-4 mt-2 select-none"
+        style={{ touchAction: "pan-y" }}>
+        <div ref={stackTwoRef} aria-hidden="true"
+          className="absolute bg-white pointer-events-none"
+          style={{ left: 30, right: 30, top: 26, bottom: -22, borderRadius: 26, opacity: 0.22 }} />
+        <div ref={stackOneRef} aria-hidden="true"
+          className="absolute bg-white pointer-events-none"
+          style={{ left: 22, right: 22, top: 14, bottom: -12, borderRadius: 26, opacity: 0.5 }} />
+        <div ref={cardRef}
+          className="relative bg-white overflow-hidden cursor-grab active:cursor-grabbing"
+          style={{ borderRadius: 28, padding: "20px 14px 14px", boxShadow: "0 22px 48px rgba(4, 26, 74, 0.42)" }}>
+          <div className="relative text-center text-[20px] font-extrabold m-0"
+            style={{ letterSpacing: "-0.02em", color: T.text, lineHeight: 1.1, marginBottom: 6 }}>
+            {MONTHS[month]} {year}
           </div>
-        </div>
-
-        {/* LEGEND */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-[8px] font-semibold uppercase tracking-wider mr-0.5" style={{ color: T.textSec }}>Shift</span>
-          {shiftsList === null
-            ? [0, 1].map(i => (
-                <span key={i} className="inline-block h-4 w-16 rounded-full bg-slate-200/80 animate-pulse" />
-              ))
-            : shiftsList.map(s => {
-                const Icon = s.icon;
-                return (
-                  <span key={s.code} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold ${s.badgeClass}`}>
-                    <Icon size={10} /> {s.name}
-                  </span>
-                );
-              })}
-        </div>
-
-        {/* CALENDAR */}
-        {loading ? (
-          <div className="flex items-center justify-center min-h-[40vh]">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 border-2 border-[#2F8BF8] border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm" style={{ color: T.textMuted }}>Memuat jadwal...</p>
-            </div>
+          <div className="grid grid-cols-7 mb-1">
+            {DAY_SHORT.map((d) => (
+              <div key={d} className="text-center text-[9.5px] font-bold" style={{ color: T.textMuted }}>{d}</div>
+            ))}
           </div>
-        ) : (
-          <div className="rounded-3xl p-3 md:p-5 overflow-x-auto"
-            style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
-            <div className="grid grid-cols-7 gap-1.5 mb-1.5">
-              {DAY_SHORT.map(d => (
-                <div key={d} className="text-center text-[9px] font-bold uppercase tracking-widest py-1" style={{ color: T.textMuted }}>
-                  {d}
-                </div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-1.5">
-              {days.map((day, i) => {
-                const key = dateStr(day);
-                const sched = key ? schedules[key] : undefined;
-                const shiftInfo = sched ? shiftMap[sched.shift_code] : null;
-                const isToday = day && year === now.getFullYear() && month === now.getMonth() && day === now.getDate();
-                const dayOfWeek = day ? (new Date(year, month, day).getDay() + 6) % 7 : -1;
-                const isWeekend = dayOfWeek >= 5;
-                const ShiftIcon = shiftInfo ? shiftInfo.icon : null;
-
-                return (
-                  <div key={i}
-                    className={`relative aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-200 cursor-default select-none
-                      ${!day ? "invisible" : ""}
-                      ${isToday ? "bg-white ring-2 ring-[#2F8BF8] ring-offset-1 ring-offset-white shadow-[0_0_14px_rgba(47,139,248,0.25)]"
-                        : shiftInfo ? shiftInfo.badgeClass
-                        : isWeekend ? "bg-slate-100" : "bg-slate-50"}
-                    `}>
-                    <span className={`text-[10px] font-bold leading-none ${
-                      isToday ? "text-[#2F8BF8]"
-                        : shiftInfo ? "" : isWeekend ? "text-slate-400" : "text-slate-600"
-                    }`}>
-                      {day}
-                    </span>
-                    {ShiftIcon && (
-                      <ShiftIcon size={9} className={`mt-0.5 ${isToday ? "text-[#2F8BF8]" : ""}`} />
-                    )}
-                    {!shiftInfo && isWeekend && (
-                      <span className="text-[5px] text-slate-400 mt-0.5 leading-none">Libur</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* TODAY SCHEDULE INFO */}
-        {(() => {
-          const nowD = new Date();
-          const todayStr = `${nowD.getFullYear()}-${String(nowD.getMonth() + 1).padStart(2, "0")}-${String(nowD.getDate()).padStart(2, "0")}`;
-          const todaySched = schedules[todayStr];
-          const shiftInfo = todaySched ? shiftMap[todaySched.shift_code] : null;
-          if (!todaySched || !shiftInfo) return null;
-          // Jam kerja shift hari ini dari definisi instansi (Senin-0),
-          // format "08.00 - 13.00" konsisten dengan jam di seluruh aplikasi.
-          const def = getShiftDefinition(shiftDefs, { date: todayStr, shift_code: todaySched.shift_code });
-          const jamText = def?.start_time && def?.end_time
-            ? ` ${def.start_time.slice(0, 5).replace(":", ".")} - ${def.end_time.slice(0, 5).replace(":", ".")}`
-            : "";
-          return (
-            <div className="rounded-xl p-3 text-center"
-              style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.2)' }}>
-              <span className="text-[10px] font-medium">
-                <span style={{ color: T.textSec }}>Jadwal hari ini: </span>
-                <span style={{ color: T.text }}>
-                  {nowD.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                  {' '}<span style={{ color: '#2F8BF8' }}>({shiftInfo.name})</span>
-                  {jamText && <span style={{ color: '#2F8BF8' }}>{jamText} {getZonaWaktuLabel()}</span>}
-                </span>
-              </span>
-            </div>
-          );
-        })()}
-
-        {/* SUMMARY CARDS */}
-        {!loading && stats.total > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {shiftsList.map(s => {
-              const Icon = s.icon;
-              const count = stats[s.code] || 0;
-              if (count === 0) return null;
+          <div className="grid grid-cols-7">
+            {days.map((day, i) => {
+              const key = dateStr(day);
+              const sched = key ? schedules[key] : undefined;
+              const isToday = key === todayWita;
+              const isSel = key && key === selected;
               return (
-                <div key={s.code} className={`${s.badgeClass} rounded-xl p-3 flex flex-col items-center text-center gap-2`}>
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-black/10">
-                    <Icon size={16} />
-                  </div>
-                  <div>
-                    <p className="text-xl font-extrabold leading-none opacity-90">{count}</p>
-                    <p className="text-[10px] font-medium mt-0.5 opacity-70">hari kerja</p>
-                  </div>
-                  <p className="text-[9px] font-bold uppercase tracking-wider opacity-80">Shift {s.name}</p>
+                <div key={i} className="relative aspect-square flex items-center justify-center">
+                  {day ? (
+                    <button type="button"
+                      onClick={() => { setSelected(key); setSheetOpen(true); }}
+                      className={`relative w-full max-w-[44px] h-full flex flex-col items-center justify-center rounded-full border-none transition-colors duration-150
+                        ${isSel ? "bg-[#2F8BF8]" : "bg-transparent hover:bg-[#EEF6FF]"}`}
+                      style={isSel ? { boxShadow: "0 8px 18px -4px rgba(47,139,248,0.6)" } : null}>
+                      <span className="text-[13.5px] font-bold leading-none"
+                        style={{ color: isSel ? "#fff" : isToday ? "#1F74E0" : T.textSec, fontWeight: isSel || isToday ? 800 : 700 }}>
+                        {day}
+                      </span>
+                      {sched && (
+                        <span className="rounded-full mt-1"
+                          style={{ width: 5, height: 5, background: colorFor(sched.shift_code) }} />
+                      )}
+                    </button>
+                  ) : <span />}
                 </div>
               );
             })}
           </div>
-        )}
-
-        {/* FOOTER INFO */}
-        <div className="flex items-center gap-2 p-3.5 rounded-xl bg-white border text-[11px]"
-          style={{ background: T.surface, borderColor: T.border, color: T.textSec, boxShadow: T.shadow }}>
-          <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style={{ background: T.iconBg }}>
-            <Info size={13} style={{ color: '#2F8BF8' }} />
-          </div>
-          <p>Jadwal ini ditetapkan oleh admin. Hubungi admin jika ada perubahan shift.</p>
         </div>
       </div>
 
-      {/* MONTH PICKER BOTTOM SHEET */}
-      <BottomSheet open={showMonthPicker} onClose={() => setShowMonthPicker(false)}
-        title="Pilih Bulan" subtitle={`Tahun ${pickerYear}`}>
-        <div className="space-y-5">
-          {/* Year nav */}
-          <div className="flex items-center justify-center gap-6 py-2">
-            <button onClick={() => setPickerYear(p => p - 1)}
-              className="p-2 rounded-xl hover:bg-slate-100 transition-all" style={{ color: T.textSec }}>
-              <ChevronLeft size={18} />
-            </button>
-            <span className="text-lg font-bold w-20 text-center select-none" style={{ color: T.text }}>{pickerYear}</span>
-            <button onClick={() => setPickerYear(p => p + 1)}
-              className="p-2 rounded-xl hover:bg-slate-100 transition-all" style={{ color: T.textSec }}>
-              <ChevronRight size={18} />
-            </button>
+      {/* ── PREMIUM CARD: shift hari ini (hitam) + keterangan warna (putih) ── */}
+      <div className="mx-4 mt-9 relative" style={{ aspectRatio: "1.52 / 1", minHeight: 210 }}>
+        <div className="absolute inset-0 rounded-[26px]" style={{ background: "#101828", boxShadow: "0 16px 36px rgba(4,26,74,0.42)" }} />
+        <div className="absolute flex items-center justify-between gap-3 px-[18px]"
+          style={{ top: 0, left: 0, right: 0, height: "34%" }}>
+          <div className="min-w-0">
+            <span className="block text-[9.5px] font-semibold" style={{ color: "rgba(255,255,255,0.62)" }}>
+              Keterangan shift hari ini
+            </span>
+            <div className="flex items-center gap-2 mt-1">
+              {todayShift && (
+                <span className="w-3 h-3 rounded-full flex-none"
+                  style={{ background: colorFor(todayShift.shift_code) }} />
+              )}
+              <span className="text-[14px] font-extrabold truncate text-white" style={{ letterSpacing: "-0.01em" }}>
+                {todayShiftName || "Tidak ada jadwal hari ini"}
+              </span>
+            </div>
           </div>
-
-          {/* Month grid */}
-          <div className="grid grid-cols-4 gap-2">
-            {MONTHS.map((name, i) => {
-              const isActive = month === i && pickerYear === year;
-              return (
-                <button key={i} onClick={() => selectMonth(i)}
-                  className={`p-3 rounded-2xl text-sm font-semibold transition-all active:scale-95
-                    ${isActive ? "bg-[#2F8BF8] text-white hero-card-bg shadow-lg"
-                      : "bg-white border text-slate-600 hover:bg-slate-50"}`}
-                  style={isActive ? { boxShadow: '0 8px 20px rgba(47,139,248,0.3)' } : { borderColor: T.border, background: T.surface }}>
-                  {name.substring(0, 3)}
-                </button>
-              );
-            })}
+          {todayJam && (
+            <span className="flex-none text-[10.5px] font-bold text-white whitespace-nowrap"
+              style={{ background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.24)", borderRadius: 999, padding: "5px 11px" }}>
+              {todayJam.trim()}
+            </span>
+          )}
+        </div>
+        <div className="absolute bg-white rounded-[26px] px-4 pt-3 pb-2"
+          style={{ inset: "34% 0 0 0", boxShadow: "0 -8px 24px rgba(4,26,74,0.18)" }}>
+          <p className="m-0 text-[11px] font-extrabold" style={{ color: T.textMuted }}>
+            Keterangan warna shift · {MONTHS[month]} {year}
+          </p>
+          <div>
+            {shiftsList === null ? (
+              [0, 1, 2].map((i) => (
+                <div key={i} className="flex items-center gap-2 py-2">
+                  <span className="inline-block h-4 w-16 rounded-full bg-slate-200/80 animate-pulse" />
+                </div>
+              ))
+            ) : shiftsList.length === 0 ? (
+              <p className="text-[11px] font-semibold py-2 m-0" style={{ color: T.textMuted }}>Belum ada shift aktif.</p>
+            ) : (
+              shiftsList.map((s) => (
+                <div key={s.code} className="flex items-center gap-2 py-[6px]">
+                  <span className="w-2.5 h-2.5 rounded-full flex-none" style={{ background: s.color }} />
+                  <span className="flex-1 min-w-0 text-[11.5px] font-bold truncate" style={{ color: T.text }}>
+                    Shift {s.name}
+                  </span>
+                  <span className="flex-none text-[9.5px] font-extrabold rounded-full px-2 py-0.5"
+                    style={{ color: "#1F74E0", background: T.iconBg }}>
+                    {stats[s.code] || 0} hari
+                  </span>
+                  <span className="flex-none text-[9.5px] font-medium" style={{ color: T.textMuted }}>
+                    {legendJamFor(s.code) || "—"}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
-      </BottomSheet>
+      </div>
+
+      <p className="text-center text-[10.5px] mt-4" style={{ color: "rgba(255,255,255,0.55)" }}>
+        Geser kartu kalender untuk berpindah bulan
+      </p>
+
+      {loading && !isCurrentMonth && Object.keys(schedules).length === 0 && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center" style={{ background: "rgba(27,84,222,0.92)" }}>
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <p className="text-xs font-semibold text-white">Memuat jadwal...</p>
+          </div>
+        </div>
+      )}
+
+      {/* ── BOTTOM SHEET DETAIL TANGGAL ── */}
+      {sheetOpen && (
+        <>
+          <div className="fixed inset-0 z-50" style={{ background: "rgba(15,23,42,0.46)" }}
+            onClick={() => setSheetOpen(false)} aria-hidden="true" />
+          <div role="dialog" aria-modal="true" aria-labelledby="jadwal-sheet-title"
+            className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-md flex flex-col overflow-hidden"
+            style={{
+              height: "min(72%, 620px)", background: "#fff",
+              borderRadius: "28px 28px 0 0", boxShadow: "0 -10px 34px rgba(15,23,42,0.14)",
+            }}>
+            <div className="flex justify-center pt-2.5 pb-1 cursor-pointer" onClick={() => setSheetOpen(false)} aria-hidden="true">
+              <span className="rounded-full" style={{ width: 44, height: 5, background: "#E2E8F0" }} />
+            </div>
+            <header className="flex items-center gap-3 px-5" style={{ paddingTop: 6, paddingBottom: 14 }}>
+              <div className="flex-1 min-w-0">
+                <h2 id="jadwal-sheet-title" className="m-0 text-[17px] font-extrabold"
+                  style={{ letterSpacing: "-0.02em", color: T.text }}>Detail Jadwal</h2>
+                <p className="text-[11.5px] mt-1 m-0" style={{ color: T.textMuted }}>
+                  {selected ? new Date(selected + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) : "—"}
+                </p>
+              </div>
+              <button type="button" onClick={() => setSheetOpen(false)} aria-label="Tutup"
+                className="w-[34px] h-[34px] flex-none rounded-full flex items-center justify-center border border-[#E2E8F0] bg-[#F8FAFC] hover:bg-[#F1F5F9] transition-colors"
+                style={{ color: T.textSec }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M6 6l12 12" /><path d="M18 6 6 18" /></svg>
+              </button>
+            </header>
+            <div className="h-px" style={{ background: T.div }} />
+            <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4">
+              {sheetSched && sheetShiftName ? (
+                <>
+                  <div className="flex items-center gap-3 rounded-[18px] px-4 py-[14px]"
+                    style={{ background: T.iconBg }}>
+                    <span className="w-[46px] h-[46px] rounded-full flex items-center justify-center flex-none text-white"
+                      style={{ background: colorFor(sheetSched.shift_code) }}>
+                      <Clock size={22} />
+                    </span>
+                    <div>
+                      <p className="m-0 text-[16px] font-extrabold" style={{ color: T.text, letterSpacing: "-0.01em" }}>
+                        Shift {sheetShiftName}
+                      </p>
+                      <span className="block mt-0.5 text-[10.5px] font-semibold" style={{ color: T.textMuted }}>
+                        Ditetapkan oleh admin
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-3 rounded-[16px] px-4 py-1"
+                    style={{ background: "#F8FAFD" }}>
+                    <div className="flex items-center justify-between gap-3 py-2.5">
+                      <span className="text-[11px] font-semibold" style={{ color: T.textMuted }}>Jam kerja</span>
+                      <b className="text-[12px] font-extrabold" style={{ color: T.text }}>
+                        {sheetJam ? sheetJam.trim() : "Sesuai pengaturan instansi"}
+                      </b>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 py-2.5"
+                      style={{ borderTop: `1px solid ${T.div}` }}>
+                      <span className="text-[11px] font-semibold" style={{ color: T.textMuted }}>Zona waktu</span>
+                      <b className="text-[12px] font-extrabold" style={{ color: T.text }}>{getZonaWaktuLabel()} (UTC+8)</b>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 py-2.5"
+                      style={{ borderTop: `1px solid ${T.div}` }}>
+                      <span className="text-[11px] font-semibold" style={{ color: T.textMuted }}>Bulan</span>
+                      <b className="text-[12px] font-extrabold" style={{ color: T.text }}>{MONTHS[month]} {year}</b>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-10">
+                  <b className="block text-[13.5px] font-extrabold" style={{ color: T.text }}>Tidak ada jadwal</b>
+                  <p className="mt-1.5 mb-0 mx-auto max-w-[240px] text-[11px] leading-relaxed" style={{ color: T.textMuted }}>
+                    Tanggal ini tidak memiliki penugasan shift. Jadwal ditetapkan oleh admin melalui halaman kelola jadwal.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
