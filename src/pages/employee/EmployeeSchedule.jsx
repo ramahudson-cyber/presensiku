@@ -184,12 +184,11 @@ export default function EmployeeSchedule() {
   }, [user?.id, year, month, lastDay]);
 
   const { pullDistance, isRefreshing } = usePullToRefresh(handleRefresh);
-
-  // ── Geser kartu kalender untuk berpindah bulan (animasi tumpukan) ──
-  const calWrapRef = useRef(null);
   const cardRef = useRef(null);
   const stackOneRef = useRef(null);
   const stackTwoRef = useRef(null);
+  // ── Geser kartu kalender untuk berpindah bulan (animasi tumpukan) ──
+  const calWrapRef = useRef(null);
   let pdY = useRef(null);
   let dragDist = useRef(0);
   let suppressClick = useRef(false);
@@ -382,6 +381,11 @@ export default function EmployeeSchedule() {
         </div>
       </div>
 
+      <p className="text-center text-[10.5px] mt-4" style={{ color: "rgba(255,255,255,0.55)" }}>
+        Geser kartu kalender untuk berpindah bulan
+      </p>
+
+
       {/* ── PREMIUM CARD: shift hari ini (hitam) + keterangan warna (putih) ── */}
       <div className="mx-4 mt-9 relative" style={{ aspectRatio: "1.52 / 1", minHeight: 210 }}>
         <div className="absolute inset-0 rounded-[26px]" style={{ background: "#101828", boxShadow: "0 16px 36px rgba(4,26,74,0.42)" }} />
@@ -396,14 +400,14 @@ export default function EmployeeSchedule() {
                 <span className="w-3 h-3 rounded-full flex-none"
                   style={{ background: colorFor(todayShift.shift_code) }} />
               )}
-              <span className="text-[14px] font-extrabold truncate text-white" style={{ letterSpacing: "-0.01em" }}>
+              <span className="text-[14px] font-extrabold truncate" style={{ color: "#fff" }} style={{ letterSpacing: "-0.01em" }}>
                 {todayShiftName || "Tidak ada jadwal hari ini"}
               </span>
             </div>
           </div>
           {todayJam && (
-            <span className="flex-none text-[10.5px] font-bold text-white whitespace-nowrap"
-              style={{ background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.24)", borderRadius: 999, padding: "5px 11px" }}>
+            <span className="flex-none text-[10.5px] font-bold whitespace-nowrap"
+              style={{ color: "#fff", background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.24)", borderRadius: 999, padding: "5px 11px" }}>
               {todayJam.trim()}
             </span>
           )}
@@ -443,9 +447,6 @@ export default function EmployeeSchedule() {
         </div>
       </div>
 
-      <p className="text-center text-[10.5px] mt-4" style={{ color: "rgba(255,255,255,0.55)" }}>
-        Geser kartu kalender untuk berpindah bulan
-      </p>
 
       {loading && !isCurrentMonth && Object.keys(schedules).length === 0 && (
         <div className="fixed inset-0 z-40 flex items-center justify-center" style={{ background: "rgba(27,84,222,0.92)" }}>
