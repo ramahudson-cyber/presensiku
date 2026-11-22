@@ -197,22 +197,22 @@ export default function EmployeeSchedule() {
   const applyDrag = (v) => {
     if (cardRef.current) {
       cardRef.current.style.transition = "none";
-      cardRef.current.style.transform = `translateY(${v * 0.45}px)`;
+      cardRef.current.style.transform = `translateX(${v * 0.6}px)`;
     }
     if (stackOneRef.current) {
       stackOneRef.current.style.transition = "none";
-      stackOneRef.current.style.transform = `translateY(${v * 0.22}px)`;
+      stackOneRef.current.style.transform = `translateX(${v * 0.3}px)`;
     }
     if (stackTwoRef.current) {
       stackTwoRef.current.style.transition = "none";
-      stackTwoRef.current.style.transform = `translateY(${v * 0.12}px)`;
+      stackTwoRef.current.style.transform = `translateX(${v * 0.16}px)`;
     }
   };
   const springBack = () => {
     [cardRef, stackOneRef, stackTwoRef].forEach((ref) => {
       if (!ref.current) return;
       ref.current.style.transition = "transform .34s cubic-bezier(0.22, 1, 0.36, 1)";
-      ref.current.style.transform = "translateY(0)";
+      ref.current.style.transform = "translateX(0)";
     });
   };
   const changeMonthAnimated = (dir) => {
@@ -221,46 +221,46 @@ export default function EmployeeSchedule() {
     const ease = "transform .4s cubic-bezier(0.3, 0.7, 0.35, 1), opacity .4s ease";
     if (cardRef.current) {
       cardRef.current.style.transition = ease;
-      cardRef.current.style.transform = `translateY(${dir * -120}%)`;
+      cardRef.current.style.transform = `translateX(${dir * -110}%)`;
       cardRef.current.style.opacity = "0.25";
     }
     if (stackOneRef.current) {
       stackOneRef.current.style.transition = ease;
-      stackOneRef.current.style.transform = `translateY(${dir * -44}px)`;
+      stackOneRef.current.style.transform = `translateX(${dir * -30}px)`;
     }
     if (stackTwoRef.current) {
       stackTwoRef.current.style.transition = ease;
-      stackTwoRef.current.style.transform = `translateY(${dir * -24}px)`;
+      stackTwoRef.current.style.transform = `translateX(${dir * -18}px)`;
     }
     window.setTimeout(() => {
       changeMonth(dir);
       if (cardRef.current) {
         cardRef.current.style.transition = "none";
-        cardRef.current.style.transform = `translateY(${dir * 120}%)`;
+        cardRef.current.style.transform = `translateX(${dir * 110}%)`;
       }
-      if (stackOneRef.current) stackOneRef.current.style.transform = `translateY(${dir * 44}px)`;
-      if (stackTwoRef.current) stackTwoRef.current.style.transform = `translateY(${dir * 24}px)`;
+      if (stackOneRef.current) stackOneRef.current.style.transform = `translateX(${dir * 30}px)`;
+      if (stackTwoRef.current) stackTwoRef.current.style.transform = `translateX(${dir * 18}px)`;
       void cardRef.current?.offsetHeight;
       const easeIn = "transform .5s cubic-bezier(0.22, 1, 0.36, 1), opacity .5s ease";
       if (cardRef.current) {
         cardRef.current.style.transition = easeIn;
-        cardRef.current.style.transform = "translateY(0)";
+        cardRef.current.style.transform = "translateX(0)";
         cardRef.current.style.opacity = "1";
       }
-      if (stackOneRef.current) stackOneRef.current.style.transform = "translateY(0)";
-      if (stackTwoRef.current) stackTwoRef.current.style.transform = "translateY(0)";
+      if (stackOneRef.current) stackOneRef.current.style.transform = "translateX(0)";
+      if (stackTwoRef.current) stackTwoRef.current.style.transform = "translateX(0)";
       window.setTimeout(() => { animatingRef.current = false; }, 520);
     }, 360);
   };
 
   const onWrapPointerDown = (e) => {
     if (animatingRef.current) return;
-    pdY.current = e.clientY; dragDist.current = 0; suppressClick.current = false;
+    pdY.current = e.clientX; dragDist.current = 0; suppressClick.current = false;
     calWrapRef.current?.setPointerCapture(e.pointerId);
   };
   const onWrapPointerMove = (e) => {
     if (pdY.current === null || animatingRef.current) return;
-    dragDist.current = e.clientY - pdY.current;
+    dragDist.current = e.clientX - pdY.current;
     if (Math.abs(dragDist.current) > 12) suppressClick.current = true;
     applyDrag(dragDist.current);
   };
@@ -334,10 +334,10 @@ export default function EmployeeSchedule() {
         style={{ touchAction: "pan-y" }}>
         <div ref={stackTwoRef} aria-hidden="true"
           className="absolute bg-white pointer-events-none"
-          style={{ left: 30, right: 30, top: 26, bottom: -22, borderRadius: 26, opacity: 0.22 }} />
+          style={{ left: 32, right: -16, top: 20, bottom: -16, borderRadius: 26, opacity: 0.22 }} />
         <div ref={stackOneRef} aria-hidden="true"
           className="absolute bg-white pointer-events-none"
-          style={{ left: 22, right: 22, top: 14, bottom: -12, borderRadius: 26, opacity: 0.5 }} />
+          style={{ left: 24, right: -8, top: 12, bottom: -10, borderRadius: 26, opacity: 0.5 }} />
         <div ref={cardRef}
           className="relative bg-white overflow-hidden cursor-grab active:cursor-grabbing"
           style={{ borderRadius: 28, padding: "20px 14px 14px", boxShadow: "0 22px 48px rgba(4, 26, 74, 0.42)" }}>
