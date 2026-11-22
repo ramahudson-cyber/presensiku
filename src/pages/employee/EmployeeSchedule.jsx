@@ -218,39 +218,40 @@ export default function EmployeeSchedule() {
   const changeMonthAnimated = (dir) => {
     if (animatingRef.current) return;
     animatingRef.current = true;
-    const ease = "transform .4s cubic-bezier(0.3, 0.7, 0.35, 1), opacity .4s ease";
+    const easeOut = "transform .45s cubic-bezier(0.4, 0, 0.2, 1), opacity .45s ease";
     if (cardRef.current) {
-      cardRef.current.style.transition = ease;
-      cardRef.current.style.transform = `translateX(${dir * -110}%)`;
-      cardRef.current.style.opacity = "0.25";
+      cardRef.current.style.transition = easeOut;
+      cardRef.current.style.transform = `translateX(${dir * -108}%) scale(0.96)`;
+      cardRef.current.style.opacity = "0";
     }
     if (stackOneRef.current) {
-      stackOneRef.current.style.transition = ease;
-      stackOneRef.current.style.transform = `translateX(${dir * -30}px)`;
+      stackOneRef.current.style.transition = easeOut;
+      stackOneRef.current.style.transform = `translateX(${dir * -26}px)`;
     }
     if (stackTwoRef.current) {
-      stackTwoRef.current.style.transition = ease;
-      stackTwoRef.current.style.transform = `translateX(${dir * -18}px)`;
+      stackTwoRef.current.style.transition = easeOut;
+      stackTwoRef.current.style.transform = `translateX(${dir * -16}px)`;
     }
     window.setTimeout(() => {
       changeMonth(dir);
       if (cardRef.current) {
         cardRef.current.style.transition = "none";
-        cardRef.current.style.transform = `translateX(${dir * 110}%)`;
+        cardRef.current.style.transform = `translateX(${dir * 108}%) scale(0.96)`;
+        cardRef.current.style.opacity = "0";
       }
-      if (stackOneRef.current) stackOneRef.current.style.transform = `translateX(${dir * 30}px)`;
-      if (stackTwoRef.current) stackTwoRef.current.style.transform = `translateX(${dir * 18}px)`;
+      if (stackOneRef.current) stackOneRef.current.style.transform = `translateX(${dir * 26}px)`;
+      if (stackTwoRef.current) stackTwoRef.current.style.transform = `translateX(${dir * 16}px)`;
       void cardRef.current?.offsetHeight;
-      const easeIn = "transform .5s cubic-bezier(0.22, 1, 0.36, 1), opacity .5s ease";
+      const easeIn = "transform .58s cubic-bezier(0.22, 1, 0.36, 1), opacity .58s ease";
       if (cardRef.current) {
         cardRef.current.style.transition = easeIn;
-        cardRef.current.style.transform = "translateX(0)";
+        cardRef.current.style.transform = "translateX(0) scale(1)";
         cardRef.current.style.opacity = "1";
       }
       if (stackOneRef.current) stackOneRef.current.style.transform = "translateX(0)";
       if (stackTwoRef.current) stackTwoRef.current.style.transform = "translateX(0)";
-      window.setTimeout(() => { animatingRef.current = false; }, 520);
-    }, 360);
+      window.setTimeout(() => { animatingRef.current = false; }, 580);
+    }, 430);
   };
 
   const onWrapPointerDown = (e) => {
@@ -340,9 +341,9 @@ export default function EmployeeSchedule() {
           style={{ left: 24, right: -8, top: 12, bottom: -10, borderRadius: 26, opacity: 0.5 }} />
         <div ref={cardRef}
           className="relative bg-white overflow-hidden cursor-grab active:cursor-grabbing"
-          style={{ borderRadius: 28, padding: "20px 14px 14px", boxShadow: "0 22px 48px rgba(4, 26, 74, 0.42)" }}>
+          style={{ borderRadius: 28, padding: "16px 14px 14px", boxShadow: "0 22px 48px rgba(4, 26, 74, 0.42)" }}>
           <div className="relative text-center text-[20px] font-extrabold m-0"
-            style={{ letterSpacing: "-0.02em", color: T.text, lineHeight: 1.1, marginBottom: 6 }}>
+            style={{ letterSpacing: "-0.02em", color: T.text, lineHeight: 1.1, marginTop: -4, marginBottom: 14 }}>
             {MONTHS[month]} {year}
           </div>
           <div className="grid grid-cols-7 mb-1">
