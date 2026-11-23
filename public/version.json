@@ -1,10 +1,10 @@
 {
   "version": "1.8.4",
   "versionCode": 31,
-  "webVersionCode": 81,
+  "webVersionCode": 82,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.4/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
-  "changelog": "Jarak ikon lonceng dan keluar di header beranda pegawai dirapatkan.",
+  "changelog": "Kartu absen pulang saat belum absen kini menampilkan placeholder jam --:-- seperti kartu masuk.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }
