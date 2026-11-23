@@ -383,12 +383,14 @@ export default function EmployeeDashboard() {
             </div>
           </div>
 
-          <div className="px-4 mt-3">
-            <span className="text-[10px] font-semibold bg-white/20 px-3 py-1 rounded-full inline-block"
-              style={{ border: '1px solid rgba(255,255,255,0.25)' }}>
-              {shift ? shift : "Tidak ada jadwal hari ini"}
-            </span>
-          </div>
+          {shift && (
+            <div className="px-4 mt-3">
+              <span className="text-[10px] font-semibold bg-white/20 px-3 py-1 rounded-full inline-block"
+                style={{ border: '1px solid rgba(255,255,255,0.25)' }}>
+                {shift}
+              </span>
+            </div>
+          )}
 
           {/* KARTU DI HEADER */}
           <div className="mx-[14px] mt-3 bg-white rounded-[26px] grid"
@@ -412,6 +414,15 @@ export default function EmployeeDashboard() {
                 Absen Sekarang
                 <ArrowRight size={13} className="shrink-0" />
               </Link>
+              {!shift && (
+                <span className="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9.5px] font-bold"
+                  style={{ background: '#EEF2F8', color: '#475569' }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
+                    <circle cx="12" cy="12" r="8.5" /><path d="M12 8v4" /><path d="M12 15.5h.01" />
+                  </svg>
+                  Shift: Tidak ada
+                </span>
+              )}
             </div>
 
             <div className="min-w-0" style={{ padding: '15px 15px 14px 13px', borderLeft: '1px solid #EDF1F7' }}>
