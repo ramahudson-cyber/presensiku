@@ -366,16 +366,16 @@ export default function EmployeeDashboard() {
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-0.5 shrink-0">
+            <div className="flex items-center gap-0 shrink-0">
               <Link to="/employee/notifications" aria-label="Pengumuman"
-                className="relative w-[42px] h-[42px] rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all">
+                className="relative w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all">
                 <Bell size={20} className="text-white" />
                 {announcements.some((a) => !ackedIds.has(a.id)) && (
                   <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full" />
                 )}
               </Link>
               <button onClick={handleLogout} disabled={loggingOut} aria-label="Keluar"
-                className="w-[42px] h-[42px] rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all disabled:opacity-60">
+                className="w-9 h-9 -ml-1 rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all disabled:opacity-60">
                 {loggingOut
                   ? <div className="w-5 h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
                   : <LogOut size={20} className="text-white" />}
