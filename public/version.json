@@ -1,10 +1,10 @@
 {
   "version": "1.8.4",
   "versionCode": 31,
-  "webVersionCode": 79,
+  "webVersionCode": 80,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.4/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
-  "changelog": "Tanpa jadwal: info Shift: Tidak ada kini tampil di bawah tombol Absen Sekarang, bukan di header.",
+  "changelog": "Posisi ikon lonceng di header beranda pegawai digeser lebih ke kanan.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }

@@ -355,7 +355,7 @@ export default function EmployeeDashboard() {
         </div>
 
         <div className="relative max-w-md mx-auto" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 10px)' }}>
-          <div className="flex items-start justify-between gap-3 px-4">
+          <div className="flex items-start justify-between gap-3 pl-4 pr-2">
             <div className="flex items-center gap-3 min-w-0">
               <ProfileAvatarButton user={user} initials={user?.full_name?.charAt(0)?.toUpperCase() || "R"} variant="hero" />
               <div className="min-w-0">
@@ -366,7 +366,7 @@ export default function EmployeeDashboard() {
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex items-center gap-0.5 shrink-0">
               <Link to="/employee/notifications" aria-label="Pengumuman"
                 className="relative w-[42px] h-[42px] rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all">
                 <Bell size={20} className="text-white" />
