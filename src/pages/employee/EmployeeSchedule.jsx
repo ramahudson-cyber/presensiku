@@ -26,6 +26,18 @@ const colorFor = (code) => SHIFT_COLORS[code] || NEUTRAL_COLOR;
 
 const cap = (s) => (s ? s.trim().charAt(0).toUpperCase() + s.trim().slice(1) : s);
 
+// Normalisasi hasil query jadwal 1 bulan → map tanggal + statistik per shift
+const buildMonthData = (rows) => {
+  const m = {};
+  const count = { total: 0 };
+  (rows || []).forEach((x) => {
+    m[x.date] = x;
+    count.total++;
+    count[x.shift_code] = (count[x.shift_code] || 0) + 1;
+  });
+  return { schedules: m, stats: count };
+};
+
 const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 const DAY_SHORT = ["Sen","Sel","Rab","Kam","Jum","Sab","Min"];
 
@@ -113,38 +125,69 @@ export default function EmployeeSchedule() {
   }, [shiftsMaster]);
 
   const days = getDaysInMonth(year, month);
-  const lastDay = new Date(year, month + 1, 0).getDate();
   const dateStr = (d) => d ? `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}` : null;
 
-  const loadSchedules = useCallback(async () => {
-    if (!user?.id) return;
-    setLoading(true);
-    try {
-      const s = `${year}-${String(month + 1).padStart(2, "0")}-01`;
-      const e = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
-      const { data } = await supabase
-        .from("employee_schedules")
-        .select("date, shift_code")
-        .eq("user_id", user.id)
-        .gte("date", s)
-        .lte("date", e);
-      const m = {};
-      const count = { total: 0 };
-      (data || []).forEach(x => {
-        m[x.date] = x;
-        count.total++;
-        count[x.shift_code] = (count[x.shift_code] || 0) + 1;
-      });
-      setSchedules(m);
-      setStats(count);
-    } catch (e) {
-      console.error("Gagal muat jadwal", e);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.id, year, month, lastDay]);
+  // Cache data per bulan → pindah bulan instan (tanpa overlay loading).
+  const monthCacheRef = useRef(new Map());
+  const userId = user?.id;
 
-  useEffect(() => { loadSchedules(); }, [loadSchedules]);
+  const fetchMonth = useCallback(async (y, m, { force = false } = {}) => {
+    if (!userId) return null;
+    const key = `${y}-${m}`;
+    if (!force && monthCacheRef.current.has(key)) return monthCacheRef.current.get(key);
+    const mm = String(m + 1).padStart(2, "0");
+    const last = new Date(y, m + 1, 0).getDate();
+    const { data } = await supabase
+      .from("employee_schedules")
+      .select("date, shift_code")
+      .eq("user_id", userId)
+      .gte("date", `${y}-${mm}-01`)
+      .lte("date", `${y}-${mm}-${String(last).padStart(2, "0")}`);
+    const res = buildMonthData(data);
+    monthCacheRef.current.set(key, res);
+    return res;
+  }, [userId]);
+
+  // Muat bulan tampil: pakai cache dulu supaya animasi geser tidak terpotong.
+  useEffect(() => {
+    if (!userId) return undefined;
+    let cancelled = false;
+    const key = `${year}-${month}`;
+    const cached = monthCacheRef.current.get(key);
+    if (cached) {
+      setSchedules(cached.schedules);
+      setStats(cached.stats);
+      setLoading(false);
+      return undefined;
+    }
+    // Cache miss: kosongkan data bulan lama (hindari angka stale), tanpa overlay.
+    setSchedules({});
+    setStats({ total: 0 });
+    (async () => {
+      try {
+        const res = await fetchMonth(year, month);
+        if (!cancelled && res) {
+          setSchedules(res.schedules);
+          setStats(res.stats);
+        }
+      } catch (e) {
+        console.error("Gagal muat jadwal", e);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [userId, year, month, fetchMonth]);
+
+  // Prefetch bulan sebelum & sesudah → swipe berikutnya langsung tampil.
+  useEffect(() => {
+    if (!userId) return;
+    [new Date(year, month + 1, 1), new Date(year, month - 1, 1)].forEach((d) => {
+      const y = d.getFullYear();
+      const m = d.getMonth();
+      if (!monthCacheRef.current.has(`${y}-${m}`)) fetchMonth(y, m).catch(() => {});
+    });
+  }, [userId, year, month, fetchMonth]);
 
   const changeMonth = useCallback((dir) => {
     let m = month + dir;
@@ -157,31 +200,17 @@ export default function EmployeeSchedule() {
     setSelected(`${y}-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`);
   }, [month, year, selected]);
 
-  // Pull-to-refresh (page scroll)
+  // Pull-to-refresh (page scroll) — bypass cache bulan aktif
   const handleRefresh = useCallback(async () => {
-    if (!user?.id) return;
+    if (!userId) return;
     try {
-      const s = `${year}-${String(month + 1).padStart(2, "0")}-01`;
-      const e = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
-      const { data } = await supabase
-        .from("employee_schedules")
-        .select("date, shift_code")
-        .eq("user_id", user.id)
-        .gte("date", s)
-        .lte("date", e);
-      const m = {};
-      const count = { total: 0 };
-      (data || []).forEach(x => {
-        m[x.date] = x;
-        count.total++;
-        count[x.shift_code] = (count[x.shift_code] || 0) + 1;
-      });
-      setSchedules(m);
-      setStats(count);
+      monthCacheRef.current.delete(`${year}-${month}`);
+      const res = await fetchMonth(year, month, { force: true });
+      if (res) { setSchedules(res.schedules); setStats(res.stats); }
     } catch (e) {
       console.error("Gagal refresh jadwal", e);
     }
-  }, [user?.id, year, month, lastDay]);
+  }, [userId, year, month, fetchMonth]);
 
   const { pullDistance, isRefreshing } = usePullToRefresh(handleRefresh);
   const cardRef = useRef(null);
@@ -194,63 +223,85 @@ export default function EmployeeSchedule() {
   let suppressClick = useRef(false);
 
   const applyDrag = (v) => {
+    const dist = Math.max(-340, Math.min(340, v));
     if (cardRef.current) {
+      cardRef.current.style.willChange = "transform";
       cardRef.current.style.transition = "none";
-      cardRef.current.style.transform = `translateX(${v * 0.6}px)`;
+      cardRef.current.style.transform =
+        `translateX(${dist * 0.72}px) rotate(${dist * 0.006}deg) scale(${1 - Math.abs(dist) * 0.00007})`;
     }
     if (stackOneRef.current) {
+      stackOneRef.current.style.willChange = "transform";
       stackOneRef.current.style.transition = "none";
-      stackOneRef.current.style.transform = `translateX(${v * 0.3}px)`;
+      stackOneRef.current.style.transform = `translateX(${dist * 0.26}px)`;
     }
     if (stackTwoRef.current) {
+      stackTwoRef.current.style.willChange = "transform";
       stackTwoRef.current.style.transition = "none";
-      stackTwoRef.current.style.transform = `translateX(${v * 0.16}px)`;
+      stackTwoRef.current.style.transform = `translateX(${dist * 0.14}px)`;
     }
   };
   const springBack = () => {
+    const ease = "transform .38s cubic-bezier(0.22, 1, 0.36, 1)";
     [cardRef, stackOneRef, stackTwoRef].forEach((ref) => {
       if (!ref.current) return;
-      ref.current.style.transition = "transform .34s cubic-bezier(0.22, 1, 0.36, 1)";
-      ref.current.style.transform = "translateX(0)";
+      ref.current.style.transition = ease;
+      ref.current.style.transform = "translateX(0) rotate(0deg) scale(1)";
     });
   };
   const changeMonthAnimated = (dir) => {
     if (animatingRef.current) return;
+    if (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      changeMonth(dir);
+      return;
+    }
     animatingRef.current = true;
-    const easeOut = "transform .45s cubic-bezier(0.4, 0, 0.2, 1), opacity .45s ease";
-    if (cardRef.current) {
-      cardRef.current.style.transition = easeOut;
-      cardRef.current.style.transform = `translateX(${dir * -108}%) scale(0.96)`;
-      cardRef.current.style.opacity = "0";
+    const card = cardRef.current;
+    const s1 = stackOneRef.current;
+    const s2 = stackTwoRef.current;
+    const easeOut = "transform .2s cubic-bezier(0.32, 0.72, 0, 1), opacity .16s ease-in";
+    const easeIn = "transform .44s cubic-bezier(0.16, 1, 0.3, 1), opacity .26s ease-out";
+
+    [card, s1, s2].forEach((el) => { if (el) el.style.willChange = "transform, opacity"; });
+
+    // Fase keluar: kartu meluncur cepat + mengecil + miring halus
+    if (card) {
+      card.style.transition = easeOut;
+      card.style.transform = `translateX(${dir * -104}%) rotate(${dir * -1.4}deg) scale(0.94)`;
+      card.style.opacity = "0";
     }
-    if (stackOneRef.current) {
-      stackOneRef.current.style.transition = easeOut;
-      stackOneRef.current.style.transform = `translateX(${dir * -26}px)`;
-    }
-    if (stackTwoRef.current) {
-      stackTwoRef.current.style.transition = easeOut;
-      stackTwoRef.current.style.transform = `translateX(${dir * -16}px)`;
-    }
+    if (s1) { s1.style.transition = easeOut; s1.style.transform = `translateX(${dir * -18}px) scale(0.985)`; }
+    if (s2) { s2.style.transition = easeOut; s2.style.transform = `translateX(${dir * -10}px) scale(0.97)`; }
+
     window.setTimeout(() => {
       changeMonth(dir);
-      if (cardRef.current) {
-        cardRef.current.style.transition = "none";
-        cardRef.current.style.transform = `translateX(${dir * 108}%) scale(0.96)`;
-        cardRef.current.style.opacity = "0";
+      // Fase masuk: kartu baru datang dari arah swipe dengan easing spring
+      if (card) {
+        card.style.transition = "none";
+        card.style.transform = `translateX(${dir * 88}%) rotate(${dir * 1.4}deg) scale(0.94)`;
+        card.style.opacity = "0";
       }
-      if (stackOneRef.current) stackOneRef.current.style.transform = `translateX(${dir * 26}px)`;
-      if (stackTwoRef.current) stackTwoRef.current.style.transform = `translateX(${dir * 16}px)`;
-      void cardRef.current?.offsetHeight;
-      const easeIn = "transform .58s cubic-bezier(0.22, 1, 0.36, 1), opacity .58s ease";
-      if (cardRef.current) {
-        cardRef.current.style.transition = easeIn;
-        cardRef.current.style.transform = "translateX(0) scale(1)";
-        cardRef.current.style.opacity = "1";
+      if (s1) { s1.style.transition = "none"; s1.style.transform = `translateX(${dir * 18}px) scale(0.985)`; }
+      if (s2) { s2.style.transition = "none"; s2.style.transform = `translateX(${dir * 10}px) scale(0.97)`; }
+      void card?.offsetHeight;
+      if (card) {
+        card.style.transition = easeIn;
+        card.style.transform = "translateX(0) rotate(0deg) scale(1)";
+        card.style.opacity = "1";
       }
-      if (stackOneRef.current) stackOneRef.current.style.transform = "translateX(0)";
-      if (stackTwoRef.current) stackTwoRef.current.style.transform = "translateX(0)";
-      window.setTimeout(() => { animatingRef.current = false; }, 580);
-    }, 430);
+      if (s1) { s1.style.transition = easeIn; s1.style.transform = "translateX(0) scale(1)"; }
+      if (s2) { s2.style.transition = easeIn; s2.style.transform = "translateX(0) scale(1)"; }
+      window.setTimeout(() => {
+        animatingRef.current = false;
+        [card, s1, s2].forEach((el) => {
+          if (!el) return;
+          el.style.transition = "";
+          el.style.transform = "";
+          el.style.opacity = "";
+          el.style.willChange = "";
+        });
+      }, 450);
+    }, 200);
   };
 
   const onWrapPointerDown = (e) => {
@@ -356,21 +407,29 @@ export default function EmployeeSchedule() {
               const sched = key ? schedules[key] : undefined;
               const isToday = key === todayWita;
               const isSel = key && key === selected;
+              const shiftColor = sched ? colorFor(sched.shift_code) : null;
               return (
                 <div key={i} className="relative aspect-square flex items-center justify-center">
                   {day ? (
                     <button type="button"
                       onClick={() => { setSelected(key); setSheetOpen(true); }}
-                      className={`relative w-full max-w-[44px] h-full flex flex-col items-center justify-center rounded-full border-none transition-colors duration-150
-                        ${isSel ? "bg-[#2F8BF8]" : "bg-transparent hover:bg-[#EEF6FF]"}`}
-                      style={isSel ? { boxShadow: "0 8px 18px -4px rgba(47,139,248,0.6)" } : null}>
-                      <span className="text-[13.5px] font-bold leading-none"
-                        style={{ color: isSel ? "#fff" : isToday ? "#1F74E0" : T.textSec, fontWeight: isSel || isToday ? 800 : 700 }}>
+                      className={`relative w-full max-w-[44px] h-full flex flex-col items-center justify-center rounded-full border-none transition-all duration-150
+                        ${!shiftColor && !isSel ? "bg-transparent hover:bg-[#EEF6FF]" : ""}`}
+                      style={{
+                        background: isSel ? (shiftColor || "#2F8BF8") : (shiftColor || undefined),
+                        boxShadow: isSel
+                          ? "0 0 0 2.5px #0F172A, 0 8px 18px -6px rgba(4,26,74,0.45)"
+                          : shiftColor ? `0 6px 14px -7px ${shiftColor}b3` : null,
+                      }}>
+                      <span className="text-[13.5px] leading-none"
+                        style={{
+                          color: isSel || shiftColor ? "#fff" : isToday ? "#1F74E0" : T.textSec,
+                          fontWeight: isSel || isToday || shiftColor ? 800 : 700,
+                        }}>
                         {day}
                       </span>
-                      {sched && (
-                        <span className="rounded-full mt-1"
-                          style={{ width: 5, height: 5, background: colorFor(sched.shift_code) }} />
+                      {isToday && shiftColor && (
+                        <span className="rounded-full mt-1 bg-white" style={{ width: 4, height: 4 }} />
                       )}
                     </button>
                   ) : <span />}
@@ -381,18 +440,17 @@ export default function EmployeeSchedule() {
         </div>
       </div>
 
-      <p className="text-center text-[10.5px] mt-4" style={{ color: "rgba(255,255,255,0.55)" }}>
+      <p className="text-center text-[10.5px] font-semibold mt-7" style={{ color: "rgba(255,255,255,0.9)" }}>
         Geser kartu kalender untuk berpindah bulan
       </p>
 
 
       {/* ── PREMIUM CARD: shift hari ini (hitam) + keterangan warna (putih) ── */}
-      <div className="mx-4 mt-9 relative" style={{ aspectRatio: "1.52 / 1", minHeight: 210 }}>
-        <div className="absolute inset-0 rounded-[26px]" style={{ background: "#101828", boxShadow: "0 16px 36px rgba(4,26,74,0.42)" }} />
-        <div className="absolute flex items-center justify-between gap-3 px-[18px]"
-          style={{ top: 0, left: 0, right: 0, height: "34%" }}>
+      <div className="mx-4 mt-3 relative rounded-[26px] overflow-hidden"
+        style={{ background: "#101828", boxShadow: "0 16px 36px rgba(4,26,74,0.42)" }}>
+        <div className="flex items-center justify-between gap-3 px-[18px] pt-4 pb-4">
           <div className="min-w-0">
-            <span className="block text-[9.5px] font-semibold" style={{ color: "rgba(255,255,255,0.62)" }}>
+            <span className="block text-[9.5px] font-bold" style={{ color: "rgba(255,255,255,0.92)" }}>
               Keterangan shift hari ini
             </span>
             <div className="flex items-center gap-2 mt-1">
@@ -400,7 +458,8 @@ export default function EmployeeSchedule() {
                 <span className="w-3 h-3 rounded-full flex-none"
                   style={{ background: colorFor(todayShift.shift_code) }} />
               )}
-              <span className="text-[14px] font-extrabold truncate" style={{ color: "#fff" }} style={{ letterSpacing: "-0.01em" }}>
+              <span className="text-[14px] font-extrabold truncate"
+                style={{ color: "#fff", letterSpacing: "-0.01em" }}>
                 {todayShiftName || "Tidak ada jadwal hari ini"}
               </span>
             </div>
@@ -412,8 +471,8 @@ export default function EmployeeSchedule() {
             </span>
           )}
         </div>
-        <div className="absolute bg-white rounded-[26px] px-4 pt-3 pb-2"
-          style={{ inset: "34% 0 0 0", boxShadow: "0 -8px 24px rgba(4,26,74,0.18)" }}>
+        <div className="bg-white rounded-[26px] px-4 pt-3 pb-3"
+          style={{ boxShadow: "0 -8px 24px rgba(4,26,74,0.18)" }}>
           <p className="m-0 text-[11px] font-extrabold" style={{ color: T.textMuted }}>
             Keterangan warna shift · {MONTHS[month]} {year}
           </p>
@@ -437,7 +496,7 @@ export default function EmployeeSchedule() {
                     style={{ color: "#1F74E0", background: T.iconBg }}>
                     {stats[s.code] || 0} hari
                   </span>
-                  <span className="flex-none text-[9.5px] font-medium" style={{ color: T.textMuted }}>
+                  <span className="flex-none text-[10px] font-bold" style={{ color: "#64748B" }}>
                     {legendJamFor(s.code) || "—"}
                   </span>
                 </div>
@@ -448,7 +507,7 @@ export default function EmployeeSchedule() {
       </div>
 
 
-      {loading && !isCurrentMonth && Object.keys(schedules).length === 0 && (
+      {loading && (
         <div className="fixed inset-0 z-40 flex items-center justify-center" style={{ background: "rgba(27,84,222,0.92)" }}>
           <div className="flex flex-col items-center gap-3">
             <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
