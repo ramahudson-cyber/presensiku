@@ -19,9 +19,12 @@ import { useLocation, useNavigate } from "react-router-dom";
  *
  * Bar ini TIDAK sticky (ikut ter-scroll) supaya posisi konten tidak berubah.
  */
-export default function EmployeeAppBar({ title, right = null, onBack }) {
+export default function EmployeeAppBar({ title, right = null, onBack, size = "md" }) {
   const navigate = useNavigate();
   const location = useLocation();
+  // size="lg" menyamakan tinggi total header (102px + safe-area) dengan
+  // header halaman Riwayat Absensi: 28 (atas) + 40 (baris) + 34 (bawah).
+  const isLg = size === "lg";
 
   const handleBack = () => {
     if (onBack) return onBack();
@@ -42,7 +45,7 @@ export default function EmployeeAppBar({ title, right = null, onBack }) {
         boxShadow: "0 2px 12px rgba(153,0,204,0.28)",
       }}
     >
-      <div className="relative flex items-center px-2 pb-4" style={{ minHeight: 48 }}>
+      <div className="relative flex items-center px-2" style={{ minHeight: 48, paddingBottom: isLg ? 34 : 16 }}>
         <button
           type="button"
           onClick={handleBack}

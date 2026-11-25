@@ -182,7 +182,7 @@ function EmployeeSalaryPage() {
   if (enabled === null || loading) {
     return (
       <div className="min-h-screen w-full absolute top-0 left-0 right-0 bg-slate-50">
-        <EmployeeAppBar title="Slip Gaji" />
+        <EmployeeAppBar title="Slip Gaji" size="lg" />
         <div className="max-w-md mx-auto p-4" style={{ display: "grid", gap: 16 }}>
           <Skeleton width={190} height={10} style={{ margin: "0 auto" }} />
           <div className="bg-white rounded-3xl border p-4" style={{ borderColor: T_BORDER }}>
@@ -223,7 +223,7 @@ function EmployeeSalaryPage() {
   if (!enabled) {
     return (
       <div className="min-h-screen w-full absolute top-0 left-0 right-0 bg-slate-50">
-        <EmployeeAppBar title="Slip Gaji" />
+        <EmployeeAppBar title="Slip Gaji" size="lg" />
         <div className="flex items-center justify-center p-6 py-12">
           <div className="bg-white rounded-3xl p-8 border text-center max-w-sm" style={{ borderColor: T_BORDER }}>
             <Info size={26} className="mx-auto mb-3 text-slate-400" />
@@ -237,7 +237,7 @@ function EmployeeSalaryPage() {
   return (
     <div className="min-h-screen w-full absolute top-0 left-0 right-0 pb-24 bg-slate-50">
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
-      <EmployeeAppBar title="Slip Gaji" />
+      <EmployeeAppBar title="Slip Gaji" size="lg" />
       <div className="max-w-md mx-auto p-4 space-y-4">
         <p className="text-xs text-slate-500 text-center">Riwayat gaji berbasis kehadiran</p>
 

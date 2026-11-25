@@ -129,7 +129,7 @@ export default function EmployeeNotificationsPage() {
   if (loading) {
     return (
       <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: "#F4F2FB" }}>
-        <EmployeeAppBar title="Notifikasi" />
+        <EmployeeAppBar title="Notifikasi" size="lg" />
         <div className="max-w-md mx-auto px-4 pt-3">
           <Skeleton width={96} height={10} />
         </div>
@@ -177,6 +177,7 @@ export default function EmployeeNotificationsPage() {
       {/* HEADER — app bar biru; "Baca Semua" di kanan, jumlah belum dibaca jadi subjudul */}
       <EmployeeAppBar
         title="Notifikasi"
+        size="lg"
         right={
           unreadCount > 0 ? (
             <button onClick={handleMarkAllRead}
