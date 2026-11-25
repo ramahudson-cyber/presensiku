@@ -334,7 +334,7 @@ export default function EmployeeHistory() {
       {/* SHEET PUTIH */}
       <div className="relative flex-1 min-h-0 overflow-y-auto bg-white"
         style={{ marginTop: -26, borderTopLeftRadius: 28, borderTopRightRadius: 28, zIndex: 10 }}>
-        <div className="px-4 pb-8" style={{ paddingTop: 94 }}>
+        <div className="px-4 pb-8" style={{ paddingTop: 62 }}>
           {loading ? (
             <div style={{ display: 'grid', gap: 16 }}>
               <Skeleton width={150} height={15} />
