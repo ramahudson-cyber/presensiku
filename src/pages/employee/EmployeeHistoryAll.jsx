@@ -10,6 +10,7 @@ import { shiftLabel } from "../../lib/shiftName";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import { MonthMenu, monthOptions, currentMonthKey } from "./overtime/overtimeUi";
+import Skeleton from "../../components/Skeleton";
 
 /**
  * Halaman "Riwayat Absensi" lengkap — dibuka dari tombol "Lihat Semua"
@@ -279,8 +280,26 @@ export default function EmployeeHistoryAll() {
       {/* DAFTAR - full-width tanpa kartu, hanya garis pemisah */}
       <div className="flex-1 min-h-0 overflow-y-auto pb-8">
         {loading ? (
-          <div className="flex justify-center py-16">
-            <div className="w-8 h-8 border-2 border-[#2F8BF8] border-t-transparent rounded-full animate-spin" />
+          <div className="px-4 py-2">
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex items-center justify-between gap-3 py-3"
+                style={{ borderTop: i === 0 ? "none" : "1px solid #F1F5F9" }}>
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className="w-9" style={{ display: 'grid', gap: 4, justifyItems: 'center' }}>
+                    <Skeleton width={26} height={8} />
+                    <Skeleton width={18} height={16} />
+                    <Skeleton width={26} height={8} />
+                  </div>
+                  <span className="w-px h-9 shrink-0" style={{ background: "#E2E8F0" }} />
+                  <Skeleton width={28} height={28} radius={999} />
+                  <div className="flex-1 min-w-0" style={{ display: 'grid', gap: 6 }}>
+                    <Skeleton width="62%" height={12} />
+                    <Skeleton width="45%" height={9} />
+                  </div>
+                </div>
+                <Skeleton width={54} height={22} radius={999} />
+              </div>
+            ))}
           </div>
         ) : error ? (
           <div className="flex flex-col items-center py-14 px-6 text-center">

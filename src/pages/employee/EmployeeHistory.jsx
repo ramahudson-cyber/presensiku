@@ -8,6 +8,7 @@ import {
 } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 
 const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
   "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -335,8 +336,44 @@ export default function EmployeeHistory() {
         style={{ marginTop: -26, borderTopLeftRadius: 28, borderTopRightRadius: 28, zIndex: 10 }}>
         <div className="px-4 pb-8" style={{ paddingTop: 94 }}>
           {loading ? (
-            <div className="flex justify-center py-16">
-              <div className="w-8 h-8 border-2 border-[#2F8BF8] border-t-transparent rounded-full animate-spin" />
+            <div style={{ display: 'grid', gap: 16 }}>
+              <Skeleton width={150} height={15} />
+              <div className="rounded-[20px] p-4" style={{ background: "#fff", border: "1px solid #EDF1F7" }}>
+                <div className="flex items-center justify-end">
+                  <Skeleton width={78} height={20} radius={999} />
+                </div>
+                <div className="flex items-center gap-3 mt-3">
+                  <Skeleton width={112} height={112} radius={999} />
+                  <div className="flex-1" style={{ display: 'grid', gap: 10 }}>
+                    <Skeleton width="55%" height={26} />
+                    <Skeleton width="82%" height={10} />
+                    <Skeleton width="64%" height={10} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-4 mt-4" style={{ gap: 8 }}>
+                  {[0, 1, 2, 3].map((i) => (
+                    <div key={i} style={{ display: 'grid', gap: 6, justifyItems: 'center' }}>
+                      <Skeleton width={18} height={18} radius={999} />
+                      <Skeleton width="70%" height={8} />
+                      <Skeleton width="52%" height={8} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Skeleton width={140} height={14} />
+              <div className="grid grid-cols-2" style={{ gap: 10 }}>
+                {[0, 1].map((i) => <Skeleton key={i} width="100%" height={86} radius={16} />)}
+              </div>
+              <Skeleton width={120} height={14} />
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="rounded-[16px] p-3" style={{ border: "1px solid #EDF1F7", display: 'grid', gap: 8 }}>
+                  <div className="flex items-center justify-between">
+                    <Skeleton width={110} height={12} />
+                    <Skeleton width={56} height={20} radius={999} />
+                  </div>
+                  <Skeleton width="70%" height={9} />
+                </div>
+              ))}
             </div>
           ) : fetchError ? (
             <div className="flex flex-col items-center py-14 px-4 text-center">

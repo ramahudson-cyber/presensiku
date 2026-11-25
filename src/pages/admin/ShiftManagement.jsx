@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
 import TimeSelect from "../../components/TimeSelect";
+import Skeleton from "../../components/Skeleton";
 import {
   Clock, Save, RefreshCw, Sun, Moon, CloudSun,
   Sunset, CheckCircle2, XCircle, Info, ArrowRightLeft
@@ -142,8 +143,28 @@ export default function TabShift() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <RefreshCw size={24} className="animate-spin text-periwinkle-glow" />
+      <div>
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div style={{ display: "grid", gap: 8 }}>
+            <Skeleton dark width={150} height={15} />
+            <Skeleton dark width={210} height={9} />
+          </div>
+          <Skeleton dark width={104} height={30} radius={999} />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-4"
+              style={{ display: "grid", gap: 10 }}>
+              <Skeleton dark width={96} height={12} />
+              {[0, 1, 2].map((j) => (
+                <div key={j} className="flex items-center justify-between">
+                  <Skeleton dark width="30%" height={9} />
+                  <Skeleton dark width={72} height={22} radius={8} />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

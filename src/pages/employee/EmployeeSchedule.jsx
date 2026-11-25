@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 import { getShiftDefinition, getWitaDateKey, getZonaWaktuLabel } from "../../lib/shiftTime";
 import { Clock } from "lucide-react";
 
@@ -530,8 +531,11 @@ export default function EmployeeSchedule() {
           <div>
             {shiftsList === null ? (
               [0, 1, 2].map((i) => (
-                <div key={i} className="flex items-center gap-2 py-2">
-                  <span className="inline-block h-4 w-16 rounded-full bg-slate-200/80 animate-pulse" />
+                <div key={i} className="flex items-center gap-2 py-[6px]">
+                  <Skeleton width={10} height={10} radius={999} />
+                  <Skeleton width={104} height={10} />
+                  <Skeleton width={40} height={16} radius={999} style={{ marginLeft: "auto" }} />
+                  <Skeleton width={76} height={9} />
                 </div>
               ))
             ) : shiftsList.length === 0 ? (
@@ -559,10 +563,52 @@ export default function EmployeeSchedule() {
 
 
       {loading && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center" style={{ background: "rgba(27,84,222,0.92)" }}>
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            <p className="text-xs font-semibold text-white">Memuat jadwal...</p>
+        <div className="fixed inset-0 z-40 overflow-y-auto"
+          style={{ background: "linear-gradient(168deg, #1B54DE 0%, #2F8BF8 58%, #1F74E0 100%)" }}>
+          <div className="mx-auto max-w-md px-4" style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 18px)" }}>
+            <div className="flex items-center justify-between">
+              <Skeleton dark width={36} height={36} radius={999} />
+              <Skeleton dark width={110} height={16} />
+              <span style={{ width: 36 }} />
+            </div>
+            <div className="mt-5 rounded-[28px] bg-white" style={{ padding: "16px 14px 14px" }}>
+              <Skeleton width={128} height={18} style={{ margin: "0 auto 16px" }} />
+              <div className="grid grid-cols-7" style={{ gap: 6, marginBottom: 8 }}>
+                {[...Array(7)].map((_, i) => (
+                  <Skeleton key={i} width={22} height={8} style={{ margin: "0 auto" }} />
+                ))}
+              </div>
+              <div className="grid grid-cols-7">
+                {[...Array(42)].map((_, i) => (
+                  <div key={i} className="aspect-square flex items-center justify-center">
+                    <Skeleton width={30} height={30} radius={999} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="text-center text-[10.5px] font-semibold mt-7" style={{ color: "rgba(255,255,255,0.9)" }}>
+              Geser kartu kalender untuk berpindah bulan
+            </p>
+            <div className="mt-3 rounded-[26px] overflow-hidden" style={{ background: "#101828" }}>
+              <div className="flex items-center justify-between px-[18px] pt-4 pb-4">
+                <div style={{ display: "grid", gap: 8 }}>
+                  <Skeleton dark width={110} height={9} />
+                  <Skeleton dark width={150} height={14} />
+                </div>
+                <Skeleton dark width={92} height={24} radius={999} />
+              </div>
+              <div className="bg-white rounded-[26px] px-4 pt-3 pb-3" style={{ display: "grid", gap: 12 }}>
+                <Skeleton width={170} height={10} />
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Skeleton width={10} height={10} radius={999} />
+                    <Skeleton width="38%" height={10} />
+                    <Skeleton width={40} height={16} radius={999} style={{ marginLeft: "auto" }} />
+                    <Skeleton width={78} height={9} />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}

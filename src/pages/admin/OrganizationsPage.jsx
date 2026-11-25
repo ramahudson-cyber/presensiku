@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { Building2, Plus, Loader2, CheckCircle2, XCircle, AlertCircle, Trash2, LogIn } from "lucide-react";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 
 const T = {
   text: "#0F172A",
@@ -322,8 +323,22 @@ function OrganizationsPage() {
       {/* Daftar instansi */}
       <div className="bg-white rounded-3xl border overflow-hidden" style={{ borderColor: T.border }}>
         {loading ? (
-          <div className="p-10 flex items-center justify-center gap-2 text-sm" style={{ color: T.textMuted }}>
-            <Loader2 size={16} className="animate-spin" /> Memuat instansi...
+          <div className="divide-y" style={{ borderColor: T.border }}>
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center justify-between gap-3 p-4 sm:p-5">
+                <div className="flex items-center gap-3 min-w-0">
+                  <Skeleton width={40} height={40} radius={16} />
+                  <div className="min-w-0" style={{ display: "grid", gap: 7 }}>
+                    <Skeleton width={130} height={12} />
+                    <Skeleton width={170} height={9} />
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Skeleton width={62} height={22} radius={999} />
+                  <Skeleton width={70} height={26} radius={999} />
+                </div>
+              </div>
+            ))}
           </div>
         ) : orgs.length === 0 ? (
           <div className="p-10 text-center text-sm" style={{ color: T.textMuted }}>

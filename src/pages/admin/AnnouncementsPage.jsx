@@ -6,6 +6,7 @@ import BottomSheet from "../../components/BottomSheet";
 import { sendPushForAnnouncement } from "../../services/pushNotificationService";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 import {
   Megaphone, Plus, Loader2, Pencil, Trash2, Power,
   CheckCircle2, XCircle, AlertTriangle,
@@ -248,8 +249,21 @@ export default function AnnouncementsPage() {
       {/* Daftar */}
       <div className="space-y-3">
         {loading ? (
-          <div className="bg-white rounded-3xl border p-10 flex items-center justify-center gap-2 text-sm" style={{ color: T.textMuted, borderColor: T.border }}>
-            <Loader2 size={16} className="animate-spin" /> Memuat pengumuman...
+          <div className="space-y-3">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="bg-white rounded-3xl border p-4 sm:p-5" style={{ borderColor: T.border, display: "grid", gap: 10 }}>
+                <div className="flex items-center justify-between gap-3">
+                  <Skeleton width="52%" height={14} />
+                  <Skeleton width={70} height={22} radius={999} />
+                </div>
+                <Skeleton width="94%" height={10} />
+                <Skeleton width="78%" height={10} />
+                <div className="flex items-center gap-2" style={{ marginTop: 2 }}>
+                  <Skeleton width={92} height={9} />
+                  <Skeleton width={60} height={9} />
+                </div>
+              </div>
+            ))}
           </div>
         ) : items.length === 0 ? (
           <div className="bg-white rounded-3xl border p-10 text-center space-y-2" style={{ borderColor: T.border }}>

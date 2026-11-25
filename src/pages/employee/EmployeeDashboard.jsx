@@ -14,6 +14,7 @@ import NotificationPermissionBanner from "../../components/NotificationPermissio
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton";
+import Skeleton from "../../components/Skeleton";
 
 function withTimeout(promise, ms, label) {
   return Promise.race([
@@ -282,10 +283,10 @@ export default function EmployeeDashboard() {
   // sibling di root) — konten halaman terkurung stacking context z-10 milik
   // AdminLayout, jadi z-50 di dalamnya kalah (pola sama dgn BottomSheet).
   if (loading) return createPortal(
-    <div className="fixed inset-0 flex items-center justify-center z-50" style={{ background: T.bg }}>
-      <div className="flex flex-col items-center gap-3">
-        {fetchError ? (
-          <>
+    <div className="fixed inset-0 z-50 overflow-y-auto" style={{ background: T.bg }}>
+      {fetchError ? (
+        <div className="min-h-full flex items-center justify-center px-6">
+          <div className="flex flex-col items-center gap-3">
             <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mb-1">
               <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -296,14 +297,69 @@ export default function EmployeeDashboard() {
               className="mt-3 px-6 py-2 bg-[#2F8BF8] hover:bg-[#1F74E0] text-white hero-card-bg text-xs font-semibold rounded-full transition-all duration-200 shadow-md">
               Coba Lagi
             </button>
-          </>
-        ) : (
-          <>
-            <div className="w-10 h-10 border-4 border-[#2F8BF8] border-t-transparent rounded-full animate-spin"></div>
-            <div className="text-gray-500 text-xs tracking-widest uppercase">Memuat...</div>
-          </>
-        )}
-      </div>
+          </div>
+        </div>
+      ) : (
+        <div className="min-h-screen w-full font-sans pb-24">
+          {/* HERO skeleton */}
+          <div className="w-full rounded-b-[34px]"
+            style={{ background: 'linear-gradient(150deg, #0B3FB8 0%, #1449D8 34%, #2F7BF0 68%, #3F93FD 100%)', paddingBottom: 74 }}>
+            <div className="relative max-w-md mx-auto" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 10px)' }}>
+              <div className="flex items-start justify-between gap-3 pl-4 pr-2">
+                <div className="flex items-center gap-3 min-w-0">
+                  <Skeleton dark width={46} height={46} radius={999} />
+                  <div className="min-w-0" style={{ display: 'grid', gap: 7 }}>
+                    <Skeleton dark width={92} height={9} />
+                    <Skeleton dark width={148} height={15} />
+                    <Skeleton dark width={108} height={9} />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Skeleton dark width={36} height={36} radius={999} />
+                  <Skeleton dark width={36} height={36} radius={999} />
+                </div>
+              </div>
+              <div className="px-4 mt-3">
+                <Skeleton dark width={88} height={20} radius={999} />
+              </div>
+              <div className="mx-[14px] mt-3 bg-white rounded-[26px] grid"
+                style={{ gridTemplateColumns: '1.08fr 0.92fr', marginBottom: -130, boxShadow: '0 18px 40px rgba(9,33,84,0.20)' }}>
+                <div className="min-w-0" style={{ padding: '18px 13px 14px 15px', display: 'grid', gap: 12, alignContent: 'start' }}>
+                  <Skeleton width={128} height={30} />
+                  <Skeleton width={150} height={10} />
+                  <Skeleton width="100%" height={42} radius={999} />
+                </div>
+                <div className="min-w-0" style={{ padding: '18px 15px 14px 13px', borderLeft: '1px solid #EDF1F7', display: 'grid', gap: 12, alignContent: 'start' }}>
+                  <Skeleton width="100%" height={30} radius={999} />
+                  <div className="grid grid-cols-2" style={{ gap: '10px 8px' }}>
+                    {[0, 1, 2, 3].map((i) => (
+                      <div key={i} style={{ display: 'grid', gap: 6 }}>
+                        <Skeleton width={26} height={14} />
+                        <Skeleton width={40} height={8} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* KONTEN skeleton */}
+          <div className="relative max-w-md mx-auto px-4" style={{ paddingTop: 150, display: 'grid', gap: 16 }}>
+            <Skeleton width={128} height={14} />
+            <Skeleton width="100%" height={92} radius={22} />
+            <Skeleton width={104} height={14} />
+            <div className="grid grid-cols-4" style={{ gap: 10 }}>
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} style={{ display: 'grid', justifyItems: 'center', gap: 8 }}>
+                  <Skeleton width={48} height={48} radius={16} />
+                  <Skeleton width={38} height={8} />
+                </div>
+              ))}
+            </div>
+            <Skeleton width="100%" height={72} radius={20} />
+          </div>
+        </div>
+      )}
     </div>,
     document.body
   );

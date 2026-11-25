@@ -98,7 +98,7 @@ export default function OvertimeDetailPage() {
 
         <div className="px-4 pb-10">
           {loading ? (
-            <Loader label="Memuat detail..." />
+            <Loader label="Memuat detail..." variant="detail" />
           ) : error ? (
             <ErrorState message={error} onRetry={load} />
           ) : (

@@ -17,6 +17,7 @@ import {
 import { exportExcelWorkbook, DATE_FMT } from "../../services/excelExport";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 import BottomSheet from "../../components/BottomSheet";
 import {
   Check, X, Plus, Download, Loader2, RefreshCw, Inbox, Search,
@@ -431,8 +432,19 @@ export default function OvertimeManagementPage() {
       {/* Daftar */}
       <div className={`${cardBase} overflow-hidden`}>
         {loading ? (
-          <div className="p-8 flex items-center justify-center gap-2 text-sm text-slate-mist">
-            <Loader2 size={16} className="animate-spin" /> Memuat…
+          <div>
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex items-center gap-3 px-4 py-3.5"
+                style={{ borderTop: i === 0 ? "none" : "1px solid rgba(255,255,255,0.06)" }}>
+                <Skeleton dark width={32} height={32} radius={999} />
+                <div className="flex-1 min-w-0" style={{ display: "grid", gap: 7 }}>
+                  <Skeleton dark width="40%" height={11} />
+                  <Skeleton dark width="62%" height={9} />
+                </div>
+                <Skeleton dark width={70} height={22} radius={999} />
+                <Skeleton dark width={80} height={10} />
+              </div>
+            ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-8 text-center text-xs text-slate-mist">

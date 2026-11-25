@@ -3,6 +3,7 @@ import { getLeaveRequests, approveLeaveRequest, rejectLeaveRequest, countLeaveDa
 import { toast } from "react-toastify";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 
 /* ═══ Premium badge config — light tokens ═══ */
 const STATUS = {
@@ -322,7 +323,21 @@ export default function LeaveManagementPage() {
 
             <div style={{ padding: "4px 32px 16px" }}>
               {loading ? (
-                <div style={{ textAlign: "center", padding: "40px 0", color: "#94a3b8", fontSize: 15 }}>Memuat data...</div>
+                <div style={{ display: "grid", gap: 12, paddingTop: 12 }}>
+                  {[0, 1, 2, 3].map((i) => (
+                    <div key={i} style={{
+                      background: "#fff", border: "1px solid #eef2f7", borderRadius: 18,
+                      padding: "14px 16px", display: "flex", alignItems: "center", gap: 14,
+                    }}>
+                      <Skeleton width={42} height={42} radius={999} />
+                      <div style={{ flex: 1, minWidth: 0, display: "grid", gap: 8 }}>
+                        <Skeleton width="38%" height={12} />
+                        <Skeleton width="58%" height={9} />
+                      </div>
+                      <Skeleton width={78} height={24} radius={999} />
+                    </div>
+                  ))}
+                </div>
               ) : items.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "72px 24px", display: "flex", flexDirection: "column", alignItems: "center" }}>
                   <div style={{ width: 100, height: 100, borderRadius: "50%", background: "#f8fafc", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, color: "#94a3b8", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)", marginBottom: 24 }}>

@@ -3,6 +3,7 @@
 // Token, helper, dan komponen kecil modul Lembur.
 // Warna mengikuti DESIGN.md (biru brand #2F8BF8, teks #0F172A, border halus).
 import { useEffect, useRef, useState } from "react";
+import Skeleton from "../../../components/Skeleton";
 
 export const OT = {
   bg: "#F4F2FB",
@@ -125,15 +126,38 @@ export function LightAppBar({ title, onBack, right = null }) {
   );
 }
 
-export function Loader({ label = "Memuat..." }) {
+export function Loader({ label = "Memuat...", variant = "list" }) {
+  const rows = variant === "detail" ? 4 : variant === "rules" ? 5 : 3;
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "56px 0" }}>
-      <div style={{
-        width: 30, height: 30, borderRadius: "50%",
-        border: `2px solid ${OT.brand}`, borderTopColor: "transparent",
-        animation: "spin 0.9s linear infinite",
-      }} />
-      <span style={{ fontSize: 12, color: OT.textMuted, fontWeight: 600 }}>{label}</span>
+    <div role="status" aria-label={label} style={{ padding: "8px 0" }}>
+      {variant === "detail" && <Skeleton width="100%" height={104} radius={24} />}
+      {variant === "rules" && <Skeleton width="100%" height={150} radius={24} style={{ marginTop: 4 }} />}
+      {variant === "dashboard" && (
+        <>
+          <div className="flex items-start justify-between gap-3">
+            <div style={{ display: "grid", gap: 10 }}>
+              <Skeleton width={128} height={11} />
+              <Skeleton width={152} height={30} />
+              <Skeleton width={188} height={9} />
+            </div>
+            <Skeleton width={86} height={32} radius={999} />
+          </div>
+          <div className="grid grid-cols-3" style={{ marginTop: 16 }}>
+            {[0, 1, 2].map((i) => (
+              <div key={i} style={{ display: "grid", gap: 7, justifyItems: "center" }}>
+                <Skeleton width={30} height={16} />
+                <Skeleton width={56} height={8} />
+              </div>
+            ))}
+          </div>
+          <Skeleton width={110} height={11} style={{ marginTop: 18 }} />
+        </>
+      )}
+      <div style={{ display: "grid", gap: 10, marginTop: variant === "dashboard" ? 10 : 14 }}>
+        {[...Array(rows)].map((_, i) => (
+          <Skeleton key={i} width="100%" height={variant === "detail" ? 54 : variant === "rules" ? 44 : 62} radius={14} />
+        ))}
+      </div>
     </div>
   );
 }

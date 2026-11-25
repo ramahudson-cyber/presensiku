@@ -128,7 +128,7 @@ export default function OvertimeDashboard() {
         padding: "20px 16px 32px", minHeight: "60vh",
       }}>
         {loading ? (
-          <Loader label="Memuat data lembur..." />
+          <Loader label="Memuat data lembur..." variant="dashboard" />
         ) : error ? (
           <ErrorState message={error} onRetry={load} />
         ) : (

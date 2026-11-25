@@ -9,6 +9,7 @@ import { shiftLabel } from "../../lib/shiftName";
 import { getMondayFirstDayOfWeek, getEarlyLeaveInfo, formatDuration, isShiftEnded } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 import {
   Search, Filter, Download, Calendar,
   ChevronLeft, ChevronRight, Loader2,
@@ -226,8 +227,25 @@ function TodayMonitorPanel() {
       </div>
 
       {loading ? (
-        <div className={`${cardBase} p-8 flex items-center justify-center gap-2 text-sm text-slate-mist`}>
-          <Loader2 size={16} className="animate-spin" /> Memuat pantauan...
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[0, 1].map((i) => (
+            <div key={i} className={`${cardBase} p-4`} style={{ display: "grid", gap: 12 }}>
+              <div className="flex items-center justify-between">
+                <Skeleton dark width={110} height={11} />
+                <Skeleton dark width={40} height={18} radius={999} />
+              </div>
+              {[0, 1, 2].map((j) => (
+                <div key={j} className="flex items-center gap-3">
+                  <Skeleton dark width={28} height={28} radius={999} />
+                  <div className="flex-1" style={{ display: "grid", gap: 6 }}>
+                    <Skeleton dark width="52%" height={9} />
+                    <Skeleton dark width="34%" height={8} />
+                  </div>
+                  <Skeleton dark width={44} height={18} radius={999} />
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
       ) : scheduledCount === 0 ? (
         <div className={`${cardBase} p-6 text-center text-xs text-slate-mist`}>
@@ -657,8 +675,19 @@ export default function AttendanceHistoryPage() {
       <div className={`${cardBase} overflow-hidden`}>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 size={28} className="animate-spin text-periwinkle-glow" />
+          <div>
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex items-center gap-3 px-4 sm:px-6 py-4"
+                style={{ borderTop: i === 0 ? "none" : "1px solid rgba(255,255,255,0.06)" }}>
+                <Skeleton dark width={34} height={34} radius={999} />
+                <div className="flex-1 min-w-0" style={{ display: "grid", gap: 7 }}>
+                  <Skeleton dark width="30%" height={10} />
+                  <Skeleton dark width="44%" height={9} />
+                </div>
+                <Skeleton dark width={70} height={10} />
+                <Skeleton dark width={64} height={22} radius={999} />
+              </div>
+            ))}
           </div>
         ) : records.length === 0 ? (
           <div className="design-empty flex flex-col items-center gap-3">

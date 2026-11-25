@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import EmployeeAppBar from "../../components/EmployeeAppBar";
+import Skeleton from "../../components/Skeleton";
 
 const rupiah = (n) => "Rp" + Number(n || 0).toLocaleString("id-ID");
 const currentPeriod = () => new Date().toISOString().slice(0, 7) + "-01";
@@ -182,10 +183,38 @@ function EmployeeSalaryPage() {
     return (
       <div className="min-h-screen w-full absolute top-0 left-0 right-0 bg-slate-50">
         <EmployeeAppBar title="Slip Gaji" />
-        <div className="flex items-center justify-center py-16">
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            <Loader2 size={16} className="animate-spin" /> Memuat slip gaji...
+        <div className="max-w-md mx-auto p-4" style={{ display: "grid", gap: 16 }}>
+          <Skeleton width={190} height={10} style={{ margin: "0 auto" }} />
+          <div className="bg-white rounded-3xl border p-4" style={{ borderColor: T_BORDER }}>
+            <Skeleton width={140} height={9} />
+            <div className="flex items-end gap-2 mt-2">
+              <Skeleton width="100%" height={38} radius={16} />
+              <Skeleton width={74} height={34} radius={999} />
+            </div>
           </div>
+          {[0, 1].map((i) => (
+            <div key={i} className="bg-white rounded-3xl border overflow-hidden" style={{ borderColor: T_BORDER }}>
+              <div className="px-5 pt-4 pb-3 flex items-center justify-between" style={{ borderBottom: `1px solid ${T_BORDER}` }}>
+                <div style={{ display: "grid", gap: 7 }}>
+                  <Skeleton width={110} height={13} />
+                  <Skeleton width={72} height={8} />
+                </div>
+                <Skeleton width={86} height={26} radius={999} />
+              </div>
+              <div className="px-5 py-4" style={{ display: "grid", gap: 10 }}>
+                {[0, 1, 2, 3].map((j) => (
+                  <div key={j} className="flex items-center justify-between">
+                    <Skeleton width={`${50 + (j % 2) * 12}%`} height={10} />
+                    <Skeleton width={64} height={10} />
+                  </div>
+                ))}
+                <div className="flex items-center justify-between pt-3" style={{ borderTop: `1px solid ${T_BORDER}` }}>
+                  <Skeleton width={84} height={13} />
+                  <Skeleton width={96} height={16} />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );

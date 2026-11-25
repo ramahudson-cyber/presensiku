@@ -814,9 +814,17 @@ export default function AttendancePage() {
               onMapReady={(m) => zoomMapRef.current = m}
             />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100">
-            <Loader2 size={28} className="animate-spin text-periwinkle-glow/60 mb-3" />
-            <p className="text-xs text-slate-500">Mendapatkan lokasi...</p>
+          <div className="w-full h-full relative overflow-hidden bg-slate-100">
+            <div aria-hidden="true" className="skeleton-block absolute inset-0" style={{ borderRadius: 0, opacity: 0.55 }} />
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-md">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F8BF8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              </div>
+              <p className="text-xs font-semibold text-slate-600">Mendapatkan lokasi...</p>
+            </div>
           </div>
         )}
       </div>

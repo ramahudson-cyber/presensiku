@@ -3,6 +3,8 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { signOut } from "../services/authService";
 import { XCircle, LogOut } from "lucide-react";
+import Skeleton from "../components/Skeleton";
+import AppBootSkeleton from "../components/AppBootSkeleton";
 
 const STUCK_TIMEOUT_MS = 15000;
 
@@ -28,21 +30,22 @@ function ProtectedRoute({ children, allowedRoles }) {
   // Show loading while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-<p className="mt-4 text-gray-600">
-            {stuck ? "Lama memuat..." : "Memuat..."}
-          </p>
-          {stuck && (
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-4 px-5 py-2 rounded-full bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors"
-            >
-              Muat Ulang
-            </button>
-          )}
-        </div>
+      <div className="relative">
+        <AppBootSkeleton label={stuck ? "Lama memuat..." : "Memuat..."} />
+        {stuck && (
+          <div className="fixed inset-0 z-10 flex items-center justify-center px-4" style={{ background: "rgba(15,23,42,0.24)" }}>
+            <div className="bg-white rounded-2xl shadow-xl px-6 py-5 text-center max-w-xs">
+              <p className="text-sm font-semibold text-slate-700">Lama memuat...</p>
+              <p className="text-xs text-slate-500 mt-1">Jaringan mungkin lambat. Muat ulang untuk mencoba lagi.</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-4 px-5 py-2 rounded-full bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors"
+              >
+                Muat Ulang
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -57,9 +60,13 @@ function ProtectedRoute({ children, allowedRoles }) {
   // ulang padahal sesinya masih ada. Tampilkan opsi muat ulang profil.
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <div className="text-center max-w-xs px-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
+        <div className="w-full max-w-xs text-center">
+          <Skeleton width={48} height={48} radius={999} style={{ margin: "0 auto" }} />
+          <div style={{ display: "grid", gap: 10, marginTop: 16 }}>
+            <Skeleton width="62%" height={12} style={{ margin: "0 auto" }} />
+            <Skeleton width="88%" height={10} style={{ margin: "0 auto" }} />
+          </div>
           <p className="mt-4 text-gray-600">Memuat profil...</p>
           {profileError && (
             <p className="mt-2 text-xs text-red-500">Gagal memuat profil — periksa koneksi Anda.</p>

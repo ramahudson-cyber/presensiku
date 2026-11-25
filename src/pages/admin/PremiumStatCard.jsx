@@ -1,4 +1,5 @@
 import { ArrowUp, ArrowDown, UsersRound, CircleCheckBig, HeartPulse, UserX } from "lucide-react";
+import Skeleton from "../../components/Skeleton";
 
 const PhotoStack = ({ users = [], max = 4 }) => {
   if (!users || users.length === 0) {
@@ -50,13 +51,16 @@ export function PremiumStatCard({ title, sub, value, users, trendValue, trendDir
   }
 
   if (loading) {
-    return <div className="min-h-[178px] rounded-[28px] border border-slate-200/70 bg-white p-5 animate-pulse">
+    return <div className="min-h-[178px] rounded-[28px] border border-slate-200/70 bg-white p-5">
       <div className="flex justify-between">
-        <div className="space-y-2"><div className="h-3 w-24 rounded bg-slate-100"></div><div className="h-3 w-16 rounded bg-slate-50"></div></div>
-        <div className="h-11 w-11 rounded-2xl bg-slate-100"></div>
+        <div className="space-y-2">
+          <Skeleton width={96} height={12} />
+          <Skeleton width={64} height={12} />
+        </div>
+        <Skeleton width={44} height={44} radius={16} />
       </div>
-      <div className="h-11 w-16 rounded bg-slate-100 mt-7"></div>
-      <div className="h-4 w-28 rounded bg-slate-50 mt-4"></div>
+      <Skeleton width={64} height={44} style={{ marginTop: 28 }} />
+      <Skeleton width={112} height={16} style={{ marginTop: 16 }} />
     </div>
   }
 

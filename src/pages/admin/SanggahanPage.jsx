@@ -13,6 +13,7 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 
 // Identitas visual kartu — sama dengan AttendanceHistoryPage
 const initials = (name) => {
@@ -326,7 +327,24 @@ export default function SanggahanPage() {
       {/* List */}
       {loading ? (
         <div className="space-y-3">
-          {[1, 2, 3].map((i) => <div key={i} className="h-32 rounded-2xl bg-white/[0.04] animate-pulse" />)}
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-4" style={{ display: "grid", gap: 12 }}>
+              <div className="flex items-center gap-3">
+                <Skeleton dark width={38} height={38} radius={999} />
+                <div className="flex-1" style={{ display: "grid", gap: 7 }}>
+                  <Skeleton dark width="36%" height={11} />
+                  <Skeleton dark width="24%" height={9} />
+                </div>
+                <Skeleton dark width={72} height={22} radius={999} />
+              </div>
+              <Skeleton dark width="86%" height={9} />
+              <div className="flex items-center gap-2">
+                <Skeleton dark width={54} height={9} />
+                <Skeleton dark width={54} height={9} />
+                <Skeleton dark width={68} height={9} />
+              </div>
+            </div>
+          ))}
         </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] py-14 flex flex-col items-center gap-2">

@@ -10,6 +10,7 @@ import {
 } from "../../services/sanggahService";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 
 // Token light-mode per DESIGN.md (biru #2F8BF8, bg #F4F2FB, kartu putih)
 const T = {
@@ -519,9 +520,24 @@ export default function SanggahPage() {
 
           {/* ── Daftar riwayat ── */}
           {loading ? (
-            <div className="flex flex-col items-center py-10">
-              <Loader2 size={22} className="animate-spin" style={{ color: T.blue }} />
-              <span className="text-[12px] mt-2.5" style={{ color: T.textMuted }}>Memuat...</span>
+            <div className="flex flex-col gap-3.5">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="rounded-[20px] px-[15px] py-[14px]"
+                  style={{ background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
+                  <div className="flex items-center gap-[11px]">
+                    <Skeleton width={44} height={44} radius={14} />
+                    <div className="flex-1 min-w-0" style={{ display: "grid", gap: 7 }}>
+                      <Skeleton width="58%" height={12} />
+                      <div className="flex items-center gap-3">
+                        <Skeleton width={78} height={9} />
+                        <Skeleton width={52} height={9} />
+                      </div>
+                    </div>
+                    <Skeleton width={74} height={24} radius={999} />
+                  </div>
+                  <Skeleton width="82%" height={9} style={{ marginTop: 10 }} />
+                </div>
+              ))}
             </div>
           ) : sanggahan.length === 0 ? (
             <p className="text-[12px] text-center py-10" style={{ color: T.textMuted }}>Belum ada pengajuan.</p>

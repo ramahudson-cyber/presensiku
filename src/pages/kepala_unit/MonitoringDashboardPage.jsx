@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { signOut } from "../../services/authService";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 import { isShiftEnded, getMondayFirstDayOfWeek } from "../../lib/shiftTime";
 import {
   Users, UserCheck, UserMinus, UserX,
@@ -19,7 +20,7 @@ function StatCard({ title, value, subtitle, icon: Icon, accent = "from-[#2F8BF8]
         <div className="min-w-0">
           <p className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider truncate">{title}</p>
           {loading ? (
-            <div className="h-8 sm:h-10 w-16 sm:w-20 bg-slate-100 animate-pulse rounded-lg mt-1 sm:mt-2" />
+            <Skeleton width={72} height={34} radius={10} style={{ marginTop: 8 }} />
           ) : (
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mt-0.5 sm:mt-2 tabular-nums">{value}</h3>
           )}
@@ -269,7 +270,7 @@ export default function KepalaUnitDashboard() {
 
             {/* Shift Badge — Loading */}
             {myScheduleLoading && (
-              <div className="h-5 w-28 bg-white/[0.08] animate-pulse rounded-full mt-2" />
+              <Skeleton dark width={112} height={20} radius={999} style={{ marginTop: 8 }} />
             )}
 
             {/* Shift Badge — Kosong */}
@@ -395,7 +396,13 @@ export default function KepalaUnitDashboard() {
             </div>
             {loading ? (
               <div className="space-y-3">
-                {[1, 2, 3].map((i) => <div key={i} className="h-16 bg-slate-100 animate-pulse rounded-2xl" />)}
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="p-3 bg-slate-50/80 border border-slate-100 rounded-2xl" style={{ display: "grid", gap: 8 }}>
+                    <Skeleton width="58%" height={12} />
+                    <Skeleton width="92%" height={9} />
+                    <Skeleton width="40%" height={8} />
+                  </div>
+                ))}
               </div>
             ) : announcements.length === 0 ? (
               <div className="text-center py-6 sm:py-8 flex flex-col items-center gap-1.5 sm:gap-2">
@@ -431,7 +438,16 @@ export default function KepalaUnitDashboard() {
 
           {loading ? (
             <div className="space-y-3">
-              {[1, 2, 3, 4].map((i) => <div key={i} className="h-12 bg-slate-100 animate-pulse rounded-2xl" />)}
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <Skeleton width={30} height={30} radius={999} />
+                  <div className="flex-1" style={{ display: "grid", gap: 7 }}>
+                    <Skeleton width="38%" height={10} />
+                    <Skeleton width="24%" height={8} />
+                  </div>
+                  <Skeleton width={56} height={20} radius={999} />
+                </div>
+              ))}
             </div>
           ) : recentAttendance.length === 0 ? (
             <div className="text-center py-8 sm:py-12 flex flex-col items-center gap-2 sm:gap-3">

@@ -12,6 +12,7 @@ import {
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import { MonthMenu, monthOptions, currentMonthKey } from "./overtime/overtimeUi";
+import Skeleton from "../../components/Skeleton";
 
 // ─── Token light mode — DESIGN.md ───
 const T = {
@@ -256,8 +257,22 @@ export default function LeaveRequestPage() {
   // ─── Guard (setelah hooks) ───
   if (authLoading) {
     return (
-      <div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", color: T.textMuted, background: T.bg }}>
-        Memuat...
+      <div style={{ minHeight: "100vh", background: "#F4F2FB" }}>
+        <div style={{ height: 62, background: "linear-gradient(135deg,#2F8BF8,#1F74E0)" }} />
+        <div className="mx-auto w-full max-w-md px-4" style={{ paddingTop: 18, display: "grid", gap: 14 }}>
+          <div style={{ background: "#fff", borderRadius: 20, padding: 16, border: "1px solid rgba(31,41,55,0.08)", display: "grid", gap: 12 }}>
+            <Skeleton width={130} height={12} />
+            <Skeleton width="100%" height={44} radius={14} />
+            <Skeleton width="100%" height={44} radius={14} />
+            <Skeleton width="100%" height={72} radius={14} />
+          </div>
+          <div style={{ background: "#fff", borderRadius: 20, padding: 16, border: "1px solid rgba(31,41,55,0.08)", display: "grid", gap: 10 }}>
+            <Skeleton width={110} height={12} />
+            <Skeleton width="100%" height={44} radius={14} />
+            <Skeleton width="100%" height={44} radius={14} />
+          </div>
+          <Skeleton width="100%" height={48} radius={16} />
+        </div>
       </div>
     );
   }
@@ -747,9 +762,16 @@ export default function LeaveRequestPage() {
             </button>
           </div>
         ) : fetching ? (
-          <div style={{ textAlign: "center", padding: "40px 0" }}>
-            <div className="mx-auto w-7 h-7 border-2 border-[#2F8BF8] border-t-transparent rounded-full animate-spin" />
-            <div style={{ fontSize: 12, color: T.textMuted, marginTop: 10 }}>Memuat...</div>
+          <div style={{ display: "grid", gap: 10 }}>
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} style={{ background: "#fff", borderRadius: 16, border: "1px solid rgba(31,41,55,0.08)", padding: 14, display: "grid", gap: 8 }}>
+                <div className="flex items-center justify-between">
+                  <Skeleton width="48%" height={12} />
+                  <Skeleton width={64} height={22} radius={999} />
+                </div>
+                <Skeleton width="76%" height={9} />
+              </div>
+            ))}
           </div>
         ) : riwayatRows.length === 0 ? (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "56px 28px 0" }}>

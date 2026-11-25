@@ -11,6 +11,7 @@ import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import BottomSheet from "../../components/BottomSheet";
 import EmployeeAppBar from "../../components/EmployeeAppBar";
+import Skeleton from "../../components/Skeleton";
 
 // Badge prioritas — konsisten dengan halaman admin
 const PRIORITY_BADGE = {
@@ -127,8 +128,39 @@ export default function EmployeeNotificationsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen pb-20" style={{ background: "#F4F2FB" }}>
-        <Clock size={20} className="animate-spin text-[#2F8BF8]" />
+      <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: "#F4F2FB" }}>
+        <EmployeeAppBar title="Notifikasi" />
+        <div className="max-w-md mx-auto px-4 pt-3">
+          <Skeleton width={96} height={10} />
+        </div>
+        <div className="max-w-md mx-auto px-4 mt-6" style={{ display: "grid", gap: 16 }}>
+          <div className="rounded-3xl bg-white p-5" style={{ border: "1px solid rgba(31,41,55,0.08)" }}>
+            <div className="flex gap-3">
+              <Skeleton width={40} height={40} radius={14} />
+              <div className="flex-1" style={{ display: "grid", gap: 8 }}>
+                <Skeleton width="55%" height={12} />
+                <Skeleton width="90%" height={9} />
+                <Skeleton width={96} height={26} radius={999} />
+              </div>
+            </div>
+          </div>
+          <div className="rounded-3xl bg-white overflow-hidden" style={{ border: "1px solid rgba(31,41,55,0.08)" }}>
+            <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(31,41,55,0.08)" }}>
+              <Skeleton width={120} height={12} />
+            </div>
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="px-5 py-4"
+                style={{ borderTop: i ? "1px solid #F1F5F9" : "none", display: "grid", gap: 8 }}>
+                <div className="flex items-center justify-between">
+                  <Skeleton width="58%" height={12} />
+                  <Skeleton width={44} height={8} />
+                </div>
+                <Skeleton width="92%" height={9} />
+                <Skeleton width="70%" height={9} />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

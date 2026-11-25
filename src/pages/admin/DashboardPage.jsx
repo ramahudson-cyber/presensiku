@@ -7,6 +7,7 @@ import { PremiumStatCard } from "./PremiumStatCard";
 import { isShiftEnded, getMondayFirstDayOfWeek } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 import {
   TrendingUp, Bell, RefreshCw, BellOff, LogOut,
 } from "lucide-react";
@@ -197,6 +198,17 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5 mt-3 sm:mt-4 md:mt-6">
           <div className="design-card p-4 sm:p-5 md:p-6 lg:col-span-2">
             <div className="flex items-center justify-between mb-3 md:mb-6"><h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Grafik Presensi 7 Hari</h2><div className="flex items-center gap-2 text-xs text-slate-500"><TrendingUp size={14} /> Kehadiran harian</div></div>
+            {loading ? (
+              <div className="flex items-end gap-[3px] sm:gap-1 md:gap-2 h-32 sm:h-40 md:h-48">
+                {[38, 62, 46, 84, 56, 72, 44].map((h, i) => (
+                  <div key={i} className="flex-1 flex flex-col items-center justify-end gap-2">
+                    <Skeleton width="55%" height={9} />
+                    <Skeleton width="100%" height={h} radius={10} />
+                    <Skeleton width="60%" height={8} />
+                  </div>
+                ))}
+              </div>
+            ) : (
             <div className="flex items-end gap-[3px] sm:gap-1 md:gap-2 h-32 sm:h-40 md:h-48">
               {weeklyData.map((val, i) => {
                 const d = new Date(serverNow); d.setDate(d.getDate() - (6 - i));
@@ -210,10 +222,11 @@ export default function DashboardPage() {
                 );
               })}
             </div>
+            )}
           </div>
           <div className="design-card p-4 sm:p-5 md:p-6">
             <div className="flex items-center justify-between mb-3 md:mb-4"><h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Pengumuman</h2><div className="p-1.5 rounded-lg bg-[#EEF6FF]"><Bell size={16} className="text-[#2F8BF8]" /></div></div>
-            {loading ? <div className="space-y-3">{[1, 2, 3].map((i) => <div key={i} className="h-16 bg-slate-100 animate-pulse rounded-2xl" />)}</div>
+            {loading ? <div className="space-y-3">{[1, 2, 3].map((i) => <div key={i} className="p-3 bg-slate-50/80 border border-slate-100 rounded-2xl" style={{ display: "grid", gap: 8 }}><Skeleton width="58%" height={12} /><Skeleton width="92%" height={9} /><Skeleton width="40%" height={8} /></div>)}</div>
             : announcements.length === 0 ? <div className="text-center py-6 sm:py-8 flex flex-col items-center gap-1.5 sm:gap-2"><div className="p-2 sm:p-3 rounded-2xl bg-slate-50"><BellOff size={18} className="sm:w-6 sm:h-6 text-slate-400" /></div><p className="text-slate-400 text-xs sm:text-sm">Belum ada pengumuman</p></div>
             : <div className="space-y-3">{announcements.map((a) => <div key={a.id} className="p-3 bg-slate-50/80 border border-slate-100 rounded-2xl hover:scale-[1.02] transition-all"><p className="text-sm font-semibold text-slate-900 line-clamp-1">{a.title}</p><p className="text-xs text-slate-600 mt-1 line-clamp-2">{a.content}</p><p className="text-xs text-[#7032c4] mt-1.5 font-medium">{new Date(a.created_at).toLocaleDateString("id-ID")}</p></div>)}</div>}
           </div>

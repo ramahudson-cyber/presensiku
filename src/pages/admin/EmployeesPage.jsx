@@ -12,6 +12,7 @@ import {
   Briefcase, User, IdCard,
 } from 'lucide-react';
 import ConfirmSheet from '../../components/ConfirmSheet';
+import Skeleton from '../../components/Skeleton';
 
 const POSITIONS = [
   "Cleaning Service", "Driver", "Satpam", "Manajemen",
@@ -494,9 +495,20 @@ const EmployeesPage = () => {
       {/* Desktop Table + Mobile Cards */}
         <div className="design-card overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-16 gap-3">
-            <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-500/30 border-t-violet-400"></div>
-            <span className="text-slate-mist text-sm">Memuat data...</span>
+          <div>
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex items-center gap-4 px-4 sm:px-6 py-4"
+                style={{ borderTop: i === 0 ? "none" : "1px solid rgba(255,255,255,0.06)" }}>
+                <Skeleton dark width={38} height={38} radius={999} />
+                <div className="flex-1 min-w-0" style={{ display: "grid", gap: 7 }}>
+                  <Skeleton dark width="42%" height={11} />
+                  <Skeleton dark width="28%" height={9} />
+                </div>
+                <Skeleton dark width={90} height={10} />
+                <Skeleton dark width={64} height={22} radius={999} />
+                <Skeleton dark width={56} height={26} radius={8} />
+              </div>
+            ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-16 flex flex-col items-center gap-3">

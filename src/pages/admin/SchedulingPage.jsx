@@ -14,6 +14,7 @@ import BottomSheet from "../../components/BottomSheet";
 import ConfirmSheet from "../../components/ConfirmSheet";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 
 // Visual per kode shift ikut master DB (instansi bebas membuat kode sendiri:
 // PG/SG/MLM, dsb). Kode tak dikenal dapat visual netral.
@@ -265,10 +266,16 @@ export default function SchedulingPage() {
           <p className="text-slate-mist text-sm mt-1">Klik kolom pencarian di atas, lalu cari nama pegawai</p>
         </div>
       ) : loading ? (
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="flex flex-col items-center gap-3">
-            <Loader2 size={28} className="animate-spin text-periwinkle-glow" />
-            <p className="text-sm text-slate-mist">Memuat jadwal...</p>
+        <div className="design-card p-3 md:p-5">
+          <div className="grid grid-cols-7 gap-1.5 md:gap-2 mb-2">
+            {[...Array(7)].map((_, i) => (
+              <Skeleton key={i} dark width="55%" height={8} style={{ margin: "4px auto" }} />
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-1.5 md:gap-2">
+            {[...Array(35)].map((_, i) => (
+              <Skeleton key={i} dark width="100%" height={54} radius={12} />
+            ))}
           </div>
         </div>
       ) : (

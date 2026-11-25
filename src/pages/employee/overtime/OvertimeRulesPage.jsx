@@ -44,7 +44,7 @@ export default function OvertimeRulesPage() {
 
         <div className="px-4 pb-10">
           {loading ? (
-            <Loader label="Memuat ketentuan..." />
+            <Loader label="Memuat ketentuan..." variant="rules" />
           ) : error ? (
             <div style={{
               background: "#fff", border: `1px solid ${OT.border}`, borderRadius: 20,

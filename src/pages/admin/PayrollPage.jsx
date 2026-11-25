@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
+import Skeleton from "../../components/Skeleton";
 import {
   Wallet, Calculator, Users, SlidersHorizontal, Loader2,
   Save, Download, Power, CheckCircle2, Info, ChevronDown,
@@ -81,8 +82,11 @@ export default function PayrollPage() {
 
   if (enabled === null) {
     return (
-      <div className="p-6 flex items-center justify-center gap-2 text-sm" style={{ color: T.textMuted }}>
-        <Loader2 size={16} className="animate-spin" /> Memuat modul gaji...
+      <div className="p-6" style={{ display: "grid", gap: 16 }}>
+        <div className="grid grid-cols-2 lg:grid-cols-4" style={{ gap: 12 }}>
+          {[0, 1, 2, 3].map((i) => <Skeleton key={i} width="100%" height={92} radius={20} />)}
+        </div>
+        <Skeleton width="100%" height={240} radius={24} />
       </div>
     );
   }
@@ -287,8 +291,19 @@ function TabRekap({ period, setPeriod, lines, setLines, loading, setLoading, rec
       {/* Tabel rekap */}
       <div className="bg-white rounded-3xl border overflow-x-auto" style={{ borderColor: T.border }}>
         {loading ? (
-          <div className="p-10 flex items-center justify-center gap-2 text-sm" style={{ color: T.textMuted }}>
-            <Loader2 size={16} className="animate-spin" /> Memuat rekap...
+          <div>
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex items-center gap-3 px-4 py-3.5"
+                style={{ borderTop: i === 0 ? "none" : `1px solid ${T.div || "#F1F5F9"}` }}>
+                <Skeleton width={30} height={30} radius={999} />
+                <div className="flex-1" style={{ display: "grid", gap: 7 }}>
+                  <Skeleton width="32%" height={10} />
+                  <Skeleton width="24%" height={9} />
+                </div>
+                <Skeleton width={84} height={10} />
+                <Skeleton width={72} height={22} radius={999} />
+              </div>
+            ))}
           </div>
         ) : lines.length === 0 ? (
           <div className="p-10 text-center text-sm space-y-2" style={{ color: T.textMuted }}>
@@ -533,8 +548,18 @@ function TabGaji({ user, period }) {
 
       <div className="bg-white rounded-3xl border overflow-hidden" style={{ borderColor: T.border }}>
         {loading ? (
-          <div className="p-10 flex items-center justify-center gap-2 text-sm" style={{ color: T.textMuted }}>
-            <Loader2 size={16} className="animate-spin" /> Memuat pegawai...
+          <div>
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex items-center gap-3 px-4 py-3.5"
+                style={{ borderTop: i === 0 ? "none" : `1px solid ${T.div || "#F1F5F9"}` }}>
+                <Skeleton width={32} height={32} radius={999} />
+                <div className="flex-1" style={{ display: "grid", gap: 7 }}>
+                  <Skeleton width="36%" height={10} />
+                  <Skeleton width="22%" height={9} />
+                </div>
+                <Skeleton width={92} height={30} radius={10} />
+              </div>
+            ))}
           </div>
         ) : employees.length === 0 ? (
           <div className="p-10 text-center text-sm" style={{ color: T.textMuted }}>Belum ada pegawai di instansi ini.</div>
@@ -588,8 +613,16 @@ function TabAturan({ period }) {
 
   if (!config) {
     return (
-      <div className="p-10 flex items-center justify-center gap-2 text-sm bg-white rounded-3xl border" style={{ color: T.textMuted, borderColor: T.border }}>
-        <Loader2 size={16} className="animate-spin" /> Memuat aturan...
+      <div className="p-4" style={{ display: "grid", gap: 14 }}>
+        <div className="bg-white rounded-3xl border" style={{ borderColor: T.border, padding: 18, display: "grid", gap: 12 }}>
+          <Skeleton width={160} height={13} />
+          <Skeleton width="100%" height={44} radius={12} />
+          <Skeleton width="100%" height={44} radius={12} />
+        </div>
+        <div className="bg-white rounded-3xl border" style={{ borderColor: T.border, padding: 18, display: "grid", gap: 12 }}>
+          <Skeleton width={130} height={13} />
+          {[0, 1, 2].map((i) => <Skeleton key={i} width="100%" height={38} radius={12} />)}
+        </div>
       </div>
     );
   }

@@ -12,6 +12,7 @@ import { exportExcelWorkbook, DATE_FMT } from "../../services/excelExport";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import BottomSheet from "../../components/BottomSheet";
+import Skeleton from "../../components/Skeleton";
 import {
   ShieldAlert, ShieldCheck, Search, Download, Loader2, RefreshCw,
   AlertTriangle, XCircle, Smartphone, Clock, Inbox, Filter,
@@ -409,8 +410,18 @@ export default function SecurityAttendancePage() {
         </div>
 
         {loading ? (
-          <div className="p-8 flex items-center justify-center gap-2 text-sm text-slate-mist">
-            <Loader2 size={16} className="animate-spin" /> Memuat…
+          <div>
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="flex items-center gap-3 px-4 py-3.5"
+                style={{ borderTop: i === 0 ? "none" : "1px solid rgba(255,255,255,0.06)" }}>
+                <Skeleton dark width={30} height={30} radius={999} />
+                <div className="flex-1 min-w-0" style={{ display: "grid", gap: 7 }}>
+                  <Skeleton dark width="46%" height={11} />
+                  <Skeleton dark width="64%" height={9} />
+                </div>
+                <Skeleton dark width={70} height={20} radius={999} />
+              </div>
+            ))}
           </div>
         ) : filteredEvents.length === 0 ? (
           <div className="p-8 text-center text-xs text-slate-mist">
@@ -494,8 +505,18 @@ export default function SecurityAttendancePage() {
         </div>
 
         {loading ? (
-          <div className="p-8 flex items-center justify-center gap-2 text-sm text-slate-mist">
-            <Loader2 size={16} className="animate-spin" /> Memuat…
+          <div>
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="flex items-center gap-3 px-4 py-3.5"
+                style={{ borderTop: i === 0 ? "none" : "1px solid rgba(255,255,255,0.06)" }}>
+                <Skeleton dark width={30} height={30} radius={999} />
+                <div className="flex-1 min-w-0" style={{ display: "grid", gap: 7 }}>
+                  <Skeleton dark width="44%" height={11} />
+                  <Skeleton dark width="60%" height={9} />
+                </div>
+                <Skeleton dark width={64} height={20} radius={999} />
+              </div>
+            ))}
           </div>
         ) : filteredFlagged.length === 0 ? (
           <div className="p-8 text-center text-xs text-slate-mist">

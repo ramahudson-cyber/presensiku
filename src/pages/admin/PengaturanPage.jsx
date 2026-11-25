@@ -19,6 +19,7 @@ import MasterDataManagementPage from "../MasterDataManagementPage";
 import BottomSheet from "../../components/BottomSheet";
 import ConfirmSheet from "../../components/ConfirmSheet";
 import LocationPicker from "../../components/LocationPicker";
+import Skeleton from "../../components/Skeleton";
 
 /* ──────────────────────────────────────────────────────────────────────────
    SHARED THEME TOKENS
@@ -28,6 +29,30 @@ const cardBase = "design-card";
 const inputBase = "design-input";
 
 const labelBase = "design-label";
+
+// Skeleton seragam untuk body tiap tab pengaturan (permukaan gelap admin).
+function TabSkeleton({ rows = 4 }) {
+  return (
+    <div className="space-y-5">
+      <div style={{ display: "grid", gap: 8 }}>
+        <Skeleton dark width={190} height={16} />
+        <Skeleton dark width={250} height={10} />
+      </div>
+      <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-4" style={{ display: "grid", gap: 14 }}>
+        {[...Array(rows)].map((_, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <Skeleton dark width={36} height={36} radius={12} />
+            <div className="flex-1 min-w-0" style={{ display: "grid", gap: 7 }}>
+              <Skeleton dark width="44%" height={10} />
+              <Skeleton dark width="30%" height={8} />
+            </div>
+            <Skeleton dark width={64} height={26} radius={8} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const sectionTitle = "design-section-title";
 
@@ -319,11 +344,7 @@ function TabProfilPuskesmas() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-periwinkle-glow" />
-      </div>
-    );
+    return <TabSkeleton rows={4} />;
   }
 
   return (
@@ -754,11 +775,7 @@ function TabManajemenUser() {
   );
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-periwinkle-glow" />
-      </div>
-    );
+    return <TabSkeleton rows={4} />;
   }
 
   return (
@@ -878,9 +895,9 @@ function TabManajemenUser() {
                           </div>
 
                           {!userDevices[u.id] ? (
-                            <div className="text-center py-4 text-slate-mist text-sm flex flex-col items-center gap-2">
-                              <RefreshCw size={20} className="animate-spin" />
-                              Memuat device...
+                            <div className="py-3" style={{ display: "grid", gap: 8 }}>
+                              <Skeleton dark width="62%" height={10} />
+                              <Skeleton dark width="42%" height={8} />
                             </div>
                           ) : userDevices[u.id].length === 0 ? (
                             <div className="text-center py-4 text-slate-mist text-sm flex flex-col items-center gap-2">
@@ -962,9 +979,10 @@ function TabManajemenUser() {
           </button>
 
           {!deviceSheetUser ? null : !userDevices[deviceSheetUser.id] ? (
-            <div className="text-center py-10 text-gray-400 text-sm flex flex-col items-center gap-2">
-              <RefreshCw size={24} className="animate-spin" />
-              Memuat device...
+            <div className="py-4" style={{ display: "grid", gap: 10 }}>
+              <Skeleton width="64%" height={11} />
+              <Skeleton width="44%" height={9} />
+              <Skeleton width="52%" height={9} />
             </div>
           ) : userDevices[deviceSheetUser.id].length === 0 ? (
             <div className="text-center py-10 text-gray-400 text-sm flex flex-col items-center gap-2">
@@ -1146,11 +1164,7 @@ function TabApprovalDevice() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-periwinkle-glow" />
-      </div>
-    );
+    return <TabSkeleton rows={4} />;
   }
 
   return (
@@ -1390,11 +1404,7 @@ function TabAuditLog() {
   );
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-periwinkle-glow" />
-      </div>
-    );
+    return <TabSkeleton rows={4} />;
   }
 
   return (
@@ -1537,11 +1547,7 @@ function TabModul() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <RefreshCw size={28} className="animate-spin text-periwinkle-glow" />
-      </div>
-    );
+    return <TabSkeleton rows={4} />;
   }
 
   return (
