@@ -289,6 +289,18 @@ html, body, #root {
   .skeleton-block { animation: none; }
 }
 
+/* --- GRAFIK BATANG RINGKASAN KEHADIRAN (Riwayat Absensi) --- */
+@keyframes empBarGrow { from{transform:scaleY(.04);opacity:.25} to{transform:scaleY(1);opacity:1} }
+.emp-bar-grow {
+  animation: empBarGrow .75s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: bottom;
+  transition: filter .2s ease;
+}
+.emp-bar-grow:hover { filter: brightness(1.06); }
+@media (prefers-reduced-motion: reduce) {
+  .emp-bar-grow { animation: none; }
+}
+
 /* ============================================================================
    ANIMASI MASUK DASHBOARD PEGAWAI
    Hanya opacity + transform (tanpa ubah ukuran/jarak) agar tata letak tetap

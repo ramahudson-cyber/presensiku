@@ -211,6 +211,13 @@ export default function EmployeeHistory() {
     alpha:     { bg: "#EF4444", chip: "rgba(239,68,68,0.12)",  text: "#DC2626", icon: "close" },
   };
 
+  const BAR_GRAD = {
+    hadir: "linear-gradient(180deg,#5FAEFF 0%,#2F8BF8 62%,#1F74E0 100%)",
+    izin:  "linear-gradient(180deg,#FCD77A 0%,#F59E0B 62%,#D97706 100%)",
+    sakit: "linear-gradient(180deg,#5EE0B0 0%,#10B981 62%,#059669 100%)",
+    alpha: "linear-gradient(180deg,#FCA5A5 0%,#EF4444 62%,#DC2626 100%)",
+  };
+
 
 
   const goThisMonth = () => {
@@ -219,30 +226,20 @@ export default function EmployeeHistory() {
     setMonthPicker(false);
   };
 
-  // Segmen donat: hadir, izin, sakit, alpha
-  const segments = [
-    { key: "hadir", value: totalHadir, color: "#2F8BF8" },
-    { key: "izin", value: izin, color: "#F59E0B" },
-    { key: "sakit", value: sakit, color: "#10B981" },
-    { key: "alpha", value: alphaCount, color: "#EF4444" },
-  ].filter((s) => s.value > 0);
-
-  const R = 46;
-  const CIRC = 2 * Math.PI * R;
-  let acc = 0;
-  const donutSegs = segments.map((s) => {
-    const len = totalRecorded > 0 ? (s.value / totalRecorded) * CIRC : 0;
-    const el = { ...s, len: Math.max(0, len - 3), offset: -acc };
-    acc += len;
-    return el;
-  });
-
   const cols = [
     { key: "hadir", label: "Hadir", value: totalHadir, color: "#2F8BF8", icon: "check" },
     { key: "izin", label: "Izin", value: izin, color: "#F59E0B", icon: "clock" },
     { key: "sakit", label: "Sakit", value: sakit, color: "#10B981", icon: "plus" },
     { key: "alpha", label: "Alpha", value: alphaCount, color: "#EF4444", icon: "close" },
   ];
+
+  // Batang grafik: tinggi proporsional terhadap total hari tercatat (skala 0-100%),
+  // status tanpa catatan tetap tampil sebagai stub 6px agar terbaca "0".
+  const chartBars = cols.map((c) => ({
+    ...c,
+    pct: percent(c.value),
+    height: totalRecorded > 0 ? Math.max(6, (c.value / totalRecorded) * 168) : 6,
+  }));
 
   return (
     <div className="hero-card-bg min-h-screen w-full absolute top-0 left-0 right-0 flex flex-col" style={{ background: "#EEF3FB" }}>
@@ -396,8 +393,19 @@ export default function EmployeeHistory() {
               </div>
 
               <section className="p-4" style={CARD}>
-                <div className="flex items-center justify-end mb-1">
-                  <span className="inline-flex items-center gap-1 pl-1 pr-2.5 py-0.5 rounded-full text-[11.5px] font-bold"
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-end gap-2.5 min-w-0">
+                    <div className="text-[38px] font-extrabold leading-none tracking-[-0.045em] text-slate-900 tabular-nums">
+                      {pctHadir}<span className="text-[17px] font-extrabold tracking-tight" style={{ color: "#94A3B8" }}>%</span>
+                    </div>
+                    <div className="pb-1 min-w-0">
+                      <p className="m-0 text-[11.5px] font-extrabold" style={{ color: "#475569", letterSpacing: "-0.005em" }}>Tingkat kehadiran</p>
+                      <p className="m-0 mt-0.5 text-[10.5px] font-semibold" style={{ color: "#64748B" }}>
+                        {totalHadir} dari {totalRecorded} hari kerja
+                      </p>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1 pl-1 pr-2.5 py-0.5 rounded-full text-[11.5px] font-bold shrink-0"
                     style={{ background: predikat.bg, color: predikat.color }}>
                     <span className="w-4 h-4 rounded-full text-white flex items-center justify-center"
                       style={{ background: predikat.color }}>
@@ -407,52 +415,50 @@ export default function EmployeeHistory() {
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-2 py-2">
-                  <div className="relative shrink-0" style={{ width: 118, height: 118 }}>
-                    <svg viewBox="0 0 120 120" width="118" height="118" style={{ transform: "rotate(-90deg)" }}>
-                      <circle cx="60" cy="60" r={R} fill="none" stroke="#E6EFFD" strokeWidth="13" />
-                      {donutSegs.map((s) => (
-                        <circle key={s.key} cx="60" cy="60" r={R} fill="none" stroke={s.color}
-                          strokeWidth="13" strokeLinecap="round"
-                          strokeDasharray={`${s.len} ${CIRC}`} strokeDashoffset={s.offset} />
-                      ))}
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-[26px] font-extrabold leading-none text-slate-900 tracking-tight">{pctHadir}%</span>
-                      <span className="text-[10.5px] font-semibold text-slate-500 mt-1">Kehadiran</span>
-                    </div>
+                {/* Grafik batang per status — skala 0-100% dari hari tercatat.
+                    Animation-delay bertingkat membuat batang tumbuh bergantian. */}
+                <div key={`${year}-${month}`} className="mt-4 grid" style={{ gridTemplateColumns: "32px 1fr", gap: 8 }}>
+                  <div className="flex flex-col justify-between items-end" style={{ height: 168, paddingBottom: 1 }}>
+                    {["100%", "50%", "0%"].map((t) => (
+                      <span key={t} className="text-[8.5px] font-bold tabular-nums" style={{ color: "#94A3B8" }}>{t}</span>
+                    ))}
                   </div>
-
-                  <div className="h-[86px] w-px shrink-0" style={{ background: "#EEF2F9" }} />
-
-                  <div className="flex-1 min-w-0 pl-1">
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-[28px] font-extrabold leading-none text-slate-900 tracking-tight">{totalHadir}</span>
-                      <span className="text-[22px] font-bold text-slate-300 leading-none">/</span>
-                      <span className="text-[26px] font-extrabold leading-none text-slate-900 tracking-tight">{totalRecorded}</span>
+                  <div className="relative" style={{ height: 168 }}>
+                    <div className="absolute inset-x-0 top-0 border-t border-dashed" style={{ borderColor: "#E9EEF6" }} />
+                    <div className="absolute inset-x-0 border-t border-dashed" style={{ top: "50%", borderColor: "#E9EEF6" }} />
+                    <div className="absolute inset-x-0 bottom-0 border-t" style={{ borderColor: "#EDF1F7" }} />
+                    <div className="relative h-full grid grid-cols-4" style={{ gap: 6, alignItems: "end", padding: "0 3px" }}>
+                      {chartBars.map((c, i) => (
+                        <div key={c.key} className="flex flex-col items-center justify-end h-full min-w-0">
+                          <span className="mb-1 text-[11px] font-extrabold tabular-nums"
+                            style={{ color: c.value > 0 ? "#0F172A" : "#94A3B8" }}>{c.value}</span>
+                          <div className="emp-bar-grow w-full"
+                            style={{
+                              maxWidth: 40,
+                              height: c.height,
+                              borderRadius: "12px 12px 7px 7px",
+                              background: c.value > 0 ? BAR_GRAD[c.key] : "#E7EDF5",
+                              boxShadow: c.value > 0 ? "0 10px 18px -12px rgba(15,23,42,0.5)" : "none",
+                              animationDelay: `${i * 70}ms`,
+                            }} />
+                          <span className="mt-2 inline-flex items-center gap-1 text-[9.5px] font-extrabold whitespace-nowrap" style={{ color: "#475569" }}>
+                            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: c.color }} />
+                            {c.label}
+                          </span>
+                          <span className="text-[9px] font-bold tabular-nums" style={{ color: "#64748B" }}>{c.pct}%</span>
+                        </div>
+                      ))}
                     </div>
-                    <p className="text-[11.5px] text-slate-500 leading-relaxed mt-2">
-                      Hari hadir dari
-                      <br />
-                      {totalRecorded} hari kerja
-                    </p>
                   </div>
                 </div>
 
-                <div className="mt-1 grid grid-cols-4 rounded-[16px] py-3 px-1"
-                  style={{ background: "#F2F7FF" }}>
-                  {cols.map((c, idx) => (
-                    <div key={c.key} className="flex flex-col items-center text-center px-1"
-                      style={{ borderRight: idx < cols.length - 1 ? "1px solid #DCE7F8" : "none" }}>
-                      <span className="w-[19px] h-[19px] rounded-full text-white flex items-center justify-center mb-1.5"
-                        style={{ background: c.color }}>
-                        <StatusIcon kind={c.icon} size={11} stroke={3.2} />
-                      </span>
-                      <span className="text-[10.5px] font-semibold text-slate-500">{c.label}</span>
-                      <span className="text-[11.5px] font-extrabold text-slate-900 mt-0.5">{c.value} Hari</span>
-                      <span className="text-[10.5px] font-extrabold mt-0.5" style={{ color: c.color }}>{percent(c.value)}%</span>
-                    </div>
-                  ))}
+                <div className="mt-3.5 pt-3 flex items-center gap-2 border-t" style={{ borderColor: "#EDF1F7" }}>
+                  <span className="w-5 h-5 rounded-[7px] flex items-center justify-center shrink-0" style={{ background: "#EEF6FF" }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2F8BF8" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2" /></svg>
+                  </span>
+                  <p className="m-0 text-[10px] font-semibold leading-relaxed" style={{ color: "#64748B" }}>
+                    Kehadiran dihitung dari hari kerja yang tercatat pada bulan berjalan.
+                  </p>
                 </div>
               </section>
 
