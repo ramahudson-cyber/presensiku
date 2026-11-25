@@ -68,7 +68,7 @@ export default function EmployeeSchedule() {
   // Definisi shift instansi (jam mulai/selesai per hari Senin-0)
   const [shiftDefs, setShiftDefs] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [popup, setPopup] = useState(null);
   const [todayShift, setTodayShift] = useState(null);
   const animatingRef = useRef(false);
 
@@ -221,6 +221,7 @@ export default function EmployeeSchedule() {
   let pdY = useRef(null);
   let dragDist = useRef(0);
   let suppressClick = useRef(false);
+  let tapTarget = useRef(null);
 
   const applyDrag = (v) => {
     const dist = Math.max(-340, Math.min(340, v));
@@ -307,6 +308,7 @@ export default function EmployeeSchedule() {
   const onWrapPointerDown = (e) => {
     if (animatingRef.current) return;
     pdY.current = e.clientX; dragDist.current = 0; suppressClick.current = false;
+    tapTarget.current = e.target?.closest?.("button[data-key]") || null;
     calWrapRef.current?.setPointerCapture(e.pointerId);
   };
   const onWrapPointerMove = (e) => {
@@ -318,12 +320,21 @@ export default function EmployeeSchedule() {
   const onWrapPointerUp = () => {
     if (pdY.current === null || animatingRef.current) { pdY.current = null; return; }
     const d = dragDist.current;
-    pdY.current = null; dragDist.current = 0;
+    const tap = tapTarget.current;
+    pdY.current = null; dragDist.current = 0; tapTarget.current = null;
     if (d < -90) changeMonthAnimated(1);
     else if (d > 90) changeMonthAnimated(-1);
-    else springBack();
+    else {
+      springBack();
+      // Tap tanggal: buka popover di pointerup (pointer capture membuat
+      // event click ter-retarget ke wrapper, jadi onClick tombol tidak andal)
+      if (tap && Math.abs(d) < 12) {
+        suppressClick.current = true;
+        openPopup(tap.dataset.key, tap);
+      }
+    }
   };
-  const onWrapPointerCancel = () => { pdY.current = null; springBack(); };
+  const onWrapPointerCancel = () => { pdY.current = null; tapTarget.current = null; springBack(); };
   const onWrapClickCapture = (e) => {
     if (suppressClick.current) { e.stopPropagation(); e.preventDefault(); suppressClick.current = false; }
   };
@@ -349,12 +360,49 @@ export default function EmployeeSchedule() {
     return null;
   };
 
-  const sheetSched = selected ? schedules[selected] : null;
-  const sheetDef = sheetSched ? getShiftDefinition(shiftDefs, { date: selected, shift_code: sheetSched.shift_code }) : null;
-  const sheetJam = sheetDef ? fmtJam(sheetDef) : null;
-  const sheetShiftName = sheetSched
-    ? (shiftsList?.find((s) => s.code === sheetSched.shift_code)?.name || cap(sheetSched.shift_code))
+  const popSched = popup ? schedules[popup.key] : null;
+  const popDef = popSched ? getShiftDefinition(shiftDefs, { date: popup.key, shift_code: popSched.shift_code }) : null;
+  const popJam = popDef ? fmtJam(popDef) : null;
+  const popShiftName = popSched
+    ? (shiftsList?.find((s) => s.code === popSched.shift_code)?.name || cap(popSched.shift_code))
     : null;
+  const popDateLabel = popup?.key
+    ? new Date(popup.key + "T00:00:00").toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+    : "";
+
+  // ── Popover kecil di atas tanggal (pengganti bottom sheet) ──
+  const POPUP_W = 236;
+  const openPopup = (key, el) => {
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const half = POPUP_W / 2;
+    const centerX = r.left + r.width / 2;
+    const left = Math.min(Math.max(centerX, 16 + half), window.innerWidth - 16 - half);
+    const placement = r.top > 210 ? "top" : "bottom";
+    setSelected(key);
+    setPopup({
+      key,
+      left,
+      top: placement === "top" ? r.top - 10 : r.bottom + 10,
+      placement,
+      arrow: Math.min(half - 26, Math.max(-(half - 26), centerX - left)),
+    });
+  };
+  const closePopup = () => setPopup(null);
+
+  useEffect(() => {
+    if (!popup) return undefined;
+    const close = () => setPopup(null);
+    const onKey = (e) => { if (e.key === "Escape") close(); };
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [popup]);
 
 
   return (
@@ -412,18 +460,21 @@ export default function EmployeeSchedule() {
                 <div key={i} className="relative aspect-square flex items-center justify-center">
                   {day ? (
                     <button type="button"
-                      onClick={() => { setSelected(key); setSheetOpen(true); }}
+                      data-key={key}
+                      onClick={(e) => openPopup(key, e.currentTarget)}
                       className={`relative w-full max-w-[44px] h-full flex flex-col items-center justify-center rounded-full border-none transition-all duration-150
                         ${!shiftColor && !isSel ? "bg-transparent hover:bg-[#EEF6FF]" : ""}`}
                       style={{
-                        background: isSel ? (shiftColor || "#2F8BF8") : (shiftColor || undefined),
+                        background: shiftColor || undefined,
                         boxShadow: isSel
-                          ? "0 0 0 2.5px #0F172A, 0 8px 18px -6px rgba(4,26,74,0.45)"
+                          ? shiftColor
+                            ? "0 0 0 2.5px #0F172A, 0 8px 18px -6px rgba(4,26,74,0.45)"
+                            : "0 0 0 2.5px #0F172A"
                           : shiftColor ? `0 6px 14px -7px ${shiftColor}b3` : null,
                       }}>
                       <span className="text-[13.5px] leading-none"
                         style={{
-                          color: isSel || shiftColor ? "#fff" : isToday ? "#1F74E0" : T.textSec,
+                          color: shiftColor ? "#fff" : isSel ? "#0F172A" : isToday ? "#1F74E0" : T.textSec,
                           fontWeight: isSel || isToday || shiftColor ? 800 : 700,
                         }}>
                         {day}
@@ -516,81 +567,71 @@ export default function EmployeeSchedule() {
         </div>
       )}
 
-      {/* ── BOTTOM SHEET DETAIL TANGGAL ── */}
-      {sheetOpen && (
+      {/* ── POPOVER PREMIUM DETAIL TANGGAL (di atas tanggal yang diklik) ── */}
+      {popup && (
         <>
-          <div className="fixed inset-0 z-50" style={{ background: "rgba(15,23,42,0.46)" }}
-            onClick={() => setSheetOpen(false)} aria-hidden="true" />
-          <div role="dialog" aria-modal="true" aria-labelledby="jadwal-sheet-title"
-            className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-md flex flex-col overflow-hidden"
+          <div className="fixed inset-0 z-40" onClick={closePopup} aria-hidden="true" />
+          <div role="dialog" aria-label={`Detail jadwal ${popDateLabel}`}
+            className="fixed z-50"
             style={{
-              height: "min(72%, 620px)", background: "#fff",
-              borderRadius: "28px 28px 0 0", boxShadow: "0 -10px 34px rgba(15,23,42,0.14)",
+              left: popup.left,
+              top: popup.top,
+              width: POPUP_W,
+              transform: popup.placement === "top" ? "translate(-50%, -100%)" : "translate(-50%, 0)",
             }}>
-            <div className="flex justify-center pt-2.5 pb-1 cursor-pointer" onClick={() => setSheetOpen(false)} aria-hidden="true">
-              <span className="rounded-full" style={{ width: 44, height: 5, background: "#E2E8F0" }} />
-            </div>
-            <header className="flex items-center gap-3 px-5" style={{ paddingTop: 6, paddingBottom: 14 }}>
-              <div className="flex-1 min-w-0">
-                <h2 id="jadwal-sheet-title" className="m-0 text-[17px] font-extrabold"
-                  style={{ letterSpacing: "-0.02em", color: T.text }}>Detail Jadwal</h2>
-                <p className="text-[11.5px] mt-1 m-0" style={{ color: T.textMuted }}>
-                  {selected ? new Date(selected + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) : "—"}
+            <div
+              className={`relative bg-white rounded-[18px] animate-popover-in ${popup.placement === "top" ? "origin-bottom" : "origin-top"}`}
+              style={{
+                border: "1px solid rgba(15,23,42,0.07)",
+                boxShadow: "0 18px 44px -14px rgba(15,23,42,0.38), 0 4px 12px rgba(15,23,42,0.06)",
+              }}>
+              <div className="px-3.5 pt-3 pb-2.5">
+                <p className="m-0 text-[9.5px] font-bold uppercase" style={{ color: T.textMuted, letterSpacing: "0.05em" }}>
+                  {popDateLabel}
                 </p>
-              </div>
-              <button type="button" onClick={() => setSheetOpen(false)} aria-label="Tutup"
-                className="w-[34px] h-[34px] flex-none rounded-full flex items-center justify-center border border-[#E2E8F0] bg-[#F8FAFC] hover:bg-[#F1F5F9] transition-colors"
-                style={{ color: T.textSec }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M6 6l12 12" /><path d="M18 6 6 18" /></svg>
-              </button>
-            </header>
-            <div className="h-px" style={{ background: T.div }} />
-            <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4">
-              {sheetSched && sheetShiftName ? (
-                <>
-                  <div className="flex items-center gap-3 rounded-[18px] px-4 py-[14px]"
-                    style={{ background: T.iconBg }}>
-                    <span className="w-[46px] h-[46px] rounded-full flex items-center justify-center flex-none text-white"
-                      style={{ background: colorFor(sheetSched.shift_code) }}>
-                      <Clock size={22} />
-                    </span>
-                    <div>
-                      <p className="m-0 text-[16px] font-extrabold" style={{ color: T.text, letterSpacing: "-0.01em" }}>
-                        Shift {sheetShiftName}
-                      </p>
-                      <span className="block mt-0.5 text-[10.5px] font-semibold" style={{ color: T.textMuted }}>
-                        Ditetapkan oleh admin
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-2.5 h-2.5 rounded-full flex-none"
+                    style={{ background: popSched ? colorFor(popSched.shift_code) : "#CBD5E1" }} />
+                  <b className="text-[13px] font-extrabold truncate"
+                    style={{ color: T.text, letterSpacing: "-0.01em" }}>
+                    {popSched && popShiftName ? `Shift ${popShiftName}` : "Tidak ada jadwal"}
+                  </b>
+                </div>
+                {popSched && popShiftName ? (
+                  <>
+                    <div className="flex items-center gap-1.5 mt-2 rounded-[10px] px-2 py-1.5"
+                      style={{ background: "#F1F6FF" }}>
+                      <Clock size={13} style={{ color: "#1F74E0" }} />
+                      <span className="text-[10.5px] font-bold" style={{ color: "#1E3A8A" }}>
+                        {popJam ? popJam.trim() : `Sesuai pengaturan instansi`}
                       </span>
                     </div>
-                  </div>
-                  <div className="mt-3 rounded-[16px] px-4 py-1"
-                    style={{ background: "#F8FAFD" }}>
-                    <div className="flex items-center justify-between gap-3 py-2.5">
-                      <span className="text-[11px] font-semibold" style={{ color: T.textMuted }}>Jam kerja</span>
-                      <b className="text-[12px] font-extrabold" style={{ color: T.text }}>
-                        {sheetJam ? sheetJam.trim() : "Sesuai pengaturan instansi"}
-                      </b>
-                    </div>
-                    <div className="flex items-center justify-between gap-3 py-2.5"
-                      style={{ borderTop: `1px solid ${T.div}` }}>
-                      <span className="text-[11px] font-semibold" style={{ color: T.textMuted }}>Zona waktu</span>
-                      <b className="text-[12px] font-extrabold" style={{ color: T.text }}>{getZonaWaktuLabel()} (UTC+8)</b>
-                    </div>
-                    <div className="flex items-center justify-between gap-3 py-2.5"
-                      style={{ borderTop: `1px solid ${T.div}` }}>
-                      <span className="text-[11px] font-semibold" style={{ color: T.textMuted }}>Bulan</span>
-                      <b className="text-[12px] font-extrabold" style={{ color: T.text }}>{MONTHS[month]} {year}</b>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="text-center py-10">
-                  <b className="block text-[13.5px] font-extrabold" style={{ color: T.text }}>Tidak ada jadwal</b>
-                  <p className="mt-1.5 mb-0 mx-auto max-w-[240px] text-[11px] leading-relaxed" style={{ color: T.textMuted }}>
-                    Tanggal ini tidak memiliki penugasan shift. Jadwal ditetapkan oleh admin melalui halaman kelola jadwal.
+                    <p className="m-0 mt-2 text-[9.5px] font-semibold" style={{ color: T.textMuted }}>
+                      Ditetapkan oleh admin melalui kelola jadwal.
+                    </p>
+                  </>
+                ) : (
+                  <p className="m-0 mt-2 text-[9.5px] font-semibold leading-relaxed" style={{ color: T.textMuted }}>
+                    Tidak ada penugasan shift untuk tanggal ini.
                   </p>
-                </div>
-              )}
+                )}
+              </div>
+              <span aria-hidden="true" className="absolute w-3 h-3 bg-white rotate-45"
+                style={popup.placement === "top"
+                  ? {
+                    left: `calc(50% + ${popup.arrow}px)`,
+                    bottom: -6,
+                    borderRadius: 2,
+                    borderRight: "1px solid rgba(15,23,42,0.07)",
+                    borderBottom: "1px solid rgba(15,23,42,0.07)",
+                  }
+                  : {
+                    left: `calc(50% + ${popup.arrow}px)`,
+                    top: -6,
+                    borderRadius: 2,
+                    borderLeft: "1px solid rgba(15,23,42,0.07)",
+                    borderTop: "1px solid rgba(15,23,42,0.07)",
+                  }} />
             </div>
           </div>
         </>

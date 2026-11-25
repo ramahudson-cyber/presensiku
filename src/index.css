@@ -270,6 +270,9 @@ html, body, #root {
 .animate-pulse-slow { animation:pulseSlow 3s ease-in-out infinite; }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 .animate-slide-up { animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1) }
+/* Popover kecil di atas tanggal (kalender jadwal) */
+@keyframes popoverIn { from{opacity:0;transform:translateY(6px) scale(0.94)} to{opacity:1;transform:translateY(0) scale(1)} }
+.animate-popover-in { animation:popoverIn 0.2s cubic-bezier(0.16,1,0.3,1) both }
 
 /* ============================================================================
    ANIMASI MASUK DASHBOARD PEGAWAI
