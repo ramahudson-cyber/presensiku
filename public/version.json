@@ -1,7 +1,7 @@
 {
   "version": "1.8.4",
   "versionCode": 31,
-  "webVersionCode": 83,
+  "webVersionCode": 84,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.4/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
   "changelog": "Badge placeholder bertanda dash di kartu absen dihapus saat belum absen.",

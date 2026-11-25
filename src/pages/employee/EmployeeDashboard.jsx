@@ -566,8 +566,7 @@ export default function EmployeeDashboard() {
             ) : (
               <>
                 <div className="text-base font-bold leading-none mb-2" style={{ color: '#FFFFFF' }}>Belum Absen</div>
-                <div className="text-[20px] font-bold leading-none opacity-50 mb-2">--:--</div>
-                <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/10 px-2.5 py-1 rounded-full opacity-60" style={{ border: '1px solid rgba(255,255,255,0.15)' }}>—</div>
+                <div className="text-[20px] font-bold leading-none opacity-50">--:--</div>
               </>
             )}
           </div>
@@ -604,8 +603,7 @@ export default function EmployeeDashboard() {
             ) : (
               <>
                 <div className="text-base font-bold leading-none mb-2" style={{ color: '#FFFFFF' }}>Belum Absen</div>
-                <div className="text-[20px] font-bold leading-none opacity-50 mb-2">--:--</div>
-                <div className="inline-flex items-center gap-1.5 text-[9px] font-semibold bg-white/10 px-2.5 py-1 rounded-full opacity-60">—</div>
+                <div className="text-[20px] font-bold leading-none opacity-50">--:--</div>
               </>
             )}
           </div>
