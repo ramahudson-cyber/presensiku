@@ -644,18 +644,13 @@ export default function EmployeeSchedule() {
                   </b>
                 </div>
                 {popSched && popShiftName ? (
-                  <>
-                    <div className="flex items-center gap-1.5 mt-2 rounded-[10px] px-2 py-1.5"
-                      style={{ background: "#F1F6FF" }}>
-                      <Clock size={13} style={{ color: "#1F74E0" }} />
-                      <span className="text-[10.5px] font-bold" style={{ color: "#1E3A8A" }}>
-                        {popJam ? popJam.trim() : `Sesuai pengaturan instansi`}
-                      </span>
-                    </div>
-                    <p className="m-0 mt-2 text-[9.5px] font-semibold" style={{ color: T.textMuted }}>
-                      Ditetapkan oleh admin melalui kelola jadwal.
-                    </p>
-                  </>
+                  <div className="flex items-center gap-1.5 mt-2 rounded-[10px] px-2 py-1.5"
+                    style={{ background: "#F1F6FF" }}>
+                    <Clock size={13} style={{ color: "#1F74E0" }} />
+                    <span className="text-[10.5px] font-bold" style={{ color: "#1E3A8A" }}>
+                      {popJam ? popJam.trim() : `Sesuai pengaturan instansi`}
+                    </span>
+                  </div>
                 ) : (
                   <p className="m-0 mt-2 text-[9.5px] font-semibold leading-relaxed" style={{ color: T.textMuted }}>
                     Tidak ada penugasan shift untuk tanggal ini.
