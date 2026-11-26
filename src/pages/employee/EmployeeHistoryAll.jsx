@@ -205,7 +205,6 @@ export default function EmployeeHistoryAll() {
         time: `${inStr} – ${outStr}`,
         clockIn: inStr, clockOut: outStr,
         location: item.location_in?.matched_location_name || "—",
-        note: item.notes || "",
         shift: item.shift_code ? shiftLabel(item.shift_code, null) : "",
       };
     });
@@ -413,15 +412,11 @@ export default function EmployeeHistoryAll() {
                   <span className="text-slate-700 font-semibold text-right">{detail.location}</span>
                 </div>
                 {detail.shift && (
-                  <div className="flex items-start justify-between gap-4 py-1.5 border-b border-slate-100">
+                  <div className="flex items-start justify-between gap-4 py-1.5">
                     <span className="text-slate-400 font-medium shrink-0">Shift</span>
                     <span className="text-slate-700 font-semibold text-right">{detail.shift}</span>
                   </div>
                 )}
-                <div className="flex items-start justify-between gap-4 py-1.5">
-                  <span className="text-slate-400 font-medium shrink-0">Catatan</span>
-                  <span className="text-slate-700 font-medium text-right">{detail.note || "—"}</span>
-                </div>
               </div>
 
               <button type="button" onClick={() => setDetail(null)}
