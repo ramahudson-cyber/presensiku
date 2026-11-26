@@ -698,6 +698,74 @@ export default function EmployeeDashboard() {
           ))}
         </div>
 
+        {/* PENGUMUMAN — section baru di bawah Menu; maksimal 3 pengumuman aktif.
+            Tautan "Lihat Semua" menuju halaman Pengumuman pegawai. */}
+        <div>
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h3 className="text-lg font-extrabold tracking-tight" style={{ color: T.text }}>Pengumuman</h3>
+            <Link to="/employee/notifications"
+              className="inline-flex items-center gap-0.5 text-[12px] font-extrabold shrink-0"
+              style={{ color: "#1859C9" }}>
+              Lihat Semua
+              <ChevronRight size={14} />
+            </Link>
+          </div>
+
+          {announcements.length === 0 ? (
+            <div className="text-center px-4 py-6">
+              <span className="w-11 h-11 rounded-full grid place-items-center mx-auto mb-2" style={{ background: "#EEF6FF" }}>
+                <Bell size={20} style={{ color: "#2F8BF8" }} />
+              </span>
+              <p className="m-0 text-[13px] font-extrabold text-slate-700">Belum ada pengumuman</p>
+              <p className="m-0 mt-1 text-[12px] text-slate-600">Pengumuman dari admin instansi akan muncul di sini.</p>
+            </div>
+          ) : (
+            <div>
+              {announcements.slice(0, 3).map((a, i) => {
+                const isRead = ackedIds.has(a.id);
+                const prio = a.priority === "urgent"
+                  ? { label: "Urgent", bg: "#FFE4E6", color: "#9F1239" }
+                  : a.priority === "penting"
+                    ? { label: "Penting", bg: "#FEF3C7", color: "#92400E" }
+                    : null;
+                const annDate = new Date(a.published_at || a.created_at).toLocaleDateString("id-ID", {
+                  day: "numeric", month: "short", year: "numeric",
+                });
+                return (
+                  <Link key={a.id} to="/employee/notifications"
+                    className="flex items-start gap-[11px] py-3 active:opacity-80 transition-opacity"
+                    style={{ borderTop: i ? "1px solid #F1F5F9" : "none" }}>
+                    <span className="w-[7px] h-[7px] rounded-full mt-1.5 shrink-0"
+                      style={{ background: isRead ? "#E2E8F0" : "#2F8BF8" }} />
+                    <span className="flex-1 min-w-0">
+                      <span className="flex items-start gap-2 min-w-0">
+                        <b className="text-[13px] font-extrabold leading-snug line-clamp-2 min-w-0"
+                          style={{ color: isRead ? "#0F172A" : "#1859C9", letterSpacing: "-0.005em" }}>
+                          {a.title}
+                        </b>
+                        {prio && (
+                          <span className="flex-none text-[11px] font-extrabold rounded-full px-2 py-0.5"
+                            style={{ background: prio.bg, color: prio.color }}>
+                            {prio.label}
+                          </span>
+                        )}
+                      </span>
+                      <span className="block text-[13px] mt-1 line-clamp-2"
+                        style={{ color: "#4A5A70", lineHeight: 1.55 }}>
+                        {a.content}
+                      </span>
+                      <span className="block mt-1.5 text-[12px] font-bold" style={{ color: "#475569" }}>
+                        {annDate}
+                      </span>
+                    </span>
+                    <ChevronRight size={16} className="shrink-0 mt-1" style={{ color: "#CBD5E1" }} />
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         {/* Shift Reminder Banner — check-in */}
         {(() => {
           const r = getShiftReminderInfo(serverTime, todaySched, shiftDefinitions, todayAttendance);
