@@ -233,12 +233,13 @@ export default function EmployeeHistory() {
     { key: "alpha", label: "Alpha", value: alphaCount, color: "#EF4444", icon: "close" },
   ];
 
-  // Batang grafik: tinggi proporsional terhadap total hari tercatat (skala 0-100%),
-  // status tanpa catatan tetap tampil sebagai stub 6px agar terbaca "0".
+  // Batang grafik: tinggi proporsional terhadap total hari tercatat (skala 0-100%).
+  // 132px = tinggi area plot; label status dipisah di bawah agar tidak menimpa catatan.
+  const CHART_H = 132;
   const chartBars = cols.map((c) => ({
     ...c,
     pct: percent(c.value),
-    height: totalRecorded > 0 ? Math.max(6, (c.value / totalRecorded) * 168) : 6,
+    height: totalRecorded > 0 ? Math.max(6, (c.value / totalRecorded) * CHART_H) : 6,
   }));
 
   return (
@@ -416,32 +417,46 @@ export default function EmployeeHistory() {
                 </div>
 
                 {/* Grafik batang per status — skala 0-100% dari hari tercatat.
-                    Animation-delay bertingkat membuat batang tumbuh bergantian. */}
-                <div key={`${year}-${month}`} className="mt-4 grid" style={{ gridTemplateColumns: "32px 1fr", gap: 8 }}>
-                  <div className="flex flex-col justify-between items-end" style={{ height: 168, paddingBottom: 1 }}>
-                    {["100%", "50%", "0%"].map((t) => (
-                      <span key={t} className="text-[8.5px] font-bold tabular-nums" style={{ color: "#94A3B8" }}>{t}</span>
-                    ))}
+                    Area plot 132px; label status di baris terpisah agar tidak
+                    menimpa catatan di bawah kartu. Animation-delay bertingkat. */}
+                <div key={`${year}-${month}`} className="mt-6">
+                  <div className="grid" style={{ gridTemplateColumns: "32px 1fr", gap: 8 }}>
+                    <div className="flex flex-col justify-between items-end" style={{ height: CHART_H, paddingBottom: 1 }}>
+                      {["100%", "50%", "0%"].map((t) => (
+                        <span key={t} className="text-[8.5px] font-bold tabular-nums" style={{ color: "#94A3B8" }}>{t}</span>
+                      ))}
+                    </div>
+                    <div className="relative" style={{ height: CHART_H }}>
+                      <div className="absolute inset-x-0 top-0 border-t border-dashed" style={{ borderColor: "#E9EEF6" }} />
+                      <div className="absolute inset-x-0 border-t border-dashed" style={{ top: "50%", borderColor: "#E9EEF6" }} />
+                      <div className="absolute inset-x-0 bottom-0 border-t" style={{ borderColor: "#EDF1F7" }} />
+                      <div className="absolute inset-0 grid grid-cols-4" style={{ gap: 6, alignItems: "end", padding: "0 3px" }}>
+                        {chartBars.map((c, i) => (
+                          <div key={c.key} className="relative flex items-end justify-center h-full min-w-0">
+                            <span className="absolute left-1/2 -translate-x-1/2 text-[11px] font-extrabold tabular-nums"
+                              style={{ bottom: c.height + 5, color: c.value > 0 ? "#0F172A" : "#94A3B8" }}>
+                              {c.value}
+                            </span>
+                            <div className="emp-bar-grow w-full"
+                              style={{
+                                maxWidth: 40,
+                                height: c.height,
+                                borderRadius: "12px 12px 7px 7px",
+                                background: c.value > 0 ? BAR_GRAD[c.key] : "#E7EDF5",
+                                boxShadow: c.value > 0 ? "0 10px 18px -12px rgba(15,23,42,0.5)" : "none",
+                                animationDelay: `${i * 70}ms`,
+                              }} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <div className="relative" style={{ height: 168 }}>
-                    <div className="absolute inset-x-0 top-0 border-t border-dashed" style={{ borderColor: "#E9EEF6" }} />
-                    <div className="absolute inset-x-0 border-t border-dashed" style={{ top: "50%", borderColor: "#E9EEF6" }} />
-                    <div className="absolute inset-x-0 bottom-0 border-t" style={{ borderColor: "#EDF1F7" }} />
-                    <div className="relative h-full grid grid-cols-4" style={{ gap: 6, alignItems: "end", padding: "0 3px" }}>
-                      {chartBars.map((c, i) => (
-                        <div key={c.key} className="flex flex-col items-center justify-end h-full min-w-0">
-                          <span className="mb-1 text-[11px] font-extrabold tabular-nums"
-                            style={{ color: c.value > 0 ? "#0F172A" : "#94A3B8" }}>{c.value}</span>
-                          <div className="emp-bar-grow w-full"
-                            style={{
-                              maxWidth: 40,
-                              height: c.height,
-                              borderRadius: "12px 12px 7px 7px",
-                              background: c.value > 0 ? BAR_GRAD[c.key] : "#E7EDF5",
-                              boxShadow: c.value > 0 ? "0 10px 18px -12px rgba(15,23,42,0.5)" : "none",
-                              animationDelay: `${i * 70}ms`,
-                            }} />
-                          <span className="mt-2 inline-flex items-center gap-1 text-[9.5px] font-extrabold whitespace-nowrap" style={{ color: "#475569" }}>
+                  <div className="grid" style={{ gridTemplateColumns: "32px 1fr", gap: 8 }}>
+                    <span />
+                    <div className="grid grid-cols-4" style={{ gap: 6, padding: "0 3px" }}>
+                      {chartBars.map((c) => (
+                        <div key={c.key} className="flex flex-col items-center min-w-0 pt-2">
+                          <span className="inline-flex items-center gap-1 text-[9.5px] font-extrabold whitespace-nowrap" style={{ color: "#475569" }}>
                             <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: c.color }} />
                             {c.label}
                           </span>
