@@ -677,7 +677,7 @@ export default function EmployeeDashboard() {
             { to: "/employee/sanggah", icon: MessageSquareWarning, label: "Koreksi" },
             { to: "/employee/overtime", icon: Clock, label: "Lembur" },
             { to: "/employee/history", icon: History, label: "Riwayat Kehadiran" },
-            { to: "/employee/notifications", icon: Bell, label: "Notifikasi", badge: true },
+            { to: "/employee/notifications", icon: Bell, label: "Pengumuman", badge: true },
             ...(payrollOn ? [{ to: "/employee/salary", icon: Wallet, label: "Slip Gaji" }] : []),
             { to: "/employee/profile", icon: User, label: "Profil" },
           ].map((item) => (

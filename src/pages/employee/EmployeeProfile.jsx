@@ -55,7 +55,7 @@ const icons = {
 // ── Card Header ──
 const CardHeader = ({ title, subtitle }) => (
   <div className="flex items-center justify-between px-5 pt-5 pb-1">
-    <div className="flex items-center gap-2.5">
+    <div className="flex items-center gap-2.5">
       <span className="text-xs font-bold tracking-wide" style={{ color: T.text }}>{title}</span>
     </div>
     <span className="text-[10px] font-medium" style={{ color: T.sub }}>{subtitle}</span>
@@ -225,9 +225,9 @@ export default function EmployeeProfile() {
             <MenuRow icon={icons.edit} title="Edit Profil"
               desc="Ubah foto, nama, dan informasi pribadi"
               onClick={() => navigate(user?.role === 'pegawai' ? '/employee/profile/edit' : '/admin/profile/edit')} />
-            <MenuRow icon={icons.bell} title="Notifikasi"
-              desc="Pengingat & pemberitahuan"
-              onClick={() => {}} />
+            <MenuRow icon={icons.bell} title="Pengumuman"
+              desc="Pengumuman & pemberitahuan"
+              onClick={() => navigate("/employee/notifications")} />
           </div>
         </Card>
 
