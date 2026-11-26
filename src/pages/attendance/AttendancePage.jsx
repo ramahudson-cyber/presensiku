@@ -262,6 +262,9 @@ export default function AttendancePage() {
         setShiftDefinition(definition || null);
         setTodaySchedule({ code: sched.shift_code, name: shiftInfo?.name || sched.shift_code });
       } else {
+        // Tanpa jadwal: reset juga shiftDefinition. Kalau tidak, nilai dari
+        // render sebelumnya bisa tertinggal dan dipakai menghitung deadline.
+        setShiftDefinition(null);
         setTodaySchedule(null);
       }
     } catch (e) { console.error(e); }
@@ -397,6 +400,8 @@ export default function AttendancePage() {
 
   // Jendela waktu absen masuk: tombol terkunci sampai 15 menit sebelum jam
   // shift (server tetap menegakkan lewat guard — defense in depth).
+  // shiftDefinition null (lembur hari libur / tanpa jadwal) → gerbang terbuka,
+  // karena tidak ada jam shift yang bisa dijadikan acuan.
   const checkInGate = todayAttendance
     ? { open: true, minutesUntil: 0 }
     : isCheckInWindowOpen(shiftDefinition, serverTime || new Date(), 15);
@@ -437,7 +442,8 @@ export default function AttendancePage() {
   })();
   // Lembur disetujui memperpanjang batas pulang: deadline = jam selesai lembur
   // + 1 jam, bila lebih lambat dari deadline shift. Server menegakkan aturan
-  // yang sama lewat effective_checkout_deadline(). Dua kelompok slot:
+  // yang sama lewat effective_checkout_deadline() dan (untuk baris tanpa
+  // jadwal) lewat cabang OLD.shift_code IS NULL di guard.
   //   plain = slot sehari (end > start); pada shift malam, slot yang selesai
   //           sebelum jam mulai shift terjadi setelah tengah malam → +1 hari;
   //   cross = slot lintas tengah malam (end <= start) → selalu selesai besok.
@@ -472,6 +478,8 @@ export default function AttendancePage() {
     if (crossMs === null) return plainMs;
     return Math.max(plainMs, crossMs);
   })();
+  // Absensi lembur tanpa jadwal (shiftDefinition null): deadline sepenuhnya
+  // dari slot lembur, sebab tidak ada jam selesai shift sebagai dasar.
   const effectiveEndAtMs = (endAtMs !== null && overtimeEndAtMs !== null)
     ? Math.max(endAtMs, overtimeEndAtMs)
     : (overtimeEndAtMs ?? endAtMs);
@@ -571,16 +579,32 @@ export default function AttendancePage() {
       const today = witaDate.toISOString().split("T")[0];
 
 	      const schedule = await getTodayScheduleInfo(witaDate, user.id);
-	      if (!schedule?.shift_code) {
-	        setError("Tidak ada jadwal kerja hari ini");
-	        setShowScheduleAlert(true);
-	        setSaving(false);
-	        return;
+	      const shiftCode = schedule?.shift_code || null;
+
+	      if (!shiftCode) {
+	        // Tanpa jadwal: absen hanya boleh bila ada lembur DISETUJUI hari ini
+	        // (mis. lembur hari libur). Kehadiran ini yang membuat uang lembur
+	        // masuk slip gaji, jadi server mengizinkannya lewat jalur khusus.
+	        const { data: otRows } = await supabase
+	          .from("overtime_requests")
+	          .select("id")
+	          .eq("user_id", user.id)
+	          .eq("date", today)
+	          .eq("status", "approved")
+	          .limit(1);
+
+	        if (!otRows?.length) {
+	          setError("Tidak ada jadwal kerja hari ini");
+	          setShowScheduleAlert(true);
+	          setSaving(false);
+	          return;
+	        }
 	      }
-	      const shiftCode = schedule.shift_code;
 
       const pgDayOfWeek = (witaDate.getUTCDay() + 6) % 7;
-      const shiftSchedule = await getShiftSchedule(shiftCode, pgDayOfWeek);
+      // Tanpa jadwal (lembur hari libur) tidak ada definisi shift untuk dicek,
+      // jadi tidak ada keterlambatan. Server juga memaksa nilai yang sama.
+      const shiftSchedule = shiftCode ? await getShiftSchedule(shiftCode, pgDayOfWeek) : null;
 
       const witaHour = witaDate.getUTCHours();
       const witaMinute = witaDate.getUTCMinutes();
@@ -638,6 +662,8 @@ export default function AttendancePage() {
         selfie_out_url: null,
         attendance_status: status,
         shift_code: shiftCode,
+        // Jalur lembur tanpa jadwal: schedule_match=false, dan server memaksa
+        // is_late=false + status hadir untuk baris tanpa shift_code.
         schedule_match: !!schedule,
         is_late: isLate,
         late_minutes: lateMinutes,

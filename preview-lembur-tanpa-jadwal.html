@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id" data-zcode-design>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — Lembur di Hari Tanpa Jadwal</title>
+<style>
+  :root {
+    --blue: #2F8BF8;
+    --blue-dark: #1F74E0;
+    --ink: #0F172A;
+    --ink-2: #475569;
+    --muted: #94A3B8;
+    --line: rgba(31, 41, 55, 0.10);
+    --ok: #10B981;
+    --warn: #F59E0B;
+    --bad: #EF4444;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 34px 20px 60px;
+    background: #F4F2FB; color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1020px; margin: 0 auto; }
+  h1 { font-size: 21px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .desc { font-size: 13px; color: var(--ink-2); margin: 0 0 26px; line-height: 1.65; }
+  .desc code { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; font-size: 11.5px; }
+
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 22px 24px; box-shadow: 0 8px 26px rgba(15,23,42,0.05); margin-bottom: 20px; }
+  .card h2 { font-size: 15px; font-weight: 800; margin: 0 0 3px; }
+  .card .sub { font-size: 11.5px; color: var(--muted); margin: 0 0 18px; }
+
+  /* timeline */
+  .flow { position: relative; padding-left: 6px; }
+  .step { display: grid; grid-template-columns: 30px 1fr; gap: 14px; padding-bottom: 20px; position: relative; }
+  .step:last-child { padding-bottom: 0; }
+  .step:not(:last-child)::before {
+    content: ""; position: absolute; left: 14px; top: 30px; bottom: 0;
+    width: 2px; background: linear-gradient(180deg, #DBEAFE, #EFF6FF);
+  }
+  .num {
+    width: 30px; height: 30px; border-radius: 999px; flex-shrink: 0; z-index: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11.5px; font-weight: 800;
+  }
+  .num.old { background: #FEE2E2; color: #B91C1C; }
+  .num.new { background: #D1FAE5; color: #047857; }
+  .step .body { padding-top: 3px; }
+  .step .title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .step .text { font-size: 12px; line-height: 1.6; color: var(--ink-2); }
+  .step .text code { background: #F1F5F9; border-radius: 4px; padding: 1px 4px; font-size: 10.5px; }
+
+  .badge {
+    display: inline-block; font-size: 9.5px; font-weight: 800; letter-spacing: 0.04em;
+    text-transform: uppercase; border-radius: 999px; padding: 2px 8px; margin-left: 6px;
+    vertical-align: middle;
+  }
+  .badge.bad { background: #FEE2E2; color: #B91C1C; }
+  .badge.ok { background: #D1FAE5; color: #047857; }
+
+  /* grid before/after */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 4px; }
+  @media (max-width: 780px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .panel { border-radius: 14px; padding: 15px 16px; border: 1px solid; }
+  .panel.bad { background: #FEF2F2; border-color: #FECACA; }
+  .panel.good { background: #F0FDF4; border-color: #BBF7D0; }
+  .panel h3 { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 10px; }
+  .panel.bad h3 { color: #B91C1C; }
+  .panel.good h3 { color: #047857; }
+  .panel ul { margin: 0; padding-left: 17px; }
+  .panel li { font-size: 11.5px; line-height: 1.75; color: var(--ink-2); }
+  .panel li b { color: var(--ink); }
+
+  /* scenario table */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    text-align: left; font-size: 9.5px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.07em; color: #64748B; padding: 0 10px 9px; border-bottom: 1px solid var(--line);
+  }
+  td { padding: 10px; border-bottom: 1px solid #F1F5F9; vertical-align: top; line-height: 1.55; }
+  tr:last-child td { border-bottom: 0; }
+  .pill { display: inline-block; font-size: 9.5px; font-weight: 800; border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+  .pill.ok { background: #D1FAE5; color: #047857; }
+  .pill.no { background: #FEE2E2; color: #B91C1C; }
+  .pill.mid { background: #FEF3C7; color: #B45309; }
+
+  .verdict {
+    margin-top: 16px; padding: 14px 16px; border-radius: 13px;
+    background: #EFF6FF; border: 1px solid #BFDBFE; font-size: 12.5px; line-height: 1.65; color: #1E3A8A;
+  }
+  .verdict b { color: #1E40AF; }
+
+  .warnbox {
+    margin-top: 14px; padding: 13px 15px; border-radius: 13px;
+    background: #FFFBEB; border: 1px solid #FDE68A; font-size: 12px; line-height: 1.65; color: #78350F;
+  }
+  .warnbox b { color: #451A03; }
+
+  .src { margin-top: 22px; font-size: 10.5px; color: #64748B; line-height: 1.8; }
+  .src code { background: #F1F5F9; border-radius: 4px; padding: 1px 4px; }
+
+  ul.checks { margin: 0; padding-left: 18px; }
+  ul.checks li { font-size: 12px; line-height: 1.85; color: var(--ink-2); }
+  ul.checks li b { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Lembur di Hari Tanpa Jadwal</h1>
+  <p class="desc">
+    Perubahan agar lembur hari libur (mis. Minggu tanpa jadwal shift) bisa diajukan, diabsen
+    masuk &amp; pulang, lalu masuk slip gaji — tanpa mengubah jalur pegawai yang punya jadwal.
+    Mockup statis; sumber angka dari kode, bukan data live.
+  </p>
+
+  <!-- ALUR -->
+  <div class="card">
+    <h2>Alur yang diperbaiki</h2>
+    <p class="sub">Empat titik blokir, dari pengajuan sampai slip gaji.</p>
+
+    <div class="flow">
+      <div class="step">
+        <span class="num old">1</span>
+        <div class="body">
+          <div class="title">Pegawai ajukan lembur <span class="badge bad">Ditolak</span> <span class="badge ok">Diperbaiki</span></div>
+          <div class="text">
+            <code>create_overtime_request</code> mensyaratkan baris <code>employee_schedules</code>.
+            Syarat itu dilepas — pengajuan tetap masuk antrean admin untuk disetujui.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="num old">2</span>
+        <div class="body">
+          <div class="title">Pegawai absen masuk <span class="badge bad">Diblokir</span> <span class="badge ok">Diperbaiki</span></div>
+          <div class="text">
+            Guard server menolak tanpa jadwal. Sekarang dibuka <b>hanya bila ada lembur approved</b>
+            di tanggal itu. Baris absensi disimpan dengan <code>shift_code = NULL</code> sebagai penanda
+            "lembur tanpa jadwal", <code>schedule_match = false</code>, tanpa keterlambatan.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="num old">3</span>
+        <div class="body">
+          <div class="title">Pegawai absen pulang <span class="badge bad">Diblokir</span> <span class="badge ok">Diperbaiki</span></div>
+          <div class="text">
+            Tanpa shift, batas pulang tidak punya acuan. Sekarang batasnya
+            <b>jam selesai lembur + 1 jam</b> — sama seperti aturan lembur pada shift reguler.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="num old">4</span>
+        <div class="body">
+          <div class="title">Uang masuk slip gaji <span class="badge bad">Tidak cair</span> <span class="badge ok">Cair</span></div>
+          <div class="text">
+            Syarat payroll "ada <code>clock_out_time</code> pada tanggal lembur" kini terpenuhi
+            karena langkah 2 &amp; 3 berhasil.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RISIKO YANG DITANGANI -->
+  <div class="card">
+    <h2>Risiko yang ikut ditutup</h2>
+    <p class="sub">Tanpa dua penjagaan ini, fitur baru akan merusak perhitungan gaji yang sudah jalan.</p>
+
+    <div class="grid2">
+      <div class="panel bad">
+        <h3>Kalau dibiarkan</h3>
+        <ul>
+          <li>Baris absensi lembur ikut dihitung <b>hadir</b>, sehingga <b>alpha hari kerja lain tertutupi</b> dan potongannya hilang.</li>
+          <li>Baris lembur tanpa shift kena potongan <b>"tidak absen pulang"</b>, padahal tidak ada shift untuk dipulangkan.</li>
+        </ul>
+      </div>
+      <div class="panel good">
+        <h3>Setelah diperbaiki</h3>
+        <ul>
+          <li>Baris dengan <code>shift_code IS NULL</code> <b>tidak</b> menambah hitungan hadir. Uang lemburnya dihitung terpisah.</li>
+          <li>Potongan <code>no_checkout</code> hanya berlaku untuk baris yang punya shift.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKENARIO -->
+  <div class="card">
+    <h2>Skenario &amp; hasil</h2>
+    <p class="sub">Contoh: lembur 8 jam di hari Minggu, pegawai tanpa jadwal.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:34%">Skenario</th>
+          <th style="width:22%">Sebelum</th>
+          <th style="width:22%">Sesudah</th>
+          <th>Catatan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Lembur Minggu 08.00–16.00, tanpa jadwal</td>
+          <td><span class="pill ok">Bisa</span></td>
+          <td><span class="pill ok">Bisa</span></td>
+          <td>Admin memang sudah bisa; tidak berubah.</td>
+        </tr>
+        <tr>
+          <td>Pegawai ajukan lembur sendiri di hari itu</td>
+          <td><span class="pill no">Ditolak</span></td>
+          <td><span class="pill ok">Bisa</span></td>
+          <td>Masuk antrean persetujuan admin.</td>
+        </tr>
+        <tr>
+          <td>Absen masuk hari Minggu</td>
+          <td><span class="pill no">Diblokir</span></td>
+          <td><span class="pill ok">Bisa</span></td>
+          <td>Butuh lembur <b>approved</b>. Tanpa lembur tetap ditolak.</td>
+        </tr>
+        <tr>
+          <td>Absen pulang</td>
+          <td><span class="pill no">Diblokir</span></td>
+          <td><span class="pill ok">Bisa</span></td>
+          <td>Batas = selesai lembur + 1 jam (16.00 → 17.00).</td>
+        </tr>
+        <tr>
+          <td>Uang lembur masuk slip</td>
+          <td><span class="pill no">Tidak</span></td>
+          <td><span class="pill ok">Ya</span></td>
+          <td>Karena absen masuk &amp; pulang tercatat.</td>
+        </tr>
+        <tr>
+          <td>Hari kerja biasa dengan jadwal</td>
+          <td><span class="pill ok">Normal</span></td>
+          <td><span class="pill ok">Normal</span></td>
+          <td>Tidak tersentuh — jalur reguler tidak diubah.</td>
+        </tr>
+        <tr>
+          <td>Absen di hari tanpa jadwal <i>dan</i> tanpa lembur</td>
+          <td><span class="pill no">Ditolak</span></td>
+          <td><span class="pill no">Ditolak</span></td>
+          <td>Sengaja dipertahankan: bukan jalur absensi bebas.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="verdict">
+      <b>Kunci desainnya:</b> jalur "tanpa jadwal" hanya terbuka kalau ada lembur <b>approved</b>.
+      Jadi tidak ada celah untuk absen seenaknya di hari libur — kehadiran selalu terikat pada
+      lembur yang sudah disetujui admin.
+    </div>
+  </div>
+
+  <!-- PERUBAHAN TEKNIS -->
+  <div class="card">
+    <h2>Yang diubah</h2>
+    <p class="sub">Satu migrasi + satu halaman klien.</p>
+
+    <ul class="checks">
+      <li><b>Migrasi baru</b> <code>supabase/migrations/20261127000000_overtime_without_schedule.sql</code> — menambal 3 fungsi: <code>create_overtime_request</code>, <code>guard_attendance_self_write</code>, <code>upsert_payroll_line</code>.</li>
+      <li><b>AttendancePage.jsx</b> — cek lembur approved sebelum menolak, reset <code>shiftDefinition</code> saat tanpa jadwal, deadline pulang dari slot lembur.</li>
+      <li><b>Pola patch aman</b> — fragmen wajib ditemukan; kalau tidak, migrasi <b>gagal</b> dan tidak mengubah apa pun (tidak pernah diam-diam terlewat).</li>
+      <li><b>Idempotent</b> — dijalankan dua kali tidak menggandakan perubahan.</li>
+      <li><b>Hitung ulang slip DRAFT</b> yang punya baris absensi tanpa jadwal. Slip lain dan slip final tidak disentuh.</li>
+    </ul>
+
+    <div class="warnbox">
+      <b>Penting sebelum rilis:</b> CI <b>tidak</b> menerapkan migrasi ke database. Migrasi harus
+      dijalankan manual lewat SQL Editor Supabase. Setelah migrasi jalan, baru deploy web/APK.
+      Catatan di <code>AI-NOTES.md</code> juga menyarankan <b>jangan</b> <code>supabase db push</code>
+      (riwayat migrasi remote tertinggal).
+    </div>
+
+    <div class="warnbox">
+      <b>Batasan yang saya pilih sadar:</b> absen masuk dini hari (mis. 02.00) untuk lembur
+      lintas tengah malam yang dimulai hari sebelumnya <b>belum</b> didukung pada jalur tanpa
+      jadwal. Pegawai perlu absen masuk saat lembur dimulai. Kasus dini hari sudah tertangani
+      untuk pegawai yang punya jadwal shift malam. Kalau ini dibutuhkan, saya kerjakan sebagai
+      tambahan terpisah.
+    </div>
+  </div>
+
+  <p class="src">
+    Sumber: <code>supabase/migrations/20261127000000_overtime_without_schedule.sql</code> ·
+    <code>src/pages/attendance/AttendancePage.jsx</code> ·
+    acuan pola: <code>20261022000000_overtime_checkout_deadline.sql</code>,
+    <code>20261025000000_overtime_crosses_midnight.sql</code>,
+    <code>20261023000000_overtime_requires_checkout.sql</code>
+  </p>
+
+</div>
+</body>
+</html>

@@ -121,8 +121,10 @@ export default function OvertimeManagementPage() {
     const kickMembers = setTimeout(() => {
       supabase
         .from("profiles")
-        .select("id, full_name, username, position")
-        .neq("role", "super_admin")
+        .select("id, full_name, username, position, role")
+        // Admin tidak menjalani lembur — jangan sampai ikut tercentang.
+        // Negasi (bukan whitelist) supaya role lain yang sah tidak ikut hilang.
+        .not("role", "in", "(super_admin,admin,admin_puskesmas)")
         .order("full_name")
         .then(({ data }) => setMembers(data || []));
     }, 0);
@@ -651,8 +653,11 @@ export default function OvertimeManagementPage() {
         )}
       </BottomSheet>
 
-      {/* Sheet: buat lembur */}
-      <BottomSheet open={showCreate} onClose={() => setShowCreate(false)} title="Buat Lembur untuk Pegawai" subtitle="Langsung tercatat & disetujui">
+      {/* Sheet: buat lembur. bottomPad ringkas: sheet ini punya tombol
+          "Catat Lembur" sendiri sebagai aksi penutup, jadi tidak perlu ruang
+          100px untuk bottom nav (dulu menyisakan gap kosong besar). */}
+      <BottomSheet open={showCreate} onClose={() => setShowCreate(false)} title="Buat Lembur untuk Pegawai" subtitle="Langsung tercatat & disetujui"
+        bottomPad="calc(1rem + env(safe-area-inset-bottom, 0px))">
         <div className="space-y-4 pb-2">
           <div>
             <div className="flex items-center justify-between mb-1.5">

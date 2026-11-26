@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id" data-zcode-design>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — Perbaikan Dialog Buat Lembur</title>
+<style>
+  :root {
+    --violet: #6D4AFF;
+    --violet-dark: #5733E0;
+    --ink: #0F172A;
+    --ink-2: #475569;
+    --muted: #94A3B8;
+    --line: rgba(31, 41, 55, 0.10);
+    --ok: #10B981;
+    --bad: #EF4444;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0; padding: 32px 20px 56px;
+    background: #F4F2FB; color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1060px; margin: 0 auto; }
+
+  h1 { font-size: 21px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .desc { font-size: 13px; color: var(--ink-2); margin: 0 0 26px; line-height: 1.6; }
+  .desc code { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; font-size: 11.5px; }
+
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 22px; }
+
+  .col-head { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+  .tag { font-size: 10px; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; }
+  .tag.before { background: #FEE2E2; color: #B91C1C; }
+  .tag.after { background: #D1FAE5; color: #047857; }
+  .col-head .sub { font-size: 11.5px; color: var(--ink-2); }
+
+  .frame { background: #fff; border: 1px solid var(--line); border-radius: 26px; overflow: hidden; box-shadow: 0 10px 34px rgba(15, 23, 42, 0.08); }
+  .scene { position: relative; background: linear-gradient(160deg, #E8EEFA 0%, #EDE9FB 100%); padding: 16px 14px 0; }
+  .behind { height: 60px; border-radius: 14px; margin-bottom: 10px; background: linear-gradient(120deg, rgba(47,139,248,0.18), rgba(74,124,251,0.10)); border: 1px solid rgba(255,255,255,0.7); }
+  .behind.sm { width: 58%; height: 28px; border-radius: 999px; background: rgba(255,255,255,0.7); }
+
+  .sheet {
+    position: relative; background: #fff; border-radius: 26px 26px 0 0;
+    box-shadow: 0 -8px 30px rgba(15,23,42,0.14);
+    display: flex; flex-direction: column; margin: 0 -0px;
+  }
+  .sheet-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 20px 10px; flex-shrink: 0; }
+  .sheet-head h3 { margin: 0; font-size: 13.5px; font-weight: 800; }
+  .sheet-head p { margin: 2px 0 0; font-size: 10px; color: var(--muted); }
+  .x { width: 30px; height: 30px; border-radius: 11px; border: 0; background: #F1F5F9; color: #475569; display: flex; align-items: center; justify-content: center; margin-left: 12px; flex-shrink: 0; }
+
+  .scroller { padding: 0 20px; overflow-y: auto; }
+  .scroller.before { padding-bottom: 100px; height: 330px; }
+  .scroller.after  { padding-bottom: 16px;  max-height: 330px; }
+
+  .lbl-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .lbl { font-size: 11px; font-weight: 700; color: #64748B; }
+  .link { font-size: 10px; font-weight: 700; color: var(--violet); }
+
+  .list { border: 1px solid #E2E8F0; border-radius: 12px; padding: 6px; }
+  .item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px; font-size: 12px; color: #334155; }
+  .item input { width: 14px; height: 14px; accent-color: var(--violet); flex-shrink: 0; }
+  .item .grow { flex: 1; min-width: 0; font-weight: 600; }
+  .item .pos { font-size: 9px; color: var(--muted); }
+  .item.is-admin { background: #FFF7ED; }
+  .item.is-admin .grow::after {
+    content: "admin"; margin-left: 6px; font-size: 8.5px; font-weight: 800;
+    background: #FED7AA; color: #9A3412; border-radius: 999px; padding: 1px 6px;
+    vertical-align: middle;
+  }
+
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+  .grid3 label, .field label { display: block; font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 6px; }
+  input[type="date"], input[type="time"], input[type="text"], input[type="number"] {
+    width: 100%; padding: 9px 10px; font-size: 12px; font-family: inherit;
+    border: 1px solid #E2E8F0; border-radius: 10px; background: #fff; color: var(--ink); outline: none;
+  }
+  .field { margin-top: 14px; }
+
+  .payrow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .paybtn { padding: 9px; border-radius: 10px; font-size: 12px; font-weight: 700; text-align: center; border: 1px solid #E2E8F0; color: #64748B; }
+  .paybtn.on { background: var(--violet); border-color: var(--violet); color: #fff; }
+
+  .hint { font-size: 10px; color: #64748B; margin: 10px 0 0; line-height: 1.5; }
+
+  .submit {
+    width: 100%; margin-top: 16px; padding: 11px; border: 0; border-radius: 999px;
+    background: var(--violet); color: #fff; font-size: 13px; font-weight: 700; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    box-shadow: 0 8px 20px rgba(109,74,255,0.30);
+  }
+
+  .gap-mark {
+    position: absolute; left: 50%; transform: translateX(-50%); bottom: 74px;
+    font-size: 9.5px; font-weight: 800; color: #B91C1C; background: #FEE2E2;
+    border-radius: 999px; padding: 3px 9px; white-space: nowrap; z-index: 5;
+  }
+
+  .notes { margin-top: 12px; display: grid; gap: 7px; }
+  .note { display: flex; gap: 8px; font-size: 11.5px; line-height: 1.55; color: var(--ink-2); background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 9px 11px; }
+  .note b { color: var(--ink); }
+  .note .dot { width: 6px; height: 6px; border-radius: 999px; margin-top: 6px; flex-shrink: 0; }
+  .note.fix .dot { background: var(--ok); }
+  .note.old .dot { background: var(--bad); }
+
+  .qa { margin-top: 34px; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 20px 22px; box-shadow: 0 8px 26px rgba(15,23,42,0.05); }
+  .qa h2 { font-size: 15px; font-weight: 800; margin: 0 0 4px; }
+  .qa .q { font-size: 12px; color: var(--ink-2); margin: 0 0 16px; font-style: italic; }
+  .flow { display: grid; gap: 10px; }
+  .step { display: flex; gap: 11px; align-items: flex-start; font-size: 12px; line-height: 1.6; color: var(--ink-2); }
+  .num { width: 21px; height: 21px; border-radius: 999px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 800; }
+  .num.no { background: #FEE2E2; color: #B91C1C; }
+  .num.yes { background: #D1FAE5; color: #047857; }
+  .num.info { background: #DBEAFE; color: #1D4ED8; }
+  .step b { color: var(--ink); }
+  .verdict { margin-top: 18px; padding: 13px 15px; border-radius: 13px; font-size: 12.5px; line-height: 1.65; background: #FFFBEB; border: 1px solid #FDE68A; color: #78350F; }
+  .verdict b { color: #451A03; }
+  .verdict .big { display: block; font-size: 13.5px; font-weight: 800; margin-bottom: 5px; color: #451A03; }
+  .src { margin-top: 12px; font-size: 10.5px; color: #64748B; line-height: 1.7; }
+  .src code { background: #F1F5F9; border-radius: 4px; padding: 1px 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Perbaikan Dialog "Buat Lembur"</h1>
+  <p class="desc">Dua masalah di <code>/admin/overtime</code>: nama admin masih muncul di daftar pegawai, dan gap kosong di bawah tombol Catat Lembur. Mockup statis — data contoh.</p>
+
+  <div class="cols">
+
+    <!-- BEFORE -->
+    <section>
+      <div class="col-head">
+        <span class="tag before">Sebelum</span>
+        <span class="sub">awilys (admin) ikut terdaftar</span>
+      </div>
+
+      <div class="frame">
+        <div class="scene">
+          <div class="behind"></div>
+          <div class="behind sm"></div>
+
+          <div class="sheet">
+            <div class="sheet-head">
+              <div><h3>Buat Lembur untuk Pegawai</h3><p>Langsung tercatat &amp; disetujui</p></div>
+              <button class="x" aria-label="Tutup">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            <div class="scroller before">
+              <div class="lbl-row">
+                <span class="lbl">Pegawai</span>
+                <a href="#" class="link">Pilih semua</a>
+              </div>
+              <div class="list">
+                <div class="item is-admin"><input type="checkbox"><span class="grow">awilys</span></div>
+                <div class="item"><input type="checkbox"><span class="grow">Dini Aspiani</span></div>
+                <div class="item"><input type="checkbox"><span class="grow">Ialu rama jalil wijaya A.Md.Kom</span><span class="pos">Dokter Spesialis Gigi</span></div>
+                <div class="item"><input type="checkbox"><span class="grow">rakim</span></div>
+              </div>
+
+              <div class="grid3">
+                <div><label>Tanggal</label><input type="date" value="2026-11-26"></div>
+                <div><label>Mulai</label><input type="time"></div>
+                <div><label>Selesai</label><input type="time"></div>
+              </div>
+
+              <div class="field">
+                <label>Alasan (opsional)</label>
+                <input type="text" placeholder="Contoh: penambahan jaga sore">
+              </div>
+
+              <div class="field">
+                <label>Cara bayar</label>
+                <div class="payrow">
+                  <div class="paybtn on">Per jam</div>
+                  <div class="paybtn">Nominal tetap</div>
+                </div>
+              </div>
+
+              <p class="hint">Uang = jam × tarif Rp20.000/jam, dihitung otomatis oleh server.</p>
+
+              <button class="submit">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                Catat Lembur
+              </button>
+            </div>
+          </div>
+
+          <span class="gap-mark">gap kosong ± 100px</span>
+        </div>
+      </div>
+
+      <div class="notes">
+        <div class="note old">
+          <span class="dot"></span>
+          <span><b>awilys (admin)</b> ikut muncul — query hanya membuang <code>super_admin</code>, admin instansi lolos.</span>
+        </div>
+        <div class="note old">
+          <span class="dot"></span>
+          <span>Padding bawah sheet <b>100px</b> untuk bottom-nav, padahal sheet ini punya tombol sendiri.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- AFTER -->
+    <section>
+      <div class="col-head">
+        <span class="tag after">Sesudah</span>
+        <span class="sub">Hanya pegawai, tombol rapat</span>
+      </div>
+
+      <div class="frame">
+        <div class="scene">
+          <div class="behind"></div>
+          <div class="behind sm"></div>
+
+          <div class="sheet">
+            <div class="sheet-head">
+              <div><h3>Buat Lembur untuk Pegawai</h3><p>Langsung tercatat &amp; disetujui</p></div>
+              <button class="x" aria-label="Tutup">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            <div class="scroller after">
+              <div class="lbl-row">
+                <span class="lbl">Pegawai</span>
+                <a href="#" class="link">Pilih semua</a>
+              </div>
+              <div class="list">
+                <div class="item"><input type="checkbox"><span class="grow">Dini Aspiani</span></div>
+                <div class="item"><input type="checkbox"><span class="grow">Ialu rama jalil wijaya A.Md.Kom</span><span class="pos">Dokter Spesialis Gigi</span></div>
+                <div class="item"><input type="checkbox"><span class="grow">rakim</span></div>
+              </div>
+
+              <div class="grid3">
+                <div><label>Tanggal</label><input type="date" value="2026-11-26"></div>
+                <div><label>Mulai</label><input type="time"></div>
+                <div><label>Selesai</label><input type="time"></div>
+              </div>
+
+              <div class="field">
+                <label>Alasan (opsional)</label>
+                <input type="text" placeholder="Contoh: penambahan jaga sore">
+              </div>
+
+              <div class="field">
+                <label>Cara bayar</label>
+                <div class="payrow">
+                  <div class="paybtn on">Per jam</div>
+                  <div class="paybtn">Nominal tetap</div>
+                </div>
+              </div>
+
+              <p class="hint">Uang = jam × tarif Rp20.000/jam, dihitung otomatis oleh server.</p>
+
+              <button class="submit">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                Catat Lembur
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <div class="note fix">
+          <span class="dot"></span>
+          <span>Daftar memakai negasi role: <code>super_admin</code>, <code>admin</code>, <code>admin_puskesmas</code> dibuang. Role lain yang sah tetap muncul.</span>
+        </div>
+        <div class="note fix">
+          <span class="dot"></span>
+          <span>Padding bawah sheet turun ke <b>16px</b> — tombol Catat Lembur menempel, tanpa ruang kosong.</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= PERTANYAAN LEMBUR ================= -->
+  <div class="qa">
+    <h2>Bisakah lembur di hari tanpa jadwal?</h2>
+    <p class="q">"Misal lembur dibuat hari Minggu dan pegawai tidak punya jadwal di waktu itu?"</p>
+
+    <div class="flow">
+      <div class="step">
+        <span class="num no">1</span>
+        <span><b>Admin membuat lembur (Buat Lembur) — BISA, tanpa syarat jadwal.</b>
+          RPC <code>admin_create_overtime</code> hanya memeriksa: role admin, instansi pegawai, format jam,
+          durasi ≤ batas jam/hari (khusus mode per jam), dan nominal. <b>Tidak ada</b> pemeriksaan
+          <code>employee_schedules</code>. Jadi hari Minggu tanpa jadwal tetap tercatat.</span>
+      </div>
+      <div class="step">
+        <span class="num no">2</span>
+        <span><b>Pegawai mengajukan lembur sendiri — TIDAK BISA.</b>
+          RPC <code>create_overtime_request</code> mewajibkan ada baris <code>employee_schedules</code>
+          untuk tanggal itu. Tanpa jadwal, ditolak dengan pesan "Tidak ada jadwal kerja pada tanggal tersebut".</span>
+      </div>
+      <div class="step">
+        <span class="num info">3</span>
+        <span><b>Absen masuk di hari tanpa jadwal — TIDAK BISA.</b>
+          Guard server <code>guard_attendance_self_write</code> menolak dengan
+          "Tidak ada jadwal kerja hari ini — hubungi admin", dan sisi klien juga memblokir di
+          halaman Absensi.</span>
+      </div>
+      <div class="step">
+        <span class="num no">4</span>
+        <span><b>Uangnya cair? — BELUM TENTU.</b>
+          <code>upsert_payroll_line</code> hanya menjumlahkan lembur <code>approved</code> bila ada baris
+          <code>attendance</code> pada tanggal itu dengan <code>clock_out_time</code> terisi. Tanpa absen
+          pulang, nominal lembur tercatat tapi <b>tidak masuk slip gaji</b>.</span>
+      </div>
+    </div>
+
+    <div class="verdict">
+      <span class="big">Jadi: bisa dicatat, tapi tidak akan terbayar</span>
+      Admin memang bisa membuat lembur di hari Minggu untuk pegawai tanpa jadwal — datanya tersimpan dan
+      berstatus disetujui. Namun pegawai itu tidak dapat absen (diblokir di dua lapis), sehingga syarat
+      "ada absen pulang" tidak pernah terpenuhi dan lembur tersebut <b>tidak dihitung ke slip gaji</b>.
+      Ini kemungkinan besar bukan yang Anda inginkan untuk lembur hari libur.
+    </div>
+
+    <p class="src">
+      Bukti: <code>supabase/migrations/20261022020000_overtime_fixed_pay.sql</code> (admin_create_overtime, tanpa cek jadwal) ·
+      <code>20261019000000_overtime_system.sql</code> (create_overtime_request, wajib jadwal) ·
+      <code>20261005000000_checkin_time_window.sql</code> (guard absen masuk) ·
+      <code>20261023000000_overtime_requires_checkout.sql</code> (syarat clock_out untuk payroll)
+    </p>
+  </div>
+
+</div>
+</body>
+</html>
