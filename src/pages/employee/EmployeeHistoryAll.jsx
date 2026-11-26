@@ -114,9 +114,13 @@ export default function EmployeeHistoryAll() {
 
       const defs = shiftRes.data || [];
       const serverNow = new Date(timeData || Date.now());
+      // getAttendanceHistory mengembalikan array langsung (bukan { data }).
+      // Sebelumnya `attRes.data` selalu undefined → semua absensi asli hilang
+      // dan halaman ini hanya menampilkan baris alpha turunan.
+      const attRows = attRes || [];
       const rows = [
-        ...(attRes.data || []),
-        ...deriveAlphaRows(attRes.data, schedRes.data || [], defs, serverNow, user.id),
+        ...attRows,
+        ...deriveAlphaRows(attRows, schedRes.data || [], defs, serverNow, user.id),
       ].sort((a, b) => b.date.localeCompare(a.date));
 
       setHistory(rows);
