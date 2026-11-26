@@ -1,10 +1,10 @@
 {
   "version": "1.8.4",
   "versionCode": 31,
-  "webVersionCode": 84,
+  "webVersionCode": 85,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.4/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
-  "changelog": "Badge placeholder bertanda dash di kartu absen dihapus saat belum absen.",
+  "changelog": "Layar hasil absen masuk/pulang tampil light mode dengan seal biru bergerigi, centang animasi, dan konfeti biru.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }

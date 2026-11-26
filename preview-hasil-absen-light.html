@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hasil Absen - Light Mode Preview</title>
+<style>
+  :root{
+    --blue:#2F8BF8;
+    --blue-deep:#1F74E0;
+    --surface:#FFFFFF;
+    --page:#F4F2FB;
+    --border:rgba(31,41,55,0.08);
+    --div:#F1F5F9;
+    --row:rgba(15,23,42,0.025);
+    --icon-bg:#EEF6FF;
+    --text:#0F172A;
+    --text-sec:#475569;
+    --text-muted:#94A3B8;
+    --sub:#6B7280;
+    --amber:#F59E0B;
+    --emerald:#10B981;
+    --card-shadow:0 4px 16px rgba(15,23,42,0.06);
+  }
+  *{box-sizing:border-box;-webkit-font-smoothing:antialiased}
+  html,body{margin:0}
+  body{
+    font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;
+    background:#EDEFF6;
+    color:var(--text);
+    padding:48px 24px 72px;
+    display:flex;flex-direction:column;align-items:center;
+  }
+  .stage-head{text-align:center;margin-bottom:36px;max-width:640px}
+  .stage-head h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0 0 8px}
+  .stage-head p{font-size:13px;color:#64748b;line-height:1.6;margin:0}
+  .stage{display:flex;gap:56px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+  .col{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .col-label{font-size:11px;font-weight:700;color:#64748b;letter-spacing:.04em}
+
+  /* ── Phone ── */
+  .phone{
+    width:390px;height:800px;border-radius:46px;background:#0B1220;
+    padding:9px;position:relative;
+    box-shadow:0 30px 70px rgba(15,23,42,0.22),0 0 0 1px rgba(15,23,42,0.08);
+  }
+  .screen{
+    width:100%;height:100%;border-radius:38px;overflow:hidden;position:relative;
+    background:linear-gradient(180deg,#DCE9F8 0%,#EAF1FA 55%,#F4F2FB 100%);
+  }
+  .notch{
+    position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    width:104px;height:26px;background:#0B1220;border-radius:14px;z-index:40;
+  }
+  .status-bar{
+    position:absolute;top:0;left:0;right:0;height:48px;display:flex;align-items:center;
+    justify-content:space-between;padding:0 26px;z-index:35;
+    font-size:12px;font-weight:700;color:#334155;letter-spacing:.02em;
+  }
+  .status-bar .icons{display:flex;gap:5px;align-items:center}
+  .bar{width:3px;border-radius:2px;background:#334155}
+  .battery{width:22px;height:11px;border:1.4px solid #334155;border-radius:3px;position:relative}
+  .battery::after{content:"";position:absolute;inset:1.6px;background:#334155;border-radius:1px}
+
+  /* ── Backdrop (map page, simplified) ── */
+  .map-bg{position:absolute;inset:0;z-index:0}
+  .map-bg::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 20% 12%,rgba(47,139,248,0.16),transparent 42%),
+      radial-gradient(circle at 82% 26%,rgba(57,192,223,0.14),transparent 46%),
+      linear-gradient(180deg,#E7EFFA,#EEF2FA);
+  }
+  .map-grid{
+    position:absolute;inset:0;opacity:.5;
+    background-image:linear-gradient(rgba(47,139,248,0.09) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(47,139,248,0.09) 1px,transparent 1px);
+    background-size:34px 34px;
+  }
+  .map-route{
+    position:absolute;left:0;right:0;top:190px;height:2px;
+    background:linear-gradient(90deg,transparent,rgba(47,139,248,0.35),transparent);
+    transform:rotate(-8deg);
+  }
+
+  /* ── Sheet ── */
+  .sheet{
+    position:absolute;left:0;right:0;bottom:0;z-index:20;
+    background:var(--surface);
+    border-radius:30px 30px 0 0;
+    box-shadow:0 -10px 40px rgba(15,23,42,0.12),0 0 0 1px var(--border);
+    padding:10px 22px calc(26px + env(safe-area-inset-bottom,0px));
+    max-height:calc(100% - 76px);
+    display:flex;flex-direction:column;
+    animation:sheetUp .5s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes sheetUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .handle{width:40px;height:4px;border-radius:2px;background:#E2E8F0;margin:0 auto 14px}
+
+  /* ── Seal ── */
+  .seal-wrap{position:relative;display:flex;justify-content:center;margin-bottom:14px}
+  .seal-halo{
+    position:absolute;left:50%;top:0;transform:translateX(-50%);
+    width:86px;height:86px;border-radius:50%;
+    border:2px solid rgba(47,139,248,.35);
+    opacity:0;
+    animation:halo 1.8s cubic-bezier(.16,1,.3,1) .35s 2 forwards;
+    pointer-events:none;
+  }
+  @keyframes halo{
+    0%{transform:translateX(-50%) scale(.85);opacity:.5}
+    70%{transform:translateX(-50%) scale(1.5);opacity:0}
+    100%{transform:translateX(-50%) scale(1.5);opacity:0}
+  }
+  .seal{
+    width:86px;height:86px;display:block;position:relative;
+    filter:drop-shadow(0 8px 18px rgba(47,139,248,0.26));
+    animation:pop .6s cubic-bezier(.34,1.4,.64,1) both;
+  }
+  @keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
+  .check{
+    stroke-dasharray:60;stroke-dashoffset:60;
+    animation:draw .55s .28s cubic-bezier(.16,1,.3,1) forwards;
+  }
+  @keyframes draw{to{stroke-dashoffset:0}}
+
+  /* ── Konfeti kertas biru ── */
+  .confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:3}
+  .confetti span{
+    position:absolute;top:-18px;opacity:0;
+    animation-name:cf-fall;animation-timing-function:linear;animation-fill-mode:forwards;
+  }
+  @keyframes cf-fall{
+    0%{opacity:0;transform:translate3d(0,-20px,0) rotate(0deg)}
+    8%{opacity:1}
+    70%{opacity:1}
+    100%{opacity:0;transform:translate3d(var(--cf-drift),620px,0) rotate(var(--cf-spin))}
+  }
+
+  /* ── Title block ── */
+  .head{text-align:center;margin-bottom:12px}
+  .head h2{font-size:20px;font-weight:800;letter-spacing:-.015em;color:var(--text);margin:0 0 5px}
+  .head .date{font-size:11px;font-weight:500;color:var(--text-muted);margin:0 0 8px}
+  .head .greet{font-size:12.5px;font-weight:600;color:var(--blue);margin:0}
+
+  /* ── Chips ── */
+  .chip-row{display:flex;justify-content:center;margin-bottom:12px}
+  .chip{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:10.5px;font-weight:600;padding:4px 11px;border-radius:999px;
+  }
+  .chip-late{color:#B45309;background:#FEF3C7;border:1px solid #FDE68A}
+
+  /* ── Illustration ── */
+  .illus{display:flex;justify-content:center;margin-bottom:2px}
+  .illus img{
+    width:162px;height:auto;display:block;
+    -webkit-mask-image:linear-gradient(to bottom,#000 58%,transparent 86%);
+    mask-image:linear-gradient(to bottom,#000 58%,transparent 86%);
+    animation:bob 2.6s ease-in-out .6s infinite;
+  }
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+  /* ── Stat tiles ── */
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 6px}
+  .stat{
+    background:#F7F9FD;border:1px solid rgba(31,41,55,0.06);border-radius:14px;
+    padding:11px 12px;text-align:center;
+  }
+  .stat .k{font-size:10px;font-weight:600;color:var(--text-muted);margin-bottom:3px}
+  .stat .v{font-size:19px;font-weight:800;letter-spacing:-.01em;color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .stat .v.text{font-size:13.5px;letter-spacing:0}
+  .stat .v.ok{color:var(--emerald)}
+  .stat .v.warn{color:var(--amber)}
+
+  /* ── Detail rows ── */
+  .details{margin-top:4px}
+  .row{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:9px 4px;
+  }
+  .row + .row{border-top:1px solid var(--div)}
+  .row-l{display:flex;align-items:center;gap:10px;min-width:0}
+  .ico{
+    width:28px;height:28px;border-radius:9px;background:var(--icon-bg);
+    display:flex;align-items:center;justify-content:center;flex:0 0 28px;
+  }
+  .row-k{font-size:11px;font-weight:600;color:var(--text-sec)}
+  .row-sub{font-size:10px;font-weight:500;color:var(--text-muted);margin-top:1px}
+  .row-v{font-size:12px;font-weight:700;color:var(--text);text-align:right;white-space:nowrap}
+  .tag{
+    font-size:10px;font-weight:600;padding:3px 9px;border-radius:7px;
+    background:#ECFDF5;color:#047857;border:1px solid #A7F3D0;
+  }
+
+  /* ── CTA ── */
+  .cta{
+    width:100%;margin-top:16px;padding:15px 0;border:0;border-radius:16px;
+    background:var(--blue-deep);color:#fff;font-size:14.5px;font-weight:700;
+    font-family:inherit;letter-spacing:.01em;cursor:pointer;
+    box-shadow:0 8px 20px rgba(31,116,224,0.26);
+    transition:transform .16s ease,background .16s ease;
+  }
+  .cta:hover{background:#1A63C8}
+  .cta:active{transform:scale(.985)}
+  .fineprint{font-size:9.5px;color:var(--text-muted);text-align:center;margin:10px 0 0}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important}
+    .check{stroke-dashoffset:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="stage-head">
+  <h1>Hasil absen, light mode</h1>
+  <p>Seal biru 12 gerigi dengan centang putih menggantikan kotak gradient. Isi data, ilustrasi, dan alur tetap sama.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════ ABSEN MASUK ══════════ -->
+  <div class="col">
+    <span class="col-label">Absen masuk</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <div class="map-bg"></div>
+        <div class="map-grid"></div>
+        <div class="map-route"></div>
+        <div class="status-bar">
+          <span>07:28</span>
+          <span class="icons">
+            <span class="bar" style="height:7px"></span>
+            <span class="bar" style="height:10px"></span>
+            <span class="bar" style="height:13px"></span>
+            <span class="battery"></span>
+          </span>
+        </div>
+
+        <div class="sheet">
+          <div class="confetti" aria-hidden="true"><span style="left:23.76%;width:7.0px;height:6.9px;background:#1F74E0;border-radius:1.5px;--cf-drift:-31px;--cf-spin:978deg;animation-duration:4.98s;animation-delay:0.27s"></span><span style="left:19.96%;width:4.1px;height:11.1px;background:#93C5FD;border-radius:50%;--cf-drift:6px;--cf-spin:1157deg;animation-duration:4.39s;animation-delay:0.20s"></span><span style="left:89.09%;width:5.1px;height:10.8px;background:#39C0DF;border-radius:1.5px;--cf-drift:-28px;--cf-spin:641deg;animation-duration:3.32s;animation-delay:0.90s"></span><span style="left:56.13%;width:7.0px;height:7.3px;background:#BFDBFE;border-radius:1.5px;--cf-drift:24px;--cf-spin:557deg;animation-duration:4.01s;animation-delay:1.16s"></span><span style="left:46.09%;width:6.8px;height:8.1px;background:#39C0DF;border-radius:50%;--cf-drift:-30px;--cf-spin:1129deg;animation-duration:3.31s;animation-delay:1.39s"></span><span style="left:83.96%;width:5.5px;height:8.9px;background:#1F74E0;border-radius:50%;--cf-drift:-34px;--cf-spin:782deg;animation-duration:3.48s;animation-delay:0.38s"></span><span style="left:94.75%;width:4.1px;height:11.0px;background:#39C0DF;border-radius:50%;--cf-drift:31px;--cf-spin:642deg;animation-duration:4.95s;animation-delay:0.14s"></span><span style="left:3.46%;width:7.7px;height:10.0px;background:#39C0DF;border-radius:1.5px;--cf-drift:-28px;--cf-spin:933deg;animation-duration:4.59s;animation-delay:1.07s"></span><span style="left:35.08%;width:5.2px;height:7.4px;background:#1F74E0;border-radius:1.5px;--cf-drift:17px;--cf-spin:980deg;animation-duration:4.65s;animation-delay:0.37s"></span><span style="left:14.62%;width:5.6px;height:10.6px;background:#39C0DF;border-radius:50%;--cf-drift:-27px;--cf-spin:1008deg;animation-duration:3.76s;animation-delay:0.03s"></span><span style="left:67.08%;width:5.9px;height:9.2px;background:#2F8BF8;border-radius:1.5px;--cf-drift:-3px;--cf-spin:1243deg;animation-duration:4.19s;animation-delay:0.46s"></span><span style="left:17.46%;width:7.1px;height:10.7px;background:#39C0DF;border-radius:1.5px;--cf-drift:-33px;--cf-spin:1009deg;animation-duration:4.58s;animation-delay:0.45s"></span><span style="left:90.75%;width:6.3px;height:10.6px;background:#BFDBFE;border-radius:1.5px;--cf-drift:-29px;--cf-spin:531deg;animation-duration:3.58s;animation-delay:0.41s"></span><span style="left:11.95%;width:4.3px;height:10.3px;background:#39C0DF;border-radius:1.5px;--cf-drift:26px;--cf-spin:934deg;animation-duration:3.45s;animation-delay:0.74s"></span><span style="left:6.08%;width:6.3px;height:11.4px;background:#39C0DF;border-radius:1.5px;--cf-drift:9px;--cf-spin:644deg;animation-duration:4.62s;animation-delay:0.24s"></span><span style="left:98.12%;width:5.2px;height:9.4px;background:#1F74E0;border-radius:1.5px;--cf-drift:9px;--cf-spin:785deg;animation-duration:3.96s;animation-delay:0.90s"></span><span style="left:13.08%;width:6.0px;height:11.8px;background:#2F8BF8;border-radius:1.5px;--cf-drift:-28px;--cf-spin:682deg;animation-duration:3.72s;animation-delay:1.53s"></span><span style="left:75.95%;width:5.7px;height:8.1px;background:#2F8BF8;border-radius:1.5px;--cf-drift:-14px;--cf-spin:560deg;animation-duration:4.33s;animation-delay:0.92s"></span><span style="left:11.74%;width:5.4px;height:11.7px;background:#93C5FD;border-radius:1.5px;--cf-drift:-2px;--cf-spin:645deg;animation-duration:4.46s;animation-delay:1.08s"></span><span style="left:45.45%;width:5.9px;height:6.2px;background:#BFDBFE;border-radius:1.5px;--cf-drift:27px;--cf-spin:1161deg;animation-duration:4.55s;animation-delay:0.81s"></span><span style="left:2.07%;width:4.4px;height:11.0px;background:#2F8BF8;border-radius:50%;--cf-drift:19px;--cf-spin:533deg;animation-duration:3.25s;animation-delay:0.51s"></span><span style="left:6.61%;width:5.8px;height:9.8px;background:#39C0DF;border-radius:1.5px;--cf-drift:-8px;--cf-spin:786deg;animation-duration:4.62s;animation-delay:0.57s"></span><span style="left:84.07%;width:7.1px;height:9.9px;background:#1F74E0;border-radius:1.5px;--cf-drift:34px;--cf-spin:1246deg;animation-duration:3.70s;animation-delay:1.40s"></span><span style="left:59.45%;width:5.4px;height:6.9px;background:#BFDBFE;border-radius:1.5px;--cf-drift:22px;--cf-spin:1237deg;animation-duration:4.54s;animation-delay:0.19s"></span><span style="left:57.74%;width:5.5px;height:8.3px;background:#39C0DF;border-radius:1.5px;--cf-drift:-27px;--cf-spin:984deg;animation-duration:3.99s;animation-delay:0.55s"></span><span style="left:3.95%;width:4.6px;height:9.5px;background:#1F74E0;border-radius:1.5px;--cf-drift:-24px;--cf-spin:712deg;animation-duration:4.30s;animation-delay:1.28s"></span><span style="left:23.07%;width:7.5px;height:6.1px;background:#93C5FD;border-radius:50%;--cf-drift:-24px;--cf-spin:647deg;animation-duration:4.13s;animation-delay:1.17s"></span><span style="left:40.11%;width:7.4px;height:11.6px;background:#93C5FD;border-radius:50%;--cf-drift:-7px;--cf-spin:1013deg;animation-duration:3.92s;animation-delay:0.64s"></span><span style="left:80.07%;width:5.2px;height:9.5px;background:#93C5FD;border-radius:50%;--cf-drift:-26px;--cf-spin:1135deg;animation-duration:4.12s;animation-delay:0.06s"></span><span style="left:67.94%;width:6.0px;height:7.2px;background:#2F8BF8;border-radius:1.5px;--cf-drift:5px;--cf-spin:1238deg;animation-duration:3.39s;animation-delay:1.46s"></span><span style="left:28.73%;width:6.6px;height:6.4px;background:#93C5FD;border-radius:1.5px;--cf-drift:-35px;--cf-spin:648deg;animation-duration:3.97s;animation-delay:0.42s"></span><span style="left:87.44%;width:4.2px;height:8.4px;background:#1F74E0;border-radius:50%;--cf-drift:12px;--cf-spin:489deg;animation-duration:4.51s;animation-delay:0.55s"></span><span style="left:69.06%;width:7.7px;height:8.7px;background:#93C5FD;border-radius:1.5px;--cf-drift:21px;--cf-spin:986deg;animation-duration:3.66s;animation-delay:0.64s"></span><span style="left:98.61%;width:6.0px;height:9.0px;background:#1F74E0;border-radius:1.5px;--cf-drift:12px;--cf-spin:564deg;animation-duration:3.67s;animation-delay:1.11s"></span><span style="left:1.06%;width:4.4px;height:10.6px;background:#39C0DF;border-radius:50%;--cf-drift:1px;--cf-spin:1249deg;animation-duration:3.20s;animation-delay:0.73s"></span><span style="left:1.44%;width:7.6px;height:9.1px;background:#1F74E0;border-radius:1.5px;--cf-drift:6px;--cf-spin:565deg;animation-duration:4.49s;animation-delay:1.53s"></span><span style="left:24.73%;width:4.7px;height:12.0px;background:#2F8BF8;border-radius:1.5px;--cf-drift:-25px;--cf-spin:537deg;animation-duration:4.39s;animation-delay:0.69s"></span><span style="left:95.94%;width:4.8px;height:8.7px;background:#1F74E0;border-radius:50%;--cf-drift:-5px;--cf-spin:490deg;animation-duration:3.36s;animation-delay:0.22s"></span><span style="left:40.06%;width:4.8px;height:6.8px;background:#BFDBFE;border-radius:50%;--cf-drift:14px;--cf-spin:650deg;animation-duration:3.64s;animation-delay:0.51s"></span><span style="left:82.10%;width:5.7px;height:7.8px;background:#2F8BF8;border-radius:1.5px;--cf-drift:-22px;--cf-spin:1241deg;animation-duration:3.88s;animation-delay:0.37s"></span><span style="left:47.06%;width:4.5px;height:7.2px;background:#39C0DF;border-radius:1.5px;--cf-drift:-24px;--cf-spin:688deg;animation-duration:4.53s;animation-delay:0.20s"></span><span style="left:59.93%;width:6.2px;height:6.4px;background:#BFDBFE;border-radius:1.5px;--cf-drift:25px;--cf-spin:1016deg;animation-duration:4.24s;animation-delay:0.40s"></span><span style="left:45.72%;width:7.9px;height:7.0px;background:#BFDBFE;border-radius:1.5px;--cf-drift:3px;--cf-spin:651deg;animation-duration:3.47s;animation-delay:1.36s"></span><span style="left:29.43%;width:6.4px;height:10.5px;background:#93C5FD;border-radius:1.5px;--cf-drift:-4px;--cf-spin:717deg;animation-duration:4.46s;animation-delay:0.29s"></span><span style="left:36.06%;width:6.9px;height:6.4px;background:#1F74E0;border-radius:50%;--cf-drift:23px;--cf-spin:539deg;animation-duration:4.06s;animation-delay:0.78s"></span><span style="left:90.60%;width:6.3px;height:8.2px;background:#1F74E0;border-radius:50%;--cf-drift:32px;--cf-spin:1242deg;animation-duration:4.53s;animation-delay:0.04s"></span></div>
+          <div class="handle"></div>
+
+          <div class="seal-wrap">
+            <span class="seal-halo"></span>
+            <svg class="seal" viewBox="0 0 100 100" aria-hidden="true">
+              <path fill="#2F8BF8" d="M50.00 10.00 Q62.68 2.67 70.00 15.36 Q84.65 15.35 84.64 30.00 Q97.33 37.32 90.00 50.00 Q97.33 62.68 84.64 70.00 Q84.65 84.65 70.00 84.64 Q62.68 97.33 50.00 90.00 Q37.32 97.33 30.00 84.64 Q15.35 84.65 15.36 70.00 Q2.67 62.68 10.00 50.00 Q2.67 37.32 15.36 30.00 Q15.35 15.35 30.00 15.36 Q37.32 2.67 50.00 10.00 Z"/>
+              <path class="check" d="M31 51 L44 64 L69 38" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <div class="head">
+            <h2>Absen masuk berhasil</h2>
+            <p class="date">Kamis, 27 November 2026</p>
+            <p class="greet">Selamat bekerja, semangat ya</p>
+          </div>
+
+          <div class="illus">
+            <img src="src/assets/thumbs-up-success.png" alt="Semangat">
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="k">Masuk</div>
+              <div class="v">07:28</div>
+            </div>
+            <div class="stat">
+              <div class="k">Status</div>
+              <div class="v text ok">Tepat waktu</div>
+            </div>
+          </div>
+
+          <div class="details">
+            <div class="row">
+              <div class="row-l">
+                <div class="ico">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="4" width="18" height="18" rx="2.5" fill="#2F8BF8" opacity=".16"/>
+                    <rect x="3" y="4" width="18" height="18" rx="2.5" stroke="#2F8BF8" stroke-width="1.6"/>
+                    <path d="M16 2v4M8 2v4M3 10h18" stroke="#2F8BF8" stroke-width="1.6" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="row-k">Shift</div>
+                  <div class="row-sub">07:30 - 14:00 WITA</div>
+                </div>
+              </div>
+              <div class="row-v">Shift Pagi</div>
+            </div>
+
+            <div class="row">
+              <div class="row-l">
+                <div class="ico">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 1 1 16 0z" fill="#2F8BF8" opacity=".16"/>
+                    <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 1 1 16 0z" stroke="#2F8BF8" stroke-width="1.6"/>
+                    <circle cx="12" cy="10" r="2.6" fill="#2F8BF8"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="row-k">Lokasi</div>
+                  <div class="row-sub">Puskesmas Cakranegara · 24 m dari lokasi</div>
+                </div>
+              </div>
+              <span class="tag">Valid</span>
+            </div>
+          </div>
+
+          <button class="cta">Tutup</button>
+          <p class="fineprint">Absen masuk tersimpan, kamu bisa absen pulang di jam selesai shift.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ ABSEN PULANG ══════════ -->
+  <div class="col">
+    <span class="col-label">Absen pulang</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <div class="map-bg"></div>
+        <div class="map-grid"></div>
+        <div class="map-route"></div>
+        <div class="status-bar">
+          <span>14:02</span>
+          <span class="icons">
+            <span class="bar" style="height:7px"></span>
+            <span class="bar" style="height:10px"></span>
+            <span class="bar" style="height:13px"></span>
+            <span class="battery"></span>
+          </span>
+        </div>
+
+        <div class="sheet">
+          <div class="confetti" aria-hidden="true"><span style="left:98.91%;width:7.8px;height:9.0px;background:#39C0DF;border-radius:50%;--cf-drift:-11px;--cf-spin:668deg;animation-duration:4.24s;animation-delay:1.45s"></span><span style="left:72.43%;width:5.0px;height:11.2px;background:#39C0DF;border-radius:50%;--cf-drift:-9px;--cf-spin:1243deg;animation-duration:3.44s;animation-delay:0.74s"></span><span style="left:68.87%;width:4.2px;height:11.8px;background:#93C5FD;border-radius:1.5px;--cf-drift:27px;--cf-spin:673deg;animation-duration:4.86s;animation-delay:0.01s"></span><span style="left:13.23%;width:6.3px;height:6.3px;background:#BFDBFE;border-radius:50%;--cf-drift:-26px;--cf-spin:985deg;animation-duration:3.54s;animation-delay:1.24s"></span><span style="left:30.50%;width:4.3px;height:8.1px;background:#93C5FD;border-radius:1.5px;--cf-drift:-11px;--cf-spin:603deg;animation-duration:3.54s;animation-delay:0.04s"></span><span style="left:45.69%;width:7.3px;height:6.8px;background:#2F8BF8;border-radius:1.5px;--cf-drift:20px;--cf-spin:652deg;animation-duration:3.49s;animation-delay:0.00s"></span><span style="left:83.80%;width:4.1px;height:9.9px;background:#39C0DF;border-radius:1.5px;--cf-drift:15px;--cf-spin:457deg;animation-duration:3.86s;animation-delay:1.54s"></span><span style="left:69.82%;width:7.9px;height:6.9px;background:#1F74E0;border-radius:1.5px;--cf-drift:-10px;--cf-spin:1144deg;animation-duration:3.30s;animation-delay:0.24s"></span><span style="left:28.76%;width:7.5px;height:11.2px;background:#1F74E0;border-radius:50%;--cf-drift:35px;--cf-spin:1137deg;animation-duration:4.04s;animation-delay:1.30s"></span><span style="left:85.61%;width:4.1px;height:6.4px;background:#1F74E0;border-radius:1.5px;--cf-drift:25px;--cf-spin:661deg;animation-duration:4.75s;animation-delay:0.33s"></span><span style="left:65.38%;width:6.7px;height:6.0px;background:#2F8BF8;border-radius:1.5px;--cf-drift:-21px;--cf-spin:842deg;animation-duration:4.07s;animation-delay:0.93s"></span><span style="left:93.07%;width:4.1px;height:11.5px;background:#1F74E0;border-radius:1.5px;--cf-drift:-16px;--cf-spin:1003deg;animation-duration:4.25s;animation-delay:0.30s"></span><span style="left:93.68%;width:5.4px;height:6.3px;background:#93C5FD;border-radius:1.5px;--cf-drift:-12px;--cf-spin:471deg;animation-duration:3.94s;animation-delay:0.43s"></span><span style="left:92.20%;width:7.7px;height:10.1px;background:#2F8BF8;border-radius:1.5px;--cf-drift:7px;--cf-spin:371deg;animation-duration:3.60s;animation-delay:0.13s"></span><span style="left:13.64%;width:7.9px;height:6.2px;background:#1F74E0;border-radius:50%;--cf-drift:-10px;--cf-spin:926deg;animation-duration:3.67s;animation-delay:1.39s"></span><span style="left:83.00%;width:7.0px;height:8.1px;background:#BFDBFE;border-radius:50%;--cf-drift:24px;--cf-spin:563deg;animation-duration:4.60s;animation-delay:1.42s"></span><span style="left:25.27%;width:6.0px;height:11.5px;background:#BFDBFE;border-radius:1.5px;--cf-drift:-13px;--cf-spin:406deg;animation-duration:3.24s;animation-delay:0.62s"></span><span style="left:65.46%;width:5.9px;height:11.7px;background:#39C0DF;border-radius:1.5px;--cf-drift:-34px;--cf-spin:680deg;animation-duration:3.65s;animation-delay:0.99s"></span><span style="left:28.56%;width:7.8px;height:10.3px;background:#1F74E0;border-radius:50%;--cf-drift:-22px;--cf-spin:710deg;animation-duration:4.47s;animation-delay:1.32s"></span><span style="left:39.59%;width:4.5px;height:8.7px;background:#1F74E0;border-radius:1.5px;--cf-drift:-29px;--cf-spin:722deg;animation-duration:4.35s;animation-delay:0.42s"></span><span style="left:23.53%;width:5.2px;height:8.6px;background:#93C5FD;border-radius:1.5px;--cf-drift:33px;--cf-spin:940deg;animation-duration:3.75s;animation-delay:0.28s"></span><span style="left:5.38%;width:6.8px;height:11.3px;background:#93C5FD;border-radius:1.5px;--cf-drift:-29px;--cf-spin:689deg;animation-duration:4.90s;animation-delay:1.32s"></span><span style="left:10.15%;width:6.3px;height:6.4px;background:#BFDBFE;border-radius:1.5px;--cf-drift:12px;--cf-spin:1095deg;animation-duration:4.67s;animation-delay:0.71s"></span><span style="left:62.84%;width:4.8px;height:7.4px;background:#1F74E0;border-radius:1.5px;--cf-drift:35px;--cf-spin:581deg;animation-duration:3.50s;animation-delay:0.48s"></span><span style="left:88.45%;width:7.1px;height:9.7px;background:#2F8BF8;border-radius:50%;--cf-drift:-14px;--cf-spin:1174deg;animation-duration:3.65s;animation-delay:1.01s"></span><span style="left:11.97%;width:6.4px;height:8.9px;background:#93C5FD;border-radius:1.5px;--cf-drift:23px;--cf-spin:398deg;animation-duration:3.75s;animation-delay:1.11s"></span><span style="left:58.41%;width:7.6px;height:6.5px;background:#2F8BF8;border-radius:50%;--cf-drift:23px;--cf-spin:1179deg;animation-duration:4.27s;animation-delay:1.17s"></span><span style="left:52.77%;width:7.7px;height:10.0px;background:#BFDBFE;border-radius:1.5px;--cf-drift:5px;--cf-spin:1041deg;animation-duration:3.86s;animation-delay:0.01s"></span><span style="left:20.04%;width:7.7px;height:8.8px;background:#2F8BF8;border-radius:50%;--cf-drift:-15px;--cf-spin:1109deg;animation-duration:4.75s;animation-delay:1.21s"></span><span style="left:85.23%;width:4.6px;height:10.5px;background:#2F8BF8;border-radius:50%;--cf-drift:-19px;--cf-spin:708deg;animation-duration:3.81s;animation-delay:0.37s"></span><span style="left:73.33%;width:7.5px;height:10.6px;background:#2F8BF8;border-radius:50%;--cf-drift:11px;--cf-spin:963deg;animation-duration:3.28s;animation-delay:1.10s"></span><span style="left:9.35%;width:5.2px;height:10.6px;background:#1F74E0;border-radius:1.5px;--cf-drift:22px;--cf-spin:1200deg;animation-duration:3.61s;animation-delay:0.60s"></span><span style="left:18.29%;width:6.9px;height:11.9px;background:#BFDBFE;border-radius:1.5px;--cf-drift:31px;--cf-spin:743deg;animation-duration:3.45s;animation-delay:0.87s"></span><span style="left:25.15%;width:5.5px;height:10.2px;background:#1F74E0;border-radius:50%;--cf-drift:-13px;--cf-spin:717deg;animation-duration:3.26s;animation-delay:0.70s"></span><span style="left:54.92%;width:6.0px;height:6.7px;background:#93C5FD;border-radius:1.5px;--cf-drift:-24px;--cf-spin:448deg;animation-duration:3.48s;animation-delay:0.50s"></span><span style="left:32.61%;width:5.5px;height:9.2px;background:#1F74E0;border-radius:1.5px;--cf-drift:16px;--cf-spin:1059deg;animation-duration:4.56s;animation-delay:0.66s"></span><span style="left:83.22%;width:4.8px;height:7.1px;background:#1F74E0;border-radius:1.5px;--cf-drift:-16px;--cf-spin:977deg;animation-duration:3.35s;animation-delay:1.59s"></span><span style="left:31.74%;width:5.1px;height:7.8px;background:#2F8BF8;border-radius:50%;--cf-drift:-31px;--cf-spin:426deg;animation-duration:3.91s;animation-delay:0.49s"></span><span style="left:3.18%;width:7.2px;height:6.9px;background:#BFDBFE;border-radius:50%;--cf-drift:-13px;--cf-spin:532deg;animation-duration:4.88s;animation-delay:0.96s"></span><span style="left:22.53%;width:4.3px;height:11.8px;background:#BFDBFE;border-radius:1.5px;--cf-drift:-14px;--cf-spin:619deg;animation-duration:4.91s;animation-delay:0.19s"></span><span style="left:14.81%;width:5.4px;height:6.2px;background:#1F74E0;border-radius:1.5px;--cf-drift:-16px;--cf-spin:911deg;animation-duration:4.46s;animation-delay:0.19s"></span><span style="left:5.00%;width:7.3px;height:9.4px;background:#93C5FD;border-radius:1.5px;--cf-drift:-3px;--cf-spin:736deg;animation-duration:3.96s;animation-delay:1.35s"></span><span style="left:18.10%;width:7.1px;height:11.0px;background:#BFDBFE;border-radius:1.5px;--cf-drift:-25px;--cf-spin:1216deg;animation-duration:3.88s;animation-delay:0.89s"></span><span style="left:79.12%;width:5.9px;height:6.4px;background:#1F74E0;border-radius:1.5px;--cf-drift:3px;--cf-spin:778deg;animation-duration:4.66s;animation-delay:0.78s"></span><span style="left:13.06%;width:4.6px;height:9.3px;background:#2F8BF8;border-radius:1.5px;--cf-drift:30px;--cf-spin:546deg;animation-duration:4.96s;animation-delay:1.45s"></span><span style="left:44.92%;width:4.2px;height:9.0px;background:#93C5FD;border-radius:1.5px;--cf-drift:3px;--cf-spin:745deg;animation-duration:3.41s;animation-delay:0.08s"></span></div>
+          <div class="handle"></div>
+
+          <div class="seal-wrap">
+            <span class="seal-halo"></span>
+            <svg class="seal" viewBox="0 0 100 100" aria-hidden="true">
+              <path fill="#2F8BF8" d="M50.00 10.00 Q62.68 2.67 70.00 15.36 Q84.65 15.35 84.64 30.00 Q97.33 37.32 90.00 50.00 Q97.33 62.68 84.64 70.00 Q84.65 84.65 70.00 84.64 Q62.68 97.33 50.00 90.00 Q37.32 97.33 30.00 84.64 Q15.35 84.65 15.36 70.00 Q2.67 62.68 10.00 50.00 Q2.67 37.32 15.36 30.00 Q15.35 15.35 30.00 15.36 Q37.32 2.67 50.00 10.00 Z"/>
+              <path class="check" d="M31 51 L44 64 L69 38" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <div class="head">
+            <h2>Absen pulang berhasil</h2>
+            <p class="date">Kamis, 27 November 2026</p>
+            <p class="greet">Selamat beristirahat, sampai jumpa lagi</p>
+          </div>
+
+          <div class="illus">
+            <img src="src/assets/waving-goodbye.png" alt="Dadah" style="animation-delay:.7s">
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="k">Pulang</div>
+              <div class="v">14:02</div>
+            </div>
+            <div class="stat">
+              <div class="k">Status</div>
+              <div class="v text ok">Tepat waktu</div>
+            </div>
+          </div>
+
+          <div class="details">
+            <div class="row">
+              <div class="row-l">
+                <div class="ico">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="4" width="18" height="18" rx="2.5" fill="#2F8BF8" opacity=".16"/>
+                    <rect x="3" y="4" width="18" height="18" rx="2.5" stroke="#2F8BF8" stroke-width="1.6"/>
+                    <path d="M16 2v4M8 2v4M3 10h18" stroke="#2F8BF8" stroke-width="1.6" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="row-k">Shift</div>
+                  <div class="row-sub">07:30 - 14:00 WITA</div>
+                </div>
+              </div>
+              <div class="row-v">Shift Pagi</div>
+            </div>
+
+            <div class="row">
+              <div class="row-l">
+                <div class="ico">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 1 1 16 0z" fill="#2F8BF8" opacity=".16"/>
+                    <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 1 1 16 0z" stroke="#2F8BF8" stroke-width="1.6"/>
+                    <circle cx="12" cy="10" r="2.6" fill="#2F8BF8"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="row-k">Lokasi</div>
+                  <div class="row-sub">Puskesmas Cakranegara · 31 m dari lokasi</div>
+                </div>
+              </div>
+              <span class="tag">Valid</span>
+            </div>
+          </div>
+
+          <button class="cta">Tutup</button>
+          <p class="fineprint">Absen pulang hari ini tercatat. Terima kasih atas kerja hari ini.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

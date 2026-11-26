@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import thumbsUpImg from "../assets/thumbs-up-success.png";
 import wavingGoodbyeImg from "../assets/waving-goodbye.png";
@@ -16,70 +16,111 @@ function formatDate(isoString) {
 
 const cap = (s) => (s ? s.trim().charAt(0).toUpperCase() + s.trim().slice(1) : s);
 
-// ── Inline SVG Icons (solid) ──
+// ── Inline SVG Icons (light mode, satu aksen biru) ──
 function CalendarIcon() {
   return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="4" width="18" height="18" rx="2" fill="#2F8BF8" opacity="0.2" />
-      <rect x="3" y="4" width="18" height="18" rx="2" stroke="#2F8BF8" strokeWidth="1.5" />
-      <path d="M16 2v4M8 2v4M3 10h18" stroke="#2F8BF8" strokeWidth="1.5" strokeLinecap="round" />
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="18" rx="2.5" fill="#2F8BF8" opacity="0.16" />
+      <rect x="3" y="4" width="18" height="18" rx="2.5" stroke="#2F8BF8" strokeWidth="1.6" />
+      <path d="M16 2v4M8 2v4M3 10h18" stroke="#2F8BF8" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
 
 function MapPinIcon() {
   return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-      <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 0116 0z" fill="#2F8BF8" opacity="0.2" />
-      <circle cx="12" cy="10" r="5" fill="#2F8BF8" />
-      <circle cx="12" cy="10" r="2" fill="white" />
-      <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 0116 0z" stroke="#2F8BF8" strokeWidth="1.5" />
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+      <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 1 1 16 0z" fill="#2F8BF8" opacity="0.16" />
+      <path d="M20 10c0 5-5.5 10-8 12-2.5-2-8-7-8-12a8 8 0 1 1 16 0z" stroke="#2F8BF8" strokeWidth="1.6" />
+      <circle cx="12" cy="10" r="2.6" fill="#2F8BF8" />
     </svg>
   );
 }
 
-// ── Confetti ──
-function Confetti({ id }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const spans = [];
-    const colors = ["#2F8BF8", "#FF0099", "#ADFF2F", "#FBBF24", "#1F74E0", "#3B82F6"];
-    for (let i = 0; i < 60; i++) {
-      const l = (Math.random() * 100).toFixed(1);
-      const w = (3 + Math.random() * 4).toFixed(1);
-      const h = (3 + Math.random() * 4).toFixed(1);
-      const c = colors[Math.floor(Math.random() * colors.length)];
-      const d = (Math.random() * 3).toFixed(1);
-      const dur = (2.5 + Math.random() * 1.5).toFixed(1);
-      spans.push(`<span style="position:absolute;left:${l}%;width:${w}px;height:${h}px;background:${c};border-radius:1px;top:-20px;animation:cf-${id} ${dur}s linear ${d}s infinite;"></span>`);
-    }
-    el.innerHTML = spans.join("");
-  }, [id]);
-  return <div ref={ref} style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 0 }} />;
-}
+// ── Seal: 12 gerigi biru + centang putih (mengikuti referensi desain) ──
+const SEAL_PATH =
+  "M50.00 10.00 Q62.68 2.67 70.00 15.36 Q84.65 15.35 84.64 30.00 Q97.33 37.32 90.00 50.00 " +
+  "Q97.33 62.68 84.64 70.00 Q84.65 84.65 70.00 84.64 Q62.68 97.33 50.00 90.00 " +
+  "Q37.32 97.33 30.00 84.64 Q15.35 84.65 15.36 70.00 Q2.67 62.68 10.00 50.00 " +
+  "Q2.67 37.32 15.36 30.00 Q15.35 15.35 30.00 15.36 Q37.32 2.67 50.00 10.00 Z";
 
-// ── Divider ──
-function Divider() {
-  return <div style={{ height: 1, background: "rgba(255,255,255,0.05)", width: "100%", margin: "4px 0" }} />;
-}
-
-// ── Icon Box ──
-function IconBox({ children }) {
+function SuccessSeal() {
   return (
-    <div style={{
-      width: 26, height: 26, background: "rgba(47,139,248,0.12)", border: "1px solid rgba(47,139,248,0.25)",
-      borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+    <svg width="86" height="86" viewBox="0 0 100 100" aria-hidden="true"
+      style={{ display: "block", filter: "drop-shadow(0 8px 18px rgba(47,139,248,0.26))" }}>
+      <path d={SEAL_PATH} fill="#2F8BF8" />
+      <path d="M31 51 L44 64 L69 38" fill="none" stroke="#FFFFFF" strokeWidth="6"
+        strokeLinecap="round" strokeLinejoin="round" className="seal-check" />
+    </svg>
+  );
+}
+
+// ── Konfeti: potongan kertas kecil biru yang jatuh & berputar ──
+// Palet dibatasi ke keluarga biru brand agar tetap satu aksen.
+const PAPER_COLORS = ["#2F8BF8", "#1F74E0", "#39C0DF", "#93C5FD", "#BFDBFE"];
+
+// Posisi/ukuran/durasi dibuat deterministik dari seed agar tidak berubah
+// tiap re-render, tapi tetap terasa acak.
+function buildPieces(seed, count) {
+  let s = seed || 1;
+  const rnd = () => {
+    s = (s * 9301 + 49297) % 233280;
+    return s / 233280;
+  };
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: +(rnd() * 100).toFixed(2),
+    w: +(4 + rnd() * 4).toFixed(1),
+    h: +(6 + rnd() * 6).toFixed(1),
+    delay: +(rnd() * 1.6).toFixed(2),
+    dur: +(3.2 + rnd() * 1.8).toFixed(2),
+    drift: +((rnd() - 0.5) * 70).toFixed(0),
+    spin: +(360 + rnd() * 900).toFixed(0),
+    color: PAPER_COLORS[Math.floor(rnd() * PAPER_COLORS.length)],
+    radius: rnd() > 0.75 ? "50%" : "1.5px",
+  }));
+}
+
+function Confetti({ seed, pieces = 46 }) {
+  const list = useMemo(() => buildPieces(seed, pieces), [seed, pieces]);
+
+  return (
+    <div aria-hidden="true" style={{
+      position: "absolute", inset: 0, overflow: "hidden",
+      pointerEvents: "none", zIndex: 3,
     }}>
-      {children}
+      {list.map(p => (
+        <span key={p.id} style={{
+          position: "absolute",
+          top: -18,
+          left: `${p.left}%`,
+          width: p.w,
+          height: p.h,
+          background: p.color,
+          borderRadius: p.radius,
+          opacity: 0,
+          transformStyle: "preserve-3d",
+          ["--cf-drift"]: `${p.drift}px`,
+          ["--cf-spin"]: `${p.spin}deg`,
+          animation: `cf-fall ${p.dur}s linear ${p.delay}s forwards`,
+        }} />
+      ))}
     </div>
   );
 }
 
 export default function AttendanceResultSheet({ open, onClose, data, type, shiftName: shiftNameProp, locationName, endAtMs, makeupTargetMs }) {
   const navigate = useNavigate();
-  const uid = useRef(Math.random().toString(36).slice(2, 8)).current;
+
+  // Seed konfeti: acak tiap sheet dibuka, stabil selama terbuka.
+  // Hook diletakkan sebelum early-return agar urutan hooks tidak berubah.
+  const [confettiSeed, setConfettiSeed] = useState(1);
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    if (open && !wasOpen.current) setConfettiSeed(Math.floor(Math.random() * 1e6) + 1);
+    wasOpen.current = open;
+  }, [open]);
+
   if (!data) return null;
   const isCheckIn = type === "in";
   const isLate = data.is_late;
@@ -98,26 +139,22 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
   // pulang di/dalam batas = "Pulang Tepat Waktu".
   const targetMs = makeupTargetMs ?? endAtMs;
   let pulangStatus = null;
-  let pulangStatusColor = "#ADFF2F";
+  let pulangTone = "ok"; // ok | warn
   if (!isCheckIn) {
     if (targetMs && data.clock_out_time) {
       const outMs = new Date(data.clock_out_time).getTime();
       if (outMs < targetMs) {
         pulangStatus = "Pulang Cepat";
-        pulangStatusColor = "#FBBF24";
+        pulangTone = "warn";
       } else {
         pulangStatus = "Pulang Tepat Waktu";
-        pulangStatusColor = "#ADFF2F";
+        pulangTone = "ok";
       }
     } else {
       pulangStatus = "-";
-      pulangStatusColor = "#FFFFFF";
+      pulangTone = "ok";
     }
   }
-  const statusColor = isLate ? "#FBBF24" : "#ADFF2F";
-  const badgeGrad = isLate
-    ? "linear-gradient(145deg, #FBBF24 0%, #F59E0B 50%, #D97706 100%)"
-    : "linear-gradient(145deg, #FF0099 0%, #2F8BF8 50%, #1F74E0 100%)";
   // Lokasi sesuai jenis absen: masuk → location_in, pulang → location_out.
   // Nama dari record (di-enrich trigger DB saat absen) agar selalu lokasi
   // yang benar-benar dipakai, bukan lokasi alfabetis pertama.
@@ -126,179 +163,227 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
     ?? data.location_in?.distance_from_puskesmas ?? null;
   const displayLocName = locJson?.matched_location_name || locationName;
 
+  const statusText = isCheckIn ? (isLate ? "Terlambat" : "Tepat waktu") : (pulangStatus || "-");
+  const statusTone = isCheckIn ? (isLate ? "warn" : "ok") : pulangTone;
+  const timeLabel = isCheckIn ? "Masuk" : "Pulang";
+  const timeValue = isCheckIn ? clockIn : clockOut;
+
   return (
     <>
       <style>{`
-        @keyframes bb-${uid} {
-          0%, 100% { transform: rotate(-6deg) scale(1); }
-          50% { transform: rotate(-6deg) scale(1.05); }
+        @keyframes seal-pop {
+          0% { transform: scale(0.4); opacity: 0; }
+          60% { transform: scale(1.08); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
         }
-        @keyframes cf-${uid} {
-          0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+        @keyframes seal-draw { to { stroke-dashoffset: 0; } }
+        @keyframes seal-halo {
+          0% { transform: scale(0.85); opacity: 0.5; }
+          70% { transform: scale(1.5); opacity: 0; }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+        @keyframes illus-bob {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
+        @keyframes cf-fall {
+          0% {
+            opacity: 0;
+            transform: translate3d(0, -20px, 0) rotate(0deg);
+          }
+          8% { opacity: 1; }
           70% { opacity: 1; }
-          100% { transform: translateY(820px) rotate(720deg); opacity: 0; }
+          100% {
+            opacity: 0;
+            transform: translate3d(var(--cf-drift), 620px, 0) rotate(var(--cf-spin));
+          }
         }
-        @keyframes pop-${uid} {
-          0% { transform: scale(0) rotate(-8deg); opacity: 0; }
-          60% { transform: scale(1.12) rotate(3deg); opacity: 1; }
-          80% { transform: scale(0.96) rotate(-1deg); }
-          100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        .seal-wrap { position: relative; animation: seal-pop 0.6s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+        .seal-halo {
+          position: absolute; inset: -6px; border-radius: 50%;
+          border: 2px solid rgba(47,139,248,0.35);
+          /* opacity 0 + forwards: cincin tidak terlihat sebelum animasi mulai
+             dan benar-benar hilang setelah 2 putaran selesai. */
+          opacity: 0;
+          animation: seal-halo 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s 2 forwards;
+          pointer-events: none;
         }
-        @keyframes bob-${uid} {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-7px) rotate(-2.5deg); }
+        .seal-check {
+          stroke-dasharray: 60;
+          stroke-dashoffset: 60;
+          animation: seal-draw 0.55s 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .illus-img { animation: illus-bob 2.6s ease-in-out 0.6s infinite; }
+        @media (prefers-reduced-motion: reduce) {
+          .seal-wrap, .illus-img, .seal-halo { animation: none !important; }
+          .seal-halo { display: none; }
+          .seal-check { animation: none !important; stroke-dashoffset: 0; }
         }
       `}</style>
 
       {open && (
-        <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center animate-fade-in" onClick={onClose}>
-          <div className="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-sm" onClick={onClose} />
+        <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center" onClick={onClose}>
+          <div className="fixed inset-0 z-[9998] bg-slate-900/30 backdrop-blur-[2px]" onClick={onClose} />
 
           <div onClick={e => e.stopPropagation()}
+            className="md:rounded-3xl mx-auto flex flex-col animate-slide-up z-[9999] w-full"
             style={{
-              maxHeight: "93vh", width: "100%", maxWidth: 420,
+              maxHeight: "93vh", maxWidth: 420,
               borderRadius: "28px 28px 0 0",
-              background: "linear-gradient(165deg, #4A7CFB 0%, #2F8BF8 25%, #1F74E0 60%, #39C0DF 100%)",
-              border: "1px solid rgba(47,139,248,0.4)",
-              boxShadow: "0 20px 60px rgba(76,29,149,0.45), 0 0 40px rgba(47,139,248,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
+              background: "#FFFFFF",
+              border: "1px solid rgba(31,41,55,0.08)",
+              boxShadow: "0 -10px 40px rgba(15,23,42,0.12)",
               position: "relative", overflow: "hidden",
             }}
-            className="md:rounded-3xl mx-auto flex flex-col animate-slide-up z-[9999]"
           >
-            <Confetti id={uid} />
-
-            {/* Gradient overlay */}
             <div style={{
-              position: "absolute", inset: 0,
-              background: "radial-gradient(circle at 50% 5%, rgba(255,0,153,0.35), transparent 50%), radial-gradient(circle at 50% 95%, rgba(112,102,237,0.25), transparent 50%)",
-              pointerEvents: "none", zIndex: 1,
-            }} />
+              padding: "10px 22px calc(26px + env(safe-area-inset-bottom, 0px))",
+              display: "flex", flexDirection: "column", alignItems: "center",
+              overflowY: "auto", flex: "1 1 auto", minHeight: 0,
+            }}>
+              {/* Konfeti kertas biru */}
+              <Confetti seed={confettiSeed} />
 
-            {/* Content */}
-            <div style={{ position: "relative", zIndex: 2, padding: "8px 22px 24px", display: "flex", flexDirection: "column", alignItems: "center", overflowY: "auto", flex: "1 1 auto", minHeight: 0, paddingBottom: "calc(24px + env(safe-area-inset-bottom, 0px))" }}>
               {/* Handle */}
-              <div style={{ display: "flex", justifyContent: "center", paddingBottom: 8 }}>
-                <div style={{ width: 40, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.15)" }} />
+              <div style={{ display: "flex", justifyContent: "center", paddingBottom: 14 }}>
+                <div style={{ width: 40, height: 4, borderRadius: 2, background: "#E2E8F0" }} />
               </div>
 
-              {/* 3D Badge */}
-              <div style={{
-                width: 76, height: 76, borderRadius: 18, background: badgeGrad,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                marginBottom: 16, position: "relative",
-                animation: `bb-${uid} 2s ease-in-out infinite`,
-                boxShadow: "0 10px 24px rgba(47,139,248,0.4), 0 4px 8px rgba(0,0,0,0.3), inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 3px 6px rgba(255,255,255,0.2)",
+              {/* Seal biru */}
+              <div className="seal-wrap" style={{ marginBottom: 14 }}>
+                <span className="seal-halo" />
+                <SuccessSeal />
+              </div>
+
+              {/* Judul */}
+              <h2 style={{
+                fontSize: 20, fontWeight: 800, letterSpacing: "-0.015em",
+                color: "#0F172A", textAlign: "center", margin: 0, marginBottom: 5,
               }}>
-                <div style={{ position: "absolute", inset: -4, borderRadius: 22, background: badgeGrad, zIndex: -1, opacity: 0.35, filter: "blur(6px)" }} />
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  {isCheckIn ? (
-                    <><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></>
-                  ) : (
-                    <><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></>
-                  )}
-                </svg>
-              </div>
-
-              {/* Title */}
-              <h2 style={{ fontSize: 22, fontWeight: 800, color: "white", textAlign: "center", marginBottom: 4 }}>
-                {isCheckIn ? "Absen Masuk Berhasil!" : "Absen Pulang Berhasil!"}
+                {isCheckIn ? "Absen masuk berhasil" : "Absen pulang berhasil"}
               </h2>
-              <p style={{ fontSize: 11, color: "white", textAlign: "center", marginBottom: 4 }}>{dateStr}</p>
-              <p style={{ fontSize: 13, fontWeight: 700, color: "#ADFF2F", textAlign: "center", marginBottom: isLate ? 10 : 14 }}>
-                {isCheckIn ? "Selamat bekerja, semangat ya !" : "Selamat beristirahat, sampai jumpa lagi !"}
+              <p style={{ fontSize: 11, fontWeight: 500, color: "#94A3B8", textAlign: "center", margin: 0, marginBottom: 8 }}>
+                {dateStr}
+              </p>
+              <p style={{ fontSize: 12.5, fontWeight: 600, color: "#2F8BF8", textAlign: "center", margin: 0, marginBottom: 12 }}>
+                {isCheckIn ? "Selamat bekerja, semangat ya" : "Selamat beristirahat, sampai jumpa lagi"}
               </p>
 
-              {/* Late badge */}
+              {/* Keterlambatan */}
               {isLate && isCheckIn && (
                 <span style={{
-                  fontSize: 9, fontWeight: 600, color: "#FBBF24",
-                  background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.2)",
-                  borderRadius: 20, padding: "3px 10px", marginBottom: 14,
+                  fontSize: 10.5, fontWeight: 600, color: "#B45309",
+                  background: "#FEF3C7", border: "1px solid #FDE68A",
+                  borderRadius: 999, padding: "4px 11px", marginBottom: 12,
+                  display: "inline-flex", alignItems: "center", gap: 5,
                 }}>
-                  ⚠ Keterlambatan tercatat
+                  Keterlambatan tercatat
                 </span>
               )}
 
-              {/* Ilustrasi — jempol (masuk, bob pelan) / karakter dadah (pulang, statis); pop-in sekali; gradasi memudarkan potongan bawah */}
-              <div style={{ animation: `pop-${uid} 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both`, marginBottom: 10 }}>
-                {isCheckIn ? (
-                  <img src={thumbsUpImg} alt="Semangat!"
-                    style={{
-                      width: 180, height: "auto",
-                      filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.35))",
-                      animation: `bob-${uid} 2s ease-in-out 0.7s infinite`,
-                      WebkitMaskImage: "linear-gradient(to bottom, black 68%, transparent 100%)",
-                      maskImage: "linear-gradient(to bottom, black 68%, transparent 100%)",
-                    }} />
-                ) : (
-                  <img src={wavingGoodbyeImg} alt="Dadah!"
-                    style={{
-                      width: 180, height: "auto",
-                      filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.35))",
-                      WebkitMaskImage: "linear-gradient(to bottom, black 80%, transparent 100%)",
-                      maskImage: "linear-gradient(to bottom, black 80%, transparent 100%)",
-                    }} />
-                )}
+              {/* Ilustrasi: jempol (masuk) / karakter dadah (pulang), gradasi memudarkan potongan bawah */}
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 2 }}>
+                <img
+                  src={isCheckIn ? thumbsUpImg : wavingGoodbyeImg}
+                  alt={isCheckIn ? "Semangat" : "Dadah"}
+                  className="illus-img"
+                  style={{
+                    width: 162, height: "auto", display: "block",
+                    WebkitMaskImage: "linear-gradient(to bottom, #000 58%, transparent 86%)",
+                    maskImage: "linear-gradient(to bottom, #000 58%, transparent 86%)",
+                  }}
+                />
               </div>
 
-              {/* Stats Row */}
-              <div style={{ display: "flex", gap: 8, width: "100%", marginBottom: 14 }}>
-                <div style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "10px 12px", textAlign: "center" }}>
-                  <div style={{ fontSize: 9, fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: 0.8 }}>{isCheckIn ? "Masuk" : "Pulang"}</div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: "white", marginTop: 2 }}>{isCheckIn ? clockIn : clockOut}</div>
+              {/* Ringkasan jam & status */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, width: "100%", margin: "14px 0 6px" }}>
+                <div style={{
+                  background: "#F7F9FD", border: "1px solid rgba(31,41,55,0.06)",
+                  borderRadius: 14, padding: "11px 12px", textAlign: "center",
+                }}>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: "#94A3B8", marginBottom: 3 }}>{timeLabel}</div>
+                  <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.01em", color: "#0F172A", fontVariantNumeric: "tabular-nums" }}>
+                    {timeValue}
+                  </div>
                 </div>
-                <div style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "10px 12px", textAlign: "center" }}>
-                  <div style={{ fontSize: 9, fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: 0.8 }}>Status</div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: isCheckIn ? statusColor : pulangStatusColor, marginTop: 2 }}>
-                    {isCheckIn ? (isLate ? "Terlambat" : "Tepat Waktu") : (pulangStatus || "-")}
+                <div style={{
+                  background: "#F7F9FD", border: "1px solid rgba(31,41,55,0.06)",
+                  borderRadius: 14, padding: "11px 12px", textAlign: "center",
+                }}>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: "#94A3B8", marginBottom: 3 }}>Status</div>
+                  <div style={{
+                    fontSize: 13.5, fontWeight: 800, letterSpacing: 0,
+                    color: statusTone === "warn" ? "#F59E0B" : "#10B981",
+                    whiteSpace: "nowrap",
+                  }}>
+                    {statusText}
                   </div>
                 </div>
               </div>
 
-              {/* ── Detail items ── */}
-              <div style={{ width: "100%" }}>
-                {/* Shift */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <IconBox><CalendarIcon /></IconBox>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: 0.5 }}>Shift</span>
-                  </div>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "white" }}>{shiftLabel}</span>
-                </div>
-                <Divider />
-
-                {/* Lokasi */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <IconBox><MapPinIcon /></IconBox>
+              {/* Detail */}
+              <div style={{ width: "100%", marginTop: 4 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "9px 4px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 9, background: "#EEF6FF",
+                      display: "flex", alignItems: "center", justifyContent: "center", flex: "0 0 28px",
+                    }}>
+                      <CalendarIcon />
+                    </div>
                     <div>
-                      <span style={{ fontSize: 10, fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: 0.5 }}>Lokasi</span>
-                      {displayLocName && <span style={{ fontSize: 10, fontWeight: 700, color: "white", display: "block", marginTop: 1 }}>{cap(displayLocName)}</span>}
-                      {distance && <span style={{ fontSize: 10, fontWeight: 400, color: "white", display: "block", marginTop: 1 }}>{distance}m dari Lokasi</span>}
+                      <div style={{ fontSize: 11, fontWeight: 600, color: "#475569" }}>Shift</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#0F172A", textAlign: "right", whiteSpace: "nowrap" }}>
+                    {shiftLabel}
+                  </div>
+                </div>
+
+                <div style={{ height: 1, background: "#F1F5F9", width: "100%" }} />
+
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "9px 4px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 9, background: "#EEF6FF",
+                      display: "flex", alignItems: "center", justifyContent: "center", flex: "0 0 28px",
+                    }}>
+                      <MapPinIcon />
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: "#475569" }}>Lokasi</div>
+                      <div style={{ fontSize: 10, fontWeight: 500, color: "#94A3B8", marginTop: 1 }}>
+                        {cap(displayLocName) || "-"}
+                        {distance ? ` · ${distance} m dari lokasi` : ""}
+                      </div>
                     </div>
                   </div>
                   {distance && (
                     <span style={{
-                      fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 6,
-                      color: Number(distance) <= 100 ? "#ADFF2F" : "#FBBF24",
-                      background: Number(distance) <= 100 ? "rgba(173,255,47,0.1)" : "rgba(251,191,36,0.1)",
+                      fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 7,
+                      background: Number(distance) <= 100 ? "#ECFDF5" : "#FFFBEB",
+                      color: Number(distance) <= 100 ? "#047857" : "#B45309",
+                      border: `1px solid ${Number(distance) <= 100 ? "#A7F3D0" : "#FDE68A"}`,
+                      whiteSpace: "nowrap",
                     }}>
-                      {Number(distance) <= 100 ? "Valid" : "Di Luar Jarak"}
+                      {Number(distance) <= 100 ? "Valid" : "Di luar jarak"}
                     </span>
                   )}
                 </div>
               </div>
 
-              {/* Button */}
-              <button onClick={() => { onClose(); navigate("/employee"); }}
+              {/* Tutup */}
+              <button
+                onClick={() => { onClose(); navigate("/employee"); }}
+                className="active:scale-[0.985]"
                 style={{
-                  width: "100%", padding: "14px 0", marginTop: 16,
-                  background: "linear-gradient(135deg, #2F8BF8 0%, #4A7CFB 50%, #1F74E0 100%)",
-                  border: "none", borderRadius: 16, color: "white",
-                  fontSize: 14, fontWeight: 700, cursor: "pointer", letterSpacing: 0.3,
-                  boxShadow: "0 8px 24px rgba(47,139,248,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
+                  width: "100%", padding: "15px 0", marginTop: 16,
+                  background: "#1F74E0", border: "none", borderRadius: 16,
+                  color: "#FFFFFF", fontSize: 14.5, fontWeight: 700,
+                  fontFamily: "inherit", letterSpacing: "0.01em", cursor: "pointer",
+                  boxShadow: "0 8px 20px rgba(31,116,224,0.26)",
+                  transition: "transform 0.16s ease, background 0.16s ease",
                 }}
-                className="active:scale-[0.98]"
               >
                 Tutup
               </button>
