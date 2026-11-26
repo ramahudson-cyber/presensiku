@@ -1,10 +1,10 @@
 {
   "version": "1.8.4",
   "versionCode": 31,
-  "webVersionCode": 85,
+  "webVersionCode": 86,
   "apkUrl": "https://github.com/ramahudson-cyber/presensiku/releases/download/v1.8.4/app-release.apk",
   "apkUrlFallback": "https://github.com/ramahudson-cyber/presensiku/releases/latest/download/app-release.apk",
-  "changelog": "Layar hasil absen masuk/pulang tampil light mode dengan seal biru bergerigi, centang animasi, dan konfeti biru.",
+  "changelog": "Chip shift di dashboard pegawai pindah ke dalam kartu, di bawah tombol Absen Sekarang.",
   "requiresNativeUpdate": true,
   "forceUpdate": false
 }

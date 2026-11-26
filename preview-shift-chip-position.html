@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Pegawai - Posisi Chip Shift</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body{font-family:Inter,"Segoe UI",system-ui,sans-serif;background:#EDEFF6;margin:0;padding:44px 24px 70px;display:flex;flex-direction:column;align-items:center}
+  .stage-head{text-align:center;margin-bottom:32px;max-width:680px}
+  .stage-head h1{font-size:21px;font-weight:800;letter-spacing:-.02em;margin:0 0 8px}
+  .stage-head p{font-size:13px;color:#64748b;line-height:1.6;margin:0}
+  .stage{display:flex;gap:52px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+  .col{display:flex;flex-direction:column;align-items:center;gap:12px}
+  .col-label{font-size:11px;font-weight:700;color:#64748b;letter-spacing:.03em}
+  .phone{width:390px;height:600px;border-radius:44px;background:#0B1220;padding:9px;box-shadow:0 30px 70px rgba(15,23,42,.22),0 0 0 1px rgba(15,23,42,.08)}
+  .screen{width:100%;height:100%;border-radius:36px;overflow:hidden;position:relative;background:#F4F2FB}
+  .notch{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:102px;height:25px;background:#0B1220;border-radius:13px;z-index:50}
+  .hero{background:linear-gradient(150deg,#0B3FB8 0%,#1449D8 34%,#2F7BF0 68%,#3F93FD 100%);border-radius:0 0 34px 34px;padding-bottom:74px;position:relative;color:#fff}
+  .hero svg.wave{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .card{background:#fff;border-radius:26px;display:grid;grid-template-columns:1.08fr .92fr;margin:12px 14px -130px;box-shadow:0 18px 40px rgba(9,33,84,.20);position:relative;z-index:5}
+  .tabular{font-variant-numeric:tabular-nums}
+  .mark{position:absolute;border:2px dashed #EF4444;border-radius:10px;pointer-events:none;z-index:60}
+  .mark-label{position:absolute;background:#EF4444;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap;z-index:61}
+  .bad{position:absolute;border:2px dashed #10B981;border-radius:10px;pointer-events:none;z-index:60}
+  .bad-label{position:absolute;background:#10B981;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap;z-index:61}
+</style>
+</head>
+<body>
+
+<div class="stage-head">
+  <h1>Posisi chip shift di dashboard pegawai</h1>
+  <p>Kiri: kondisi lama, chip shift menempel di hero bawah foto profil. Kanan: kondisi baru, chip shift pindah ke dalam kartu putih di bawah tombol Absen Sekarang.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ═════════ SEBELUM ═════════ -->
+  <div class="col">
+    <span class="col-label">Sebelum (salah)</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <div class="hero">
+          <svg class="wave" viewBox="0 0 390 230" preserveAspectRatio="none" fill="none">
+            <defs>
+              <linearGradient id="w1" x1="390" y1="0" x2="110" y2="220" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#7FCBFF" stop-opacity="0.72"/><stop offset="1" stop-color="#2F7BF0" stop-opacity="0.10"/>
+              </linearGradient>
+              <linearGradient id="w2" x1="390" y1="50" x2="170" y2="225" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#9EDFFF" stop-opacity="0.62"/><stop offset="1" stop-color="#3B9BFB" stop-opacity="0.06"/>
+              </linearGradient>
+            </defs>
+            <path d="M390 0V172C330 84 245 30 148 0Z" fill="url(#w1)"/>
+            <path d="M390 60C305 108 258 160 236 230H390Z" fill="url(#w2)"/>
+            <path d="M390 130C348 152 316 182 298 230H390Z" fill="#7ED4FF" opacity="0.38"/>
+          </svg>
+
+          <div class="relative max-w-md mx-auto" style="padding-top:calc(env(safe-area-inset-top,0px) + 32px)">
+            <div class="flex items-start justify-between gap-3 pl-4 pr-2">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-14 h-14 rounded-2xl border border-white/30 bg-white/15 flex items-center justify-center text-[20px] font-bold">R</div>
+                <div class="min-w-0">
+                  <div class="text-[13px] font-medium text-white/90">Selamat pagi,</div>
+                  <div class="text-[17px] font-extrabold tracking-tight leading-tight text-white">Rama Hudson</div>
+                  <div class="text-[11px] text-white/85 mt-0.5">pegawai · Perawat</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-0 shrink-0">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+                </div>
+                <div class="w-9 h-9 -ml-1 rounded-full flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- CHIP SHIFT DI HERO (posisi salah) -->
+            <div class="px-4 mt-3" id="badChipWrap">
+              <span id="badChip" class="text-[10px] font-semibold bg-white/20 px-3 py-1 rounded-full inline-block" style="border:1px solid rgba(255,255,255,0.25)">
+                Shift Siang
+              </span>
+            </div>
+            <div class="mark" id="markBad"></div>
+            <div class="mark-label" id="markBadLabel">chip di sini (salah)</div>
+
+            <div class="card">
+              <div class="min-w-0" style="padding:15px 13px 14px 15px">
+                <div class="text-[31px] font-extrabold leading-none tracking-[-0.045em] tabular" style="color:#0F172A">07:24:11</div>
+                <div class="text-[9.5px] font-semibold mt-1.5" style="color:#94A3B8">Kamis, 27 November 2026</div>
+                <div class="mt-3 w-full h-[42px] rounded-full flex items-center justify-center gap-1 whitespace-nowrap text-white text-[11px] font-extrabold" style="background:linear-gradient(135deg,#2F8BF8 0%,#1F6FE8 100%);box-shadow:0 4px 10px rgba(47,139,248,.25);padding:0 6px">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5a7.5 7.5 0 0 0-7.5 7.5v3"/><path d="M12 4.5A7.5 7.5 0 0 1 19.5 12v4.5"/><path d="M12 8a4 4 0 0 0-4 4v5"/><path d="M12 8a4 4 0 0 1 4 4v5.5"/><path d="M12 11.5a1.2 1.2 0 0 0-1.2 1.2v6"/><path d="M12 11.5a1.2 1.2 0 0 1 1.2 1.2v6.5"/></svg>
+                  Absen Sekarang
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+              </div>
+              <div class="min-w-0" style="padding:15px 15px 14px 13px;border-left:1px solid #EDF1F7">
+                <div class="w-full h-[30px] rounded-full flex items-center gap-1 px-2 text-[10px] font-extrabold whitespace-nowrap" style="background:#E8F1FE;color:#1F6FE8">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="3.5"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg>
+                  Status Bulan Ini
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="ml-auto"><path d="m9 18 6-6-6-6"/></svg>
+                </div>
+                <div class="grid grid-cols-2 mt-1.5">
+                  <div style="padding:6px 0 2px 7px"><div class="flex items-center gap-1 text-[9px] font-semibold" style="color:#475569"><span style="width:7px;height:7px;background:#10B981" class="rounded-full inline-block"></span>Hadir</div><div class="text-[14px] font-extrabold mt-0.5" style="color:#0F172A">18<span class="text-[9px] font-bold ml-0.5" style="color:#475569"> Hari</span></div></div>
+                  <div style="padding:6px 0 2px 7px;border-left:1px solid #EDF1F7"><div class="flex items-center gap-1 text-[9px] font-semibold" style="color:#475569"><span style="width:7px;height:7px;background:#F59E0B" class="rounded-full inline-block"></span>Terlambat</div><div class="text-[14px] font-extrabold mt-0.5" style="color:#0F172A">1<span class="text-[9px] font-bold ml-0.5" style="color:#475569"> Hari</span></div></div>
+                  <div style="padding:6px 0 2px 7px;border-top:1px solid #EDF1F7"><div class="flex items-center gap-1 text-[9px] font-semibold" style="color:#475569"><span style="width:7px;height:7px;background:#7C5CE0" class="rounded-full inline-block"></span>Izin</div><div class="text-[14px] font-extrabold mt-0.5" style="color:#0F172A">0<span class="text-[9px] font-bold ml-0.5" style="color:#475569"> Hari</span></div></div>
+                  <div style="padding:6px 0 2px 7px;border-top:1px solid #EDF1F7;border-left:1px solid #EDF1F7"><div class="flex items-center gap-1 text-[9px] font-semibold" style="color:#475569"><span style="width:7px;height:7px;background:#94A3B8" class="rounded-full inline-block"></span>Sakit</div><div class="text-[14px] font-extrabold mt-0.5" style="color:#0F172A">0<span class="text-[9px] font-bold ml-0.5" style="color:#475569"> Hari</span></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════ SESUDAH ═════════ -->
+  <div class="col">
+    <span class="col-label">Sesudah (benar)</span>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <div class="hero">
+          <svg class="wave" viewBox="0 0 390 230" preserveAspectRatio="none" fill="none">
+            <defs>
+              <linearGradient id="w3" x1="390" y1="0" x2="110" y2="220" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#7FCBFF" stop-opacity="0.72"/><stop offset="1" stop-color="#2F7BF0" stop-opacity="0.10"/>
+              </linearGradient>
+              <linearGradient id="w4" x1="390" y1="50" x2="170" y2="225" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#9EDFFF" stop-opacity="0.62"/><stop offset="1" stop-color="#3B9BFB" stop-opacity="0.06"/>
+              </linearGradient>
+            </defs>
+            <path d="M390 0V172C330 84 245 30 148 0Z" fill="url(#w3)"/>
+            <path d="M390 60C305 108 258 160 236 230H390Z" fill="url(#w4)"/>
+            <path d="M390 130C348 152 316 182 298 230H390Z" fill="#7ED4FF" opacity="0.38"/>
+          </svg>
+
+          <div class="relative max-w-md mx-auto" style="padding-top:calc(env(safe-area-inset-top,0px) + 32px)">
+            <div class="flex items-start justify-between gap-3 pl-4 pr-2">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-14 h-14 rounded-2xl border border-white/30 bg-white/15 flex items-center justify-center text-[20px] font-bold">R</div>
+                <div class="min-w-0">
+                  <div class="text-[13px] font-medium text-white/90">Selamat pagi,</div>
+                  <div class="text-[17px] font-extrabold tracking-tight leading-tight text-white">Rama Hudson</div>
+                  <div class="text-[11px] text-white/85 mt-0.5">pegawai · Perawat</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-0 shrink-0">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+                </div>
+                <div class="w-9 h-9 -ml-1 rounded-full flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="min-w-0" style="padding:15px 13px 14px 15px">
+                <div class="text-[31px] font-extrabold leading-none tracking-[-0.045em] tabular" style="color:#0F172A">07:24:11</div>
+                <div class="text-[9.5px] font-semibold mt-1.5" style="color:#94A3B8">Kamis, 27 November 2026</div>
+                <div class="mt-3 w-full h-[42px] rounded-full flex items-center justify-center gap-1 whitespace-nowrap text-white text-[11px] font-extrabold" style="background:linear-gradient(135deg,#2F8BF8 0%,#1F6FE8 100%);box-shadow:0 4px 10px rgba(47,139,248,.25);padding:0 6px">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5a7.5 7.5 0 0 0-7.5 7.5v3"/><path d="M12 4.5A7.5 7.5 0 0 1 19.5 12v4.5"/><path d="M12 8a4 4 0 0 0-4 4v5"/><path d="M12 8a4 4 0 0 1 4 4v5.5"/><path d="M12 11.5a1.2 1.2 0 0 0-1.2 1.2v6"/><path d="M12 11.5a1.2 1.2 0 0 1 1.2 1.2v6.5"/></svg>
+                  Absen Sekarang
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+                <!-- CHIP SHIFT DI DALAM KARTU (posisi benar) -->
+                <span id="goodChip" class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9.5px] font-bold max-w-full" style="background:#E8F1FE;color:#1F6FE8">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></svg>
+                  <span class="truncate">Shift Siang</span>
+                </span>
+                <div class="bad" id="markGood"></div>
+                <div class="bad-label" id="markGoodLabel">chip di sini (benar)</div>
+              </div>
+              <div class="min-w-0" style="padding:15px 15px 14px 13px;border-left:1px solid #EDF1F7">
+                <div class="w-full h-[30px] rounded-full flex items-center gap-1 px-2 text-[10px] font-extrabold whitespace-nowrap" style="background:#E8F1FE;color:#1F6FE8">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="3.5"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg>
+                  Status Bulan Ini
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="ml-auto"><path d="m9 18 6-6-6-6"/></svg>
+                </div>
+                <div class="grid grid-cols-2 mt-1.5">
+                  <div style="padding:6px 0 2px 7px"><div class="flex items-center gap-1 text-[9px] font-semibold" style="color:#475569"><span style="width:7px;height:7px;background:#10B981" class="rounded-full inline-block"></span>Hadir</div><div class="text-[14px] font-extrabold mt-0.5" style="color:#0F172A">18<span class="text-[9px] font-bold ml-0.5" style="color:#475569"> Hari</span></div></div>
+                  <div style="padding:6px 0 2px 7px;border-left:1px solid #EDF1F7"><div class="flex items-center gap-1 text-[9px] font-semibold" style="color:#475569"><span style="width:7px;height:7px;background:#F59E0B" class="rounded-full inline-block"></span>Terlambat</div><div class="text-[14px] font-extrabold mt-0.5" style="color:#0F172A">1<span class="text-[9px] font-bold ml-0.5" style="color:#475569"> Hari</span></div></div>
+                  <div style="padding:6px 0 2px 7px;border-top:1px solid #EDF1F7"><div class="flex items-center gap-1 text-[9px] font-semibold" style="color:#475569"><span style="width:7px;height:7px;background:#7C5CE0" class="rounded-full inline-block"></span>Izin</div><div class="text-[14px] font-extrabold mt-0.5" style="color:#0F172A">0<span class="text-[9px] font-bold ml-0.5" style="color:#475569"> Hari</span></div></div>
+                  <div style="padding:6px 0 2px 7px;border-top:1px solid #EDF1F7;border-left:1px solid #EDF1F7"><div class="flex items-center gap-1 text-[9px] font-semibold" style="color:#475569"><span style="width:7px;height:7px;background:#94A3B8" class="rounded-full inline-block"></span>Sakit</div><div class="text-[14px] font-extrabold mt-0.5" style="color:#0F172A">0<span class="text-[9px] font-bold ml-0.5" style="color:#475569"> Hari</span></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function box(targetId, markId, labelId, offset) {
+    const t = document.getElementById(targetId);
+    const m = document.getElementById(markId);
+    const l = document.getElementById(labelId);
+    if (!t || !m) return;
+    const r = t.getBoundingClientRect();
+    const s = t.closest('.screen').getBoundingClientRect();
+    m.style.left = (r.left - s.left - 4) + 'px';
+    m.style.top = (r.top - s.top - 4) + 'px';
+    m.style.width = (r.width + 8) + 'px';
+    m.style.height = (r.height + 8) + 'px';
+    if (l) {
+      l.style.left = (r.left - s.left - 4) + 'px';
+      l.style.top = (r.top - s.top - 22 + offset) + 'px';
+    }
+  }
+  window.addEventListener('load', () => {
+    box('badChip','markBad','markBadLabel', 0);
+    box('goodChip','markGood','markGoodLabel', 0);
+  });
+</script>
+</body>
+</html>

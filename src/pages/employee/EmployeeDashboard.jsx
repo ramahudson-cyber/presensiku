@@ -439,15 +439,6 @@ export default function EmployeeDashboard() {
             </div>
           </div>
 
-          {shift && (
-            <div className="px-4 mt-3">
-              <span className="text-[10px] font-semibold bg-white/20 px-3 py-1 rounded-full inline-block"
-                style={{ border: '1px solid rgba(255,255,255,0.25)' }}>
-                {shift}
-              </span>
-            </div>
-          )}
-
           {/* KARTU DI HEADER */}
           <div className="mx-[14px] mt-3 bg-white rounded-[26px] grid"
             style={{ gridTemplateColumns: '1.08fr 0.92fr', marginBottom: -130, boxShadow: '0 18px 40px rgba(9,33,84,0.20)', color: T.text }}>
@@ -470,7 +461,15 @@ export default function EmployeeDashboard() {
                 Absen Sekarang
                 <ArrowRight size={13} className="shrink-0" />
               </Link>
-              {!shift && (
+              {shift ? (
+                <span className="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9.5px] font-bold max-w-full"
+                  style={{ background: '#E8F1FE', color: '#1F6FE8' }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
+                    <circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 1.8" />
+                  </svg>
+                  <span className="truncate">{shift}</span>
+                </span>
+              ) : (
                 <span className="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9.5px] font-bold"
                   style={{ background: '#EEF2F8', color: '#475569' }}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
