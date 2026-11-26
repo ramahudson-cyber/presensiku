@@ -66,9 +66,9 @@ export default function BottomNav({ hidden = false }) {
 
   const mainMenus = userRole === "pegawai" ? pegawaiMenus : adminMain;
   const moreMenus = userRole === "pegawai" ? pegawaiMore : adminMore;
-  const centerPath = userRole === "pegawai"
-    ? "/employee/attendance"
-    : "/admin/attendance";
+  // Admin tidak melakukan presensi — tidak ada tombol Presensi mengambang di
+  // sisi admin (halaman /admin/attendance sudah tidak diakses dari menu).
+  const centerPath = userRole === "pegawai" ? "/employee/attendance" : null;
 
   // The center action gets a real grid column. This keeps it centered even when
   // the left and right groups contain a different number of items.
@@ -131,6 +131,9 @@ export default function BottomNav({ hidden = false }) {
     );
   };
 
+  // FAB presensi hanya untuk pegawai. Admin memakai bar tanpa kolom tengah.
+  const hasCenter = !!centerPath;
+
   return (
     <>
       <nav
@@ -138,24 +141,32 @@ export default function BottomNav({ hidden = false }) {
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         {/* The middle column is reserved in flow; the floating action never steals a menu slot. */}
-        <div className="absolute -top-5 left-1/2 z-20 -translate-x-1/2 text-center">
-          <NavLink
-            to={centerPath}
-            aria-label="Buka presensi"
-            className="hero-card-bg flex h-16 w-16 items-center justify-center rounded-full border-4 border-white text-3xl shadow-lg shadow-black/10"
-            style={{ background: "linear-gradient(135deg, #2F8BF8, #1F74E0)", color: "#ffffff" }}
-          >
-            <FingerprintPattern size={28} className="text-white" />
-          </NavLink>
-          <p className="mt-[5px] text-[10px] font-bold uppercase leading-none tracking-tight text-slate-600">
-            Presensi
-          </p>
-        </div>
+        {hasCenter && (
+          <>
+            <div className="absolute -top-5 left-1/2 z-20 -translate-x-1/2 text-center">
+              <NavLink
+                to={centerPath}
+                aria-label="Buka presensi"
+                className="hero-card-bg flex h-16 w-16 items-center justify-center rounded-full border-4 border-white text-3xl shadow-lg shadow-black/10"
+                style={{ background: "linear-gradient(135deg, #2F8BF8, #1F74E0)", color: "#ffffff" }}
+              >
+                <FingerprintPattern size={28} className="text-white" />
+              </NavLink>
+              <p className="mt-[5px] text-[10px] font-bold uppercase leading-none tracking-tight text-slate-600">
+                Presensi
+              </p>
+            </div>
 
-        <div className="absolute left-1/2 top-0 z-10 h-8 w-24 -translate-x-1/2 rounded-b-2xl bg-white/95" />
+            <div className="absolute left-1/2 top-0 z-10 h-8 w-24 -translate-x-1/2 rounded-b-2xl bg-white/95" />
+          </>
+        )}
 
         <div
-          className="grid h-[85px] w-full grid-cols-[minmax(0,1fr)_4rem_minmax(0,1fr)] items-stretch rounded-t-3xl border-t border-gray-100 px-2 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] sm:px-4"
+          className={`grid w-full items-stretch rounded-t-3xl border-t border-gray-100 px-2 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] sm:px-4 ${
+            hasCenter
+              ? "h-[85px] grid-cols-[minmax(0,1fr)_4rem_minmax(0,1fr)]"
+              : "h-[68px] grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+          }`}
           style={{
             background: "linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.99))",
             backdropFilter: "blur(20px)",
@@ -168,7 +179,7 @@ export default function BottomNav({ hidden = false }) {
             {leftMenus.map(renderMenuItem)}
           </div>
 
-          <div aria-hidden="true" />
+          {hasCenter && <div aria-hidden="true" />}
 
           <div
             className="grid min-w-0"

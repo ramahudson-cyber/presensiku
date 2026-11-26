@@ -29,6 +29,10 @@ const SHIFT_VISUALS = {
 const shiftVisual = (code) => SHIFT_VISUALS[code] ||
   { icon: Clock, premiumClass: "cal-premium-si", badgeClass: "cal-badge-si", color: "text-slate-500" };
 
+// Role pengelola — tidak menjalani shift, jadi tidak pernah muncul sebagai
+// peserta penjadwalan maupun absensi.
+const ADMIN_ROLES = ["super_admin", "admin", "admin_puskesmas"];
+
 const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 const DAY_NAMES = ["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"];
 const DAY_SHORT = ["Sen","Sel","Rab","Kam","Jum","Sab","Min"];
@@ -117,8 +121,11 @@ export default function SchedulingPage() {
         toast.error("Gagal memuat daftar pegawai: " + error.message);
         return;
       }
-      setEmployees(data || []);
-      if (!selectedUsers.length && user?.id && (isSuperAdmin || data?.some(item => item.id === user.id))) {
+      // Admin tidak mengikuti shift/absensi, jadi tidak boleh muncul di daftar
+      // penugasan jadwal (sheet Cari Pegawai, Isi Cepat, upload Excel).
+      const attendanceUsers = (data || []).filter(item => !ADMIN_ROLES.includes(item.role));
+      setEmployees(attendanceUsers);
+      if (!selectedUsers.length && user?.id && attendanceUsers.some(item => item.id === user.id)) {
         setSelectedUsers([user.id]);
       }
     });
@@ -358,8 +365,11 @@ export default function SchedulingPage() {
         />
       )}
 
-      {/* EMPLOYEE SEARCH — Bottom Sheet (multi-pilih via checklist) */}
+      {/* EMPLOYEE SEARCH — Bottom Sheet (multi-pilih via checklist).
+          bottomPad kecil: sheet ini punya tombol "Selesai" sendiri, jadi tidak
+          perlu ruang 100px untuk bottom nav (dulu menyisakan gap kosong besar). */}
       <BottomSheet open={showSearchModal} onClose={() => setShowSearchModal(false)}
+        bottomPad="calc(1rem + env(safe-area-inset-bottom, 0px))"
         title="Cari Pegawai" subtitle={employees.length + " pegawai terdaftar"}>
         <EmployeeSearchContent
           employees={employees} selectedIds={selectedUsers}
@@ -517,23 +527,32 @@ function EmployeeSearchContent({ employees, selectedIds, onToggle, onToggleAll, 
   const allFilteredSelected = filtered.length > 0 && filtered.every(e => selectedIds.includes(e.id));
 
   return (
-    <div className="space-y-2">
-      <div className="relative">
-        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-        <input ref={inputRef} value={q} onChange={e => setQ(e.target.value)}
-          placeholder="Ketik nama pegawai..."
-          className="w-full pl-9 pr-3 py-2.5 text-sm rounded-2xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2F8BF8]/40 transition-all" />
+    <div className="pb-1">
+      {/* Blok pencarian + aksi "pilih semua" menempel di atas scroller.
+          latar putih solid supaya tidak tampak tertutup judul sheet saat
+          daftar pegawai di-scroll. -mx-5/px-5 menutup gutter px-5 milik
+          container BottomSheet. */}
+      <div className="sticky top-0 z-10 -mx-5 px-5 pt-1 pb-2 bg-white space-y-2">
+        <div className="relative">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input ref={inputRef} value={q} onChange={e => setQ(e.target.value)}
+            placeholder="Ketik nama pegawai..."
+            className="w-full pl-9 pr-3 py-2.5 text-sm rounded-2xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2F8BF8]/40 transition-all" />
+        </div>
+        <div className="flex items-center justify-between px-1">
+          <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+            Pegawai ({selectedIds.length} dipilih)
+          </span>
+          <button onClick={() => onToggleAll(filtered.map(e => e.id), allFilteredSelected)}
+            className="text-[10px] font-semibold text-[#2F8BF8] hover:text-[#1F74E0] transition-all">
+            {allFilteredSelected ? "Hapus semua" : "Pilih semua"}
+          </button>
+        </div>
       </div>
-      <div className="flex items-center justify-between px-1">
-        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
-          Pegawai ({selectedIds.length} dipilih)
-        </span>
-        <button onClick={() => onToggleAll(filtered.map(e => e.id), allFilteredSelected)}
-          className="text-[10px] font-semibold text-[#2F8BF8] hover:text-[#1F74E0] transition-all">
-          {allFilteredSelected ? "Hapus semua" : "Pilih semua"}
-        </button>
-      </div>
-      <div className="max-h-56 overflow-y-auto space-y-0.5 -mx-1 px-1">
+      {/* Tanpa scroller bersarang: satu-satunya area scroll adalah milik
+          BottomSheet, sehingga header pencarian yang sticky benar-benar
+          menempel dan daftar panjang tidak "bertengkar" dengan sheet. */}
+      <div className="space-y-0.5 -mx-1 px-1">
         {filtered.map(emp => (
           <label key={emp.id}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm text-left cursor-pointer transition-all ${selectedIds.includes(emp.id) ? "bg-[#2F8BF8]/10 text-gray-900 ring-1 ring-[#2F8BF8]/40" : "text-gray-600 hover:bg-gray-50"}`}>
@@ -550,10 +569,14 @@ function EmployeeSearchContent({ employees, selectedIds, onToggle, onToggleAll, 
         ))}
         {!filtered.length && <p className="text-xs text-gray-400 text-center py-6">Tidak ditemukan</p>}
       </div>
-      <button onClick={onDone}
-        className="w-full py-2.5 bg-[#2F8BF8] hover:bg-[#1F74E0] text-white rounded-full text-sm font-semibold shadow-lg active:scale-[0.98] transition-all">
-        Selesai{selectedIds.length ? ` (${selectedIds.length} dipilih)` : ""}
-      </button>
+      {/* Aksi penutup menempel di bawah: daftar panjang tetap bisa digulir
+          tanpa tombol "Selesai" hilang, dan tidak ada ruang kosong di bawahnya. */}
+      <div className="sticky bottom-0 -mx-5 px-5 pt-2 pb-1 bg-white">
+        <button onClick={onDone}
+          className="w-full py-2.5 bg-[#2F8BF8] hover:bg-[#1F74E0] text-white rounded-full text-sm font-semibold shadow-lg active:scale-[0.98] transition-all">
+          Selesai{selectedIds.length ? ` (${selectedIds.length} dipilih)` : ""}
+        </button>
+      </div>
     </div>
   );
 }

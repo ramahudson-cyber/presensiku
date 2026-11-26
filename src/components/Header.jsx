@@ -1,5 +1,5 @@
 import {
-  Bell, LogOut, Users, CalendarCheck, History, CalendarDays,
+  Bell, LogOut, Users, History, CalendarDays,
   FileText, Megaphone, Settings, Building2, LayoutDashboard, Clock,
   MessageSquareWarning, ShieldAlert, Wallet,
 } from "lucide-react";
@@ -10,7 +10,6 @@ import { signOut } from "../services/authService";
    (disetujui). Tampil di semua halaman admin non-dashboard. */
 const PAGES = {
   "/admin/employees": { icon: Users, title: "Pegawai", desc: "Kelola data pegawai puskesmas" },
-  "/admin/attendance": { icon: CalendarCheck, title: "Absensi", desc: "Pantau absensi pegawai hari ini" },
   "/admin/attendance-history": { icon: History, title: "Riwayat Absensi", desc: "Rekap kehadiran seluruh pegawai" },
   "/admin/schedules": { icon: CalendarDays, title: "Jadwal Kerja", desc: "Susun jadwal shift per bulan" },
   "/admin/leave": { icon: FileText, title: "Cuti & Izin", desc: "Kelola pengajuan cuti, izin, dan sakit" },

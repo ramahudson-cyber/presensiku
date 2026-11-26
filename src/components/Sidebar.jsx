@@ -50,7 +50,8 @@ export default function Sidebar({ menuOpen = false, setMenuOpen = () => {} }) {
   const adminMenus = [
     { path: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
     { path: "/admin/employees", label: "Pegawai", icon: Users },
-    { path: "/admin/attendance", label: "Absensi", icon: CalendarCheck },
+    // Tidak ada menu "Absensi" di sisi admin: admin mengelola, bukan
+    // melakukan presensi. Pemantauan kehadiran lewat Riwayat Absensi.
     { path: "/admin/attendance-history", label: "Riwayat Absensi", icon: History },
     // Pantauan kecurangan: hanya admin instansi & platform admin (sesuai RLS
     // attendance_security_events — kepala_unit tidak diberi akses).

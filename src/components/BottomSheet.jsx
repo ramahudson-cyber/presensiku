@@ -12,7 +12,7 @@ const T = {
   textMuted: '#94A3B8',
 };
 
-export default function BottomSheet({ open, onClose, title, subtitle, children, snap = "auto", dismissible = true }) {
+export default function BottomSheet({ open, onClose, title, subtitle, children, snap = "auto", dismissible = true, bottomPad }) {
   const sheetRef = useRef(null);
 
   useEffect(() => {
@@ -54,9 +54,11 @@ export default function BottomSheet({ open, onClose, title, subtitle, children, 
 
             {/* min-h-0: wajib agar scroller flex-child mau menyusut & benar2
                 bisa di-scroll (pola sama dgn AttendanceResultSheet).
-                overscroll-contain: cegah scroll chaining mengunci body. */}
+                overscroll-contain: cegah scroll chaining mengunci body.
+                bottomPad: sheet yang punya tombol aksi sendiri (mis. "Selesai")
+                tidak butuh ruang 100px untuk bottom nav → isi lebih ringkas. */}
             <div className="flex-1 min-h-0 overscroll-contain overflow-y-auto px-5 md:pb-6 scrollbar-thin"
-              style={{ paddingBottom: "calc(100px + env(safe-area-inset-bottom, 0px))" }}>
+              style={{ paddingBottom: bottomPad || "calc(100px + env(safe-area-inset-bottom, 0px))" }}>
               {children}
             </div>
           </div>

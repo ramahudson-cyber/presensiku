@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="id" data-zcode-design>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — Perbaikan Sheet Cari Pegawai</title>
+<style>
+  :root {
+    --blue: #2F8BF8;
+    --blue-dark: #1F74E0;
+    --cyan: #39C0DF;
+    --ink: #0F172A;
+    --ink-2: #475569;
+    --muted: #94A3B8;
+    --line: rgba(31, 41, 55, 0.10);
+    --soft: #F8FAFC;
+    --ok: #10B981;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 32px 20px 56px;
+    background: #F4F2FB;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  .page-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .page-desc { font-size: 13px; color: var(--ink-2); margin: 0 0 28px; line-height: 1.6; }
+  .page-desc code {
+    background: #fff; border: 1px solid var(--line); border-radius: 6px;
+    padding: 1px 5px; font-size: 11.5px; color: #334155;
+  }
+
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 22px; }
+
+  .col-head {
+    display: flex; align-items: center; gap: 9px; margin-bottom: 10px;
+  }
+  .tag {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 999px;
+  }
+  .tag.before { background: #FEE2E2; color: #B91C1C; }
+  .tag.after { background: #D1FAE5; color: #047857; }
+  .col-head span.sub { font-size: 11.5px; color: var(--ink-2); }
+
+  /* ---- phone-ish frame ---- */
+  .frame {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    overflow: hidden;
+    box-shadow: 0 10px 34px rgba(15, 23, 42, 0.08);
+  }
+  .frame-scene {
+    position: relative;
+    background: linear-gradient(160deg, #E8EEFA 0%, #EDE9FB 100%);
+    padding: 18px 14px 90px;
+    min-height: 520px;
+  }
+  /* fake blurred page behind the sheet */
+  .behind {
+    height: 74px; border-radius: 14px; margin-bottom: 12px;
+    background: linear-gradient(120deg, rgba(47,139,248,0.20), rgba(74,124,251,0.12));
+    border: 1px solid rgba(255,255,255,0.7);
+  }
+  .behind.short { width: 62%; height: 34px; border-radius: 999px; background: rgba(255,255,255,0.72); }
+
+  .sheet {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: #fff; border-radius: 26px 26px 0 0;
+    box-shadow: 0 -10px 40px rgba(15, 23, 42, 0.16);
+    display: flex; flex-direction: column;
+  }
+
+  .sheet-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 12px 20px 12px; flex-shrink: 0;
+  }
+  .sheet-head h3 { margin: 0; font-size: 13.5px; font-weight: 800; color: var(--ink); }
+  .sheet-head p { margin: 2px 0 0; font-size: 10px; color: var(--muted); }
+  .x-btn {
+    width: 30px; height: 30px; border-radius: 11px; border: 0; flex-shrink: 0;
+    background: #F1F5F9; color: #475569; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; margin-left: 12px;
+  }
+
+  /* ---- the scroller that BottomSheet provides ---- */
+  .scroller {
+    overflow-y: auto;
+    padding: 0 20px;
+    overscroll-behavior: contain;
+  }
+  .scroller.before { padding-bottom: 100px; height: 372px; }
+  .scroller.after  { padding-bottom: 6px; max-height: 300px; }
+
+  .sheet-foot {
+    flex-shrink: 0; background: #fff;
+    padding: 8px 20px 16px;
+  }
+  .sheet-foot .done-btn { margin-top: 0; }
+
+  /* ---- search block ---- */
+  .search-block { display: block; }
+  .search-block.sticky {
+    position: sticky; top: 0; z-index: 10;
+    background: #fff;
+    margin: 0 -20px; padding: 4px 20px 8px;
+  }
+  .field { position: relative; }
+  .field svg.lens {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9CA3AF;
+  }
+  .field input {
+    width: 100%; padding: 10px 12px 10px 36px;
+    font-size: 13px; font-family: inherit; color: var(--ink);
+    background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 16px;
+    outline: none;
+  }
+  .field input::placeholder { color: #9CA3AF; }
+  .field input:focus { border-color: rgba(47,139,248,0.5); box-shadow: 0 0 0 3px rgba(47,139,248,0.16); }
+
+  .list-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 4px 6px;
+  }
+  .list-meta .cap {
+    font-size: 9px; font-weight: 800; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #64748B;
+  }
+  .list-meta a { font-size: 10px; font-weight: 700; color: var(--blue); text-decoration: none; }
+
+  .row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 16px; font-size: 13px; color: var(--ink-2);
+    border: 1px solid transparent;
+  }
+  .row + .row { margin-top: 2px; }
+  .row.on {
+    background: rgba(47,139,248,0.10); color: var(--ink);
+    border-color: rgba(47,139,248,0.40);
+  }
+  .row input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--blue); flex-shrink: 0; }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 999px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: #fff; font-size: 12px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .row .name { font-weight: 600; color: inherit; }
+  .row .role { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+  .done-btn {
+    width: 100%; margin-top: 8px; padding: 11px;
+    background: var(--blue); color: #fff; border: 0; border-radius: 999px;
+    font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer;
+    box-shadow: 0 8px 20px rgba(47,139,248,0.32);
+  }
+  .done-btn:hover { background: var(--blue-dark); }
+
+  /* ---- annotations ---- */
+  .notes { margin-top: 12px; display: grid; gap: 7px; }
+  .note {
+    display: flex; gap: 8px; align-items: flex-start;
+    font-size: 11.5px; line-height: 1.55; color: var(--ink-2);
+    background: #fff; border: 1px solid var(--line);
+    border-radius: 12px; padding: 9px 11px;
+  }
+  .note b { color: var(--ink); font-weight: 700; }
+  .note .dot {
+    width: 6px; height: 6px; border-radius: 999px; margin-top: 6px; flex-shrink: 0;
+  }
+  .note.fix .dot { background: var(--ok); }
+  .note.old .dot { background: #EF4444; }
+
+  .ghost-label {
+    position: absolute; left: 20px; z-index: 20;
+    font-size: 9.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 3px 7px; border-radius: 999px;
+  }
+  .ghost-label.bad { top: 44px; background: #FEE2E2; color: #B91C1C; }
+  .ghost-label.good { top: 44px; background: #D1FAE5; color: #047857; }
+
+  .gap-marker {
+    position: absolute; left: 50%; bottom: 88px; transform: translateX(-50%);
+    z-index: 20; font-size: 9.5px; font-weight: 700; color: #B91C1C;
+    background: #FEE2E2; border-radius: 999px; padding: 3px 9px;
+    white-space: nowrap;
+  }
+
+  /* ---- section 2: bottom nav before/after ---- */
+  .nav-frame {
+    background: #fff; border: 1px solid var(--line); border-radius: 22px; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.07);
+  }
+  .nav-stage {
+    position: relative; height: 150px;
+    background: linear-gradient(180deg, #F8FAFC, #EEF2FB);
+    display: flex; align-items: flex-end;
+  }
+  .navbar {
+    position: relative; width: 100%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.99));
+    border-top: 1px solid #F1F5F9; border-radius: 22px 22px 0 0;
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.10);
+    display: grid; align-items: stretch; padding: 0 8px;
+  }
+  .navbar.with-fab { height: 85px; grid-template-columns: minmax(0,1fr) 4rem minmax(0,1fr); }
+  .navbar.no-fab  { height: 68px; grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .nav-group { display: grid; }
+  .nav-group.right { grid-column: 3; }
+  .navbar.no-fab .nav-group.right { grid-column: 2; }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; padding-top: 8px; font-size: 10px; font-weight: 600; color: #64748B;
+  }
+  .nav-item.active { color: var(--blue); }
+  .nav-item .ico {
+    width: 30px; height: 30px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-item.active .ico { background: rgba(47,139,248,0.15); }
+  .fab {
+    position: absolute; left: 50%; top: -20px; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .fab .circle {
+    width: 64px; height: 64px; border-radius: 999px; border: 4px solid #fff;
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 20px rgba(15,23,42,0.18);
+  }
+  .fab .cap { font-size: 9.5px; font-weight: 800; letter-spacing: -0.01em; text-transform: uppercase; color: #475569; margin-top: 5px; }
+  .notch {
+    position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+    width: 96px; height: 32px; border-radius: 0 0 16px 16px; background: rgba(255,255,255,0.95);
+  }
+
+  .footer-note {
+    margin-top: 30px; font-size: 11.5px; color: var(--ink-2);
+    background: #fff; border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px 16px; line-height: 1.65;
+  }
+  .footer-note b { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1 class="page-title">Perbaikan UI — Jadwal Kerja &amp; Menu Admin</h1>
+  <p class="page-desc">
+    Preview perubahan pada sheet <code>Cari Pegawai</code> di halaman
+    <code>/admin/schedules</code> serta bar navigasi admin. Mockup statis — data contoh.
+  </p>
+
+  <!-- ============ SHEET: BEFORE / AFTER ============ -->
+  <div class="cols">
+
+    <!-- BEFORE -->
+    <section>
+      <div class="col-head">
+        <span class="tag before">Sebelum</span>
+        <span class="sub">4 baris terdaftar, admin ikut muncul</span>
+      </div>
+
+      <div class="frame">
+        <div class="frame-scene">
+          <div class="behind"></div>
+          <div class="behind short"></div>
+          <div class="behind" style="height:44px;opacity:.7"></div>
+
+          <div class="sheet">
+            <div class="sheet-head">
+              <div>
+                <h3>Cari Pegawai</h3>
+                <p>4 pegawai terdaftar</p>
+              </div>
+              <button class="x-btn" aria-label="Tutup">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            <div class="scroller before">
+              <div class="search-block">
+                <div class="field">
+                  <svg class="lens" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                  <input type="text" placeholder="Ketik nama pegawai...">
+                </div>
+                <div class="list-meta">
+                  <span class="cap">Pegawai (1 dipilih)</span>
+                  <a href="#">Pilih semua</a>
+                </div>
+              </div>
+
+              <div class="row on">
+                <input type="checkbox" checked>
+                <div class="avatar">a</div>
+                <div>
+                  <div class="name">awilys</div>
+                  <div class="role">admin</div>
+                </div>
+              </div>
+              <div class="row">
+                <input type="checkbox">
+                <div class="avatar">D</div>
+                <div>
+                  <div class="name">Dini Aspiani</div>
+                  <div class="role">pegawai</div>
+                </div>
+              </div>
+              <div class="row">
+                <input type="checkbox">
+                <div class="avatar">I</div>
+                <div>
+                  <div class="name">Ialu rama jalil wijaya A.Md.Kom</div>
+                  <div class="role">pegawai</div>
+                </div>
+              </div>
+              <div class="row">
+                <input type="checkbox">
+                <div class="avatar">r</div>
+                <div>
+                  <div class="name">rakim</div>
+                  <div class="role">pegawai</div>
+                </div>
+              </div>
+
+              <button class="done-btn">Selesai (1 dipilih)</button>
+            </div>
+          </div>
+
+          <span class="ghost-label bad">Input ikut ter-scroll → tertutup judul</span>
+          <span class="gap-marker">gap kosong ± 100px</span>
+        </div>
+      </div>
+
+      <div class="notes">
+        <div class="note old">
+          <span class="dot"></span>
+          <span>Akun <b>awilys (admin)</b> ikut terdaftar sebagai peserta jadwal, padahal admin tidak menjalani shift.</span>
+        </div>
+        <div class="note old">
+          <span class="dot"></span>
+          <span>Kotak pencarian ada di dalam area scroll — saat daftar digulir, ia hilang di bawah judul sheet.</span>
+        </div>
+        <div class="note old">
+          <span class="dot"></span>
+          <span>Ada padding bawah <b>100px</b> khusus bottom-nav, jadi muncul ruang kosong besar setelah tombol Selesai.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- AFTER -->
+    <section>
+      <div class="col-head">
+        <span class="tag after">Sesudah</span>
+        <span class="sub">3 pegawai, pencarian menempel, tanpa gap</span>
+      </div>
+
+      <div class="frame">
+        <div class="frame-scene">
+          <div class="behind"></div>
+          <div class="behind short"></div>
+          <div class="behind" style="height:44px;opacity:.7"></div>
+
+          <div class="sheet">
+            <div class="sheet-head">
+              <div>
+                <h3>Cari Pegawai</h3>
+                <p>3 pegawai terdaftar</p>
+              </div>
+              <button class="x-btn" aria-label="Tutup">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            <div class="scroller after">
+              <div class="search-block sticky">
+                <div class="field">
+                  <svg class="lens" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                  <input type="text" placeholder="Ketik nama pegawai...">
+                </div>
+                <div class="list-meta">
+                  <span class="cap">Pegawai (1 dipilih)</span>
+                  <a href="#">Pilih semua</a>
+                </div>
+              </div>
+
+              <div class="row">
+                <input type="checkbox">
+                <div class="avatar">D</div>
+                <div>
+                  <div class="name">Dini Aspiani</div>
+                  <div class="role">pegawai</div>
+                </div>
+              </div>
+              <div class="row on">
+                <input type="checkbox" checked>
+                <div class="avatar">I</div>
+                <div>
+                  <div class="name">Ialu rama jalil wijaya A.Md.Kom</div>
+                  <div class="role">pegawai</div>
+                </div>
+              </div>
+              <div class="row">
+                <input type="checkbox">
+                <div class="avatar">r</div>
+                <div>
+                  <div class="name">rakim</div>
+                  <div class="role">pegawai</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sheet-foot">
+              <button class="done-btn">Selesai (1 dipilih)</button>
+            </div>
+          </div>
+
+          <span class="ghost-label good">Input menempel di atas</span>
+        </div>
+      </div>
+
+      <div class="notes">
+        <div class="note fix">
+          <span class="dot"></span>
+          <span>Daftar difilter: role <b>super_admin / admin / admin_puskesmas</b> tidak lagi muncul di sheet, Isi Cepat, maupun upload Excel.</span>
+        </div>
+        <div class="note fix">
+          <span class="dot"></span>
+          <span>Blok pencarian <b>sticky</b> dengan latar putih — tetap terlihat walau daftar digulir.</span>
+        </div>
+        <div class="note fix">
+          <span class="dot"></span>
+          <span>Padding bawah sheet turun ke <b>16px</b> dan tombol Selesai dipasang <b>sticky</b> di dasar — tidak ada lagi ruang kosong.</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <h2 class="page-title" style="font-size:17px;margin-top:38px">Bar Navigasi Admin (mobile)</h2>
+  <p class="page-desc" style="margin-bottom:18px">
+    Tombol <b>Presensi</b> mengambang dihapus dari sisi admin karena admin tidak melakukan absensi.
+    Kolom tengah ikut dilepas, bar jadi lebih ringkas.
+  </p>
+
+  <div class="cols">
+    <section>
+      <div class="col-head">
+        <span class="tag before">Sebelum</span>
+        <span class="sub">FAB Presensi masih tampil</span>
+      </div>
+      <div class="nav-frame">
+        <div class="nav-stage">
+          <div class="navbar with-fab">
+            <div class="notch"></div>
+            <div class="fab">
+              <span class="circle">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+                  <path d="M12 3a4 4 0 0 0-4 4v2.5M12 3a4 4 0 0 1 4 4v2.2"/>
+                  <path d="M8 9.5V11a4 4 0 0 0 .6 2.1M16 9.2V12a4 4 0 0 1-.5 1.9"/>
+                  <path d="M12 8v3.5a2.5 2.5 0 0 1-2.5 2.5"/>
+                  <path d="M5.5 11v1.5a6.5 6.5 0 0 0 1 3.4M18.5 11v1.5a6.5 6.5 0 0 1-1 3.3"/>
+                  <path d="M9 19.5a8.5 8.5 0 0 0 1.6-5M15 19.5a8.4 8.4 0 0 0 1.4-4.6"/>
+                </svg>
+              </span>
+              <span class="cap">Presensi</span>
+            </div>
+            <div class="nav-group" style="grid-template-columns: repeat(2, minmax(0,1fr))">
+              <div class="nav-item active">
+                <span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.6"/></svg></span>
+                <span>Home</span>
+              </div>
+              <div class="nav-item">
+                <span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+                <span>Pegawai</span>
+              </div>
+            </div>
+            <div class="nav-group right" style="grid-template-columns: repeat(2, minmax(0,1fr))">
+              <div class="nav-item">
+                <span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-9 9Z"/><path d="M12 7v5l3 2"/></svg></span>
+                <span>Riwayat</span>
+              </div>
+              <div class="nav-item">
+                <span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></span>
+                <span>Lainnya</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="col-head">
+        <span class="tag after">Sesudah</span>
+        <span class="sub">Tanpa FAB, bar lebih pendek</span>
+      </div>
+      <div class="nav-frame">
+        <div class="nav-stage">
+          <div class="navbar no-fab">
+            <div class="nav-group" style="grid-template-columns: repeat(2, minmax(0,1fr))">
+              <div class="nav-item active">
+                <span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.6"/></svg></span>
+                <span>Home</span>
+              </div>
+              <div class="nav-item">
+                <span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+                <span>Pegawai</span>
+              </div>
+            </div>
+            <div class="nav-group right" style="grid-template-columns: repeat(2, minmax(0,1fr))">
+              <div class="nav-item">
+                <span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-9 9Z"/><path d="M12 7v5l3 2"/></svg></span>
+                <span>Riwayat</span>
+              </div>
+              <div class="nav-item">
+                <span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></span>
+                <span>Lainnya</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="footer-note">
+    <b>Menu sidebar admin:</b> item <b>Absensi</b> dihapus dari daftar menu (desktop &amp; mobile),
+    termasuk entri pada grid menu dashboard. Judul header untuk <code>/admin/attendance</code>
+    juga dilepas. Bila ada tautan lama atau bookmark ke halaman itu, pengguna dialihkan
+    otomatis ke <b>Riwayat Absensi</b> — tidak ada halaman kosong.
+    Halaman absensi milik pegawai (<code>/employee/attendance</code>) tidak berubah.
+  </div>
+
+</div>
+</body>
+</html>

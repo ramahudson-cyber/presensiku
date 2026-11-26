@@ -75,7 +75,9 @@ function AppRoutes() {
             <EmployeesPage />
           </ProtectedRoute>
         } />
-        <Route path="attendance" element={<AttendancePage />} />
+        {/* Admin tidak melakukan presensi. Tautan lama/bookmark ke
+            /admin/attendance dialihkan ke Riwayat Absensi agar tidak dead-end. */}
+        <Route path="attendance" element={<Navigate to="/admin/attendance-history" replace />} />
         <Route path="attendance-history" element={<AttendanceHistoryPage />} />
         <Route path="keamanan-absensi" element={
           <ProtectedRoute allowedRoles={["super_admin", "admin", "admin_puskesmas"]}>

@@ -78,11 +78,13 @@ function AdminLayout() {
         {!(isDashboard || isEmployeePath) && <Header />}
         {/* Halaman pegawai mengatur layout & paddingnya sendiri (app bar biru
             wajib menempel tepi atas layar), jadi main tanpa padding.
-            Halaman admin tetap memakai padding konten bawaan. */}
+            Halaman admin tetap memakai padding konten bawaan.
+            pb admin = 68px tinggi bar bawah + 16px sela; bar admin tidak lagi
+            punya FAB presensi, jadi tidak perlu 101px lagi. */}
         <main className={`flex-1 w-full min-w-0 overflow-x-hidden flex flex-col ${
           isEmployeePath
             ? "p-0"
-            : "p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8 pb-[calc(101px_+_env(safe-area-inset-bottom,0px)_+_16px)] md:pb-24"
+            : "p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8 pb-[calc(84px_+_env(safe-area-inset-bottom,0px))] md:pb-24"
         }`}>
           <div className="mx-auto max-w-[2000px] w-full flex-1 flex flex-col">
             <Outlet />
