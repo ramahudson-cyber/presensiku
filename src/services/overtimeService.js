@@ -4,6 +4,7 @@
 import { supabase } from "../lib/supabase";
 import { compressImage } from "../lib/imageCompress";
 import { getSetting, setSettingValue } from "../lib/settings";
+import { getWitaDateKey } from "../lib/shiftTime";
 
 const OVERTIME_BUCKET = "overtime";
 
@@ -104,15 +105,22 @@ export async function getMyOvertimeRequests() {
  * Status bukti kehadiran untuk setiap tanggal lembur.
  *
  * Server membayar lembur BERTINGKAT (migration 20261127010000):
- *   - tidak ada absen masuk  → tidak dibayar (Rp0)
+ *   - tidak ada absen masuk   → tidak dibayar (Rp0)
  *   - ada masuk, tanpa pulang → dibayar, dipotong overtime_no_checkout_nominal
  *   - ada masuk + pulang      → dibayar penuh
  *
- * Return: Map<date, "full" | "no_checkout" | "absent">
+ * PENTING: tanggal yang BELUM TERJADI tidak boleh dinilai "absent". Lembur
+ * yang dijadwalkan besok belum tentu tidak dikerjakan — menandainya tidak
+ * dibayar akan menyesatkan. Tanggal seperti itu berstatus "pending".
+ *
+ * Return: Map<date, "full" | "no_checkout" | "absent" | "pending">
  */
-export async function getOvertimePayEvidence(userId, dates) {
+export async function getOvertimePayEvidence(userId, dates, todayWita = null) {
   const list = [...new Set((dates || []).filter(Boolean))];
   if (!userId || list.length === 0) return new Map();
+
+  const today = todayWita || getWitaDateKey(new Date());
+
   const { data, error } = await supabase
     .from("attendance")
     .select("date, clock_in_time, clock_out_time")
@@ -120,13 +128,16 @@ export async function getOvertimePayEvidence(userId, dates) {
     .in("date", list);
   if (error) throw error;
 
+  const rows = new Map((data || []).map((r) => [r.date, r]));
   const map = new Map();
-  for (const r of data || []) {
-    const hasIn = !!r.clock_in_time;
-    const hasOut = !!r.clock_out_time;
-    if (hasIn && hasOut) map.set(r.date, "full");
-    else if (hasIn) map.set(r.date, "no_checkout");
-    else map.set(r.date, "absent");
+  for (const date of list) {
+    const r = rows.get(date);
+    const hasIn = !!r?.clock_in_time;
+    const hasOut = !!r?.clock_out_time;
+    if (hasIn && hasOut) map.set(date, "full");
+    else if (hasIn) map.set(date, "no_checkout");
+    else if (today && date > today) map.set(date, "pending"); // belum terjadi
+    else map.set(date, "absent");
   }
   return map;
 }
@@ -137,9 +148,13 @@ export async function getOvertimePayEvidence(userId, dates) {
  *
  * Return: Set<string> berisi `YYYY-MM-DD`.
  */
-export async function getPaidOvertimeDates(userId, dates) {
-  const evidence = await getOvertimePayEvidence(userId, dates);
-  return new Set([...evidence].filter(([, v]) => v !== "absent").map(([k]) => k));
+export async function getPaidOvertimeDates(userId, dates, todayWita = null) {
+  const evidence = await getOvertimePayEvidence(userId, dates, todayWita);
+  return new Set(
+    [...evidence]
+      .filter(([, v]) => v === "full" || v === "no_checkout")
+      .map(([k]) => k)
+  );
 }
 
 // Detail satu pengajuan milik sendiri (RLS membatasi ke user yang login).

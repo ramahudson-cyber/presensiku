@@ -93,11 +93,18 @@ export default function OvertimeDashboard() {
     let widthheldCount = 0;
     let absentPay = 0;
     let absentCount = 0;
+    let pendingPay = 0;
+    let pendingCount = 0;
 
     for (const r of approved) {
       const state = evidence.get(r.date) || "absent";
       const amount = Number(r.pay_amount || 0);
-      if (state === "absent") {
+      if (state === "pending") {
+        // Lembur belum berlangsung: nominal belum bisa dinilai. Bukan
+        // "tidak dibayar" — absennya belum jatuh tempo.
+        pendingPay += amount;
+        pendingCount += 1;
+      } else if (state === "absent") {
         absentPay += amount;
         absentCount += 1;
       } else if (state === "no_checkout") {
@@ -116,6 +123,7 @@ export default function OvertimeDashboard() {
       totalPay, totalHours,
       withheldPay: widthheldPay, withheldCount: widthheldCount,
       absentPay, absentCount,
+      pendingPay, pendingCount,
       count: monthRows.length,
       approved: approved.length,
       pending: monthRows.filter((r) => r.status === "pending").length,
@@ -211,6 +219,22 @@ export default function OvertimeDashboard() {
               </div>
             </div>
 
+            {summary.pendingCount > 0 && (
+              <div style={{
+                marginTop: 12, padding: "10px 12px", borderRadius: 12,
+                background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.26)",
+                display: "flex", gap: 9, alignItems: "flex-start",
+              }}>
+                <span style={{ flex: "none", marginTop: 1, color: "#1D4ED8" }}>
+                  <Icon.clock size={14} sw={2.4} />
+                </span>
+                <span style={{ fontSize: 11.5, lineHeight: 1.55, color: "#1E40AF", fontWeight: 600 }}>
+                  <b>{summary.pendingCount} lembur</b> ({rupiah(summary.pendingPay)}) belum jatuh tempo.
+                  Absen masuk &amp; pulang pada tanggal lembur agar nominalnya masuk slip gaji.
+                </span>
+              </div>
+            )}
+
             {summary.absentCount > 0 && (
               <div style={{
                 marginTop: 12, padding: "10px 12px", borderRadius: 12,
@@ -290,6 +314,7 @@ export default function OvertimeDashboard() {
                   const payable = r.status === "approved" && state === "full";
                   const partial = r.status === "approved" && state === "no_checkout";
                   const awaiting = r.status === "approved" && state === "absent";
+                  const upcoming = r.status === "approved" && state === "pending";
                   return (
                   <Link key={r.id} to={`/employee/overtime/${r.id}`}
                     className="flex items-center gap-3 active:scale-[0.99] transition"
@@ -302,12 +327,14 @@ export default function OvertimeDashboard() {
                       background: payable ? "#10B981"
                         : partial ? "#F59E0B"
                         : awaiting ? "#EF4444"
+                        : upcoming ? "#3B82F6"
                         : r.status === "rejected" ? "#EF4444" : "#3B82F6",
                       color: "#fff",
                     }}>
                       {payable ? <Icon.check size={16} sw={3} />
                         : partial ? <Icon.clock size={15} sw={2.6} />
                         : awaiting ? <Icon.close size={15} sw={3} />
+                        : upcoming ? <Icon.clock size={15} sw={2.6} />
                         : r.status === "rejected" ? <Icon.close size={15} sw={3} />
                           : <Icon.clock size={15} sw={2.6} />}
                     </span>
@@ -315,10 +342,11 @@ export default function OvertimeDashboard() {
                       <span className="block truncate" style={{ fontSize: 13, fontWeight: 700, color: OT.text }}>
                         {r.reason?.trim() ? r.reason.trim() : "Pengajuan lembur"}
                       </span>
-                      <span className="block truncate" style={{ fontSize: 11, color: (awaiting || partial) ? "#B45309" : OT.textSec, marginTop: 2, fontWeight: (awaiting || partial) ? 700 : 400 }}>
+                      <span className="block truncate" style={{ fontSize: 11, color: (awaiting || partial) ? "#B45309" : upcoming ? "#1D4ED8" : OT.textSec, marginTop: 2, fontWeight: (awaiting || partial || upcoming) ? 700 : 400 }}>
                         {fmtDate(r.date)} • {r.start_time} - {r.end_time}
                         {awaiting ? " — tidak hadir, tidak dibayar"
                           : partial ? " — belum absen pulang, dipotong"
+                          : upcoming ? " — belum jatuh tempo"
                           : ` (${durationLabel(r.requested_hours)})`}
                       </span>
                     </span>
