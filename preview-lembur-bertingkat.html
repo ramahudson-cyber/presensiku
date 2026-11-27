@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id" data-zcode-design>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — Lembur Dibayar Bertingkat</title>
+<style>
+  :root {
+    --blue: #2F8BF8; --blue-dark: #1F74E0;
+    --ink: #0F172A; --ink-2: #475569; --muted: #94A3B8;
+    --line: rgba(31,41,55,0.10);
+    --ok: #10B981; --warn: #F59E0B; --bad: #EF4444;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 34px 20px 60px; background: #F4F2FB; color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  h1 { font-size: 21px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .desc { font-size: 13px; color: var(--ink-2); margin: 0 0 26px; line-height: 1.65; }
+  .desc code { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; font-size: 11.5px; }
+
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 22px 24px; box-shadow: 0 8px 26px rgba(15,23,42,0.05); margin-bottom: 20px; }
+  .card h2 { font-size: 15px; font-weight: 800; margin: 0 0 3px; }
+  .card .sub { font-size: 11.5px; color: var(--muted); margin: 0 0 18px; }
+
+  /* tiga kartu tingkat */
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 760px) { .tiers { grid-template-columns: 1fr; } }
+
+  .tier { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; }
+  .tier .head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .tier .badge {
+    width: 26px; height: 26px; border-radius: 999px; display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .tier .title { font-size: 11.5px; font-weight: 800; letter-spacing: -0.01em; }
+  .tier .note { font-size: 11px; line-height: 1.6; color: var(--ink-2); min-height: 50px; }
+  .tier .amount { margin-top: 11px; padding-top: 11px; border-top: 1px dashed rgba(31,41,55,0.13); }
+  .tier .amount .lbl { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .tier .amount .val { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; margin-top: 2px; }
+
+  .tier.bad { background: #FEF2F2; border-color: #FECACA; }
+  .tier.bad .badge { background: #FEE2E2; color: #B91C1C; }
+  .tier.bad .title, .tier.bad .amount .val { color: #991B1B; }
+  .tier.bad .strike { text-decoration: line-through; color: #DC2626; opacity: 0.6; font-size: 13px; margin-right: 6px; }
+
+  .tier.warn { background: #FFFBEB; border-color: #FDE68A; }
+  .tier.warn .badge { background: #FEF3C7; color: #B45309; }
+  .tier.warn .title, .tier.warn .amount .val { color: #92400E; }
+
+  .tier.ok { background: #F0FDF4; border-color: #BBF7D0; }
+  .tier.ok .badge { background: #D1FAE5; color: #047857; }
+  .tier.ok .title, .tier.ok .amount .val { color: #047857; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; color: #64748B; padding: 0 10px 9px; border-bottom: 1px solid var(--line); }
+  td { padding: 10px; border-bottom: 1px solid #F1F5F9; vertical-align: top; line-height: 1.55; }
+  tr:last-child td { border-bottom: 0; }
+  .num { font-variant-numeric: tabular-nums; font-weight: 700; text-align: right; white-space: nowrap; }
+  .total-row td { background: #F8FAFC; font-weight: 800; border-top: 2px solid var(--line); }
+
+  .pill { display: inline-block; font-size: 9.5px; font-weight: 800; border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+  .pill.ok { background: #D1FAE5; color: #047857; }
+  .pill.no { background: #FEE2E2; color: #B91C1C; }
+  .pill.mid { background: #FEF3C7; color: #B45309; }
+
+  .verdict { margin-top: 16px; padding: 14px 16px; border-radius: 13px; background: #EFF6FF; border: 1px solid #BFDBFE; font-size: 12.5px; line-height: 1.65; color: #1E3A8A; }
+  .verdict b { color: #1E40AF; }
+
+  .warnbox { margin-top: 14px; padding: 13px 15px; border-radius: 13px; background: #FFFBEB; border: 1px solid #FDE68A; font-size: 12px; line-height: 1.65; color: #78350F; }
+  .warnbox b { color: #451A03; }
+
+  ul.checks { margin: 0; padding-left: 18px; }
+  ul.checks li { font-size: 12px; line-height: 1.85; color: var(--ink-2); }
+  ul.checks li b { color: var(--ink); }
+  .src { margin-top: 22px; font-size: 10.5px; color: #64748B; line-height: 1.8; }
+  .src code { background: #F1F5F9; border-radius: 4px; padding: 1px 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Lembur Dibayar Bertingkat</h1>
+  <p class="desc">
+    Perbaikan dari aturan sebelumnya yang menghanguskan seluruh nominal lembur bila tidak ada absen pulang.
+    Sekarang nominal <b>tetap dibayar</b>, dengan perlakuan berbeda menurut bukti kehadiran.
+    Mockup statis; angka contoh memakai potongan Rp5.000.
+  </p>
+
+  <!-- TIGA TINGKAT -->
+  <div class="card">
+    <h2>Tiga tingkat, bukan satu aturan seragam</h2>
+    <p class="sub">Contoh lembur 8 jam senilai Rp150.000.</p>
+
+    <div class="tiers">
+      <div class="tier bad">
+        <div class="head">
+          <span class="badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </span>
+          <span class="title">Tidak absen masuk</span>
+        </div>
+        <div class="note">Tidak ada bukti bekerja sama sekali. Ini bukan "lupa absen" — pegawai memang tidak hadir.</div>
+        <div class="amount">
+          <div class="lbl">Dibayar</div>
+          <div class="val"><span class="strike">Rp150.000</span>Rp0</div>
+        </div>
+      </div>
+
+      <div class="tier warn">
+        <div class="head">
+          <span class="badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </span>
+          <span class="title">Masuk, tanpa pulang</span>
+        </div>
+        <div class="note">Sudah terbukti datang. Yang kurang hanya bukti selesai bekerja.</div>
+        <div class="amount">
+          <div class="lbl">Dibayar (dipotong Rp5.000)</div>
+          <div class="val">Rp145.000</div>
+        </div>
+      </div>
+
+      <div class="tier ok">
+        <div class="head">
+          <span class="badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </span>
+          <span class="title">Masuk + pulang</span>
+        </div>
+        <div class="note">Bukti lengkap: datang dan selesai tercatat.</div>
+        <div class="amount">
+          <div class="lbl">Dibayar</div>
+          <div class="val">Rp150.000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="verdict">
+      <b>Ini menjawab pertanyaan Anda:</b> pegawai yang tidak masuk lembur <b>tidak</b> mendapat Rp140.000
+      hanya karena potongan Rp10.000. Tidak hadir = tidak dibayar. Yang dipotong sebagian hanya kasus
+      "sudah datang tapi lupa absen pulang" — di situ kehadirannya nyata, hanya buktinya tidak lengkap.
+    </div>
+  </div>
+
+  <!-- SIMULASI -->
+  <div class="card">
+    <h2>Simulasi slip: 3 lembur @ Rp150.000</h2>
+    <p class="sub">Hasil uji nyata terhadap fungsi payroll di database.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:30%">Tanggal</th>
+          <th style="width:24%">Bukti kehadiran</th>
+          <th class="num" style="width:23%">Nominal lembur</th>
+          <th class="num">Masuk slip</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>6 Des</td>
+          <td><span class="pill no">Tidak hadir</span></td>
+          <td class="num">Rp150.000</td>
+          <td class="num" style="color:#B91C1C">Rp0</td>
+        </tr>
+        <tr>
+          <td>13 Des</td>
+          <td><span class="pill mid">Masuk, tanpa pulang</span></td>
+          <td class="num">Rp150.000</td>
+          <td class="num" style="color:#92400E">Rp145.000</td>
+        </tr>
+        <tr>
+          <td>20 Des</td>
+          <td><span class="pill ok">Lengkap</span></td>
+          <td class="num">Rp150.000</td>
+          <td class="num" style="color:#047857">Rp150.000</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="3">Total lembur di slip</td>
+          <td class="num">Rp295.000</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="warnbox">
+      <b>Jam ikut diselaraskan.</b> Sebelumnya kolom jam menjumlah semua lembur approved,
+      sehingga slip bisa menampilkan "16 jam" padahal uangnya hanya untuk 8 jam.
+      Sekarang jam hanya dihitung untuk lembur yang dibayar — hasil uji: <b>Rp295.000 untuk 16 jam</b>
+      (Rp145.000 = 8 jam dari kasus dipotong, Rp150.000 = 8 jam dari kasus lengkap).
+    </div>
+  </div>
+
+  <!-- ATURAN POTONGAN -->
+  <div class="card">
+    <h2>Besaran potongan bisa diatur admin</h2>
+    <p class="sub">Tanpa deploy ulang.</p>
+
+    <ul class="checks">
+      <li><b>Pengaturan Gaji</b> punya kolom baru <b>"Potongan Lembur Tanpa Absen Pulang"</b>, default <b>Rp5.000</b> per lembur.</li>
+      <li>Nilai awalnya mengikuti pola potongan yang sudah ada (<code>no_checkout_nominal</code> = Rp5.000), jadi konsisten dengan sistem.</li>
+      <li>Potongan <b>tidak bisa melebihi</b> nominal lembur itu sendiri — lembur kecil tidak menjadi minus.</li>
+      <li>Disimpan di <code>payroll_config</code> yang sama, jadi tidak menambah tabel atau kolom baru.</li>
+    </ul>
+  </div>
+
+  <!-- YANG TIDAK BERUBAH -->
+  <div class="card">
+    <h2>Yang dijaga agar tidak rusak</h2>
+
+    <ul class="checks">
+      <li><b>Lembur hari libur tanpa jadwal</b> tetap bisa diabsen masuk/pulang — penjagaan dari migrasi sebelumnya dipertahankan.</li>
+      <li><b>Baris absensi lembur</b> tetap tidak dihitung sebagai hari hadir dan tidak kena potongan <code>no_checkout</code>, sehingga alpha hari kerja lain tidak tertutupi.</li>
+      <li><b>Pegawai berjadwal normal</b> memakai jalur lama tanpa perubahan.</li>
+      <li><b>Slip final</b> tidak disentuh. Hanya slip <b>draft</b> dengan lembur yang dihitung ulang.</li>
+      <li><b>Tampilan pegawai</b> kini membedakan tiga status dengan warna dan keterangan, bukan lagi "belum dihitung".</li>
+    </ul>
+  </div>
+
+  <p class="src">
+    Sumber: <code>supabase/migrations/20261127010000_overtime_tiered_pay.sql</code> ·
+    <code>supabase/migrations/20261127020000_overtime_hours_match_pay.sql</code> ·
+    <code>src/pages/employee/overtime/OvertimeDashboard.jsx</code> ·
+    <code>src/services/overtimeService.js</code> ·
+    <code>src/pages/admin/PayrollPage.jsx</code>
+  </p>
+
+</div>
+</body>
+</html>

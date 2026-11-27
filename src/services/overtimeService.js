@@ -101,26 +101,45 @@ export async function getMyOvertimeRequests() {
 }
 
 /**
- * Tanggal lembur yang SUDAH memenuhi syarat pembayaran.
+ * Status bukti kehadiran untuk setiap tanggal lembur.
  *
- * Server hanya membayar lembur bila ada baris `attendance` pada tanggal itu
- * dengan `clock_out_time` terisi (aturan anti-fraud, migration 20261023).
- * Fungsi ini mengambil tanggal-tanggal tersebut agar tampilan klien bisa
- * menyamakan angka dengan slip gaji — bukan sekadar status "approved".
+ * Server membayar lembur BERTINGKAT (migration 20261127010000):
+ *   - tidak ada absen masuk  → tidak dibayar (Rp0)
+ *   - ada masuk, tanpa pulang → dibayar, dipotong overtime_no_checkout_nominal
+ *   - ada masuk + pulang      → dibayar penuh
+ *
+ * Return: Map<date, "full" | "no_checkout" | "absent">
+ */
+export async function getOvertimePayEvidence(userId, dates) {
+  const list = [...new Set((dates || []).filter(Boolean))];
+  if (!userId || list.length === 0) return new Map();
+  const { data, error } = await supabase
+    .from("attendance")
+    .select("date, clock_in_time, clock_out_time")
+    .eq("user_id", userId)
+    .in("date", list);
+  if (error) throw error;
+
+  const map = new Map();
+  for (const r of data || []) {
+    const hasIn = !!r.clock_in_time;
+    const hasOut = !!r.clock_out_time;
+    if (hasIn && hasOut) map.set(r.date, "full");
+    else if (hasIn) map.set(r.date, "no_checkout");
+    else map.set(r.date, "absent");
+  }
+  return map;
+}
+
+/**
+ * Tanggal lembur yang dibayar (penuh maupun dipotong).
+ * Dipertahankan demi kompatibilitas pemanggil lama.
  *
  * Return: Set<string> berisi `YYYY-MM-DD`.
  */
 export async function getPaidOvertimeDates(userId, dates) {
-  const list = [...new Set((dates || []).filter(Boolean))];
-  if (!userId || list.length === 0) return new Set();
-  const { data, error } = await supabase
-    .from("attendance")
-    .select("date")
-    .eq("user_id", userId)
-    .in("date", list)
-    .not("clock_out_time", "is", null);
-  if (error) throw error;
-  return new Set((data || []).map((r) => r.date));
+  const evidence = await getOvertimePayEvidence(userId, dates);
+  return new Set([...evidence].filter(([, v]) => v !== "absent").map(([k]) => k));
 }
 
 // Detail satu pengajuan milik sendiri (RLS membatasi ke user yang login).

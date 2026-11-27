@@ -611,7 +611,7 @@ function TabAturan({ period }) {
         const cfg = await getPayrollConfig();
         if (!cancelled) setConfig(cfg);
       } catch {
-        if (!cancelled) setConfig({ late_tiers: [], alpha_nominal_per_day: 0, no_checkout_nominal: 0, early_leave_nominal: 0 });
+        if (!cancelled) setConfig({ late_tiers: [], alpha_nominal_per_day: 0, no_checkout_nominal: 0, early_leave_nominal: 0, overtime_no_checkout_nominal: 5000 });
       }
     })();
     return () => { cancelled = true; };
@@ -742,6 +742,28 @@ function TabAturan({ period }) {
             className="w-full pl-9 pr-3 py-2 rounded-2xl border text-sm font-semibold focus:outline-none focus:border-electric-violet"
             style={{ borderColor: T.border, color: T.text }}
             title="Nominal per hari tanpa absen pulang"
+          />
+        </div>
+      </div>
+
+      {/* Potongan lembur: hanya bila pegawai SUDAH absen masuk tetapi tidak
+          absen pulang. Tidak absen masuk sama sekali = lembur tidak dibayar
+          (bukan dipotong sebagian), karena tidak ada bukti bekerja. */}
+      <div className="bg-white rounded-3xl border p-4 flex flex-wrap items-center justify-between gap-3" style={{ borderColor: T.border }}>
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: T.textMuted }}>Potongan Lembur Tanpa Absen Pulang</p>
+          <p className="text-xs mt-0.5" style={{ color: T.textSec }}>
+            Nominal per lembur — sudah absen masuk tapi tidak absen pulang. Tidak absen masuk = lembur tidak dibayar.
+          </p>
+        </div>
+        <div className="relative w-44">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400">Rp</span>
+          <input
+            type="number" min="0" step="1000" value={config.overtime_no_checkout_nominal ?? 0}
+            onChange={(e) => setConfig((c) => ({ ...c, overtime_no_checkout_nominal: Number(e.target.value) }))}
+            className="w-full pl-9 pr-3 py-2 rounded-2xl border text-sm font-semibold focus:outline-none focus:border-electric-violet"
+            style={{ borderColor: T.border, color: T.text }}
+            title="Nominal potongan lembur bila tidak absen pulang"
           />
         </div>
       </div>
