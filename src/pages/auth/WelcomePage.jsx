@@ -46,7 +46,7 @@ export default function WelcomePage() {
         </svg>
       </div>
 
-          <h1 className="wordmark reveal d-word">PRESENSIKU</h1>
+          <h1 className="wordmark reveal d-word">Presensiku</h1>
 
           <p className="tagline reveal d-tag">
             Absen anti ribet,
@@ -255,7 +255,6 @@ const PREMIUM_STYLES = `
     font-weight: 600;
     letter-spacing: 0.34em;
     text-indent: 0.34em;
-    text-transform: uppercase;
     color: rgba(255,255,255,0.42);
   }
 
