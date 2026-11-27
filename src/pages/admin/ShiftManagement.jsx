@@ -8,6 +8,30 @@ import {
   Sunset, CheckCircle2, XCircle, Info, ArrowRightLeft
 } from "lucide-react";
 
+// Durasi shift minimum yang dianggap wajar. Shift 3 menit (mis. 00:55–00:58)
+// membuat sistem menandai pegawai ALPHA palsu karena jadwal dianggap sudah
+// selesai sejak dini hari, dan server menolak absen masuk/pulang.
+const MIN_SHIFT_MINUTES = 60;
+const MAX_SHIFT_MINUTES = 24 * 60;
+
+// Hitung durasi (menit) sebuah slot shift. Lintas malam dihitung sampai besok.
+const shiftDurationMinutes = (startTime, endTime, crossesMidnight) => {
+  const parse = (t) => {
+    const m = String(t || "").match(/^(\d{1,2}):(\d{2})/);
+    if (!m) return null;
+    const h = Number(m[1]);
+    const mi = Number(m[2]);
+    if (h > 23 || mi > 59) return null;
+    return h * 60 + mi;
+  };
+  const start = parse(startTime);
+  const end = parse(endTime);
+  if (start === null || end === null) return null;
+  const delta = end - start;
+  if (crossesMidnight || delta < 0) return delta + 1440;
+  return delta;
+};
+
 const DAY_NAMES = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 
 // Tanpa toleransi telat: latest_check_in selalu sama dengan jam mulai
@@ -119,6 +143,33 @@ export default function TabShift() {
       );
       return;
     }
+
+    // Pre-save guard: durasi shift harus wajar. Jam seperti 00:55–00:58
+    // (3 menit) membuat jadwal dianggap selesai sejak dini hari → pegawai
+    // ditandai ALPHA palsu dan absen masuk/pulang ditolak server.
+    const tooShort = [];
+    schedules.forEach(s => {
+      if (!s.is_working_day) return;
+      const dur = shiftDurationMinutes(s.start_time, s.end_time, s.crosses_midnight);
+      if (dur === null || dur < MIN_SHIFT_MINUTES || dur > MAX_SHIFT_MINUTES) {
+        tooShort.push({ ...s, dur });
+      }
+    });
+    if (tooShort.length > 0) {
+      const list = tooShort
+        .map(s => {
+          const jam = `${String(s.start_time).slice(0, 5)}–${String(s.end_time).slice(0, 5)}`;
+          const info = s.dur === null ? "jam tidak valid" : `${s.dur} menit`;
+          return `${s.shift_code} ${DAY_NAMES[s.day_of_week]} (${jam} = ${info})`;
+        })
+        .join(", ");
+      toast.error(
+        `Durasi shift tidak wajar — minimal ${MIN_SHIFT_MINUTES} menit: ${list}`,
+        { autoClose: 8000 }
+      );
+      return;
+    }
+
     setSaving(true);
     try {
       const { error } = await supabase.from("shift_schedules").upsert(
@@ -245,8 +296,13 @@ export default function TabShift() {
                 {DAY_NAMES.map((name, i) => {
                   const sched = shiftScheds.find(s => s.day_of_week === i);
                   const working = sched?.is_working_day;
+                  const dur = working
+                    ? shiftDurationMinutes(sched?.start_time, sched?.end_time, sched?.crosses_midnight)
+                    : null;
+                  const durBad = working && (dur === null || dur < MIN_SHIFT_MINUTES || dur > MAX_SHIFT_MINUTES);
                   return (
-                    <div key={i} className={`flex flex-wrap items-center gap-2 p-2 rounded-3xl transition-all ${working ? "bg-onyx hover:bg-white/[0.06]" : "opacity-50"}`}>
+                    <div key={i} className={`p-2 rounded-3xl transition-all ${working ? "bg-onyx hover:bg-white/[0.06]" : "opacity-50"} ${durBad ? "ring-1 ring-rose-500/60" : ""}`}>
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="w-14 text-[10px] font-semibold text-slate-mist shrink-0">{name}</span>
                       {working ? (
                         <>
@@ -279,6 +335,12 @@ export default function TabShift() {
                           </button>
                         </>
                       )}
+                    </div>
+                    {durBad && (
+                      <p className="mt-1.5 ml-16 text-[9.5px] font-bold text-rose-400">
+                        Durasi {dur === null ? "tidak valid" : `${dur} menit`} — minimal {MIN_SHIFT_MINUTES} menit. Perbaiki jam sebelum menyimpan.
+                      </p>
+                    )}
                     </div>
                   );
                 })}
