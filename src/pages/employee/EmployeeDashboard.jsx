@@ -171,7 +171,7 @@ export default function EmployeeDashboard() {
       const [attRes, shiftRes, monthAttRes, annRes, ackRes, schedRes, shiftSchedulesRes, shiftsMasterRes] = await withTimeout(Promise.all([
         supabase.from("attendance").select("*").eq("user_id", user.id).eq("date", today).maybeSingle(),
         supabase.from("employee_schedules").select("shift_code").eq("user_id", user.id).eq("date", today).maybeSingle(),
-        supabase.from("attendance").select("date, attendance_status").eq("user_id", user.id).gte("date", monthStartStr).lte("date", today),
+        supabase.from("attendance").select("date, attendance_status, shift_code").eq("user_id", user.id).gte("date", monthStartStr).lte("date", today),
         supabase.from("announcements").select("*").eq("is_active", true)
           .or(`expires_at.is.null,expires_at.gte.${new Date().toISOString()}`)
           .order("created_at", { ascending: false }).limit(3),
@@ -223,7 +223,16 @@ export default function EmployeeDashboard() {
       scheduleShiftReminders(serverNow, shiftRes.data || null, shiftDefinitions, attRes.data || null);
 
       const s = { hadir: 0, izin: 0, sakit: 0, alpha: 0, terlambat: 0 };
+      // Absensi lembur di hari tanpa jadwal (shift_code NULL) TIDAK dihitung
+      // sebagai hari hadir — kalau dihitung, alpha hari kerja lain bisa
+      // tertutupi sehingga angkanya tampak lebih baik dari kenyataan.
+      // Sama dengan aturan upsert_payroll_line di server.
+      const scheduledDates = new Set((schedRes.data || []).map((x) => x.date));
       monthAttRes.data?.forEach(a => {
+        const countsAsWorkday = a.shift_code === null
+          ? scheduledDates.has(a.date)
+          : true;
+        if (!countsAsWorkday) return;
         if (a.attendance_status === 'terlambat') s.terlambat++;
         const st = a.attendance_status === 'terlambat' ? 'hadir' : a.attendance_status;
         if (s[st] !== undefined) s[st]++;

@@ -132,10 +132,21 @@ export default function EmployeeHistory() {
   const { pullDistance, isRefreshing } = usePullToRefresh(fetchData);
 
   // ── Hitungan ──
-  const hadir = history.filter((r) => r.attendance_status === "hadir").length;
-  const terlambat = history.filter((r) => r.attendance_status === "terlambat").length;
-  const izin = history.filter((r) => r.attendance_status === "izin").length;
-  const sakit = history.filter((r) => r.attendance_status === "sakit").length;
+  // Absensi lembur di hari tanpa jadwal (shift_code NULL) bukan hari kerja:
+  // tidak boleh menambah "hadir", karena alpha hari kerja lain akan tertutupi
+  // dan angka kehadiran tampak lebih baik dari kenyataan. Sejalan dengan
+  // aturan upsert_payroll_line di server.
+  const scheduledDateSet = useMemo(
+    () => new Set(schedList.map((s) => s.date)),
+    [schedList]
+  );
+  const countsAsWorkday = (r) => !(r.shift_code === null && !scheduledDateSet.has(r.date));
+  const workdayHistory = history.filter(countsAsWorkday);
+
+  const hadir = workdayHistory.filter((r) => r.attendance_status === "hadir").length;
+  const terlambat = workdayHistory.filter((r) => r.attendance_status === "terlambat").length;
+  const izin = workdayHistory.filter((r) => r.attendance_status === "izin").length;
+  const sakit = workdayHistory.filter((r) => r.attendance_status === "sakit").length;
   const totalHadir = hadir + terlambat;
   const alphaCount = Math.max(0, workingDaysPassed - totalHadir - izin - sakit);
   const totalRecorded = totalHadir + izin + sakit + alphaCount;
@@ -157,6 +168,9 @@ export default function EmployeeHistory() {
     const isLate = st === "terlambat" && !isSanggah;
     const isLeave = st === "izin" || st === "sakit";
     const isHadir = st === "hadir";
+    // Absensi lembur tanpa jadwal: hadir, tapi bukan hari kerja. Diberi label
+    // sendiri agar tidak disangka kehadiran shift reguler.
+    const isOvertimeOnly = isHadir && item.shift_code === null && !scheduledDateSet.has(item.date);
 
     const inStr = isLeave || isSanggah || !item.clock_in_time
       ? "-"
@@ -175,11 +189,18 @@ export default function EmployeeHistory() {
     if (isSanggah) { label = "Koreksi"; badge = "Koreksi"; }
     else if (isLate) { label = "Terlambat"; badge = `Terlambat ${item.late_minutes || 0} menit`; }
     else if (isHadir) {
-      const sched = schedList.find((s) => s.date === item.date);
-      const def = getShiftDefinition(shiftDefs, { date: item.date, shift_code: item.shift_code || sched?.shift_code });
-      const early = getEarlyLeaveInfo(item.clock_out_time, item.date, def, 0);
-      label = early ? "Pulang Cepat" : "Hadir";
-      badge = early ? `Pulang cepat ${formatDuration(early.earlyMinutes)}` : "Tepat Waktu";
+      if (isOvertimeOnly) {
+        // Lembur di hari libur: tampil sebagai "Lembur", bukan "Hadir",
+        // supaya tidak terhitung sebagai kehadiran shift reguler.
+        label = "Lembur";
+        badge = "Kehadiran lembur";
+      } else {
+        const sched = schedList.find((s) => s.date === item.date);
+        const def = getShiftDefinition(shiftDefs, { date: item.date, shift_code: item.shift_code || sched?.shift_code });
+        const early = getEarlyLeaveInfo(item.clock_out_time, item.date, def, 0);
+        label = early ? "Pulang Cepat" : "Hadir";
+        badge = early ? `Pulang cepat ${formatDuration(early.earlyMinutes)}` : "Tepat Waktu";
+      }
     } else if (st === "izin") { label = "Izin"; badge = "Izin"; }
     else if (st === "sakit") { label = "Sakit"; badge = "Sakit"; }
 
@@ -191,7 +212,7 @@ export default function EmployeeHistory() {
       label, badge, styleKey,
       time: `${inStr} – ${outStr}`,
     };
-  }), [history, schedList, shiftDefs]);
+  }), [history, schedList, shiftDefs, scheduledDateSet]);
 
   const earlyCount = rows.filter((r) => r.label === "Pulang Cepat").length;
   const onTimePct = totalHadir > 0 ? Math.round((hadir / totalHadir) * 100) : 0;
