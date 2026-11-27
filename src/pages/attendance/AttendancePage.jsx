@@ -502,6 +502,10 @@ export default function AttendancePage() {
   // Semua nilai diturunkan dari state yang sudah diambil dari Supabase
   // (employee_schedules, shift_schedules, shifts, attendance, overtime_requests)
   // dan dari verifikasi lokasi server — tidak ada angka contoh.
+  // syncTimeStr WAJIB dideklarasikan sebelum blok ini: sheetDetail memakainya,
+  // dan const bersifat temporal-dead-zone (dulu memicu "Cannot access
+  // uninitialized variable" saat halaman presensi dibuka).
+  const syncTimeStr = serverTime ? serverTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Makassar" }) : null;
   const shiftLabel = todaySchedule
     ? `${todaySchedule.name || SHIFT_NAMES[todaySchedule.code] || todaySchedule.code}`
     : "";
@@ -641,8 +645,16 @@ export default function AttendancePage() {
   const sheetTitle = (() => {
     if (todayAttendance?.clock_out_time) return "Absensi hari ini selesai";
     if (isCheckoutMode) return "Siap absen pulang";
-    if (isFakeGPS || locationStatus === "invalid") return "Lokasi belum valid";
+    // Urutan cek mengikuti tingkat penghalang: status hari ini lebih final
+    // daripada masalah lokasi, jadi judul tidak boleh berbunyi "Siap absen"
+    // saat absen sudah ditutup (alpha) atau belum dibuka.
+    if (isAlphaLocked) return "Absen masuk ditutup";
+    if (checkoutLateBlocked) return "Batas absen lewat";
     if (!serverTime) return "Menyiapkan presensi";
+    if (isFakeGPS || locationStatus === "invalid") return "Lokasi belum valid";
+    if (locationStatus === "error") return "Lokasi belum terbaca";
+    if (!todayAttendance && !shiftDefinition) return "Belum ada jadwal hari ini";
+    if (!checkInGate.open) return "Absen belum dibuka";
     return "Siap absen masuk";
   })();
 
@@ -982,7 +994,6 @@ export default function AttendancePage() {
 
   // Jam server WITA (format langsung pakai timezone Asia/Makassar, bukan hack +8 jam)
   const witaClockStr = displayTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZone: "Asia/Makassar" });
-  const syncTimeStr = serverTime ? serverTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Makassar" }) : null;
 
   const radiusBg = currentCoords
     ? { latitude: currentCoords.latitude, longitude: currentCoords.longitude }
@@ -1185,6 +1196,7 @@ export default function AttendancePage() {
               note={isCheckoutMode && overtimeExtendsDeadline && !checkoutLateBlocked ? "Jangan lupa absen pulang — uang lembur hangus bila tidak ada absen pulang hari ini." : null}
               noteTone={isCheckoutMode && overtimeExtendsDeadline ? "neutral" : "green"}
               blockedReason={sheetBlockedReason}
+              closedLabel={(isAlphaLocked || checkoutLateBlocked) ? "Ditutup" : null}
               saving={saving}
               fabLabel={isCheckoutMode ? "Absen pulang sekarang" : "Absen masuk sekarang"}
               onAction={isCheckoutMode ? () => setShowCheckoutConfirm(true) : handleCheckIn}

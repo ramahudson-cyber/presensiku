@@ -80,6 +80,7 @@ export default function AttendanceReadySheet({
   note,
   noteTone = "neutral",
   blockedReason,
+  closedLabel,
   saving = false,
   fabLabel,
   onAction,
@@ -162,9 +163,9 @@ export default function AttendanceReadySheet({
               </p>
             )}
           </div>
-          <Badge tone={blockedReason ? "amber" : "green"}>
+          <Badge tone={blockedReason ? (closedLabel ? "red" : "amber") : "green"}>
             <span className="w-1.5 h-1.5 rounded-full" style={{ background: "currentColor" }} />
-            {blockedReason ? "Tertunda" : mode === "checkout" ? "Siap pulang" : "Dibuka"}
+            {blockedReason ? (closedLabel || "Tertunda") : mode === "checkout" ? "Siap pulang" : "Dibuka"}
           </Badge>
         </div>
 
