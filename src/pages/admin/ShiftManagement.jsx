@@ -51,6 +51,10 @@ export default function TabShift() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  // Simpan per-kartu: kode shift yang punya perubahan belum tersimpan,
+  // dan kode yang sedang diproses. Supaya admin tidak perlu scroll ke atas.
+  const [dirtyCodes, setDirtyCodes] = useState(() => new Set());
+  const [savingCode, setSavingCode] = useState(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -101,6 +105,7 @@ export default function TabShift() {
 
   const update = (code, day, field, value) => {
     setDirty(true);
+    setDirtyCodes(prev => new Set(prev).add(code));
     setSchedules(prev => {
       const existing = prev.find(s => s.shift_code === code && s.day_of_week === day);
       if (!existing) {
@@ -132,23 +137,20 @@ export default function TabShift() {
     });
   };
 
-  const saveAll = async () => {
-    // Pre-save guard: hari kerja wajib punya jam mulai & selesai
-    const invalid = schedules.find(s =>
-      s.is_working_day && (!s.start_time || !s.end_time)
-    );
+  // Validasi baris shift sebelum disimpan. Mengembalikan pesan error
+  // (string) bila ada yang tidak wajar, atau null bila lolos.
+  const validateRows = (rows, labelPerBaris) => {
+    // Hari kerja wajib punya jam mulai & selesai
+    const invalid = rows.find(s => s.is_working_day && (!s.start_time || !s.end_time));
     if (invalid) {
-      toast.error(
-        `Hari ${DAY_NAMES[invalid.day_of_week]} pada shift "${invalid.shift_code}" belum lengkap jamnya`
-      );
-      return;
+      return `Hari ${DAY_NAMES[invalid.day_of_week]}${labelPerBaris ? ` pada shift "${invalid.shift_code}"` : ""} belum lengkap jamnya`;
     }
 
-    // Pre-save guard: durasi shift harus wajar. Jam seperti 00:55–00:58
-    // (3 menit) membuat jadwal dianggap selesai sejak dini hari → pegawai
-    // ditandai ALPHA palsu dan absen masuk/pulang ditolak server.
+    // Durasi harus wajar. Jam seperti 00:55–00:58 (3 menit) membuat jadwal
+    // dianggap selesai sejak dini hari → pegawai ditandai ALPHA palsu dan
+    // absen masuk/pulang ditolak server.
     const tooShort = [];
-    schedules.forEach(s => {
+    rows.forEach(s => {
       if (!s.is_working_day) return;
       const dur = shiftDurationMinutes(s.start_time, s.end_time, s.crosses_midnight);
       if (dur === null || dur < MIN_SHIFT_MINUTES || dur > MAX_SHIFT_MINUTES) {
@@ -160,34 +162,72 @@ export default function TabShift() {
         .map(s => {
           const jam = `${String(s.start_time).slice(0, 5)}–${String(s.end_time).slice(0, 5)}`;
           const info = s.dur === null ? "jam tidak valid" : `${s.dur} menit`;
-          return `${s.shift_code} ${DAY_NAMES[s.day_of_week]} (${jam} = ${info})`;
+          return labelPerBaris
+            ? `${DAY_NAMES[s.day_of_week]} (${jam} = ${info})`
+            : `${s.shift_code} ${DAY_NAMES[s.day_of_week]} (${jam} = ${info})`;
         })
         .join(", ");
-      toast.error(
-        `Durasi shift tidak wajar — minimal ${MIN_SHIFT_MINUTES} menit: ${list}`,
-        { autoClose: 8000 }
-      );
+      return `Durasi shift tidak wajar — minimal ${MIN_SHIFT_MINUTES} menit: ${list}`;
+    }
+
+    return null;
+  };
+
+  // Inti penyimpanan: dipakai saveAll (semua kartu) dan saveShift (satu kartu).
+  const persistRows = async (rows) => {
+    const { error } = await supabase.from("shift_schedules").upsert(
+      rows.map(s => ({
+        organization_id: s.organization_id,
+        shift_code: s.shift_code,
+        day_of_week: s.day_of_week,
+        start_time: s.is_working_day ? s.start_time : "00:00",
+        end_time: s.is_working_day ? s.end_time : "00:00",
+        latest_check_in: s.is_working_day ? sameAsStart(s.start_time) : "00:00",
+        crosses_midnight: s.crosses_midnight || false,
+        is_working_day: s.is_working_day,
+      })),
+      { onConflict: "organization_id,shift_code,day_of_week" }
+    );
+    if (error) throw error;
+  };
+
+  /** Simpan hanya satu kartu shift — tombol di dalam kartu, tanpa scroll ke atas. */
+  const saveShift = async (code) => {
+    const rows = schedules.filter(s => s.shift_code === code);
+    const errMsg = validateRows(rows, true);
+    if (errMsg) {
+      toast.error(errMsg, { autoClose: 8000 });
+      return;
+    }
+    setSavingCode(code);
+    try {
+      await persistRows(rows);
+      toast.success("Jadwal shift disimpan");
+      // Hitung sisa kartu yang masih punya perubahan belum tersimpan.
+      const sisa = new Set(dirtyCodes);
+      sisa.delete(code);
+      setDirtyCodes(sisa);
+      // Tombol global hanya aktif bila masih ada kartu lain yang kotor.
+      setDirty(sisa.size > 0);
+    } catch (err) {
+      toast.error("Gagal: " + err.message);
+    }
+    setSavingCode(null);
+  };
+
+  const saveAll = async () => {
+    const errMsg = validateRows(schedules, false);
+    if (errMsg) {
+      toast.error(errMsg, { autoClose: 8000 });
       return;
     }
 
     setSaving(true);
     try {
-      const { error } = await supabase.from("shift_schedules").upsert(
-        schedules.map(s => ({
-          organization_id: s.organization_id,
-          shift_code: s.shift_code,
-          day_of_week: s.day_of_week,
-          start_time: s.is_working_day ? s.start_time : "00:00",
-          end_time: s.is_working_day ? s.end_time : "00:00",
-          latest_check_in: s.is_working_day ? sameAsStart(s.start_time) : "00:00",
-          crosses_midnight: s.crosses_midnight || false,
-          is_working_day: s.is_working_day,
-        })),
-        { onConflict: "organization_id,shift_code,day_of_week" }
-      );
-      if (error) throw error;
+      await persistRows(schedules);
       toast.success("Jadwal shift disimpan");
       setDirty(false);
+      setDirtyCodes(new Set());
     } catch (err) { toast.error("Gagal: " + err.message); }
     setSaving(false);
   };
@@ -254,6 +294,14 @@ export default function TabShift() {
           const meta = SHIFT_META[shift.code];
           const Icon = meta?.icon || Clock;
           const shiftScheds = schedules.filter(s => s.shift_code === shift.code);
+          const cardDirty = dirtyCodes.has(shift.code);
+          const cardSaving = savingCode === shift.code;
+          // Peringatan durasi per kartu (tanpa harus menekan Simpan dulu).
+          const cardDurBad = shiftScheds.some((s) => {
+            if (!s.is_working_day) return false;
+            const dur = shiftDurationMinutes(s.start_time, s.end_time, s.crosses_midnight);
+            return dur === null || dur < MIN_SHIFT_MINUTES || dur > MAX_SHIFT_MINUTES;
+          });
 
           return (
             <div key={shift.code} className={`design-card overflow-hidden hover:shadow-lg transition-all ${shift.is_active ? "" : "opacity-75"}`}>
@@ -344,6 +392,31 @@ export default function TabShift() {
                     </div>
                   );
                 })}
+              </div>
+              {/* Footer — tombol Simpan khusus kartu ini, supaya admin tidak
+                  perlu scroll ke atas. Muncul selalu agar mudah dijangkau. */}
+              <div className="px-3 pb-3 pt-1">
+                {cardDurBad && (
+                  <p className="mb-2 px-1 text-[10px] font-bold text-rose-400">
+                    Ada jam tidak wajar di kartu ini — perbaiki sebelum menyimpan.
+                  </p>
+                )}
+                <button
+                  type="button"
+                  onClick={() => saveShift(shift.code)}
+                  disabled={cardSaving || !cardDirty}
+                  className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-full text-[12px] font-bold transition-all duration-200
+                    ${cardDirty
+                      ? "bg-electric-violet text-pure-white hover:brightness-110 active:brightness-90"
+                      : "bg-white/[0.06] text-slate-mist cursor-not-allowed"}`}>
+                  {cardSaving ? (
+                    <><RefreshCw size={14} className="animate-spin" /> Menyimpan...</>
+                  ) : cardDirty ? (
+                    <><Save size={14} /> Simpan {shift.name}</>
+                  ) : (
+                    <><CheckCircle2 size={14} /> {shift.name} tersimpan</>
+                  )}
+                </button>
               </div>
             </div>
           );
