@@ -502,9 +502,9 @@ export default function AttendancePage() {
   // Semua nilai diturunkan dari state yang sudah diambil dari Supabase
   // (employee_schedules, shift_schedules, shifts, attendance, overtime_requests)
   // dan dari verifikasi lokasi server — tidak ada angka contoh.
-  // syncTimeStr WAJIB dideklarasikan sebelum blok ini: sheetDetail memakainya,
-  // dan const bersifat temporal-dead-zone (dulu memicu "Cannot access
-  // uninitialized variable" saat halaman presensi dibuka).
+  // syncTimeStr dideklarasikan di sini karena dipakai blok di bawah dan
+  // kartu jam; const bersifat temporal-dead-zone, dan dulu sempat dipakai
+  // sebelum deklarasinya sehingga halaman gagal render.
   const syncTimeStr = serverTime ? serverTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Makassar" }) : null;
   const shiftLabel = todaySchedule
     ? `${todaySchedule.name || SHIFT_NAMES[todaySchedule.code] || todaySchedule.code}`
@@ -643,7 +643,9 @@ export default function AttendancePage() {
     if (shiftLabel) out.push({ label: "Shift", value: `${shiftLabel} · ${todaySchedule?.code || ""}`.trim() });
     if (todayAttendance?.shift_code) out.push({ label: "Kode shift tercatat", value: todayAttendance.shift_code, mono: true });
     if (todayAttendance?.schedule_match === false) out.push({ label: "Kecocokan jadwal", value: "Tidak cocok", mono: false });
-    if (syncTimeStr) out.push({ label: "Sinkron server", value: `${syncTimeStr} WITA`, mono: true });
+    // "Sinkron server" sengaja tidak dicantumkan: kartu jam di atas sudah
+    // menampilkannya, jadi mengulang di sini hanya menambah baris tanpa
+    // informasi baru.
     return out;
   })();
 
