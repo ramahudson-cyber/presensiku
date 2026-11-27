@@ -584,7 +584,9 @@ export default function AttendancePage() {
         {
           icon: "pin", label: "Lokasi & jarak",
           value: locName,
-          badge: distance != null ? `${formatDistance(distance)} · ${withinRadius ? "dalam radius" : "luar radius"}` : undefined,
+          badge: distance != null
+            ? `${formatDistance(distance)} · ${withinRadius ? "dalam" : "luar"} radius ${radiusM != null ? radiusM + " m" : ""}`.trim()
+            : undefined,
           badgeTone: withinRadius ? "green" : "red",
         },
         effectiveCheckoutDeadlineMs !== null
@@ -604,7 +606,9 @@ export default function AttendancePage() {
       {
         icon: "pin", label: "Lokasi & jarak",
         value: locName,
-        badge: distance != null ? `${formatDistance(distance)} · ${withinRadius ? "dalam radius" : "luar radius"}` : undefined,
+        badge: distance != null
+            ? `${formatDistance(distance)} · ${withinRadius ? "dalam" : "luar"} radius ${radiusM != null ? radiusM + " m" : ""}`.trim()
+            : undefined,
         badgeTone: withinRadius ? "green" : "red",
       },
       shiftRangeStr
@@ -623,8 +627,9 @@ export default function AttendancePage() {
 
   const sheetDetail = (() => {
     const out = [];
+    // Radius TIDAK diulang di sini: baris "Lokasi & jarak" sudah menampilkan
+    // "42 m / 200 m", jadi menyebut radius lagi hanya mengulang fakta yang sama.
     if (accuracyM != null) out.push({ label: "Akurasi GPS", value: `±${accuracyM} m`, mono: true });
-    if (radiusM != null) out.push({ label: "Radius lokasi", value: `${radiusM} m`, mono: true });
     if (shiftDefinition?.start_time) {
       const startM = String(shiftDefinition.start_time).match(/^(\d{1,2}):(\d{2})/);
       if (startM) {
