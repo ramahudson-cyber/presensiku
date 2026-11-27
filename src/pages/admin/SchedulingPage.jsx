@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
@@ -69,6 +69,14 @@ export default function SchedulingPage() {
   const [shiftsLoading, setShiftsLoading] = useState(true);
   const fileInputRef = useRef(null);
 
+  // Daftar pegawai + status jadwal bulan ini. Sebelumnya halaman kosong
+  // sebelum admin memilih pegawai; sekarang semua pegawai terlihat beserta
+  // berapa hari yang sudah dijadwalkan (data asli employee_schedules).
+  const [monthOverview, setMonthOverview] = useState({}); // user_id -> { days, shifts[] }
+  const [overviewLoading, setOverviewLoading] = useState(true);
+  const [listQuery, setListQuery] = useState("");
+  const [listFilter, setListFilter] = useState("all"); // all | full | part | none
+  const [listOpen, setListOpen] = useState(true);
   // Master shift instansi — dari DB (RLS org-scoped; ikut switch super_admin)
   useEffect(() => {
     let cancelled = false;
@@ -109,7 +117,7 @@ export default function SchedulingPage() {
   useEffect(() => {
     let query = supabase
       .from("profiles")
-      .select("id, full_name, role, created_by, organization_id")
+      .select("id, full_name, role, position, created_by, organization_id")
       .order("full_name");
 
     if (!isSuperAdmin && user?.id) {
@@ -145,6 +153,92 @@ export default function SchedulingPage() {
   }, [selectedUser, year, month, lastDay]);
 
   useEffect(() => { loadSchedules(); }, [loadSchedules]);
+
+  // Muat ringkasan jadwal SEMUA pegawai untuk bulan tampil (satu query).
+  // Sumber: employee_schedules — bukan data contoh.
+  const loadMonthOverview = useCallback(async () => {
+    if (!employees.length) { setOverviewLoading(false); return; }
+    setOverviewLoading(true);
+    try {
+      const s = `${year}-${String(month + 1).padStart(2, "0")}-01`;
+      const e = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+      const { data, error } = await supabase
+        .from("employee_schedules")
+        .select("user_id, date, shift_code")
+        .gte("date", s)
+        .lte("date", e);
+      if (error) throw error;
+
+      const map = {};
+      (data || []).forEach((row) => {
+        const cur = map[row.user_id] || { days: 0, shifts: {} };
+        cur.days += 1;
+        if (row.shift_code) cur.shifts[row.shift_code] = (cur.shifts[row.shift_code] || 0) + 1;
+        map[row.user_id] = cur;
+      });
+      // Normalisasi: shifts -> array kode terurut frekuensi
+      Object.keys(map).forEach((k) => {
+        map[k].shifts = Object.entries(map[k].shifts)
+          .sort((a, b) => b[1] - a[1])
+          .map(([code]) => code);
+      });
+      setMonthOverview(map);
+    } catch {
+      toast.error("Gagal memuat ringkasan jadwal");
+      setMonthOverview({});
+    } finally {
+      setOverviewLoading(false);
+    }
+  }, [employees.length, year, month, lastDay]);
+
+  useEffect(() => {
+    // setTimeout: muat lewat task terpisah — setState tidak sinkron di dalam
+    // body effect (pola yang sama dipakai halaman admin lainnya).
+    const kick = setTimeout(loadMonthOverview, 0);
+    return () => clearTimeout(kick);
+  }, [loadMonthOverview]);
+
+  // Baris daftar pegawai: status kelengkapan + shift yang dipakai.
+  // Penyebut = jumlah hari dalam bulan tampil (jujur, bukan asumsi hari kerja).
+  const employeeRows = useMemo(() => {
+    const rows = employees.map((emp) => {
+      const info = monthOverview[emp.id] || { days: 0, shifts: [] };
+      const days = info.days;
+      const state = days === 0 ? "none" : days >= lastDay ? "full" : "part";
+      return {
+        id: emp.id,
+        name: emp.full_name || "–",
+        position: emp.position || emp.role || "",
+        days,
+        shifts: info.shifts.slice(0, 3),
+        state,
+      };
+    });
+    return rows.sort((a, b) => a.days - b.days || a.name.localeCompare(b.name));
+  }, [employees, monthOverview, lastDay]);
+
+  const listCounts = useMemo(() => ({
+    total: employeeRows.length,
+    full: employeeRows.filter((r) => r.state === "full").length,
+    part: employeeRows.filter((r) => r.state === "part").length,
+    none: employeeRows.filter((r) => r.state === "none").length,
+  }), [employeeRows]);
+
+  const visibleRows = useMemo(() => {
+    const q = listQuery.trim().toLowerCase();
+    return employeeRows.filter((r) => {
+      if (q && !r.name.toLowerCase().includes(q) && !String(r.position).toLowerCase().includes(q)) return false;
+      if (listFilter === "full" && r.state !== "full") return false;
+      if (listFilter === "part" && r.state !== "part") return false;
+      if (listFilter === "none" && r.state !== "none") return false;
+      return true;
+    });
+  }, [employeeRows, listQuery, listFilter]);
+
+  // Pilih satu pegawai dari daftar → kalender pegawai itu terbuka di bawah.
+  const pickEmployee = (id) => {
+    setSelectedUsers([id]);
+  };
 
   const { pullDistance, isRefreshing } = usePullToRefresh(() => loadSchedules());
 
@@ -261,6 +355,148 @@ export default function SchedulingPage() {
         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium bg-onyx text-slate-mist ring-1 ring-white/5">
           <X size={11} /> Kosong
         </span>
+      </div>
+
+      {/* DAFTAR PEGAWAI + STATUS JADWAL BULAN INI */}
+      <div className="design-card overflow-hidden">
+        <button type="button" onClick={() => setListOpen((v) => !v)}
+          className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-white/[0.03] transition-colors">
+          <span className="w-8 h-8 rounded-xl bg-electric-violet/15 flex items-center justify-center shrink-0">
+            <UserCheck size={15} className="text-electric-violet" />
+          </span>
+          <span className="flex-1 min-w-0">
+            <span className="block text-sm font-bold text-pure-white">Daftar Pegawai &amp; Jadwal</span>
+            <span className="block text-[10.5px] text-slate-mist mt-0.5">
+              {MONTHS[month]} {year} · {listCounts.total} pegawai
+            </span>
+          </span>
+          <ChevronRight size={16}
+            className={`text-slate-mist shrink-0 transition-transform duration-200 ${listOpen ? "rotate-90" : ""}`} />
+        </button>
+
+        {listOpen && (
+          <div className="border-t border-white/[0.06]">
+            {/* Ringkasan status — angka asli dari employee_schedules */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3">
+              {[
+                { key: "total", label: "Total pegawai", value: listCounts.total, color: "text-periwinkle-glow" },
+                { key: "full", label: "Lengkap", value: listCounts.full, color: "text-emerald-400" },
+                { key: "part", label: "Sebagian", value: listCounts.part, color: "text-amber-300" },
+                { key: "none", label: "Belum ada", value: listCounts.none, color: "text-rose-400" },
+              ].map((c) => (
+                <div key={c.key} className="rounded-xl bg-onyx border border-white/[0.06] px-3 py-2">
+                  <p className={`text-lg font-extrabold leading-none tabular-nums ${c.color}`}>{c.value}</p>
+                  <p className="text-[10.5px] font-semibold text-slate-mist mt-1">{c.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Pencarian + filter */}
+            <div className="px-3 pb-2 space-y-2">
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-mist" />
+                <input
+                  value={listQuery}
+                  onChange={(e) => setListQuery(e.target.value)}
+                  placeholder="Cari nama atau jabatan…"
+                  className="w-full pl-8.5 pr-3 py-2 text-xs rounded-xl bg-onyx border border-white/[0.06] text-pure-white placeholder:text-slate-mist focus:outline-none focus:border-electric-violet/50"
+                  style={{ paddingLeft: 32 }}
+                />
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  { key: "all", label: "Semua" },
+                  { key: "full", label: "Lengkap" },
+                  { key: "part", label: "Sebagian" },
+                  { key: "none", label: "Belum ada" },
+                ].map((f) => (
+                  <button key={f.key} type="button" onClick={() => setListFilter(f.key)}
+                    className={`px-2.5 py-1 rounded-full text-[10.5px] font-bold transition-all ${
+                      listFilter === f.key
+                        ? "bg-electric-violet/25 text-pure-white ring-1 ring-electric-violet/50"
+                        : "bg-white/[0.04] text-slate-mist hover:bg-white/[0.07]"
+                    }`}>
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Baris pegawai */}
+            {overviewLoading ? (
+              <div className="p-3 space-y-2">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="flex items-center gap-3 py-2">
+                    <Skeleton dark width={34} height={34} radius={999} />
+                    <div className="flex-1" style={{ display: "grid", gap: 6 }}>
+                      <Skeleton dark width="42%" height={10} />
+                      <Skeleton dark width="28%" height={8} />
+                    </div>
+                    <Skeleton dark width={56} height={20} radius={999} />
+                  </div>
+                ))}
+              </div>
+            ) : visibleRows.length === 0 ? (
+              <p className="px-4 py-6 text-center text-xs text-slate-mist">
+                Tidak ada pegawai yang cocok dengan pencarian/filter ini.
+              </p>
+            ) : (
+              <div className="max-h-[340px] overflow-y-auto">
+                {visibleRows.map((r) => {
+                  const isActive = selectedUsers.includes(r.id);
+                  const stateStyle = r.state === "full"
+                    ? { bg: "bg-emerald-500/15", text: "text-emerald-300", label: "Lengkap" }
+                    : r.state === "part"
+                      ? { bg: "bg-amber-500/15", text: "text-amber-300", label: "Sebagian" }
+                      : { bg: "bg-rose-500/15", text: "text-rose-300", label: "Belum ada" };
+                  return (
+                    <button key={r.id} type="button" onClick={() => pickEmployee(r.id)}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-left border-t border-white/[0.05] transition-colors ${
+                        isActive ? "bg-electric-violet/10" : "hover:bg-white/[0.03]"
+                      }`}>
+                      <span className="w-[34px] h-[34px] rounded-full bg-gradient-to-br from-[#2F8BF8] to-[#1F74E0] flex items-center justify-center text-[11px] font-extrabold text-white shrink-0">
+                        {r.name.trim().charAt(0).toUpperCase()}
+                      </span>
+                      <span className="flex-1 min-w-0">
+                        <span className="block text-[12.5px] font-bold text-pure-white truncate">{r.name}</span>
+                        {r.position && (
+                          <span className="block text-[10.5px] text-slate-mist truncate mt-0.5">{r.position}</span>
+                        )}
+                      </span>
+                      <span className="hidden sm:flex items-center gap-1 shrink-0">
+                        {r.shifts.map((code) => {
+                          const sv = SHIFT_MAP[code];
+                          return (
+                            <span key={code}
+                              className={`text-[9.5px] font-bold px-1.5 py-0.5 rounded-full ${sv ? sv.badgeClass : "bg-white/[0.06] text-slate-mist"}`}>
+                              {sv?.name || code}
+                            </span>
+                          );
+                        })}
+                      </span>
+                      <span className="text-[11px] font-extrabold tabular-nums text-pure-white shrink-0 w-[58px] text-right">
+                        {r.days}<span className="text-slate-mist font-bold">/{lastDay}</span>
+                      </span>
+                      <span className={`text-[9.5px] font-bold px-2 py-0.5 rounded-full shrink-0 ${stateStyle.bg} ${stateStyle.text}`}>
+                        {stateStyle.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="px-4 py-2.5 border-t border-white/[0.06] flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-[10.5px] text-slate-mist">
+                Klik pegawai untuk membuka kalender &amp; mengisi jadwalnya.
+              </p>
+              <button type="button" onClick={() => setShowBulkAssign(true)}
+                className="inline-flex items-center gap-1.5 text-[10.5px] font-bold text-electric-violet hover:brightness-125 transition-all">
+                <Layers size={11} /> Isi Cepat
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* CALENDAR */}
