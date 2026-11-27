@@ -100,6 +100,29 @@ export async function getMyOvertimeRequests() {
   return data || [];
 }
 
+/**
+ * Tanggal lembur yang SUDAH memenuhi syarat pembayaran.
+ *
+ * Server hanya membayar lembur bila ada baris `attendance` pada tanggal itu
+ * dengan `clock_out_time` terisi (aturan anti-fraud, migration 20261023).
+ * Fungsi ini mengambil tanggal-tanggal tersebut agar tampilan klien bisa
+ * menyamakan angka dengan slip gaji — bukan sekadar status "approved".
+ *
+ * Return: Set<string> berisi `YYYY-MM-DD`.
+ */
+export async function getPaidOvertimeDates(userId, dates) {
+  const list = [...new Set((dates || []).filter(Boolean))];
+  if (!userId || list.length === 0) return new Set();
+  const { data, error } = await supabase
+    .from("attendance")
+    .select("date")
+    .eq("user_id", userId)
+    .in("date", list)
+    .not("clock_out_time", "is", null);
+  if (error) throw error;
+  return new Set((data || []).map((r) => r.date));
+}
+
 // Detail satu pengajuan milik sendiri (RLS membatasi ke user yang login).
 export async function getMyOvertimeRequest(id) {
   const { data, error } = await supabase

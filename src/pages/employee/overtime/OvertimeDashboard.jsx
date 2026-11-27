@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
-import { getMyOvertimeRequests } from "../../../services/overtimeService";
+import { getMyOvertimeRequests, getPaidOvertimeDates } from "../../../services/overtimeService";
 import OvertimeRequestSheet from "./OvertimeRequestSheet";
 import {
   OT, Icon, StatusBadge, Loader, ErrorState, EmptyState,
@@ -17,6 +17,9 @@ export default function OvertimeDashboard() {
   const navigate = useNavigate();
 
   const [rows, setRows] = useState([]);
+  // Tanggal lembur yang sudah memenuhi syarat bayar (ada absen pulang).
+  // Server hanya membayar lembur pada tanggal ini — angka di layar mengikuti.
+  const [paidDates, setPaidDates] = useState(() => new Set());
   const [month, setMonth] = useState(currentMonthKey());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -27,10 +30,14 @@ export default function OvertimeDashboard() {
     setLoading(true);
     setError("");
     try {
-      setRows(await getMyOvertimeRequests());
+      const data = await getMyOvertimeRequests();
+      setRows(data);
+      const approvedDates = data.filter((r) => r.status === "approved").map((r) => r.date);
+      setPaidDates(await getPaidOvertimeDates(user.id, approvedDates));
     } catch (e) {
       setError(e.message || "Gagal memuat data lembur");
       setRows([]);
+      setPaidDates(new Set());
     } finally {
       setLoading(false);
     }
@@ -48,16 +55,23 @@ export default function OvertimeDashboard() {
     [rows, month]
   );
 
+  // Total uang lembur hanya menghitung lembur yang SUDAH ada absen pulang —
+  // sama dengan aturan slip gaji di server. Lembur disetujui tapi belum
+  // dibuktikan kehadirannya tetap tampil di riwayat, namun tidak dijumlahkan.
   const summary = useMemo(() => {
     const approved = monthRows.filter((r) => r.status === "approved");
+    const paid = approved.filter((r) => paidDates.has(r.date));
+    const unpaid = approved.filter((r) => !paidDates.has(r.date));
     return {
-      totalPay: approved.reduce((s, r) => s + Number(r.pay_amount || 0), 0),
-      totalHours: approved.reduce((s, r) => s + Number(r.approved_hours || 0), 0),
+      totalPay: paid.reduce((s, r) => s + Number(r.pay_amount || 0), 0),
+      totalHours: paid.reduce((s, r) => s + Number(r.approved_hours || 0), 0),
+      unpaidPay: unpaid.reduce((s, r) => s + Number(r.pay_amount || 0), 0),
+      unpaidCount: unpaid.length,
       count: monthRows.length,
       approved: approved.length,
       pending: monthRows.filter((r) => r.status === "pending").length,
     };
-  }, [monthRows]);
+  }, [monthRows, paidDates]);
 
   const recent = monthRows.slice(0, 3);
   const closeSheet = useCallback(() => setSheetOpen(false), []);
@@ -140,13 +154,29 @@ export default function OvertimeDashboard() {
                   {rupiah(summary.totalPay)}
                 </p>
                 <p style={{ fontSize: 11, fontWeight: 600, color: OT.textSec, marginTop: 6 }}>
-                  dari {durationLabel(summary.totalHours)} lembur yang disetujui
+                  dari {durationLabel(summary.totalHours)} lembur yang sudah absen pulang
                 </p>
               </div>
               <div style={{ paddingTop: 2 }}>
                 <MonthMenu value={month} onChange={setMonth} options={monthOptions(rows, currentMonthKey())} />
               </div>
             </div>
+
+            {summary.unpaidCount > 0 && (
+              <div style={{
+                marginTop: 12, padding: "10px 12px", borderRadius: 12,
+                background: "rgba(245,158,11,0.09)", border: "1px solid rgba(245,158,11,0.28)",
+                display: "flex", gap: 9, alignItems: "flex-start",
+              }}>
+                <span style={{ flex: "none", marginTop: 1, color: "#B45309" }}>
+                  <Icon.clock size={14} sw={2.4} />
+                </span>
+                <span style={{ fontSize: 11.5, lineHeight: 1.55, color: "#92400E", fontWeight: 600 }}>
+                  <b>{summary.unpaidCount} lembur disetujui</b> ({rupiah(summary.unpaidPay)}) belum dihitung
+                  karena belum ada absen pulang. Absen pulang pada tanggal lembur agar uangnya masuk slip gaji.
+                </span>
+              </div>
+            )}
 
             <div style={{ height: 1, background: OT.divider, margin: "16px 0 12px" }} />
 
@@ -190,7 +220,10 @@ export default function OvertimeDashboard() {
               />
             ) : (
               <div className="space-y-2">
-                {recent.map((r) => (
+                {recent.map((r) => {
+                  const payable = r.status === "approved" && paidDates.has(r.date);
+                  const awaiting = r.status === "approved" && !paidDates.has(r.date);
+                  return (
                   <Link key={r.id} to={`/employee/overtime/${r.id}`}
                     className="flex items-center gap-3 active:scale-[0.99] transition"
                     style={{
@@ -199,10 +232,11 @@ export default function OvertimeDashboard() {
                     }}>
                     <span className="flex items-center justify-center shrink-0" style={{
                       width: 38, height: 38, borderRadius: "50%",
-                      background: r.status === "approved" ? "#10B981" : r.status === "rejected" ? "#EF4444" : "#3B82F6",
+                      background: payable ? "#10B981" : r.status === "approved" ? "#F59E0B" : r.status === "rejected" ? "#EF4444" : "#3B82F6",
                       color: "#fff",
                     }}>
-                      {r.status === "approved" ? <Icon.check size={16} sw={3} />
+                      {payable ? <Icon.check size={16} sw={3} />
+                        : awaiting ? <Icon.clock size={15} sw={2.6} />
                         : r.status === "rejected" ? <Icon.close size={15} sw={3} />
                           : <Icon.clock size={15} sw={2.6} />}
                     </span>
@@ -210,14 +244,16 @@ export default function OvertimeDashboard() {
                       <span className="block truncate" style={{ fontSize: 13, fontWeight: 700, color: OT.text }}>
                         {r.reason?.trim() ? r.reason.trim() : "Pengajuan lembur"}
                       </span>
-                      <span className="block truncate" style={{ fontSize: 11, color: OT.textSec, marginTop: 2 }}>
-                        {fmtDate(r.date)} • {r.start_time} - {r.end_time} ({durationLabel(r.requested_hours)})
+                      <span className="block truncate" style={{ fontSize: 11, color: awaiting ? "#B45309" : OT.textSec, marginTop: 2, fontWeight: awaiting ? 700 : 400 }}>
+                        {fmtDate(r.date)} • {r.start_time} - {r.end_time}
+                        {awaiting ? " — belum absen pulang" : ` (${durationLabel(r.requested_hours)})`}
                       </span>
                     </span>
                     <StatusBadge status={r.status} />
                     <Icon.chevron size={15} sw={2.4} />
                   </Link>
-                ))}
+                  );
+                })}
               </div>
             )}
 
