@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import {
-  CheckCircle2, Loader2, ShieldAlert, Plus, Minus, FingerprintPattern, ArrowLeft, Sunset
+  CheckCircle2, Loader2, ShieldAlert, Plus, Minus, ArrowLeft, Sunset
 } from "lucide-react";
 import LocationMap from "../../components/LocationMap";
 import AttendanceResultSheet from "../../components/AttendanceResultSheet";
+import AttendanceReadySheet from "../../components/AttendanceReadySheet";
 import BottomSheet from "../../components/BottomSheet";
 import GpsDisabledSheet from "../../components/GpsDisabledSheet";
 import BottomNav from "../../components/BottomNav";
@@ -15,7 +16,7 @@ import { detectMockLocation, mockBlockMessage } from "../../services/mockLocatio
 import { buildIntegritySignal, attachIntegrity, logSecurityEvent, fetchIntegrityVerdict } from "../../services/integrityService";
 import { getPuskesmasLocation, getNearestLocation, verifyLocationServer } from "../../services/attendanceService";
 import { getApprovedOvertimeSlots } from "../../services/overtimeService";
-import { getMondayFirstDayOfWeek, getShiftDefinition, getWitaDateKey, isShiftEnded, isCheckInWindowOpen } from "../../lib/shiftTime";
+import { getMondayFirstDayOfWeek, getWitaDateKey, getWitaParts, isShiftEnded, isCheckInWindowOpen } from "../../lib/shiftTime";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 
@@ -496,6 +497,176 @@ export default function AttendancePage() {
     ? endAtMs + (todayAttendance.late_minutes || 0) * 60000
     : null;
   const fmtJamTitik = (ms) => ms == null ? "-" : new Date(ms).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Makassar" });
+
+  // ── Data panel kesiapan absen ──
+  // Semua nilai diturunkan dari state yang sudah diambil dari Supabase
+  // (employee_schedules, shift_schedules, shifts, attendance, overtime_requests)
+  // dan dari verifikasi lokasi server — tidak ada angka contoh.
+  const shiftLabel = todaySchedule
+    ? `${todaySchedule.name || SHIFT_NAMES[todaySchedule.code] || todaySchedule.code}`
+    : "";
+  // "07.30 – 11.00" dari shift_schedules hari ini (HH:MM:SS → HH.MM)
+  const hhmm = (t) => {
+    const m = String(t || "").match(/^(\d{1,2}):(\d{2})/);
+    return m ? `${m[1].padStart(2, "0")}.${m[2]}` : null;
+  };
+  const shiftStartStr = hhmm(shiftDefinition?.start_time);
+  const shiftEndStr = hhmm(shiftDefinition?.end_time);
+  const shiftRangeStr = shiftStartStr && shiftEndStr ? `${shiftStartStr} – ${shiftEndStr}` : null;
+
+  // Sisa waktu sampai jendela absen tutup = jam selesai shift hari ini.
+  // Dihitung dari selisih waktu server (bukan jam perangkat) agar konsisten
+  // dengan guard yang menolak absen lewat jam selesai.
+  const windowRemainingStr = (() => {
+    if (!serverTime || !shiftDefinition?.end_time) return null;
+    const m = String(shiftDefinition.end_time).match(/^(\d{1,2}):(\d{2})/);
+    if (!m) return null;
+    const p = getWitaParts(serverTime);
+    if (!p) return null;
+    const endMin = Number(m[1]) * 60 + Number(m[2]);
+    const nowMin = p.hour * 60 + p.minute;
+    let diff = endMin - nowMin;
+    // Shift lintas malam: jam selesai lebih kecil dari jam sekarang → besok
+    if (shiftDefinition.crosses_midnight && diff < 0) diff += 1440;
+    if (diff <= 0) return null;
+    const h = Math.floor(diff / 60);
+    const mi = diff % 60;
+    return h > 0 ? `${h} j ${mi} m` : `${mi} m`;
+  })();
+
+  const locName = matchedLocation?.name || puskesmasLocation.name || "Lokasi presensi";
+  const radiusM = matchedLocation?.radius_meter ?? puskesmasLocation.radius_meter ?? null;
+  const accuracyM = currentCoords?.accuracy != null ? Math.round(currentCoords.accuracy) : null;
+  const withinRadius = locationStatus === "valid";
+
+  // Satu alasan saja yang ditampilkan (yang paling menghalangi lebih dulu),
+  // supaya pegawai tidak menebak dari beberapa pesan sekaligus.
+  const sheetBlockedReason = (() => {
+    if (isFakeGPS) return "Terdeteksi lokasi palsu atau akurasi GPS mencurigakan. Matikan aplikasi fake GPS lalu coba lagi.";
+    if (!serverTime) return "Menunggu sinkronisasi jam server. Tombol aktif setelah waktu server terbaca.";
+    if (isAlphaLocked) return "Absensi ditutup karena jadwal hari ini sudah berstatus Alpha.";
+    if (locationStatus === "error") return "Lokasi belum terbaca. Aktifkan GPS lalu muat ulang halaman.";
+    if (locationStatus === "invalid") return `Anda di luar radius ${radiusM ? radiusM + " m" : ""} dari ${locName}. Mendekat ke titik absensi untuk mengaktifkan tombol.`;
+    if (!todayAttendance && !shiftDefinition) return "Tidak ada jadwal shift hari ini. Absen hanya dibuka bila ada lembur yang disetujui.";
+    if (!checkInGate.open) return `Waktu absen belum dibuka. Tombol aktif pukul ${gateOpensAt} WITA (${checkInGate.minutesUntil} menit lagi).`;
+    if (checkoutLateBlocked) return "Batas absen pulang sudah lewat, sehingga absen pulang tidak bisa dicatat lagi.";
+    if (locationStatus === "checking" && !todayAttendance) return "Memverifikasi posisi Anda ke server…";
+    return "";
+  })();
+
+  const isCheckoutMode = !!todayAttendance && !todayAttendance.clock_out_time
+    && todayAttendance.attendance_status !== "izin"
+    && todayAttendance.attendance_status !== "sakit"
+    && !isSanggahCorrected;
+
+  // Hari yang sudah tuntas (izin/sakit/koreksi sanggahan/sudah absen pulang)
+  // tidak menampilkan panel absen — kartu statusnya sudah menjelaskan.
+  const hideReadySheet = !!todayAttendance && (
+    todayAttendance.attendance_status === "izin"
+    || todayAttendance.attendance_status === "sakit"
+    || isSanggahCorrected
+    || !!todayAttendance.clock_out_time
+  );
+
+  const sheetRows = (() => {
+    if (isCheckoutMode) {
+      return [
+        {
+          icon: "clock", label: "Waktu masuk", mono: true,
+          value: todayAttendance.clock_in_time ? fmtJamTitik(new Date(todayAttendance.clock_in_time).getTime()) + " WITA" : "—",
+          badge: todayAttendance.is_late ? `Telat ${todayAttendance.late_minutes || 0} mnt` : "Tepat waktu",
+          badgeTone: todayAttendance.is_late ? "amber" : "green",
+        },
+        {
+          icon: "pin", label: "Lokasi & jarak",
+          value: locName,
+          badge: distance != null ? `${formatDistance(distance)} · ${withinRadius ? "dalam radius" : "luar radius"}` : undefined,
+          badgeTone: withinRadius ? "green" : "red",
+        },
+        effectiveCheckoutDeadlineMs !== null
+          ? {
+              icon: "timer", label: "Batas absen pulang", mono: true,
+              value: `${fmtJamTitik(effectiveCheckoutDeadlineMs)} WITA`,
+              badge: overtimeExtendsDeadline ? "diperpanjang lembur" : "1 jam setelah shift",
+              badgeTone: overtimeExtendsDeadline ? "amber" : "neutral",
+            }
+          : { icon: "clock", label: "Shift", value: shiftLabel || "Tanpa jadwal" },
+        makeupTargetMs != null
+          ? { icon: "timer", label: "Pulang minimal", mono: true, value: `${fmtJamTitik(makeupTargetMs)} WITA`, badge: `hapus telat ${todayAttendance.late_minutes || 0} mnt`, badgeTone: "amber" }
+          : null,
+      ].filter(Boolean);
+    }
+    return [
+      {
+        icon: "pin", label: "Lokasi & jarak",
+        value: locName,
+        badge: distance != null ? `${formatDistance(distance)} · ${withinRadius ? "dalam radius" : "luar radius"}` : undefined,
+        badgeTone: withinRadius ? "green" : "red",
+      },
+      shiftRangeStr
+        ? { icon: "clock", label: "Jam shift hari ini", mono: true, value: `${shiftRangeStr} WITA`, badge: shiftLabel, badgeTone: "neutral" }
+        : { icon: "clock", label: "Shift hari ini", value: shiftLabel || "Tanpa jadwal" },
+      effectiveCheckoutDeadlineMs !== null
+        ? {
+            icon: "timer", label: "Batas absen pulang", mono: true,
+            value: `${fmtJamTitik(effectiveCheckoutDeadlineMs)} WITA`,
+            badge: overtimeExtendsDeadline ? "diperpanjang lembur" : "1 jam setelah shift",
+            badgeTone: overtimeExtendsDeadline ? "amber" : "neutral",
+          }
+        : null,
+    ].filter(Boolean);
+  })();
+
+  const sheetDetail = (() => {
+    const out = [];
+    if (accuracyM != null) out.push({ label: "Akurasi GPS", value: `±${accuracyM} m`, mono: true });
+    if (radiusM != null) out.push({ label: "Radius lokasi", value: `${radiusM} m`, mono: true });
+    if (shiftDefinition?.start_time) {
+      const startM = String(shiftDefinition.start_time).match(/^(\d{1,2}):(\d{2})/);
+      if (startM) {
+        const total = Number(startM[1]) * 60 + Number(startM[2]) - 15;
+        const hh = String(Math.floor((((total % 1440) + 1440) % 1440) / 60)).padStart(2, "0");
+        const mm = String(((total % 60) + 60) % 60).padStart(2, "0");
+        out.push({ label: "Jendela absen", value: `${hh}.${mm} – ${shiftEndStr || "—"}`, mono: true });
+      }
+    }
+    out.push({ label: "Toleransi telat", value: "0 menit", mono: true });
+    if (shiftLabel) out.push({ label: "Shift", value: `${shiftLabel} · ${todaySchedule?.code || ""}`.trim() });
+    if (todayAttendance?.shift_code) out.push({ label: "Kode shift tercatat", value: todayAttendance.shift_code, mono: true });
+    if (todayAttendance?.schedule_match === false) out.push({ label: "Kecocokan jadwal", value: "Tidak cocok", mono: false });
+    if (syncTimeStr) out.push({ label: "Sinkron server", value: `${syncTimeStr} WITA`, mono: true });
+    return out;
+  })();
+
+  const sheetTitle = (() => {
+    if (todayAttendance?.clock_out_time) return "Absensi hari ini selesai";
+    if (isCheckoutMode) return "Siap absen pulang";
+    if (isFakeGPS || locationStatus === "invalid") return "Lokasi belum valid";
+    if (!serverTime) return "Menyiapkan presensi";
+    return "Siap absen masuk";
+  })();
+
+  const sheetSubtitle = (() => {
+    if (isCheckoutMode) {
+      const inTime = todayAttendance?.clock_in_time ? fmtJamTitik(new Date(todayAttendance.clock_in_time).getTime()) : null;
+      return inTime ? <>Masuk <b>{inTime}</b> · {shiftLabel || "Tanpa jadwal"}</> : <>{shiftLabel || "Tanpa jadwal"}</>;
+    }
+    if (todaySchedule && shiftRangeStr) {
+      return <><b>{shiftLabel}</b> · {shiftRangeStr} WITA</>;
+    }
+    if (todayAttendance?.shift_code) return <>Shift {SHIFT_NAMES[todayAttendance.shift_code] || todayAttendance.shift_code}</>;
+    return <>Belum ada jadwal untuk hari ini</>;
+  })();
+
+  const sheetWindowLabel = (() => {
+    if (isCheckoutMode) {
+      return effectiveCheckoutDeadlineMs !== null
+        ? `Ditutup pukul ${fmtJamTitik(effectiveCheckoutDeadlineMs)} WITA`
+        : null;
+    }
+    if (shiftDefinition?.end_time) return `Ditutup pukul ${shiftEndStr} WITA`;
+    return null;
+  })();
 
   const handleCheckIn = async () => {
     setError("");
@@ -983,83 +1154,6 @@ export default function AttendancePage() {
           )}
 	        </div>
 
-		        {todayAttendance && (todayAttendance.attendance_status === "izin" || todayAttendance.attendance_status === "sakit" || isSanggahCorrected || todayAttendance.clock_out_time) ? null : (
-              <div className="pointer-events-auto flex flex-col items-center gap-3 mt-auto pb-16">
-                {isAlphaLocked && (
-                  <p className="text-[11px] font-semibold text-red-600 text-center max-w-[240px]">
-                    Absensi ditutup karena jadwal hari ini sudah Alpha.
-                  </p>
-                )}
-                {!checkInGate.open && (
-                  <p className="text-[11px] font-semibold text-amber-600 text-center max-w-[260px]">
-                    Waktu absensi belum dimulai — dibuka pukul {gateOpensAt} WITA
-                    ({checkInGate.minutesUntil} menit lagi).
-                  </p>
-                )}
-                <div className="relative">
-              {/* Ripple rings */}
-              <div className="absolute inset-0 rounded-full border-2 border-[#2F8BF8]/30 animate-ripple z-0"></div>
-              <div className="absolute inset-0 rounded-full border-2 border-[#2F8BF8]/20 animate-ripple2 z-0"></div>
-              <div className="absolute inset-0 rounded-full border-2 border-[#2F8BF8]/10 animate-ripple3 z-0"></div>
-              {/* Scanning line */}
-              <div className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[70px] h-[3px] rounded-full bg-gradient-to-r from-transparent via-white/60 to-transparent animate-scan z-10"></div>
-              {/* Dashed rotating ring */}
-              <div className="absolute -inset-[20px] rounded-full border border-white/[0.08] border-dashed animate-spin z-0" style={{ animationDuration: '12s' }}></div>
-              {/* Main button */}
-              <button
-                onClick={todayAttendance ? () => setShowCheckoutConfirm(true) : handleCheckIn}
-                disabled={isAlphaLocked || !checkInGate.open || checkoutLateBlocked || locationStatus !== "valid" || isFakeGPS || saving || !serverTime}
-                className="hero-card-bg relative w-[120px] h-[120px] rounded-full bg-gradient-to-br from-[#2F8BF8] via-[#1F74E0] to-[#1D6FD0] flex items-center justify-center
-                  transition-all duration-300 hover:scale-105 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed
-                  shadow-[0_0_40px_rgba(47,139,248,0.5),0_0_80px_rgba(47,139,248,0.25),0_10px_40px_rgba(0,0,0,0.4)]
-                  hover:shadow-[0_0_60px_rgba(47,139,248,0.7),0_0_100px_rgba(47,139,248,0.4),0_15px_50px_rgba(0,0,0,0.5)]
-                  before:content-[''] before:absolute before:inset-0 before:rounded-full
-                  before:bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_50%)]
-                  active:before:opacity-0 z-20"
-              >
-                {saving ? (
-                  <Loader2 size={32} className="animate-spin text-white/80 relative z-30" />
-                ) : !serverTime ? (
-                  <Loader2 size={32} className="animate-spin text-white/50 relative z-30" />
-                ) : (
-                  <div className="relative flex items-center justify-center z-30">
-                    {/* White glow background behind fingerprint */}
-                    <div className="absolute w-[60px] h-[60px] rounded-full bg-white/10 blur-lg"></div>
-                    <FingerprintPattern size={56} strokeWidth={1.6} className="animate-icon-pulse text-white" style={{
-                      filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.5))'
-                    }} />
-                  </div>
-                )}
-              </button>
-            </div>
-            <span className="text-[13px] font-bold tracking-[3px] uppercase rounded-full px-5 py-2 bg-[#17131f]/95 border border-white/30 text-white hero-card-bg shadow-lg"
-              style={{ textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
-              {saving ? "Menyimpan..." : !serverTime ? "Sinkron..." : isAlphaLocked ? "Absen Ditutup" : checkoutLateBlocked ? "Batas Pulang Lewat" : !checkInGate.open ? "Belum Dibuka" : todayAttendance ? "Absen Pulang" : "Absen Masuk"}
-            </span>
-            {/* Batas pulang & target kompensasi telat */}
-            {todayAttendance && !todayAttendance.clock_out_time && effectiveCheckoutDeadlineMs !== null && !checkoutLateBlocked && (
-              <span className="text-[10px] font-medium rounded-full px-3.5 py-1.5 bg-[#17131f]/95 border border-white/25 text-white/90 hero-card-bg text-center shadow-md">
-                Batas absen pulang: {fmtJamTitik(effectiveCheckoutDeadlineMs)} WITA
-                {overtimeExtendsDeadline && (
-                  <> · diperpanjang karena lembur s/d {fmtJamTitik(overtimeEndAtMs)}</>
-                )}
-                {makeupTargetMs != null && (
-                  <> · Absen pulang minimal <b>{fmtJamTitik(makeupTargetMs)}</b> agar telat {todayAttendance.late_minutes} menit dihapus</>
-                )}
-              </span>
-            )}
-            {todayAttendance && !todayAttendance.clock_out_time && overtimeExtendsDeadline && !checkoutLateBlocked && (
-              <span className="text-[10px] font-medium rounded-full px-3.5 py-1.5 bg-[#17131f]/95 border border-white/25 text-amber-200 hero-card-bg text-center shadow-md">
-                Jangan lupa absen pulang — uang lembur hangus bila tidak ada absen pulang hari ini.
-              </span>
-            )}
-            {checkoutLateBlocked && (
-              <span className="text-[10px] font-semibold rounded-full px-3.5 py-1.5 bg-[#17131f]/95 border border-white/25 text-rose-300 hero-card-bg text-center shadow-md">
-                Batas absen pulang sudah lewat (1 jam setelah jam selesai {overtimeExtendsDeadline ? "lembur" : "shift"})
-              </span>
-            )}
-          </div>
-		        )}
 
 	        {/* Zoom controls */}
 	        <div className="absolute bottom-28 right-4 flex flex-col gap-2 pointer-events-auto z-20">
@@ -1074,7 +1168,32 @@ export default function AttendancePage() {
 	        </div>
 	      </div>
 	
-	      {/* Bottom Sheet */}
+	          {/* ── Panel kesiapan absen — data dari DB, sidik jari di tepi atas ── */}
+          {!hideReadySheet && (
+            <AttendanceReadySheet
+              mode={isCheckoutMode ? "checkout" : "checkin"}
+              title={sheetTitle}
+              subtitle={sheetSubtitle}
+              windowLabel={sheetWindowLabel}
+              windowRemaining={windowRemainingStr}
+              windowNote={isCheckoutMode && overtimeExtendsDeadline ? `Batas pulang diperpanjang karena lembur disetujui sampai ${fmtJamTitik(overtimeEndAtMs)} WITA.` : null}
+              rows={sheetRows}
+              detail={sheetDetail}
+              deviceLabel={isFakeGPS ? "Lokasi palsu terdeteksi" : locationStatus === "valid" ? "GPS asli terdeteksi" : "Menunggu verifikasi lokasi"}
+              deviceTone={isFakeGPS ? "red" : locationStatus === "valid" ? "green" : "amber"}
+              deviceNote={isFakeGPS ? "Matikan aplikasi mock location, lalu muat ulang halaman." : null}
+              note={isCheckoutMode && overtimeExtendsDeadline && !checkoutLateBlocked ? "Jangan lupa absen pulang — uang lembur hangus bila tidak ada absen pulang hari ini." : null}
+              noteTone={isCheckoutMode && overtimeExtendsDeadline ? "neutral" : "green"}
+              blockedReason={sheetBlockedReason}
+              saving={saving}
+              fabLabel={isCheckoutMode ? "Absen pulang sekarang" : "Absen masuk sekarang"}
+              onAction={isCheckoutMode ? () => setShowCheckoutConfirm(true) : handleCheckIn}
+              disabled={isAlphaLocked || !checkInGate.open || checkoutLateBlocked || locationStatus !== "valid" || isFakeGPS || !serverTime}
+            />
+          )}
+
+
+      {/* Bottom Sheet */}
       <div className="relative z-20">
         <AttendanceResultSheet
           open={resultSheetOpen}
