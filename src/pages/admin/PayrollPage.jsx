@@ -404,7 +404,13 @@ function TabGaji({ user, period }) {
           .eq("organization_id", organizationId)
           .order("full_name", { ascending: true });
         if (error) throw error;
-        setEmployees(profiles || []);
+        // Admin/super_admin tidak menjalani shift & absensi, jadi tidak
+        // digaji lewat modul ini — sembunyikan dari daftar pengaturan gaji
+        // (pola sama dengan daftar penjadwalan di SchedulingPage).
+        const payrollUsers = (profiles || []).filter(
+          (p) => !["super_admin", "admin", "admin_puskesmas"].includes(p.role)
+        );
+        setEmployees(payrollUsers);
         const configs = await getEmployeeConfigs();
         const map = {};
         configs.forEach((c) => { map[c.user_id] = String(Number(c.base_component)); });
