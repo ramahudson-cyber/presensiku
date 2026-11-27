@@ -126,7 +126,7 @@ export default function SchedulingPage() {
 
     query.then(({ data, error }) => {
       if (error) {
-        toast.error("Gagal memuat daftar pegawai: " + error.message);
+        toast.error("Gagal memuat daftar pegawai\n" + error.message);
         return;
       }
       // Admin tidak mengikuti shift/absensi, jadi tidak boleh muncul di daftar
@@ -149,7 +149,7 @@ export default function SchedulingPage() {
         .eq("user_id", selectedUser).gte("date", s).lte("date", e);
       const m = {}; (data || []).forEach(x => m[x.date] = x);
       setSchedules(m);
-    } catch { toast.error("Gagal muat jadwal"); } finally { setLoading(false); }
+    } catch { toast.error("Gagal memuat jadwal\nPeriksa koneksi Anda, lalu coba lagi."); } finally { setLoading(false); }
   }, [selectedUser, year, month, lastDay]);
 
   useEffect(() => { loadSchedules(); }, [loadSchedules]);
@@ -184,7 +184,7 @@ export default function SchedulingPage() {
       });
       setMonthOverview(map);
     } catch {
-      toast.error("Gagal memuat ringkasan jadwal");
+      toast.error("Gagal memuat ringkasan jadwal\nPeriksa koneksi Anda, lalu coba lagi.");
       setMonthOverview({});
     } finally {
       setOverviewLoading(false);
@@ -646,7 +646,7 @@ export default function SchedulingPage() {
   }
 
   function handleDayClick(day) {
-    if (!selectedUsers.length) { toast.warning("Pilih pegawai dulu"); return; }
+    if (!selectedUsers.length) { toast.warning("Pilih pegawai dulu\nBuka daftar pegawai di atas untuk mulai mengisi jadwal."); return; }
     setShowShiftPicker(dateStr(day));
   }
 
@@ -660,15 +660,15 @@ export default function SchedulingPage() {
         await supabase.from("employee_schedules").delete()
           .in("user_id", selectedUsers).eq("date", key).eq("shift_code", shiftCode);
         setSchedules(prev => { const n = { ...prev }; delete n[key]; return n; });
-        toast.success("Jadwal dihapus");
+        toast.success("Jadwal dihapus\nShift pada tanggal tersebut sudah dikosongkan.");
       } else {
         const rows = selectedUsers.map(uid => ({ user_id: uid, date: key, shift_code: shiftCode }));
         const { error } = await supabase.from("employee_schedules").upsert(rows, { onConflict: "user_id,date" });
         if (error) throw error;
         setSchedules(prev => ({ ...prev, [key]: { date: key, shift_code: shiftCode } }));
-        toast.success(`Shift ${shifts.find(s => s.code === shiftCode)?.name || shiftCode} ditetapkan untuk ${selectedUsers.length} pegawai`);
+        toast.success(`Jadwal berhasil ditambahkan\nShift ${shifts.find(s => s.code === shiftCode)?.name || shiftCode} · ${selectedUsers.length} pegawai`);
       }
-    } catch (err) { toast.error("Gagal: " + err.message); }
+    } catch (err) { toast.error("Gagal menyimpan jadwal\n" + err.message); }
     setShowShiftPicker(null);
   }
 
@@ -700,9 +700,9 @@ export default function SchedulingPage() {
         );
         if (error) fail++; else ok++;
       }
-      toast.success(`${ok} berhasil${fail ? `, ${fail} gagal` : ""}`);
+      toast.success(`Import Excel selesai\n${ok} baris berhasil${fail ? ` · ${fail} baris dilewati` : ""}`);
       if (selectedUser) loadSchedules();
-    } catch { toast.error("Gagal baca file"); }
+    } catch { toast.error("Gagal membaca file\nPastikan format Excel sesuai template."); }
     e.target.value = "";
   }
 
@@ -725,9 +725,9 @@ export default function SchedulingPage() {
       }));
       const { error } = await supabase.from("employee_schedules").upsert(inserts, { onConflict: "user_id,date" });
       if (error) throw error;
-      toast.success(`✅ ${inserts.length} jadwal untuk ${new Set(prev.map(p => p.user_id)).size} pegawai dicopy dari bulan lalu`);
+      toast.success(`Jadwal bulan lalu disalin\n${inserts.length} jadwal untuk ${new Set(prev.map(p => p.user_id)).size} pegawai`);
       await loadSchedules();
-    } catch (err) { toast.error("Gagal: " + err.message); }
+    } catch (err) { toast.error("Gagal menyalin jadwal\n" + err.message); }
     setLoading(false);
   }
 
@@ -746,7 +746,7 @@ export default function SchedulingPage() {
     await supabase.from("employee_schedules").delete().in("user_id", selectedUsers).gte("date", s).lte("date", e);
     setSchedules({});
     setConfirmClear(null);
-    toast.success("Jadwal dibersihkan");
+    toast.success("Jadwal bulan ini dihapus\nSeluruh jadwal pegawai terpilih sudah dikosongkan.");
   }
 }
 
@@ -831,9 +831,9 @@ function BulkAssignDialog({ employees, year, month, lastDay, shifts = [], onClos
   const toggle = (id) => setSelectedIds(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
 
   const apply = async () => {
-    if (!selectedIds.length) { toast.warning("Pilih pegawai dulu"); return; }
-    if (!days.length) { toast.warning("Pilih hari dulu"); return; }
-    if (range.start > range.end) { toast.warning("Tanggal awal > akhir"); return; }
+    if (!selectedIds.length) { toast.warning("Pilih pegawai dulu\nCentang minimal satu pegawai untuk diisi jadwalnya."); return; }
+    if (!days.length) { toast.warning("Pilih hari dulu\nTentukan hari kerja yang ingin diisi."); return; }
+    if (range.start > range.end) { toast.warning("Rentang tanggal terbalik\nTanggal awal harus sebelum tanggal akhir."); return; }
     setSaving(true);
     try {
       const inserts = [];
@@ -843,12 +843,12 @@ function BulkAssignDialog({ employees, year, month, lastDay, shifts = [], onClos
         const ds = `${year}-${String(month + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
         for (const uid of selectedIds) inserts.push({ user_id: uid, date: ds, shift_code: shiftCode });
       }
-      if (!inserts.length) { toast.warning("Tidak ada hari cocok"); setSaving(false); return; }
+      if (!inserts.length) { toast.warning("Tidak ada hari yang cocok\nPeriksa kembali pilihan hari dan rentang tanggal."); setSaving(false); return; }
       const { error } = await supabase.from("employee_schedules").upsert(inserts, { onConflict: "user_id,date" });
       if (error) throw error;
-      toast.success(`✅ ${inserts.length} jadwal untuk ${selectedIds.length} pegawai`);
+      toast.success(`Isi cepat berhasil\n${inserts.length} jadwal untuk ${selectedIds.length} pegawai`);
       onDone();
-    } catch (err) { toast.error("Gagal: " + err.message); }
+    } catch (err) { toast.error("Gagal mengisi jadwal\n" + err.message); }
     setSaving(false);
   };
 
