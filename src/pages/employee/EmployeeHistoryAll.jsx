@@ -145,21 +145,7 @@ export default function EmployeeHistoryAll() {
   const { pullDistance, isRefreshing } = usePullToRefresh(load);
 
   const chipsRef = useRef(null);
-  const fadeRef = useRef(null);
   const activeChipRef = useRef(null);
-
-  // Fade tepi kanan hanya tampil bila rail chip benar-benar bisa digulir.
-  useEffect(() => {
-    const rail = chipsRef.current;
-    const fade = fadeRef.current;
-    if (!rail || !fade) return undefined;
-    const sync = () => { fade.style.display = rail.scrollWidth > rail.clientWidth + 1 ? "block" : "none"; };
-    sync();
-    if (typeof ResizeObserver === "undefined") return undefined;
-    const ro = new ResizeObserver(sync);
-    ro.observe(rail);
-    return () => ro.disconnect();
-  }, [filter]);
 
   // Chip aktif otomatis digulir ke posisi terlihat saat filter berubah.
   useEffect(() => {
@@ -268,14 +254,15 @@ export default function EmployeeHistoryAll() {
           />
         </div>
 
-        {/* FILTER CHIP — di dalam header, di bawah search */}
+        {/* FILTER CHIP — full-width, padding di dalam scroll, tanpa overlay */}
         <div className="relative mt-3">
-          <div ref={chipsRef} className="flex items-center gap-2 overflow-x-auto pb-1"
-            style={{ scrollbarWidth: "none", scrollSnapType: "x proximity", scrollPaddingLeft: 16 }}>
+          <div ref={chipsRef}
+            className="no-scrollbar flex items-center gap-2 w-full overflow-x-auto pb-1 pl-4 pr-6"
+            style={{ scrollSnapType: "x proximity", scrollPaddingLeft: 16 }}>
             {FILTERS.map((f) => (
               <button key={f} type="button" onClick={() => setFilter(f)}
                 ref={f === filter ? activeChipRef : undefined}
-                className="shrink-0 px-4 py-2 rounded-full text-[12.5px] font-bold transition active:scale-[0.97]"
+                className="shrink-0 rounded-full px-4 py-1.5 text-xs font-bold transition active:scale-[0.97]"
                 style={{
                   scrollSnapAlign: "start",
                   background: filter === f ? "#FFFFFF" : "rgba(255,255,255,0.16)",
@@ -285,21 +272,18 @@ export default function EmployeeHistoryAll() {
               </button>
             ))}
           </div>
-          <div ref={fadeRef} className="pointer-events-none absolute"
-            style={{
-              display: "none", right: 0, top: 8, bottom: 0, width: 34,
-              background: "linear-gradient(90deg, rgba(63,147,253,0) 0%, #3F93FD 85%)",
-            }} />
         </div>
       </header>
 
-      {/* SHEET PUTIH — menimpa bawah header; pill bulan di tengah garis atas */}
-      <div className="relative flex-1 min-h-0 z-10 bg-white -mt-6 rounded-t-[28px] shadow-[0_-10px_34px_rgba(15,23,42,0.14)]">
+      {/* SHEET PUTIH — pembungkus tanpa overflow agar pill di tepi atas tidak terpotong */}
+      <div className="relative flex-1 min-h-0 z-10 -mt-6">
         <div className="absolute left-0 right-0 flex justify-center" style={{ top: -17, zIndex: 20 }}>
           <MonthMenu value={monthKey} onChange={setMonthKey}
             options={monthOptions(rows, currentMonthKey())} tone="soft" />
         </div>
 
+        {/* Kontainer scroll di dalam sheet */}
+        <div className="h-full bg-white rounded-t-[28px] shadow-[0_-10px_34px_rgba(15,23,42,0.14)] overflow-y-auto no-scrollbar">
         <div className="flex justify-center pt-3.5 pb-1">
           <span className="block rounded-full" style={{ width: 42, height: 5, background: "#E2E8F0" }} />
         </div>
@@ -311,10 +295,9 @@ export default function EmployeeHistoryAll() {
               : `Periode ${periodLabel}`}
           </p>
         </div>
-      </div>
 
-      {/* DAFTAR - full-width tanpa kartu, hanya garis pemisah */}
-      <div className="flex-1 min-h-0 overflow-y-auto pb-8">
+      {/* DAFTAR - full-width tanpa kartu, hanya garis pemisah (di dalam sheet) */}
+      <div className="pb-8">
         {loading ? (
           <div className="px-4 py-2">
             {[0, 1, 2, 3, 4, 5].map((i) => (
@@ -467,6 +450,8 @@ export default function EmployeeHistoryAll() {
           </div>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 
