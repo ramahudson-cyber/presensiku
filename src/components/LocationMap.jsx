@@ -15,7 +15,7 @@ export default function LocationMap({ userLocation, puskesmasLocation, distance,
     className: "",
     html: `<div style="position:relative;width:40px;height:54px;">
       <div style="position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:18px;height:5px;border-radius:50%;background:rgba(15,23,42,0.35);filter:blur(1px);"></div>
-      <div style="position:absolute;left:2px;bottom:5px;animation:pinBounce 1.2s ease-in-out infinite;filter:drop-shadow(0 4px 6px rgba(15,23,42,0.35));">
+      <div style="position:absolute;left:2px;bottom:5px;animation:pinBounce 1.2s ease-in-out infinite;filter:drop-shadow(0 1px 2px rgba(15,23,42,0.12));">
         <svg width="36" height="44" viewBox="0 0 24 30">
           <path d="M12 0C5.4 0 0 5.4 0 12c0 8.4 10.4 17.1 11.5 18 .3.3.7.3 1 0C13.6 29.1 24 20.4 24 12 24 5.4 18.6 0 12 0z" fill="#DC2626" stroke="#ffffff" stroke-width="1.2"/>
           <circle cx="12" cy="11.6" r="4.6" fill="#ffffff"/>
@@ -44,7 +44,7 @@ export default function LocationMap({ userLocation, puskesmasLocation, distance,
       className: "",
       html: `<div style="position:relative;width:40px;height:54px;">
         <div style="position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:18px;height:5px;border-radius:50%;background:rgba(15,23,42,0.35);filter:blur(1px);"></div>
-        <div style="position:absolute;left:2px;bottom:5px;animation:pinBounce 1.2s ease-in-out infinite;filter:drop-shadow(0 4px 6px rgba(15,23,42,0.35));">
+        <div style="position:absolute;left:2px;bottom:5px;animation:pinBounce 1.2s ease-in-out infinite;filter:drop-shadow(0 1px 2px rgba(15,23,42,0.12));">
           <svg width="36" height="44" viewBox="0 0 24 30">
             <path d="M12 0C5.4 0 0 5.4 0 12c0 8.4 10.4 17.1 11.5 18 .3.3.7.3 1 0C13.6 29.1 24 20.4 24 12 24 5.4 18.6 0 12 0z" fill="#DC2626" stroke="#ffffff" stroke-width="1.2"/>
             <circle cx="12" cy="11.6" r="4.6" fill="#ffffff"/>

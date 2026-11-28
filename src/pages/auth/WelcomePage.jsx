@@ -275,8 +275,7 @@ const PREMIUM_STYLES = `
     cursor: pointer;
     box-shadow:
       0 1px 0 rgba(255,255,255,0.9) inset,
-      0 14px 40px -8px rgba(0,0,0,0.45),
-      0 4px 12px rgba(0,0,0,0.2);
+      0 1px 2px rgba(0,0,0,0.08);
     transition: transform 0.45s cubic-bezier(0.32,0.72,0,1), box-shadow 0.45s cubic-bezier(0.32,0.72,0,1);
     will-change: transform;
   }
@@ -284,8 +283,7 @@ const PREMIUM_STYLES = `
     transform: translateY(-2px);
     box-shadow:
       0 1px 0 rgba(255,255,255,0.9) inset,
-      0 22px 52px -10px rgba(0,0,0,0.5),
-      0 6px 16px rgba(0,0,0,0.22);
+      0 2px 4px rgba(0,0,0,0.10);
   }
   .btn:active { transform: scale(0.97); }
   .btn .ico {
@@ -297,7 +295,7 @@ const PREMIUM_STYLES = `
     border-radius: 50%;
     background: linear-gradient(135deg, #54E2D4 0%, #2F8BF8 100%);
     color: #fff;
-    box-shadow: 0 4px 14px rgba(47,139,248,0.45);
+    box-shadow: 0 1px 2px rgba(47,139,248,0.15);
     transition: transform 0.45s cubic-bezier(0.32,0.72,0,1);
   }
   .btn:hover .ico { transform: translateX(3px); }
