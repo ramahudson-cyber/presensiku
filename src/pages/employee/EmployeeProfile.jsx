@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
 import BottomSheet from "../../components/BottomSheet";
-import EmployeeAppBar from "../../components/EmployeeAppBar";
 import {
   Info, MapPin, FileText, Users, Database, Eye,
   Pencil, MessageCircle, Smartphone,
@@ -35,6 +35,9 @@ const T = {
   rowShadow: '0 1px 2px rgba(0,0,0,0.05)',
   iconBg: '#EEF6FF',
 };
+
+// Header hero — gradasi 4 stop dari DESIGN.md (Turquoise → Bright → Blue → Indigo)
+const HERO_GRADIENT = 'linear-gradient(165deg, #39C0DF 0%, #32ACFB 34%, #3F93FD 68%, #4A7CFB 100%)';
 
 // ── Lucide-compatible inline SVGs (stroke #2F8BF8) ──
 const icons = {
@@ -148,8 +151,16 @@ const DataItem = ({ icon: Icon, nama, isi }) => (
 export default function EmployeeProfile() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loggingOut, setLoggingOut] = useState(false);
   const [sheet, setSheet] = useState(null); // 'about' | 'privacy' | null
+
+  // Pola kembali yang sama dengan EmployeeAppBar: deep link / refresh
+  // tidak punya riwayat internal → beranda pegawai, bukan keluar aplikasi.
+  const handleBack = () => {
+    if (location.key && location.key !== "default") return navigate(-1);
+    navigate("/employee");
+  };
 
   const avatarUrl = user?.avatar_url || user?.user_metadata?.avatar_url || null;
   const initial = user?.full_name?.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() || '--';
@@ -167,41 +178,83 @@ export default function EmployeeProfile() {
   };
 
   return (
-    <div className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24" style={{ background: T.bg, color: T.text }}>
-      {/* ── HEADER — app bar biru ── */}
-      <EmployeeAppBar title="Profil Saya" />
+    <div
+      className="min-h-screen w-full font-sans absolute top-0 left-0 right-0 pb-24"
+      style={{ background: 'linear-gradient(180deg, #EEF1FB 0%, #F4F2FB 34%)', color: T.text }}
+    >
+      {/* ── HEADER HERO — biru besar, identitas di dalamnya ──
+          hero-card-bg WAJIB: override global light-mode (index.css) memaksa
+          .text-white jadi gelap; kelas ini mengembalikan teks putih. */}
+      <header
+        className="hero-card-bg relative flex flex-col items-center rounded-b-[32px] px-5 text-white"
+        style={{
+          background: HERO_GRADIENT,
+          paddingTop: 'calc(env(safe-area-inset-top, 0px) + 20px)',
+          paddingBottom: 52,
+          boxShadow: '0 8px 24px rgba(15,23,42,0.08)',
+        }}
+      >
+        {/* App bar: kembali kiri, judul tengah */}
+        <div className="relative w-full flex items-center px-1">
+          <button
+            type="button"
+            onClick={handleBack}
+            aria-label="Kembali"
+            className="grid place-items-center rounded-[13px] transition-transform active:scale-95 shrink-0"
+            style={{ width: 38, height: 38, background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.22)' }}
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <h1 className="absolute left-1/2 -translate-x-1/2 text-[17px] font-bold tracking-tight">Profil Saya</h1>
+        </div>
 
-      {/* Content */}
-      <div className="max-w-md mx-auto space-y-4 px-4 mt-6 pb-6">
-
-        {/* ─── IDENTITY CARD ─── */}
-        <Card>
-          <div className="flex items-center gap-4 px-5 pt-5 pb-4">
-            {/* Avatar */}
-            <div className="relative w-20 h-20 shrink-0 rounded-2xl p-[2.5px]"
-              style={{ background: 'linear-gradient(135deg, #2F8BF8, #1F74E0)' }}>
-              <div className="w-full h-full rounded-[14px] flex items-center justify-center overflow-hidden"
-                style={{ background: avatarUrl ? 'transparent' : T.iconBg }}>
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-[26px] font-extrabold" style={{ color: '#2F8BF8' }}>{initial}</span>
-                )}
-              </div>
-            </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-lg font-extrabold tracking-tight truncate" style={{ color: T.text }}>
-                {user?.full_name || '-'}
-              </h1>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-[0.5px] mt-1.5"
-                style={{ background: T.iconBg, border: '1px solid rgba(47,139,248,0.2)', color: '#2F8BF8' }}>
-                {icons.shield}
-                {user?.role === 'pegawai' ? 'Pegawai' : user?.role || '-'}
-              </div>
-              <p className="mt-1 text-[10px] truncate" style={{ color: T.sub }}>{user?.position || '-'}</p>
+        {/* Foto di tengah header — avatar_url Supabase, fallback inisial */}
+        <div className="mt-9">
+          <div
+            className="w-[104px] h-[104px] rounded-[28px] p-1"
+            style={{ background: 'linear-gradient(135deg, #FFFFFF, rgba(255,255,255,0.55))', boxShadow: '0 12px 28px -10px rgba(23,84,168,0.45)' }}
+          >
+            <div
+              className="w-full h-full rounded-[24px] overflow-hidden grid place-items-center"
+              style={{ background: avatarUrl ? 'transparent' : 'rgba(255,255,255,0.18)' }}
+            >
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={`Foto profil ${user?.full_name || 'pengguna'}`} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-[30px] font-extrabold text-white">{initial}</span>
+              )}
             </div>
           </div>
-        </Card>
+        </div>
+
+        {/* Identitas */}
+        <div className="text-center pt-4">
+          <h2 className="text-[20px] font-extrabold tracking-tight leading-tight" style={{ textShadow: '0 1px 8px rgba(9,44,92,0.18)' }}>
+            {user?.full_name || '-'}
+          </h2>
+          <div className="mt-2 flex items-center justify-center">
+            <span
+              className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full text-[10.5px] font-bold"
+              style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.3)' }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              {user?.role === 'pegawai' ? 'Pegawai' : user?.role || '-'}
+            </span>
+          </div>
+          <p className="mt-1.5 text-[11px]" style={{ color: 'rgba(255,255,255,0.8)' }}>{user?.position || '-'}</p>
+        </div>
+      </header>
+
+      {/* ── BOTTOM SHEET — seluruh menu terbungkus panel putih menindih header ──
+          Tindihan 46px menutup zona lengkungan sudut header (32px) agar tidak
+          ada celah latar di kiri-kanan sudut sheet. */}
+      <div className="relative z-10 max-w-md mx-auto px-3 -mt-[46px]">
+        <div
+          className="rounded-t-[28px] bg-white pt-2 px-3 pb-2"
+          style={{ boxShadow: '0 -18px 44px -18px rgba(15,23,42,0.32), inset 0 1px 0 rgba(255,255,255,0.7)' }}
+        >
+          <div className="w-10 h-1 rounded-full mx-auto mt-1 mb-1" style={{ background: 'rgba(15,23,42,0.14)' }} aria-hidden="true" />
+          <div className="space-y-3.5 pt-1 pb-3">
 
         {/* ─── INFORMASI AKUN ─── */}
         <Card>
@@ -289,6 +342,8 @@ export default function EmployeeProfile() {
           </button>
         </Card>
 
+          </div>
+        </div>
       </div>
 
       {/* ═══ SHEET: TENTANG APLIKASI ═══ */}
