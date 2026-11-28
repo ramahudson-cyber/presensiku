@@ -1461,3 +1461,49 @@ input:-webkit-autofill:active {
   }
 }
 /* ═══════════════════ AKHIR TOAST — Clean Solid ═══════════════════ */
+/* ═══════════════════ RING ANIMASI CARD HEADER PEGAWAI ═══════════════════ */
+/* Dua garis komet biru & hijau design.md berjalan memutari tepi card header.
+   Ring dipotong via mask-composite sehingga konten card tidak tersentuh.
+   Yang berputar hanya lapisan conic-gradient lewat transform — tanpa repaint
+   gradien per frame. Ukuran: ring halus 1.5px, satu putaran 6 detik. */
+.ot-header-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 26px;
+  pointer-events: none;
+  overflow: hidden;
+  padding: 1.5px;
+  background: linear-gradient(115deg,
+    rgba(47,139,248,0.22), rgba(57,192,223,0.20),
+    rgba(16,185,129,0.22), rgba(133,198,0,0.20));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+}
+
+.ot-header-ring::after {
+  content: "";
+  position: absolute;
+  inset: -60%; /* 200%+ supaya sudut tetap tertutup saat dirotasi */
+  background: conic-gradient(from 0deg,
+    transparent 0deg 30deg,
+    #2F8BF8 62deg,
+    #7FCBFF 100deg,
+    rgba(127,203,255,0) 142deg,
+    transparent 172deg 200deg,
+    #10B981 232deg,
+    #ADFF2F 268deg,
+    rgba(173,255,47,0) 308deg,
+    transparent 360deg);
+  filter: blur(1px);
+  animation: ot-ring-orbit 6s linear infinite;
+  will-change: transform;
+}
+
+@keyframes ot-ring-orbit { to { transform: rotate(1turn); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ot-header-ring::after { animation: none; opacity: 0.55; }
+}
+/* ═══════════════ AKHIR RING ANIMASI CARD HEADER PEGAWAI ═══════════════ */

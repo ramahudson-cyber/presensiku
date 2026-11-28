@@ -448,9 +448,10 @@ export default function EmployeeDashboard() {
             </div>
           </div>
 
-          {/* KARTU DI HEADER */}
-          <div className="mx-[14px] mt-3 bg-white rounded-[26px] grid"
+          {/* KARTU DI HEADER — ring animasi dipotong via mask, di luar alur grid */}
+          <div className="relative mx-[14px] mt-3 bg-white rounded-[26px] grid"
             style={{ gridTemplateColumns: '1.08fr 0.92fr', marginBottom: -130, boxShadow: '0 2px 4px rgba(0,0,0,0.04)', color: T.text }}>
+            <span className="ot-header-ring" aria-hidden="true" />
             <div className="min-w-0" style={{ padding: '15px 13px 14px 15px' }}>
               <div className="text-[31px] font-extrabold leading-none tracking-[-0.045em] tabular-nums"
                 style={{ color: T.text }}>
