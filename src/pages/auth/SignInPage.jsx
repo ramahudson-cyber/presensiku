@@ -435,7 +435,7 @@ export default function SignInPage() {
         </svg>
         {/* Identitas — hanya desktop */}
         <div className="hidden lg:flex flex-col items-center text-center">
-          <div className="text-[34px] font-extrabold tracking-[0.24em]" style={{ color: "#FFFFFF", textIndent: "0.24em" }}>
+          <div className="text-[34px] font-extrabold tracking-[0.24em]" style={{ color: "#FFFFFF", marginRight: "-0.24em" }}>
             PRESENSIKU
           </div>
           <p className="text-sm mt-3" style={{ color: "rgba(255,255,255,0.85)" }}>
