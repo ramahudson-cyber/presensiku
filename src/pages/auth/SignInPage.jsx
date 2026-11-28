@@ -439,7 +439,9 @@ export default function SignInPage() {
             PRESENSIKU
           </div>
           <p className="text-sm mt-3" style={{ color: "rgba(255,255,255,0.85)" }}>
-            Absen lebih rapi, kerja lebih tenang.
+            Absen anti ribet,
+            <br />
+            kerja makin greget!
           </p>
           <p className="text-[11px] font-bold mt-4 tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.6)" }}>
             Disiplin · Akurat · Optimal
