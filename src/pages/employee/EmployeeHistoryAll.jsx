@@ -248,8 +248,10 @@ export default function EmployeeHistoryAll() {
           />
         </div>
 
-        {/* FILTER CHIP — full-width, padding di dalam scroll, tanpa overlay */}
-        <div className="relative mt-3">
+        {/* FILTER CHIP — scroll tetap; -mx-4 menetralkan px-4 header agar tepi
+            kontainer scroll = tepi layar: chip menerus melewati tepi (ala rail chat),
+            bukan terpotong tegak di tengah udara. Padding tetap di dalam scroll. */}
+        <div className="relative mt-3 -mx-4">
           <div ref={chipsRef}
             className="no-scrollbar flex items-center gap-2 w-full overflow-x-auto pb-1 pl-4 pr-6"
             style={{ scrollSnapType: "x proximity", scrollPaddingLeft: 16 }}>
