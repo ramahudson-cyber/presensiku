@@ -56,7 +56,7 @@ function LeaveItemCard({ item, profile, onApprove, onRejectClick, processing }) 
             background: "#f4f2fb", border: "1px solid #e2e8f0",
             display: "flex", alignItems: "center", justifyContent: "center",
             color: "#0f172a", fontSize: 18, fontWeight: 800,
-            flexShrink: 0, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)",
+            flexShrink: 0, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
           }}
           aria-label={`Initial ${initial}`}
         >{initial}</div>
@@ -143,7 +143,7 @@ function LeaveItemCard({ item, profile, onApprove, onRejectClick, processing }) 
               border: "none", cursor: processing ? "wait" : "pointer",
               fontFamily: "inherit", fontSize: 15, fontWeight: 700,
               color: "#052e1b", background: "linear-gradient(180deg,#34d399,#0ea872)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.4), 0 18px 36px -10px rgba(5,150,105,0.4)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(5,150,105,0.12)",
               transition: "all .35s cubic-bezier(0.32,0.72,0,1)", opacity: processing ? 0.6 : 1,
             }}
           >
@@ -257,7 +257,7 @@ export default function LeaveManagementPage() {
       <section id="stats" aria-label="Status overview" style={{ marginBottom: 36 }}>
         <div className="leave-stats" style={{ display: "grid", gridTemplateColumns: "repeat(4,minmax(0,1fr))", gap: "14px" }}>
           <article
-            style={{ padding: "32px 26px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 20, boxShadow: "0 4px 16px rgba(15,23,42,0.06)", transition: "all .4s cubic-bezier(0.32,0.72,0,1)" }}
+            style={{ padding: "32px 26px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 20, boxShadow: "0 2px 4px rgba(0,0,0,0.04)", transition: "all .4s cubic-bezier(0.32,0.72,0,1)" }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.borderColor = "rgba(124,58,237,0.3)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "#e2e8f0"; }}
           >
@@ -268,7 +268,7 @@ export default function LeaveManagementPage() {
             <div style={{ fontSize: 13.5, color: "#94a3b8", marginTop: 6, fontVariantNumeric: "tabular-nums" }}>butuh keputusan</div>
           </article>
 
-          <article style={{ padding: "32px 26px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 20, boxShadow: "0 4px 16px rgba(15,23,42,0.06)", transition: "all .4s cubic-bezier(0.32,0.72,0,1)" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.borderColor = "rgba(5,150,105,0.3)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "#e2e8f0"; }}>
+          <article style={{ padding: "32px 26px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 20, boxShadow: "0 2px 4px rgba(0,0,0,0.04)", transition: "all .4s cubic-bezier(0.32,0.72,0,1)" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.borderColor = "rgba(5,150,105,0.3)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "#e2e8f0"; }}>
             <div style={{ fontSize: 64, fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1, fontVariantNumeric: "tabular-nums", color: "#059669" }}>{approvedCount}</div>
             <div style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: "0.14em", color: "#64748b", fontWeight: 700, marginTop: 14, display: "flex", alignItems: "center", gap: 9 }}>
               <span style={{ color: "#a7f3d0" }}><IconCheck /></span> Disetujui
@@ -276,7 +276,7 @@ export default function LeaveManagementPage() {
             <div style={{ fontSize: 13.5, color: "#94a3b8", marginTop: 6, fontVariantNumeric: "tabular-nums" }}>bulan ini</div>
           </article>
 
-          <article style={{ padding: "32px 26px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 20, boxShadow: "0 4px 16px rgba(15,23,42,0.06)", transition: "all .4s cubic-bezier(0.32,0.72,0,1)" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.borderColor = "rgba(225,29,72,0.3)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "#e2e8f0"; }}>
+          <article style={{ padding: "32px 26px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 20, boxShadow: "0 2px 4px rgba(0,0,0,0.04)", transition: "all .4s cubic-bezier(0.32,0.72,0,1)" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.borderColor = "rgba(225,29,72,0.3)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "#e2e8f0"; }}>
             <div style={{ fontSize: 64, fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1, fontVariantNumeric: "tabular-nums", color: "#e11d48" }}>{rejectedCount}</div>
             <div style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: "0.14em", color: "#64748b", fontWeight: 700, marginTop: 14, display: "flex", alignItems: "center", gap: 9 }}>
               <span style={{ color: "#fecdd3" }}><IconX /></span> Ditolak
@@ -284,7 +284,7 @@ export default function LeaveManagementPage() {
             <div style={{ fontSize: 13.5, color: "#94a3b8", marginTop: 6, fontVariantNumeric: "tabular-nums" }}>bulan ini</div>
           </article>
 
-          <article style={{ padding: "32px 26px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 20, boxShadow: "0 4px 16px rgba(15,23,42,0.06)", transition: "all .4s cubic-bezier(0.32,0.72,0,1)" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.borderColor = "rgba(245,158,11,0.35)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "#e2e8f0"; }}>
+          <article style={{ padding: "32px 26px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 20, boxShadow: "0 2px 4px rgba(0,0,0,0.04)", transition: "all .4s cubic-bezier(0.32,0.72,0,1)" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.borderColor = "rgba(245,158,11,0.35)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "#e2e8f0"; }}>
             <div style={{ fontSize: 64, fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1, fontVariantNumeric: "tabular-nums", color: "#d97706" }}>{totalDays}</div>
             <div style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: "0.14em", color: "#64748b", fontWeight: 700, marginTop: 14, display: "flex", alignItems: "center", gap: 9 }}>
               <span style={{ color: "#fde68a" }}><IconCalendar /></span> Total Hari
@@ -300,14 +300,14 @@ export default function LeaveManagementPage() {
         {/* LEFT: Ledger list */}
         <section aria-label="Permohonan menunggu" style={{
           background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 32,
-          padding: 20, boxShadow: "0 16px 44px -24px rgba(15,23,42,0.1)", overflow: "hidden",
+          padding: 20, boxShadow: "0 2px 4px rgba(0,0,0,0.04)", overflow: "hidden",
         }}>
           <div style={{
             background: "#fbfaff",
-            borderRadius: 24, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9)", overflow: "hidden",
+            borderRadius: 24, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)", overflow: "hidden",
           }}>
             <header style={{ display: "flex", alignItems: "center", gap: 16, padding: "28px 32px 22px", borderBottom: "1px solid #eef2f7" }}>
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: "#f4f2fb", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: "#0f172a", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)" }}>
+              <div style={{ width: 48, height: 48, borderRadius: 14, background: "#f4f2fb", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: "#0f172a", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)" }}>
                 <IconClipboard />
               </div>
               <div>
@@ -340,7 +340,7 @@ export default function LeaveManagementPage() {
                 </div>
               ) : items.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "72px 24px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                  <div style={{ width: 100, height: 100, borderRadius: "50%", background: "#f8fafc", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, color: "#94a3b8", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)", marginBottom: 24 }}>
+                  <div style={{ width: 100, height: 100, borderRadius: "50%", background: "#f8fafc", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, color: "#94a3b8", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)", marginBottom: 24 }}>
                     <IconClipboard />
                   </div>
                   <b style={{ fontSize: 17, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>Tidak ada permohonan</b>
@@ -373,11 +373,11 @@ export default function LeaveManagementPage() {
         <aside id="summary" aria-label="Ringkasan panel" style={{
           position: "sticky", top: 28,
           background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 32, padding: 14,
-          boxShadow: "0 16px 44px -24px rgba(15,23,42,0.1)", overflow: "hidden",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.04)", overflow: "hidden",
         }}>
-          <div style={{ background: "#fbfcfe", borderRadius: 24, padding: 28, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9)" }}>
+          <div style={{ background: "#fbfcfe", borderRadius: 24, padding: 28, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)" }}>
             <header style={{ display: "flex", alignItems: "center", gap: 16, paddingBottom: 22, borderBottom: "1px solid #eef2f7" }}>
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: "#f4f2fb", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: "#0f172a", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)" }}>
+              <div style={{ width: 48, height: 48, borderRadius: 14, background: "#f4f2fb", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: "#0f172a", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)" }}>
                 <IconChart />
               </div>
               <div>
@@ -390,11 +390,11 @@ export default function LeaveManagementPage() {
               <div
                 style={{ width: 130, height: 130, borderRadius: "50%", flexShrink: 0,
                   background: "conic-gradient(#f59e0b 0 22%,#7c3aed 22% 43%,#e2e8f0 43% 73%,#e2e8f0 73% 100%)",
-                  display: "flex", alignItems: "center", justifyContent: "center", position: "relative", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)" }}
+                  display: "flex", alignItems: "center", justifyContent: "center", position: "relative", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)" }}
                 aria-label={`Total ${items.length} permohonan: ${pendingCount} menunggu, ${approvedCount} disetujui, ${rejectedCount} ditolak`}
                 role="img"
               >
-                <div style={{ position: "absolute", inset: 12, borderRadius: "50%", background: "#ffffff", boxShadow: "inset 0 1px 3px rgba(15,23,42,0.08)" }} />
+                <div style={{ position: "absolute", inset: 12, borderRadius: "50%", background: "#ffffff", boxShadow: "inset 0 1px 3px rgba(15,23,42,0.06)" }} />
                 <b style={{ position: "relative", zIndex: 1, fontSize: 28, fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", fontVariantNumeric: "tabular-nums" }}>{items.length}</b>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 16, flex: 1 }}>
@@ -442,11 +442,11 @@ export default function LeaveManagementPage() {
             style={{
               width: "100%", maxWidth: 500,
               background: "#ffffff", border: "1px solid #e2e8f0",
-              borderRadius: 34, padding: 12, boxShadow: "0 40px 90px -30px rgba(15,23,42,0.35)",
+              borderRadius: 34, padding: 12, boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
               animation: "rise .45s cubic-bezier(0.32,0.72,0,1) both",
             }}
           >
-            <div style={{ background: "#fbfcfe", borderRadius: 26, padding: 30, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9)" }}>
+            <div style={{ background: "#fbfcfe", borderRadius: 26, padding: 30, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)" }}>
               <h3 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.15, color: "#0f172a" }}>Tolak Permohonan</h3>
               <p style={{ fontSize: 14, color: "#64748b", marginTop: 8 }}>
                 Pegawai: <b style={{ color: "#0f172a", fontWeight: 700 }}>{rejectModal.name}</b>
@@ -488,11 +488,11 @@ export default function LeaveManagementPage() {
                     flex: 1, padding: "14px 20px", borderRadius: 9999, border: "none",
                     cursor: processing ? "wait" : "pointer", fontSize: 14.5, fontWeight: 600,
                     background: "linear-gradient(180deg,#fb7185,#e11d48)", color: "#fff",
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35), 0 18px 36px -10px rgba(225,29,72,0.4)",
+                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(225,29,72,0.12)",
                     opacity: processing ? 0.6 : 1, transition: "all .35s cubic-bezier(0.32,0.72,0,1)",
                   }}
-                  onMouseEnter={(e) => { if (!processing) { e.currentTarget.style.boxShadow = "inset 0 1px 0 rgba(255,255,255,0.35), 0 28px 50px -10px rgba(225,29,72,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; } }}
-                  onMouseLeave={(e) => { if (!processing) { e.currentTarget.style.boxShadow = "inset 0 1px 0 rgba(255,255,255,0.35), 0 18px 36px -10px rgba(225,29,72,0.4)"; e.currentTarget.style.transform = "translateY(0)"; } }}
+                  onMouseEnter={(e) => { if (!processing) { e.currentTarget.style.boxShadow = "inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(225,29,72,0.12)"; e.currentTarget.style.transform = "translateY(-2px)"; } }}
+                  onMouseLeave={(e) => { if (!processing) { e.currentTarget.style.boxShadow = "inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(225,29,72,0.12)"; e.currentTarget.style.transform = "translateY(0)"; } }}
                 >{processing ? "Menolak..." : "Tolak Permohonan"}</button>
               </div>
             </div>
@@ -507,7 +507,7 @@ export default function LeaveManagementPage() {
           padding: "12px 24px", borderRadius: 18,
           background: "rgba(5,150,105,0.08)", border: "1px solid rgba(5,150,105,0.22)",
           color: "#059669", fontSize: 14, fontWeight: 600,
-          boxShadow: "0 8px 32px rgba(15,23,42,0.15)",
+          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
           animation: "rise .45s cubic-bezier(0.32,0.72,0,1) both",
         }}>
           <IconCheck /> {successToast}

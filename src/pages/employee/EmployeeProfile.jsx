@@ -30,9 +30,9 @@ const T = {
   textSec: '#475569',
   textMuted: '#94A3B8',
   sub: '#6B7280',
-  shadow: '0 4px 16px rgba(15,23,42,0.06)',
+  shadow: '0 2px 4px rgba(0,0,0,0.04)',
   rowBg: 'rgba(15,23,42,0.02)',
-  rowShadow: '0 1px 3px rgba(0,0,0,0.06)',
+  rowShadow: '0 1px 2px rgba(0,0,0,0.05)',
   iconBg: '#EEF6FF',
 };
 

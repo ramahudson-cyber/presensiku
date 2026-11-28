@@ -440,7 +440,7 @@ export default function EmployeeSchedule() {
           style={{ left: 24, right: -8, top: 12, bottom: -10, borderRadius: 26, opacity: 0.5 }} />
         <div ref={cardRef}
           className="relative bg-white overflow-hidden cursor-grab active:cursor-grabbing"
-          style={{ borderRadius: 28, padding: "16px 14px 14px", boxShadow: "0 22px 48px rgba(4, 26, 74, 0.42)" }}>
+          style={{ borderRadius: 28, padding: "16px 14px 14px", boxShadow: "0 2px 4px rgba(0,0,0,0.04)" }}>
           <div className="relative text-center text-[20px] font-extrabold m-0"
             style={{ letterSpacing: "-0.02em", color: T.text, lineHeight: 1.1, marginTop: -4, marginBottom: 14 }}>
             {MONTHS[month]} {year}
@@ -469,9 +469,9 @@ export default function EmployeeSchedule() {
                         background: shiftColor || undefined,
                         boxShadow: isSel
                           ? shiftColor
-                            ? "0 0 0 2.5px #0F172A, 0 8px 18px -6px rgba(4,26,74,0.45)"
+                            ? "0 0 0 2.5px #0F172A, 0 1px 2px rgba(0,0,0,0.05)"
                             : "0 0 0 2.5px #0F172A"
-                          : shiftColor ? `0 6px 14px -7px ${shiftColor}b3` : null,
+                          : shiftColor ? `0 1px 2px ${shiftColor}1f` : null,
                       }}>
                       <span className="text-[13.5px] leading-none"
                         style={{
@@ -499,7 +499,7 @@ export default function EmployeeSchedule() {
 
       {/* ── PREMIUM CARD: shift hari ini (hitam) + keterangan warna (putih) ── */}
       <div className="mx-4 mt-3 relative rounded-[26px] overflow-hidden"
-        style={{ background: "#101828", boxShadow: "0 16px 36px rgba(4,26,74,0.42)" }}>
+        style={{ background: "#101828", boxShadow: "0 2px 4px rgba(0,0,0,0.04)" }}>
         <div className="flex items-center justify-between gap-3 px-[18px] pt-4 pb-4">
           <div className="min-w-0">
             <span className="block text-[9.5px] font-bold" style={{ color: "rgba(255,255,255,0.92)" }}>
@@ -524,7 +524,7 @@ export default function EmployeeSchedule() {
           )}
         </div>
         <div className="bg-white rounded-[26px] px-4 pt-3 pb-3"
-          style={{ boxShadow: "0 -8px 24px rgba(4,26,74,0.18)" }}>
+          style={{ boxShadow: "0 2px 4px rgba(0,0,0,0.04)" }}>
           <p className="m-0 text-[11px] font-extrabold" style={{ color: T.textMuted }}>
             Keterangan warna shift · {MONTHS[month]} {year}
           </p>
@@ -629,7 +629,7 @@ export default function EmployeeSchedule() {
               className={`relative bg-white rounded-[18px] animate-popover-in ${popup.placement === "top" ? "origin-bottom" : "origin-top"}`}
               style={{
                 border: "1px solid rgba(15,23,42,0.07)",
-                boxShadow: "0 18px 44px -14px rgba(15,23,42,0.38), 0 4px 12px rgba(15,23,42,0.06)",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
               }}>
               <div className="px-3.5 pt-3 pb-2.5">
                 <p className="m-0 text-[9.5px] font-bold uppercase" style={{ color: T.textMuted, letterSpacing: "0.05em" }}>

@@ -42,7 +42,7 @@ export default function EmployeeAppBar({ title, right = null, onBack, size = "md
         color: "#FFFFFF",
         // +28px memberi ruang dari status bar / tepi atas layar.
         paddingTop: compact ? "calc(env(safe-area-inset-top, 0px) + 10px)" : "calc(env(safe-area-inset-top, 0px) + 28px)",
-        boxShadow: "0 2px 12px rgba(153,0,204,0.28)",
+        boxShadow: "0 1px 2px rgba(153,0,204,0.12)",
       }}
     >
       <div className="relative flex items-center px-2" style={{ minHeight: compact ? 36 : 48, paddingBottom: compact ? 12 : 16 }}>

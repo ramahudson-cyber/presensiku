@@ -1056,7 +1056,7 @@ export default function AttendancePage() {
         </div>
         <div className="pointer-events-auto space-y-2">
           {/* Location Card — ungu + jam server */}
-          <div className="hero-card-bg rounded-[18px] p-3.5 border border-white/20 shadow-[0_8px_24px_rgba(138,0,204,0.35)] text-white"
+          <div className="hero-card-bg rounded-[18px] p-3.5 border border-white/20 shadow-[0_2px_4px_rgba(138,0,204,0.08)] text-white"
             style={{ background: "linear-gradient(135deg, #2F8BF8 0%, #1F74E0 100%)" }}>
             {/* Row 1: Location + Status Pill */}
             <div className="flex items-center justify-between">
@@ -1080,7 +1080,7 @@ export default function AttendancePage() {
                   : "bg-white/15 border border-white/25"
               }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${
-                  locationStatus === "valid" ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)] animate-breathe" :
+                  locationStatus === "valid" ? "bg-emerald-500 shadow-[0_1px_2px_rgba(16,185,129,0.08)] animate-breathe" :
                   locationStatus === "invalid" ? "bg-red-300" : "bg-white/50"
                 }`}></span>
                 <span className={`text-[8px] font-bold uppercase tracking-[0.3px] ${
@@ -1106,7 +1106,7 @@ export default function AttendancePage() {
                   <span className="text-[9px] font-bold text-white/70 uppercase tracking-[0.5px]">WITA</span>
                   {serverTime ? (
                     <>
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-yellow shadow-[0_0_6px_rgba(173,255,47,0.6)] animate-breathe"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-yellow shadow-[0_1px_2px_rgba(173,255,47,0.08)] animate-breathe"></span>
                       <span className="text-[9px] font-semibold text-white/70">Tersinkron {syncTimeStr}</span>
                     </>
                   ) : (
@@ -1123,7 +1123,7 @@ export default function AttendancePage() {
           {/* Status IZIN/SAKIT — pengganti fingerprint saat cuti khusus */}
           {todayAttendance && (todayAttendance.attendance_status === "izin" || todayAttendance.attendance_status === "sakit") && (
             <div className="pointer-events-auto flex flex-col items-center gap-3 mt-auto pb-16">
-              <div className="w-[120px] h-[120px] rounded-full bg-gradient-to-br from-[#2F8BF8] via-[#1F74E0] to-[#1D6FD0] flex flex-col items-center justify-center shadow-[0_0_40px_rgba(47,139,248,0.35)]">
+              <div className="w-[120px] h-[120px] rounded-full bg-gradient-to-br from-[#2F8BF8] via-[#1F74E0] to-[#1D6FD0] flex flex-col items-center justify-center shadow-[0_1px_2px_rgba(47,139,248,0.08)]">
                 <span className="text-[22px] font-extrabold tracking-wide text-white hero-card-bg">
                   {todayAttendance.attendance_status === "izin" ? "IZIN" : "SAKIT"}
                 </span>
@@ -1140,7 +1140,7 @@ export default function AttendancePage() {
           {/* Status SANGGAH — pengganti fingerprint saat hari ini teratasi sanggahan */}
           {isSanggahCorrected && (
             <div className="pointer-events-auto flex flex-col items-center gap-3 mt-auto pb-16">
-              <div className="w-[120px] h-[120px] rounded-full bg-gradient-to-br from-[#2F8BF8] via-[#1F74E0] to-[#1D6FD0] flex flex-col items-center justify-center shadow-[0_0_40px_rgba(47,139,248,0.35)]">
+              <div className="w-[120px] h-[120px] rounded-full bg-gradient-to-br from-[#2F8BF8] via-[#1F74E0] to-[#1D6FD0] flex flex-col items-center justify-center shadow-[0_1px_2px_rgba(47,139,248,0.08)]">
                 <span className="text-[22px] font-extrabold tracking-wide text-white hero-card-bg">
                   Koreksi
                 </span>
@@ -1237,7 +1237,7 @@ export default function AttendancePage() {
         <div className="pb-2">
           <div className="flex flex-col items-center text-center gap-3 mb-4">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-white hero-card-bg"
-              style={{ background: 'linear-gradient(145deg, #32ACFB 0%, #2F8BF8 50%, #1F74E0 100%)', boxShadow: '0 10px 30px rgba(47,139,248,0.35)' }}>
+              style={{ background: 'linear-gradient(145deg, #32ACFB 0%, #2F8BF8 50%, #1F74E0 100%)', boxShadow: '0 1px 2px rgba(47,139,248,0.12)' }}>
               <Sunset size={28} />
             </div>
             <div>
@@ -1269,7 +1269,7 @@ export default function AttendancePage() {
               onClick={() => { setShowCheckoutConfirm(false); handleCheckOut(); }}
               disabled={saving}
               className="flex-1 py-3 rounded-full text-white text-sm font-bold transition-all active:scale-95 disabled:opacity-50"
-              style={{ background: 'linear-gradient(145deg, #32ACFB 0%, #2F8BF8 50%, #1F74E0 100%)', boxShadow: '0 8px 24px rgba(47,139,248,0.35)' }}
+              style={{ background: 'linear-gradient(145deg, #32ACFB 0%, #2F8BF8 50%, #1F74E0 100%)', boxShadow: '0 1px 2px rgba(47,139,248,0.12)' }}
             >
               {saving ? "Menyimpan..." : "Ya, Absen Pulang"}
             </button>
@@ -1289,7 +1289,7 @@ export default function AttendancePage() {
       {showScheduleAlert && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
              onClick={() => setShowScheduleAlert(false)}>
-          <div className="relative w-full max-w-sm rounded-3xl bg-white border border-slate-200 overflow-hidden shadow-[0_20px_60px_rgba(15,23,42,0.18)] animate-slide-up"
+          <div className="relative w-full max-w-sm rounded-3xl bg-white border border-slate-200 overflow-hidden shadow-[0_2px_4px_rgba(15,23,42,0.08)] animate-slide-up"
                onClick={e => e.stopPropagation()}>
             {/* Gradient orbs */}
             <div className="absolute top-[-60px] right-[-60px] w-[180px] h-[180px] rounded-full bg-[radial-gradient(circle,rgba(47,139,248,0.10)_0%,transparent_70%)] pointer-events-none"></div>
@@ -1310,9 +1310,9 @@ export default function AttendancePage() {
             <div className="relative px-7 pt-12 pb-7 flex flex-col items-center text-center">
               {/* Icon */}
               <div className="relative mb-5">
-                <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ boxShadow: '0 0 0 0 rgba(47,139,248,0.3)', animationDuration: '2s' }}></div>
+                <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ boxShadow: '0 1px 2px rgba(47,139,248,0.12)', animationDuration: '2s' }}></div>
                 <div className="relative w-20 h-20 rounded-2xl flex items-center justify-center bg-[linear-gradient(135deg,rgba(47,139,248,0.15)_0%,rgba(31,116,224,0.1)_100%)] border border-[rgba(47,139,248,0.25)]">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2F8BF8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 12px rgba(47,139,248,0.4))' }}>
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2F8BF8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 1px 2px rgba(47,139,248,0.12))' }}>
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                     <line x1="16" y1="2" x2="16" y2="6"/>
                     <line x1="8" y1="2" x2="8" y2="6"/>
@@ -1335,7 +1335,7 @@ export default function AttendancePage() {
 
               {/* Tutup button */}
               <button onClick={() => setShowScheduleAlert(false)}
-                className="w-full py-3.5 px-6 rounded-xl text-white font-bold text-sm tracking-wide shadow-lg active:scale-[0.97] transition-all duration-150 bg-[linear-gradient(135deg,#2F8BF8,#1F74E0,#1D6FD0)] hover:shadow-[0_0_40px_rgba(47,139,248,0.4)] hover:scale-[1.02]">
+                className="w-full py-3.5 px-6 rounded-xl text-white font-bold text-sm tracking-wide shadow-lg active:scale-[0.97] transition-all duration-150 bg-[linear-gradient(135deg,#2F8BF8,#1F74E0,#1D6FD0)] hover:shadow-[0_1px_2px_rgba(47,139,248,0.08)] hover:scale-[1.02]">
                 Tutup
               </button>
             </div>

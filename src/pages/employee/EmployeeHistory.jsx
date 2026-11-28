@@ -221,7 +221,7 @@ export default function EmployeeHistory() {
     background: "#fff",
     borderRadius: 20,
     border: "1px solid #EEF2F9",
-    boxShadow: "0 8px 22px -16px rgba(15,23,42,0.35)",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
   };
 
   const COLORS = {
@@ -310,7 +310,7 @@ export default function EmployeeHistory() {
           <div className="relative">
             <button type="button" onClick={() => setMonthPicker((v) => !v)}
               className="inline-flex items-center gap-2.5 pl-3.5 pr-3 py-2.5 rounded-full active:scale-[0.98] transition"
-              style={{ background: "#fff", boxShadow: "0 10px 26px -10px rgba(15,23,42,0.45)" }}>
+              style={{ background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2F8BF8" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="3.4" />
                 <path d="M16 2v4M8 2v4M3 10h18" />
@@ -464,7 +464,7 @@ export default function EmployeeHistory() {
                                 height: c.height,
                                 borderRadius: "12px 12px 7px 7px",
                                 background: c.value > 0 ? BAR_GRAD[c.key] : "#E7EDF5",
-                                boxShadow: c.value > 0 ? "0 10px 18px -12px rgba(15,23,42,0.5)" : "none",
+                                boxShadow: c.value > 0 ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
                                 animationDelay: `${i * 70}ms`,
                               }} />
                           </div>

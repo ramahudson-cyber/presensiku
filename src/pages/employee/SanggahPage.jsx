@@ -17,7 +17,7 @@ const T = {
   blue: '#2F8BF8', blueDeep: '#1F74E0',
   bg: '#F4F2FB', surface: '#FFFFFF', border: 'rgba(31,41,55,0.08)', div: '#F1F5F9',
   text: '#0F172A', textSec: '#475569', textMuted: '#94A3B8', iconBg: '#EEF6FF',
-  shadow: '0 4px 16px rgba(15,23,42,0.06)',
+  shadow: '0 2px 4px rgba(0,0,0,0.04)',
 };
 
 // Jenis sanggahan (snake_case — whitelist server), ikon persis preview
@@ -368,7 +368,7 @@ export default function SanggahPage() {
           position: "sticky", top: 0, zIndex: 20, background: "#2F8BF8",
           padding: "calc(env(safe-area-inset-top) + 10px) 16px 12px",
           display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
-          boxShadow: "0 4px 16px rgba(47,139,248,0.25)",
+          boxShadow: "0 1px 2px rgba(47,139,248,0.12)",
         }}
       >
         <button
@@ -503,7 +503,7 @@ export default function SanggahPage() {
                       border: `1px solid ${on ? T.blue : T.border}`,
                       background: on ? T.blue : T.surface,
                       color: on ? "#FFFFFF" : T.textSec,
-                      boxShadow: on ? "0 6px 14px -5px rgba(47,139,248,0.5)" : "none",
+                      boxShadow: on ? "0 1px 2px rgba(47,139,248,0.12)" : "none",
                     }}
                   >
                     {f.label}
@@ -664,7 +664,7 @@ export default function SanggahPage() {
             className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-md flex flex-col overflow-hidden"
             style={{
               height: "min(94dvh, 800px)", background: "#FFFFFF",
-              borderRadius: "28px 28px 0 0", boxShadow: "0 -10px 34px rgba(15,23,42,0.14)",
+              borderRadius: "28px 28px 0 0", boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
             }}>
             <div className="flex justify-center pt-2.5 pb-1 cursor-pointer" onClick={() => setSheetOpen(false)} aria-hidden="true">
               <span className="rounded-full" style={{ width: 44, height: 5, background: "#E2E8F0" }} />
@@ -792,7 +792,7 @@ export default function SanggahPage() {
               <button
                 type="button" onClick={handleSubmit} disabled={submitting}
                 className="w-full border-none rounded-full py-[15px] text-sm font-extrabold text-white flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
-                style={{ background: "linear-gradient(135deg, #2F8BF8, #1F74E0)", boxShadow: "0 12px 28px -8px rgba(47,139,248,0.55)", fontFamily: "inherit" }}>
+                style={{ background: "linear-gradient(135deg, #2F8BF8, #1F74E0)", boxShadow: "0 1px 2px rgba(47,139,248,0.12)", fontFamily: "inherit" }}>
                 {submitting ? <Loader2 size={16} className="animate-spin" /> : (
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2 11 13M22 2 15 22l-4-9-9-4Z" /></svg>
                 )}

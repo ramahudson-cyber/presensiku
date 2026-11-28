@@ -86,7 +86,7 @@ export default function OvertimeRulesPage() {
                         position: "relative", zIndex: 1,
                         width: 28, height: 28, borderRadius: "50%", background: "#fff",
                         border: "1px solid rgba(47,139,248,0.24)", color: OT.brand,
-                        fontSize: 11, fontWeight: 800, boxShadow: "0 1px 3px rgba(15,23,42,0.05)",
+                        fontSize: 11, fontWeight: 800, boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                       }}>{i + 1}</span>
                       <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.6, color: OT.textSec, paddingTop: 4 }}>{text}</p>
                     </li>

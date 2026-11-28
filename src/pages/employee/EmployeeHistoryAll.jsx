@@ -244,7 +244,7 @@ export default function EmployeeHistoryAll() {
             value={searchQ}
             onChange={(e) => setSearchQ(e.target.value)}
             placeholder="Cari tanggal atau status…"
-            className="w-full rounded-[16px] bg-white pl-10 pr-3.5 py-2.5 text-[13.5px] font-semibold text-slate-800 placeholder:text-slate-400 outline-none shadow-[0_8px_20px_-10px_rgba(15,23,42,.35)]"
+            className="w-full rounded-[16px] bg-white pl-10 pr-3.5 py-2.5 text-[13.5px] font-semibold text-slate-800 placeholder:text-slate-400 outline-none shadow-[0_1px_2px_rgba(15,23,42,.08)]"
           />
         </div>
 
@@ -278,7 +278,7 @@ export default function EmployeeHistoryAll() {
           <div className="relative">
             <button type="button" onClick={() => setMonthPicker((v) => !v)}
               className="inline-flex items-center gap-2.5 pl-3.5 pr-3 py-2.5 rounded-full active:scale-[0.98] transition"
-              style={{ background: "#fff", boxShadow: "0 10px 26px -10px rgba(15,23,42,0.45)" }}>
+              style={{ background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2F8BF8" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="3.4" />
                 <path d="M16 2v4M8 2v4M3 10h18" />
@@ -318,7 +318,7 @@ export default function EmployeeHistoryAll() {
         </div>
 
         {/* Kontainer scroll di dalam sheet */}
-        <div className="h-full bg-white rounded-t-[28px] shadow-[0_-10px_34px_rgba(15,23,42,0.14)] overflow-y-auto no-scrollbar">
+        <div className="h-full bg-white rounded-t-[28px] shadow-[0_2px_4px_rgba(15,23,42,0.08)] overflow-y-auto no-scrollbar">
         <div className="flex justify-center pt-3.5 pb-1">
           <span className="block rounded-full" style={{ width: 42, height: 5, background: "#E2E8F0" }} />
         </div>

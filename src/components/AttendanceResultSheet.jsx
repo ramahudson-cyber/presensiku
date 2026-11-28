@@ -47,7 +47,7 @@ const SEAL_PATH =
 function SuccessSeal() {
   return (
     <svg width="86" height="86" viewBox="0 0 100 100" aria-hidden="true"
-      style={{ display: "block", filter: "drop-shadow(0 8px 18px rgba(47,139,248,0.26))" }}>
+      style={{ display: "block", filter: "drop-shadow(0 1px 2px rgba(47,139,248,0.12))" }}>
       <path d={SEAL_PATH} fill="#2F8BF8" />
       <path d="M31 51 L44 64 L69 38" fill="none" stroke="#FFFFFF" strokeWidth="6"
         strokeLinecap="round" strokeLinejoin="round" className="seal-check" />
@@ -232,7 +232,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
               borderRadius: "28px 28px 0 0",
               background: "#FFFFFF",
               border: "1px solid rgba(31,41,55,0.08)",
-              boxShadow: "0 -10px 40px rgba(15,23,42,0.12)",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
               position: "relative", overflow: "hidden",
             }}
           >
@@ -381,7 +381,7 @@ export default function AttendanceResultSheet({ open, onClose, data, type, shift
                   background: "#1F74E0", border: "none", borderRadius: 16,
                   color: "#FFFFFF", fontSize: 14.5, fontWeight: 700,
                   fontFamily: "inherit", letterSpacing: "0.01em", cursor: "pointer",
-                  boxShadow: "0 8px 20px rgba(31,116,224,0.26)",
+                  boxShadow: "0 1px 2px rgba(31,116,224,0.12)",
                   transition: "transform 0.16s ease, background 0.16s ease",
                 }}
               >

@@ -451,7 +451,7 @@ export default function SignInPage() {
 
       {/* SHEET/KANAN +-65% — putih; mobile: sheet, desktop: panel kanan */}
       <div
-        className="relative z-10 flex flex-col overflow-hidden flex-[65_1_0%] min-h-0 -mt-6 rounded-t-[32px] bg-white shadow-[0_-10px_34px_rgba(15,23,42,0.14)] lg:flex-1 lg:w-1/2 lg:h-screen lg:mt-0 lg:rounded-none"
+        className="relative z-10 flex flex-col overflow-hidden flex-[65_1_0%] min-h-0 -mt-6 rounded-t-[32px] bg-white shadow-[0_2px_4px_rgba(15,23,42,0.08)] lg:flex-1 lg:w-1/2 lg:h-screen lg:mt-0 lg:rounded-none"
       >
         <div className="flex justify-center pt-2.5 pb-1 shrink-0 lg:hidden">
           <span className="block rounded-full" style={{ width: 42, height: 5, background: "#E2E8F0" }} />
@@ -459,7 +459,7 @@ export default function SignInPage() {
         <div className="flex-1 min-h-0 overflow-y-auto px-5 sm:px-7 pb-6 lg:overflow-visible lg:px-14 lg:flex lg:flex-col lg:justify-center lg:bg-[#F6F8FC]">
           {/* CARD — desktop: form login & OTP dalam kartu di atas latar abu muda;
               mobile tetap full-bleed di sheet putih */}
-          <div className="w-full lg:max-w-[440px] lg:mx-auto lg:p-9 lg:rounded-[26px] lg:bg-white lg:border lg:border-slate-100 lg:shadow-[0_24px_56px_-30px_rgba(15,23,42,0.28)]">
+          <div className="w-full lg:max-w-[440px] lg:mx-auto lg:p-9 lg:rounded-[26px] lg:bg-white lg:border lg:border-slate-100 lg:shadow-[0_2px_4px_rgba(15,23,42,0.08)]">
             {/* LOGIN STEP */}
             {step === "login" && (
               <>
@@ -626,7 +626,7 @@ export default function SignInPage() {
 
                   <div
                     className="w-full py-3.5 sm:py-4 px-8 rounded-full text-pure-white font-bold text-sm flex items-center justify-center gap-2.5"
-                    style={{ background: "linear-gradient(135deg, #39C0DF 0%, #2F8BF8 55%, #4A7CFB 100%)", boxShadow: "0 10px 24px -8px rgba(47,139,248,0.55)" }}
+                    style={{ background: "linear-gradient(135deg, #39C0DF 0%, #2F8BF8 55%, #4A7CFB 100%)", boxShadow: "0 1px 2px rgba(47,139,248,0.12)" }}
                   >
                     <button
                       type="submit"
@@ -797,7 +797,7 @@ export default function SignInPage() {
           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-fade-in">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <div className="relative z-10 w-full max-w-sm rounded-[28px] border border-white/10 p-7 text-center animate-slide-up"
-              style={{ background: 'linear-gradient(160deg, #2A1745 0%, #17102B 100%)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}>
+              style={{ background: 'linear-gradient(160deg, #2A1745 0%, #17102B 100%)', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
               <div className="w-14 h-14 rounded-full bg-rose-500/15 flex items-center justify-center mx-auto mb-4">
                 <XCircle size={28} className="text-rose-400" />
               </div>

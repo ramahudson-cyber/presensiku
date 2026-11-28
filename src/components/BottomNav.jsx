@@ -147,7 +147,7 @@ export default function BottomNav({ hidden = false }) {
               <NavLink
                 to={centerPath}
                 aria-label="Buka presensi"
-                className="hero-card-bg flex h-16 w-16 items-center justify-center rounded-full border-4 border-white text-3xl shadow-lg shadow-black/10"
+                className="hero-card-bg flex h-16 w-16 items-center justify-center rounded-full border-4 border-white text-3xl shadow-[0_1px_2px_rgba(0,0,0,0.08)]"
                 style={{ background: "linear-gradient(135deg, #2F8BF8, #1F74E0)", color: "#ffffff" }}
               >
                 <FingerprintPattern size={28} className="text-white" />
@@ -162,7 +162,7 @@ export default function BottomNav({ hidden = false }) {
         )}
 
         <div
-          className={`grid w-full items-stretch rounded-t-3xl border-t border-gray-100 px-2 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] sm:px-4 ${
+          className={`grid w-full items-stretch rounded-t-3xl border-t border-gray-100 px-2 shadow-[0_2px_4px_rgba(0,0,0,0.08)] sm:px-4 ${
             hasCenter
               ? "h-[85px] grid-cols-[minmax(0,1fr)_4rem_minmax(0,1fr)]"
               : "h-[68px] grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"

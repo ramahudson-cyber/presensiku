@@ -324,7 +324,7 @@ const EmployeesPage = () => {
             onClick={(e) => e.stopPropagation()}
             data-no-ptr
             className="relative z-10 w-full max-w-xl max-h-[92vh] overflow-y-auto rounded-t-[28px] md:rounded-3xl mt-auto md:mt-0 animate-slide-up md:animate-fade-in"
-            style={{ background: '#F4F2FB', border: '1px solid rgba(31,41,55,0.08)', boxShadow: '0 20px 60px rgba(15,23,42,0.18)' }}
+            style={{ background: '#F4F2FB', border: '1px solid rgba(31,41,55,0.08)', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}
           >
             <div
               className="flex items-center justify-between p-5 md:p-6 sticky top-0 z-10 backdrop-blur-md"
@@ -349,7 +349,7 @@ const EmployeesPage = () => {
               {/* Kartu 1 — Akun & Akses */}
               <div
                 className="rounded-3xl p-5"
-                style={{ background: '#FFFFFF', border: '1px solid rgba(31,41,55,0.08)', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' }}
+                style={{ background: '#FFFFFF', border: '1px solid rgba(31,41,55,0.08)', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}
               >
                 <div className="flex items-center gap-2.5 mb-3">
                   <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #2F8BF8, #3B82F6)' }} />
@@ -408,7 +408,7 @@ const EmployeesPage = () => {
               {/* Kartu 2 — Data Pegawai */}
               <div
                 className="rounded-3xl p-5"
-                style={{ background: '#FFFFFF', border: '1px solid rgba(31,41,55,0.08)', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' }}
+                style={{ background: '#FFFFFF', border: '1px solid rgba(31,41,55,0.08)', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}
               >
                 <div className="flex items-center gap-2.5 mb-3">
                   <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg, #2F8BF8, #3B82F6)' }} />
@@ -469,7 +469,7 @@ const EmployeesPage = () => {
 
               <div
                 className="flex gap-3 sticky bottom-0 z-10 -mx-5 md:-mx-6 px-5 md:px-6 pt-3 pb-4 backdrop-blur-md"
-                style={{ background: 'rgba(244,242,251,0.95)', boxShadow: '0 -8px 24px rgba(15,23,42,0.06)' }}
+                style={{ background: 'rgba(244,242,251,0.95)', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
               >
                 <button
                   type="button" onClick={resetForm}
@@ -481,7 +481,7 @@ const EmployeesPage = () => {
                 <button
                   type="submit" disabled={loading}
                   className="flex-1 py-2.5 rounded-full text-sm font-bold text-white transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
-                  style={{ background: 'linear-gradient(135deg, #2F8BF8, #1F74E0)', boxShadow: '0 6px 18px rgba(47,139,248,0.3)' }}
+                  style={{ background: 'linear-gradient(135deg, #2F8BF8, #1F74E0)', boxShadow: '0 1px 2px rgba(47,139,248,0.12)' }}
                 >
                   {loading && <RefreshCwIconSpinning />}
                   {loading ? 'Menyimpan...' : formData.id ? 'Update' : 'Simpan'}

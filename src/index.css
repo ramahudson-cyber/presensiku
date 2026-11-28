@@ -242,7 +242,7 @@ html, body, #root {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-cards);
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 .design-modal-header {
   display: flex;
@@ -817,7 +817,7 @@ textarea::placeholder { color: #94a3b8; }
 .admin-light .design-modal {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 .admin-light .design-modal-header { border-bottom-color: #e2e8f0; }
 

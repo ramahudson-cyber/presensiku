@@ -332,7 +332,7 @@ export default function EmployeeDashboard() {
                 <Skeleton dark width={88} height={20} radius={999} />
               </div>
               <div className="mx-[14px] mt-3 bg-white rounded-[26px] grid"
-                style={{ gridTemplateColumns: '1.08fr 0.92fr', marginBottom: -130, boxShadow: '0 18px 40px rgba(9,33,84,0.20)' }}>
+                style={{ gridTemplateColumns: '1.08fr 0.92fr', marginBottom: -130, boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
                 <div className="min-w-0" style={{ padding: '18px 13px 14px 15px', display: 'grid', gap: 12, alignContent: 'start' }}>
                   <Skeleton width={128} height={30} />
                   <Skeleton width={150} height={10} />
@@ -450,7 +450,7 @@ export default function EmployeeDashboard() {
 
           {/* KARTU DI HEADER */}
           <div className="mx-[14px] mt-3 bg-white rounded-[26px] grid"
-            style={{ gridTemplateColumns: '1.08fr 0.92fr', marginBottom: -130, boxShadow: '0 18px 40px rgba(9,33,84,0.20)', color: T.text }}>
+            style={{ gridTemplateColumns: '1.08fr 0.92fr', marginBottom: -130, boxShadow: '0 2px 4px rgba(0,0,0,0.04)', color: T.text }}>
             <div className="min-w-0" style={{ padding: '15px 13px 14px 15px' }}>
               <div className="text-[31px] font-extrabold leading-none tracking-[-0.045em] tabular-nums"
                 style={{ color: T.text }}>
@@ -461,7 +461,7 @@ export default function EmployeeDashboard() {
               </div>
               <Link to="/employee/attendance"
                 className="mt-3 w-full h-[42px] rounded-full flex items-center justify-center gap-1 whitespace-nowrap text-white text-[11px] font-extrabold active:scale-[0.98] transition"
-                style={{ background: 'linear-gradient(135deg, #2F8BF8 0%, #1F6FE8 100%)', boxShadow: '0 4px 10px rgba(47,139,248,0.25)', padding: '0 6px' }}>
+                style={{ background: 'linear-gradient(135deg, #2F8BF8 0%, #1F6FE8 100%)', boxShadow: '0 1px 2px rgba(47,139,248,0.12)', padding: '0 6px' }}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
                   <path d="M12 4.5a7.5 7.5 0 0 0-7.5 7.5v3" /><path d="M12 4.5A7.5 7.5 0 0 1 19.5 12v4.5" />
                   <path d="M12 8a4 4 0 0 0-4 4v5" /><path d="M12 8a4 4 0 0 1 4 4v5.5" />
@@ -550,7 +550,7 @@ export default function EmployeeDashboard() {
             return (
               <>
                 <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white hero-card-bg"
-                  style={{ background: '#000000', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
+                  style={{ background: '#000000', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
                   <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
                     <Sun size={13} /> Masuk
                   </div>
@@ -561,7 +561,7 @@ export default function EmployeeDashboard() {
                   </div>
                 </div>
                 <div className="hero-card-bg rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-black/20"
-                  style={{ background: '#000000', color: '#FFFFFF', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
+                  style={{ background: '#000000', color: '#FFFFFF', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
                   <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
                     <Sunset size={13} /> Pulang
                   </div>
@@ -578,7 +578,7 @@ export default function EmployeeDashboard() {
           {isSanggahToday && (
             <>
               <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white hero-card-bg"
-                style={{ background: '#000000', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
+                style={{ background: '#000000', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
                 <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
                   <Sun size={13} /> Masuk
                 </div>
@@ -589,7 +589,7 @@ export default function EmployeeDashboard() {
                 </div>
               </div>
               <div className="hero-card-bg rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-black/20"
-                style={{ background: '#000000', color: '#FFFFFF', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
+                style={{ background: '#000000', color: '#FFFFFF', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
                 <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
                   <Sunset size={13} /> Pulang
                 </div>
@@ -605,7 +605,7 @@ export default function EmployeeDashboard() {
           <>
           {/* MASUK — solid black, senada dengan card Pulang */}
           <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg text-white hero-card-bg"
-            style={{ background: '#000000', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
+            style={{ background: '#000000', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
             <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
               <Sun size={13} /> Masuk
             </div>
@@ -637,7 +637,7 @@ export default function EmployeeDashboard() {
 
           {/* PULANG — solid black for high-contrast readability */}
           <div className="rounded-3xl p-5 relative overflow-hidden shadow-lg shadow-black/20"
-            style={{ background: '#000000', color: '#FFFFFF', boxShadow: '0 6px 20px rgba(0,0,0,0.2)' }}>
+            style={{ background: '#000000', color: '#FFFFFF', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
             <div className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-3 flex items-center gap-1.5">
               <Sunset size={13} /> Pulang
             </div>
@@ -690,7 +690,7 @@ export default function EmployeeDashboard() {
             { to: "/employee/profile", icon: User, label: "Profil" },
           ].map((item) => (
             <Link key={item.to} to={item.to} className="flex flex-col items-center gap-2.5 py-1 group">
-              <span className="hero-card-bg relative w-16 h-16 rounded-[22px] flex items-center justify-center shadow-[0_6px_16px_rgba(47,139,248,0.28)] transition-transform group-hover:-translate-y-0.5 group-active:scale-95"
+              <span className="hero-card-bg relative w-16 h-16 rounded-[22px] flex items-center justify-center shadow-[0_1px_2px_rgba(47,139,248,0.08)] transition-transform group-hover:-translate-y-0.5 group-active:scale-95"
                 style={{ background: 'linear-gradient(135deg, #2F8BF8 0%, #1F74E0 100%)' }}>
                 <item.icon size={30} strokeWidth={2} className="text-white" />
                 {item.badge && unreadNotif > 0 && (

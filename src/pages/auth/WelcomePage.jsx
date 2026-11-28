@@ -240,7 +240,7 @@ const PREMIUM_STYLES = `
     letter-spacing: 0.3em;
     text-indent: 0.3em;
     color: #fff;
-    filter: drop-shadow(0 2px 18px rgba(0,0,0,0.25));
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.08));
   }
   .tagline {
     margin-top: 18px;

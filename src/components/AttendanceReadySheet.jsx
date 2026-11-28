@@ -103,7 +103,7 @@ export default function AttendanceReadySheet({
         transition: "transform 560ms cubic-bezier(.22,1.12,.36,1)",
         willChange: "transform",
         borderTop: `1px solid ${T.border}`,
-        boxShadow: "0 -14px 40px -18px rgba(15,23,42,0.28)",
+        boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
       }}
     >
       {/* ── Aksi utama: sidik jari menonjol di tepi atas sheet ── */}
@@ -128,7 +128,7 @@ export default function AttendanceReadySheet({
               // Tombol selalu biru: hijau khusus menandakan aksi yang SUDAH
               // tercatat (dipakai AttendanceResultSheet), bukan aksi pulang.
               background: `linear-gradient(158deg, #4E9EF4 0%, ${T.blue} 52%, ${T.blueDeep} 100%)`,
-              boxShadow: "0 18px 30px -14px rgba(24,84,168,0.72), inset 0 1px 0 rgba(255,255,255,0.34), inset 0 -8px 14px -8px rgba(9,44,92,0.4)",
+              boxShadow: "0 1px 2px rgba(24,84,168,0.12), inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -8px 14px -8px rgba(9,44,92,0.06)",
             }}
           >
             {saving || !onAction ? (
@@ -174,7 +174,7 @@ export default function AttendanceReadySheet({
           <div className="mt-3.5 flex items-center gap-3 p-3 rounded-[16px]"
             style={{ background: T.blueTint, border: "1px solid rgba(47,139,248,0.14)" }}>
             <span className="w-8 h-8 rounded-[10px] bg-white flex items-center justify-center shrink-0"
-              style={{ color: T.blueDeep, boxShadow: "0 2px 6px rgba(15,23,42,0.06)" }}>
+              style={{ color: T.blueDeep, boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
               <ClockIco size={15} />
             </span>
             <div className="min-w-0 flex-1">

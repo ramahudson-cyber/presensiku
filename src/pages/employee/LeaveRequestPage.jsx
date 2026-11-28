@@ -24,8 +24,8 @@ const T = {
   textSec: "#475569",
   textMuted: "#94A3B8",
   sub: "#6B7280",
-  shadow: "0 4px 16px rgba(15,23,42,0.06)",
-  shadowLg: "0 8px 24px rgba(15,23,42,0.08)",
+  shadow: "0 1px 2px rgba(0,0,0,0.05)",
+  shadowLg: "0 2px 4px rgba(0,0,0,0.04)",
   rowBg: "rgba(15,23,42,0.02)",
   iconBg: "#EEF6FF",
   blue: "#2F8BF8",
@@ -319,7 +319,7 @@ export default function LeaveRequestPage() {
           position: "sticky", top: 0, zIndex: 20, background: "#2F8BF8",
           padding: "calc(env(safe-area-inset-top) + 10px) 16px 12px",
           display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
-          boxShadow: "0 4px 16px rgba(47,139,248,0.25)",
+          boxShadow: "0 1px 2px rgba(47,139,248,0.12)",
         }}
       >
         <button style={backBtn} aria-label="Kembali" onClick={() => navigate(-1)}>
@@ -413,7 +413,7 @@ export default function LeaveRequestPage() {
               style={{
                 ...typeCardBase,
                 ...(formType === "sakit"
-                  ? { borderColor: "rgba(239,68,68,0.55)", background: "#FEF2F2", boxShadow: "0 6px 16px -6px rgba(239,68,68,0.25)" }
+                  ? { borderColor: "rgba(239,68,68,0.55)", background: "#FEF2F2", boxShadow: "0 1px 2px rgba(239,68,68,0.12)" }
                   : {}),
               }}
             >
@@ -428,7 +428,7 @@ export default function LeaveRequestPage() {
                 </div>
                 <span style={{
                   width: 20, height: 20, borderRadius: "50%", color: "#fff",
-                  boxShadow: "0 2px 6px rgba(15,23,42,0.2)", background: T.red,
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.05)", background: T.red,
                   display: formType === "sakit" ? "flex" : "none", alignItems: "center", justifyContent: "center",
                 }}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
@@ -448,7 +448,7 @@ export default function LeaveRequestPage() {
               style={{
                 ...typeCardBase,
                 ...(formType === "izin"
-                  ? { borderColor: "rgba(47,139,248,0.55)", background: "#EFF6FF", boxShadow: "0 6px 16px -6px rgba(47,139,248,0.28)" }
+                  ? { borderColor: "rgba(47,139,248,0.55)", background: "#EFF6FF", boxShadow: "0 1px 2px rgba(47,139,248,0.12)" }
                   : {}),
               }}
             >
@@ -463,7 +463,7 @@ export default function LeaveRequestPage() {
                 </div>
                 <span style={{
                   width: 20, height: 20, borderRadius: "50%", color: "#fff",
-                  boxShadow: "0 2px 6px rgba(15,23,42,0.2)", background: T.blue,
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.05)", background: T.blue,
                   display: formType === "izin" ? "flex" : "none", alignItems: "center", justifyContent: "center",
                 }}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
@@ -503,7 +503,7 @@ export default function LeaveRequestPage() {
               <span style={{
                 flex: "none", fontSize: 10, fontWeight: 800, color: "#FFFFFF",
                 background: durInvalid ? T.red : T.blue, borderRadius: 9999, padding: "5px 11px",
-                boxShadow: durInvalid ? "0 4px 10px -3px rgba(239,68,68,0.45)" : "0 4px 10px -3px rgba(47,139,248,0.45)",
+                boxShadow: durInvalid ? "0 1px 2px rgba(239,68,68,0.12)" : "0 1px 2px rgba(47,139,248,0.12)",
                 whiteSpace: "nowrap",
               }}>
                 {durBadgeText}
@@ -633,7 +633,7 @@ export default function LeaveRequestPage() {
                   cursor: loading ? "wait" : "pointer", fontFamily: "inherit", fontSize: 13,
                   fontWeight: 800, color: "#fff",
                   background: `linear-gradient(135deg,${T.blue},${T.blueDeep})`,
-                  boxShadow: "0 10px 24px -8px rgba(47,139,248,0.5)",
+                  boxShadow: "0 1px 2px rgba(47,139,248,0.12)",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                   transition: `transform .25s ${T.ease}, box-shadow .25s`, opacity: loading ? 0.7 : 1,
                 }}
@@ -663,7 +663,7 @@ export default function LeaveRequestPage() {
         <div style={{
           position: "relative", overflow: "hidden", borderRadius: 24, padding: 16,
           background: T.hero, color: "#fff",
-          boxShadow: "0 10px 26px -12px rgba(47,139,248,0.55)",
+          boxShadow: "0 1px 2px rgba(47,139,248,0.12)",
         }}>
           <div style={{
             position: "absolute", right: -20, bottom: -30, width: 110, height: 110,
@@ -755,7 +755,7 @@ export default function LeaveRequestPage() {
               style={{
                 background: T.blue, border: "none", color: "#fff", fontSize: 12, fontWeight: 600,
                 fontFamily: "inherit", borderRadius: 9999, padding: "8px 24px", cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(47,139,248,0.35)",
+                boxShadow: "0 1px 2px rgba(47,139,248,0.12)",
               }}
             >
               Coba Lagi
@@ -796,7 +796,7 @@ export default function LeaveRequestPage() {
                 background: `linear-gradient(135deg,${T.blue},${T.blueDeep})`, color: "#fff",
                 border: "none", borderRadius: 9999, padding: "11px 22px",
                 fontSize: 12.5, fontWeight: 700, fontFamily: "inherit", cursor: "pointer",
-                boxShadow: "0 10px 24px -8px rgba(47,139,248,0.5)",
+                boxShadow: "0 1px 2px rgba(47,139,248,0.12)",
               }}
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round">

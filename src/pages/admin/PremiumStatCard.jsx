@@ -15,7 +15,7 @@ const PhotoStack = ({ users = [], max = 4 }) => {
   return (
     <div className="flex flex-row-reverse items-center flex-shrink-0">
       {visibleUsers.map((u, i) => (
-        <div key={u.id || i} className={`item w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs text-white border-2 border-white -ml-2 shadow-md flex-shrink-0 overflow-hidden ${u.avatar_url ? "bg-white/10" : getColor(u.full_name?.charAt(0))}`}>
+        <div key={u.id || i} className={`item w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs text-white border-2 border-white -ml-2 shadow-[0_1px_2px_rgba(0,0,0,0.08)] flex-shrink-0 overflow-hidden ${u.avatar_url ? "bg-white/10" : getColor(u.full_name?.charAt(0))}`}>
           {u.avatar_url ? (
             <img src={u.avatar_url} alt={u.full_name || "Pegawai"} className="w-full h-full object-cover" />
           ) : (
@@ -65,14 +65,14 @@ export function PremiumStatCard({ title, sub, value, users, trendValue, trendDir
   }
 
   return (
-    <div className="relative min-h-[178px] rounded-[28px] border border-slate-200/70 bg-white p-5 overflow-hidden shadow-[0_4px_16px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#2F8BF8]/30 hover:shadow-[0_12px_32px_rgba(47,139,248,0.12)] font-['Inter',ui-sans-serif,system-ui]">
+    <div className="relative min-h-[178px] rounded-[28px] border border-slate-200/70 bg-white p-5 overflow-hidden shadow-[0_2px_4px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#2F8BF8]/30 hover:shadow-[0_2px_4px_rgba(47,139,248,0.08)] font-['Inter',ui-sans-serif,system-ui]">
       <div className="absolute -right-12 -top-14 h-36 w-36 rounded-full bg-gradient-to-br from-[#2F8BF8]/8 to-transparent blur-2xl"></div>
       <div className="relative z-10 flex justify-between items-start">
         <div>
           <div className="text-[11px] font-black text-slate-900 uppercase tracking-[0.18em]">{title}</div>
           <div className="text-xs text-slate-500 mt-1 font-semibold">{sub}</div>
         </div>
-        <div className={`h-11 w-11 rounded-2xl bg-gradient-to-br ${meta.accent} grid place-items-center shadow-lg`}>
+        <div className={`h-11 w-11 rounded-2xl bg-gradient-to-br ${meta.accent} grid place-items-center shadow-[0_1px_2px_rgba(0,0,0,0.08)]`}>
           <Icon size={20} strokeWidth={1.9} className="text-white" />
         </div>
       </div>

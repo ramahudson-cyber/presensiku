@@ -165,7 +165,7 @@ export default function OvertimeRequestSheet({ open, onClose, onSubmitted }) {
         style={{
           height: "min(92dvh, 790px)",
           borderRadius: "28px 28px 0 0",
-          boxShadow: "0 -10px 34px rgba(15,23,42,0.14)",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
           outline: "none",
         }}>
         <div className="flex justify-center pt-2.5 pb-1 cursor-pointer" onClick={onClose} aria-hidden="true">
@@ -203,7 +203,7 @@ export default function OvertimeRequestSheet({ open, onClose, onSubmitted }) {
                   flex: "none", fontSize: 10, fontWeight: 800, color: "#FFFFFF",
                   background: durationError ? "#EF4444" : durationReady ? "#10B981" : OT.brand,
                   borderRadius: 999, padding: "5px 11px", whiteSpace: "nowrap",
-                  boxShadow: "0 4px 10px -3px rgba(47,139,248,0.45)",
+                  boxShadow: "0 1px 2px rgba(47,139,248,0.12)",
                 }}>{durationBadge}</span>
               </div>
 
@@ -256,7 +256,7 @@ export default function OvertimeRequestSheet({ open, onClose, onSubmitted }) {
                     <img src={photo.url} alt="Pratinjau dokumentasi kegiatan" className="w-full h-full object-cover" />
                     <button type="button" onClick={clearPhoto} aria-label="Hapus foto dokumentasi"
                       className="absolute flex items-center justify-center rounded-full text-white active:scale-95 transition"
-                      style={{ top: 7, right: 7, width: 24, height: 24, background: "#29406C", boxShadow: "0 2px 6px rgba(15,23,42,0.25)" }}>
+                      style={{ top: 7, right: 7, width: 24, height: 24, background: "#29406C", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
                       <Icon.close size={12} sw={2.2} />
                     </button>
                   </div>
@@ -296,7 +296,7 @@ export default function OvertimeRequestSheet({ open, onClose, onSubmitted }) {
             style={{
               height: 46, border: "none", fontSize: 13.5, fontWeight: 700,
               background: "linear-gradient(135deg, #2F8BF8, #1F74E0)",
-              boxShadow: "0 6px 16px rgba(47,139,248,0.24)", cursor: saving ? "wait" : "pointer",
+              boxShadow: "0 1px 2px rgba(47,139,248,0.12)", cursor: saving ? "wait" : "pointer",
             }}>
             <Icon.send size={16} sw={1.8} />
             {saving ? "Mengirim..." : "Kirim Pengajuan"}
@@ -318,7 +318,7 @@ export default function OvertimeRequestSheet({ open, onClose, onSubmitted }) {
               marginTop: 22, width: "100%", maxWidth: 250, height: 46, border: "none",
               fontSize: 13.5, fontWeight: 700,
               background: "linear-gradient(135deg, #2F8BF8, #1F74E0)",
-              boxShadow: "0 6px 16px rgba(47,139,248,0.24)",
+              boxShadow: "0 1px 2px rgba(47,139,248,0.12)",
             }}>
             Selesai
           </button>

@@ -15,7 +15,7 @@ import {
 
 function StatCard({ title, value, subtitle, icon: Icon, accent = "from-[#2F8BF8] to-[#4A7CFB]", loading }) {
   return (
-    <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_4px_16px_rgba(15,23,42,0.06)] hover:scale-[1.02] hover:border-[#2F8BF8]/30 transition-all duration-300">
+    <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_2px_4px_rgba(15,23,42,0.06)] hover:scale-[1.02] hover:border-[#2F8BF8]/30 transition-all duration-300">
       <div className="flex items-start justify-between gap-2 md:gap-3">
         <div className="min-w-0">
           <p className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider truncate">{title}</p>
@@ -26,7 +26,7 @@ function StatCard({ title, value, subtitle, icon: Icon, accent = "from-[#2F8BF8]
           )}
           <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 sm:mt-2 truncate">{subtitle}</p>
         </div>
-        <div className={`p-2 sm:p-3 rounded-2xl bg-gradient-to-br ${accent} text-white shadow-lg shrink-0`}>
+        <div className={`p-2 sm:p-3 rounded-2xl bg-gradient-to-br ${accent} text-white shadow-[0_1px_2px_rgba(0,0,0,0.08)] shrink-0`}>
           <Icon size={16} className="sm:w-5 sm:h-5" />
         </div>
       </div>
@@ -319,7 +319,7 @@ export default function KepalaUnitDashboard() {
 
         {/* Profile Section */}
         <div className="text-center">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-white/40 to-white/10 border-2 border-white/40 shadow-xl flex items-center justify-center">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-white/40 to-white/10 border-2 border-white/40 shadow-[0_1px_2px_rgba(0,0,0,0.08)] flex items-center justify-center">
             <span className="text-3xl sm:text-4xl font-bold text-white">{userInitial}</span>
           </div>
           <div className="text-white/60 text-xs sm:text-sm font-medium mt-2 sm:mt-3">Selamat datang,</div>
@@ -338,7 +338,7 @@ export default function KepalaUnitDashboard() {
         <div className="flex justify-end mb-3">
           <button
             onClick={fetchDashboardData}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200/80 text-slate-600 rounded-full text-xs shadow-sm hover:bg-slate-50 transition-all duration-200"
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200/80 text-slate-600 rounded-full text-xs shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:bg-slate-50 transition-all duration-200"
           >
             <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
             Refresh
@@ -355,7 +355,7 @@ export default function KepalaUnitDashboard() {
 
         {/* Grafik + Pengumuman */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5 mt-3 sm:mt-4 md:mt-6">
-          <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_4px_16px_rgba(15,23,42,0.06)] lg:col-span-2">
+          <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_2px_4px_rgba(15,23,42,0.06)] lg:col-span-2">
             <div className="flex items-center justify-between mb-3 md:mb-6">
               <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Grafik Presensi 7 Hari</h2>
               <div className="flex items-center gap-2 text-xs text-slate-500">
@@ -373,7 +373,7 @@ export default function KepalaUnitDashboard() {
                     <div
                       className={`w-full rounded-t-lg md:rounded-t-xl transition-all duration-300 group-hover:scale-105 ${
                         isToday
-                          ? "bg-gradient-to-t from-electric-violet to-periwinkle-glow shadow-lg"
+                          ? "bg-gradient-to-t from-electric-violet to-periwinkle-glow shadow-[0_1px_2px_rgba(0,0,0,0.08)]"
                           : "bg-gradient-to-t from-blue-300 to-blue-200 group-hover:from-blue-400 group-hover:to-blue-300"
                       }`}
                       style={{ height: `${(val / maxWeekly) * 100}%`, minHeight: val > 0 ? "6px" : "0" }}
@@ -387,7 +387,7 @@ export default function KepalaUnitDashboard() {
             </div>
           </div>
 
-          <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_4px_16px_rgba(15,23,42,0.06)]">
+          <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_2px_4px_rgba(15,23,42,0.06)]">
             <div className="flex items-center justify-between mb-3 md:mb-4">
               <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Pengumuman</h2>
               <div className="p-1.5 rounded-lg bg-[#EEF6FF]">
@@ -428,7 +428,7 @@ export default function KepalaUnitDashboard() {
         </div>
 
         {/* Tabel Absensi Terkini */}
-        <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_4px_16px_rgba(15,23,42,0.06)] mt-3 sm:mt-4 md:mt-6">
+        <div className="p-4 sm:p-5 md:p-6 bg-white border border-slate-200/70 rounded-2xl shadow-[0_2px_4px_rgba(15,23,42,0.06)] mt-3 sm:mt-4 md:mt-6">
           <div className="flex items-center justify-between mb-3 md:mb-4">
             <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Absensi Terkini Hari Ini</h2>
             <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-slate-500">

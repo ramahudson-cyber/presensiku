@@ -16,8 +16,8 @@ export const OT = {
   brand: "#2F8BF8",
   brandDark: "#1F74E0",
   iconBg: "#EEF6FF",
-  shadow: "0 4px 16px rgba(15,23,42,0.06)",
-  rowShadow: "0 1px 3px rgba(0,0,0,0.06)",
+  shadow: "0 2px 4px rgba(0,0,0,0.04)",
+  rowShadow: "0 1px 2px rgba(0,0,0,0.05)",
 };
 
 export const STATUS = {
@@ -251,7 +251,7 @@ export function MonthMenu({ value, onChange, options, tone = "brand" }) {
           position: "absolute", right: 0, top: "calc(100% + 8px)", zIndex: 40,
           width: 168, maxHeight: 232, overflowY: "auto",
           background: "#fff", borderRadius: 16, border: `1px solid ${OT.border}`,
-          boxShadow: "0 12px 32px -12px rgba(15,23,42,0.28)", padding: 6,
+          boxShadow: "0 1px 2px rgba(0,0,0,0.05)", padding: 6,
         }}>
           {options.map((key) => (
             <button key={key} type="button"
