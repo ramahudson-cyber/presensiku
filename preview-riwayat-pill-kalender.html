@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="id" data-zcode-design>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — Pill Kalender Riwayat Disamakan</title>
+<style>
+  :root{
+    --ink:#0F172A; --sec:#475569; --muted:#64748B; --line:#F1F5F9;
+    --brand:#2F8BF8; --deep:#1F74E0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Urbanist',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:
+      radial-gradient(880px 420px at 8% -10%, #E6EFFF 0%, rgba(230,239,255,0) 62%),
+      #EDF2F9;
+    padding:34px 20px 64px;min-height:100%;
+  }
+  .wrap{max-width:1120px;margin:0 auto;min-width:0}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#1E3A8A;background:#E0ECFF;border:1px solid #BFDBFE;border-radius:999px;padding:5px 12px}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 3px rgba(47,139,248,.18)}
+  h1{font-size:clamp(1.34rem,2.4vw,1.68rem);font-weight:800;letter-spacing:-.03em;line-height:1.35;margin-top:14px}
+  .lead{max-width:74ch;margin-top:10px;font-size:.94rem;line-height:1.7;color:#54657D}
+  .lead b{color:#1E2A3D}
+
+  .stage{display:flex;flex-wrap:wrap;gap:26px;margin-top:28px;align-items:flex-start}
+  .phone{width:390px;max-width:100%;border-radius:34px;overflow:hidden;background:#EEF3FB;box-shadow:0 20px 50px -24px rgba(15,23,42,.4);border:1px solid rgba(15,23,42,.06)}
+  .cap{font-size:13px;font-weight:800;color:#334155;text-align:center;margin-top:12px}
+  .cap span{color:#64748B;font-weight:600}
+
+  .hdr{position:relative;background:linear-gradient(135deg,#2F8BF8 0%,#1F74E0 100%);padding:14px 16px 46px;color:#fff}
+  .hdr .top{display:flex;align-items:center;justify-content:space-between}
+  .back{width:40px;height:40px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none;box-shadow:0 4px 14px -6px rgba(15,23,42,.3)}
+  .hdr h2{font-size:17.5px;font-weight:800;letter-spacing:-.01em;text-align:center;flex:1}
+  .hdr .sp{width:40px;flex:none}
+  .srch{margin-top:14px;background:#fff;border-radius:16px;display:flex;align-items:center;gap:9px;padding:11px 14px;box-shadow:0 8px 20px -10px rgba(15,23,42,.35)}
+  .srch svg{flex:none;width:16px;height:16px;stroke:var(--muted);stroke-width:2.2;fill:none;stroke-linecap:round}
+  .srch .ph{font-size:14px;font-weight:600;color:#64748B}
+  .chips{display:flex;gap:8px;margin-top:12px;overflow:hidden;padding:2px 2px 4px}
+  .chip{flex:none;font-size:13px;font-weight:800;border-radius:999px;padding:9px 18px;background:rgba(255,255,255,.16);color:#fff;white-space:nowrap}
+  .chip.on{background:#fff;color:var(--deep)}
+
+  /* pill kalender baru — sama dengan Riwayat Kehadiran */
+  .sheet{position:relative;margin-top:-24px;background:#fff;border-radius:28px 28px 0 0;min-height:520px;padding:26px 0 20px}
+  .pillrow{position:absolute;left:0;right:0;top:-17px;display:flex;justify-content:center;z-index:30}
+  .pillwrap{position:relative}
+  .pill{display:inline-flex;align-items:center;gap:10px;padding:10px 12px 10px 14px;border-radius:999px;background:#fff;box-shadow:0 10px 26px -10px rgba(15,23,42,.45);border:0;cursor:pointer}
+  .pill .cal{width:17px;height:17px;stroke:var(--brand);stroke-width:2.1;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .pill .lbl{font-size:14px;font-weight:800;color:#0F172A;letter-spacing:-.01em}
+  .pill .chev{width:14px;height:14px;stroke:#64748B;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .pillwrap.open .chev{transform:rotate(180deg)}
+
+  .menu{position:absolute;left:50%;transform:translateX(-50%);top:calc(100% + 8px);width:224px;background:#fff;border-radius:16px;border:1px solid var(--line);box-shadow:0 25px 50px -12px rgba(15,23,42,.25);padding:6px 0;z-index:40;text-align:left}
+  .menu .k{padding:4px 14px;font-size:9.5px;font-weight:800;letter-spacing:.14em;color:#94A3B8}
+  .menu .now{display:block;width:100%;padding:8px 14px;font-size:12.5px;font-weight:600;color:var(--brand);background:none;border:0;cursor:pointer;text-align:left}
+  .menu .div{height:1px;background:var(--line);margin:4px 0}
+  .menu .mlist{max-height:224px;overflow:hidden}
+  .mrow{display:flex;align-items:center;justify-content:space-between;width:100%;padding:6px 14px;font-size:12px;background:none;border:0;cursor:pointer;color:#475569;font-weight:500}
+  .mrow.on{color:var(--brand);font-weight:800}
+  .mrow .yr{display:flex;align-items:center;gap:2px;color:#94A3B8;font-size:10px;font-weight:500}
+  .mrow .yr b{padding:0 4px}
+
+  .grab{width:42px;height:5px;border-radius:999px;background:#E2E8F0;margin:0 auto 4px}
+  .rows{margin-top:2px}
+  .row{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .date{flex:none;display:flex;flex-direction:column;align-items:center;line-height:1.15;width:44px}
+  .date .d1{font-size:12px;font-weight:600;color:var(--muted)}
+  .date .d2{font-size:19px;font-weight:800;color:#1E293B;margin:2px 0}
+  .date .d3{font-size:12px;font-weight:600;color:var(--muted)}
+  .sep{width:1px;height:36px;background:#E2E8F0;flex:none}
+  .ric{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff}
+  .ric svg{width:17px;height:17px;stroke-width:3;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
+  .ric.ok{background:#F59E0B}
+  .ric.no{background:#EF4444}
+  .body{min-width:0;flex:1}
+  .body .t{display:block;font-size:14.5px;font-weight:800;letter-spacing:-.01em}
+  .body .d{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-top:3px}
+  .bdg{flex:none;font-size:12px;font-weight:800;border-radius:999px;padding:4px 10px;white-space:nowrap}
+  .bdg.late{background:#FEF3C7;color:#B45309}
+  .bdg.alpha{background:#FEE2E2;color:#B91C1C}
+
+  .notes{flex:1;min-width:300px;max-width:560px}
+  .notes .k{font-size:12.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#64748B}
+  .notes h2{font-size:1.08rem;font-weight:800;letter-spacing:-.02em;margin-top:8px;color:#0F172A}
+  .notes ul{list-style:none;margin-top:14px;display:grid;gap:11px}
+  .notes li{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;line-height:1.68;color:#4A5A70}
+  .notes li .n{width:21px;height:21px;border-radius:7px;background:#fff;border:1px solid #E2E8F0;display:grid;place-items:center;flex:none;font-size:12px;font-weight:800;color:#1E3A8A;margin-top:1px}
+  .notes li b{color:#0F172A}
+  .divider{height:1px;background:#E2E8F0;margin:18px 0}
+  .cmp{display:grid;gap:8px;margin-top:8px}
+  .cmp .r{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:7px 0;border-bottom:1px solid #EDF1F7}
+  .cmp .r span{color:#64748B;font-weight:700}
+  .cmp .r b{font-weight:800;color:#0F172A}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow"><span class="dot"></span>Preview · Riwayat Absensi</span>
+  <h1>Pill Kalender Disamakan dengan Riwayat Kehadiran</h1>
+  <p class="lead">
+    Dua perubahan: <b>teks "Periode November 2026" dihapus</b> (bulan sudah terlihat di pill),
+    dan <b>pill kalender memakai desain yang sama</b> dengan halaman Riwayat Kehadiran —
+    pill putih dengan ikon kalender biru, teks tebal, dan dropdown berisi "Bulan ini" + daftar bulan dengan pilih tahun.
+  </p>
+
+  <div class="stage">
+    <div>
+      <div class="phone">
+        <div class="hdr">
+          <div class="top">
+            <span class="back"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#2F8BF8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span>
+            <h2>Riwayat Absensi</h2>
+            <span class="sp"></span>
+          </div>
+          <div class="srch">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <span class="ph">Cari tanggal atau status…</span>
+          </div>
+          <div class="chips">
+            <span class="chip on">Semua</span><span class="chip">Hadir</span><span class="chip">Izin</span><span class="chip">Sakit</span><span class="chip">Alpha</span>
+          </div>
+        </div>
+
+        <div class="sheet">
+          <div class="pillrow">
+            <div class="pillwrap">
+              <button class="pill" type="button">
+                <svg class="cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3.4"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                <span class="lbl">November 2026</span>
+                <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="grab"></div>
+          <div class="rows">
+            <div class="row">
+              <span class="date"><span class="d1">Jum</span><span class="d2">27</span><span class="d3">Nov</span></span>
+              <span class="sep"></span>
+              <span class="ric no"><svg viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></span>
+              <span class="body"><span class="t">Alpha</span><span class="d">--.--</span></span>
+              <span class="bdg alpha">Alpha</span>
+            </div>
+            <div class="row">
+              <span class="date"><span class="d1">Min</span><span class="d2">22</span><span class="d3">Nov</span></span>
+              <span class="sep"></span>
+              <span class="ric ok"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+              <span class="body"><span class="t">Terlambat</span><span class="d">09.52 – --</span></span>
+              <span class="bdg late">Terlambat 4 menit</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="cap">Keadaan tertutup — <span>teks "Periode …" hilang, langsung daftar</span></p>
+    </div>
+
+    <div>
+      <div class="phone">
+        <div class="hdr">
+          <div class="top">
+            <span class="back"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#2F8BF8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span>
+            <h2>Riwayat Absensi</h2>
+            <span class="sp"></span>
+          </div>
+          <div class="srch">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <span class="ph">Cari tanggal atau status…</span>
+          </div>
+          <div class="chips">
+            <span class="chip on">Semua</span><span class="chip">Hadir</span><span class="chip">Izin</span><span class="chip">Sakit</span><span class="chip">Alpha</span>
+          </div>
+        </div>
+
+        <div class="sheet">
+          <div class="pillrow">
+            <div class="pillwrap open">
+              <button class="pill" type="button">
+                <svg class="cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3.4"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                <span class="lbl">November 2026</span>
+                <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div class="menu">
+                <div class="k">BULAN INI</div>
+                <button class="now" type="button">November 2026</button>
+                <div class="div"></div>
+                <div class="mlist">
+                  <button class="mrow" type="button">Januari<span class="yr"><b>‹</b>2026<b>›</b></span></button>
+                  <button class="mrow" type="button">Februari<span class="yr"><b>‹</b>2026<b>›</b></span></button>
+                  <button class="mrow" type="button">Maret<span class="yr"><b>‹</b>2026<b>›</b></span></button>
+                  <button class="mrow" type="button">April<span class="yr"><b>‹</b>2026<b>›</b></span></button>
+                  <button class="mrow" type="button">Mei<span class="yr"><b>‹</b>2026<b>›</b></span></button>
+                  <button class="mrow" type="button">Juni<span class="yr"><b>‹</b>2026<b>›</b></span></button>
+                  <button class="mrow" type="button">Juli<span class="yr"><b>‹</b>2026<b>›</b></span></button>
+                  <button class="mrow" type="button">Agustus<span class="yr"><b>‹</b>2026<b>›</b></span></button>
+                  <button class="mrow" type="button">September<span class="yr"><b>‹</b>2026<b>›</b></span></button>
+                  <button class="mrow" type="button">Oktober<span class="yr"><b>‹</b>2026<b>›</b></span></button>
+                  <button class="mrow on" type="button">November<span class="yr"><b>‹</b>2026<b>›</b></span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="grab"></div>
+        </div>
+      </div>
+      <p class="cap">Keadaan terbuka — <span>"Bulan ini" + daftar bulan, pilih tahun ‹ 2026 ›</span></p>
+    </div>
+
+    <aside class="notes">
+      <div class="k">Yang berubah</div>
+      <h2>Satu desain pill untuk dua halaman riwayat</h2>
+      <ul>
+        <li><span class="n">1</span><span><b>Teks "Periode November 2026" dihapus.</b> Duplikat dari pill — bulan sudah terlihat di atas. Saat mencari, hitungan "N hasil" tetap muncul.</span></li>
+        <li><span class="n">2</span><span><b>Pill putih + ikon kalender biru.</b> Sama persis dengan halaman Riwayat Kehadiran: ikon kalender, teks tebal gelap, panah yang berputar saat terbuka.</span></li>
+        <li><span class="n">3</span><span><b>Dropdown lebih lengkap.</b> Ada pintasan "Bulan ini", daftar 12 bulan, dan tombol ganti tahun ‹ 2026 › — sebelumnya hanya daftar bulan-bulan terakhir.</span></li>
+        <li><span class="n">4</span><span><b>Perilaku sama dengan halaman lain.</b> Pilih bulan langsung memuat ulang data bulan tersebut dari database.</span></li>
+      </ul>
+
+      <div class="divider"></div>
+      <div class="k">Perbandingan</div>
+      <div class="cmp">
+        <div class="r"><span>Pill dulu</span><b>Kecil, teks biru muda 11.5px</b></div>
+        <div class="r"><span>Pill sekarang</span><b>Putih + ikon kalender, teks tebal 14px</b></div>
+        <div class="r"><span>Teks "Periode …"</span><b>Dihapus (sudah ada di pill)</b></div>
+        <div class="r"><span>Dropdown</span><b>"Bulan ini" + pilih tahun, sama dengan Riwayat Kehadiran</b></div>
+      </div>
+    </aside>
+  </div>
+</div>
+</body>
+</html>

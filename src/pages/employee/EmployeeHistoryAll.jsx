@@ -9,7 +9,6 @@ import {
 import { shiftLabel } from "../../lib/shiftName";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
-import { MonthMenu, monthOptions, currentMonthKey } from "./overtime/overtimeUi";
 import Skeleton from "../../components/Skeleton";
 import { Search } from "lucide-react";
 
@@ -87,12 +86,7 @@ export default function EmployeeHistoryAll() {
   const [detail, setDetail] = useState(null);
 
   const periodLabel = `${MONTHS[month]} ${year}`;
-  const monthKey = `${year}-${String(month + 1).padStart(2, "0")}`;
-  const setMonthKey = (key) => {
-    const [y, m] = key.split("-").map(Number);
-    setYear(y);
-    setMonth(m - 1);
-  };
+  const [monthPicker, setMonthPicker] = useState(false);
 
   const load = async () => {
     if (!user?.id) return;
@@ -277,9 +271,48 @@ export default function EmployeeHistoryAll() {
 
       {/* SHEET PUTIH — pembungkus tanpa overflow agar pill di tepi atas tidak terpotong */}
       <div className="relative flex-1 min-h-0 z-10 -mt-6">
-        <div className="absolute left-0 right-0 flex justify-center" style={{ top: -17, zIndex: 20 }}>
-          <MonthMenu value={monthKey} onChange={setMonthKey}
-            options={monthOptions(rows, currentMonthKey())} tone="soft" />
+        {/* PILL BULAN — desain sama dengan halaman Riwayat Kehadiran (EmployeeHistory) */}
+        <div className="absolute inset-x-0 flex justify-center" style={{ top: -17, zIndex: 30 }}>
+          <div className="relative">
+            <button type="button" onClick={() => setMonthPicker((v) => !v)}
+              className="inline-flex items-center gap-2.5 pl-3.5 pr-3 py-2.5 rounded-full active:scale-[0.98] transition"
+              style={{ background: "#fff", boxShadow: "0 10px 26px -10px rgba(15,23,42,0.45)" }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2F8BF8" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="3.4" />
+                <path d="M16 2v4M8 2v4M3 10h18" />
+              </svg>
+              <span className="text-[14px] font-extrabold text-slate-900 tracking-tight">{periodLabel}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" style={{ transform: monthPicker ? "rotate(180deg)" : "none", transition: "transform .2s" }}>
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+
+            {monthPicker && (
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-1.5 z-40">
+                <p className="px-3.5 py-1 text-[9.5px] font-bold tracking-widest text-slate-400">Bulan ini</p>
+                <button type="button" onClick={() => { setMonth(nowParts.month - 1); setYear(nowParts.year); setMonthPicker(false); }}
+                  className="w-full px-3.5 py-2 text-left text-[12.5px] font-semibold transition"
+                  style={{ color: "#2F8BF8" }}>
+                  {MONTHS[nowParts.month - 1]} {nowParts.year}
+                </button>
+                <div className="my-1 h-px bg-slate-100" />
+                <div className="grid grid-cols-1 max-h-56 overflow-y-auto">
+                  {MONTHS.map((nm, i) => (
+                    <button key={nm} type="button" onClick={() => { setMonth(i); setMonthPicker(false); }}
+                      className="w-full px-3.5 py-1.5 text-left text-[12px] hover:bg-slate-50 transition flex items-center justify-between"
+                      style={{ color: month === i ? "#2F8BF8" : "#475569", fontWeight: month === i ? 800 : 500 }}>
+                      {nm}
+                      <span className="flex items-center gap-1">
+                        <span onClick={(e) => { e.stopPropagation(); setYear((y) => Math.max(2020, y - 1)); }} className="px-1.5 text-slate-400">‹</span>
+                        <span className="text-[10px] text-slate-400">{year}</span>
+                        <span onClick={(e) => { e.stopPropagation(); setYear((y) => y + 1); }} className="px-1.5 text-slate-400">›</span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Kontainer scroll di dalam sheet */}
@@ -288,13 +321,13 @@ export default function EmployeeHistoryAll() {
           <span className="block rounded-full" style={{ width: 42, height: 5, background: "#E2E8F0" }} />
         </div>
 
-        <div className="px-4 pt-2" style={{ paddingBottom: 8 }}>
-          <p className="text-[10.5px] text-slate-400 font-semibold text-center">
-            {searchQ.trim()
-              ? `${filtered.length} hasil untuk "${searchQ.trim()}"`
-              : `Periode ${periodLabel}`}
-          </p>
-        </div>
+        {searchQ.trim() && (
+          <div className="px-4 pt-2" style={{ paddingBottom: 8 }}>
+            <p className="text-[10.5px] text-slate-400 font-semibold text-center">
+              {filtered.length} hasil untuk "{searchQ.trim()}"
+            </p>
+          </div>
+        )}
 
       {/* DAFTAR - full-width tanpa kartu, hanya garis pemisah (di dalam sheet) */}
       <div className="pb-8">
@@ -340,9 +373,11 @@ export default function EmployeeHistoryAll() {
                 ? `Tidak ada hasil untuk "${searchQ.trim()}"`
                 : `Tidak ada data ${filter === "Semua" ? "" : filter} di bulan ini`}
             </p>
-            <p className="text-[11.5px] text-slate-400 mt-1">
-              {searchQ.trim() ? "Coba kata kunci lain, mis. tanggal atau status." : `Periode ${periodLabel}`}
-            </p>
+            {searchQ.trim() && (
+              <p className="text-[11.5px] text-slate-400 mt-1">
+                Coba kata kunci lain, mis. tanggal atau status.
+              </p>
+            )}
           </div>
         ) : (
           <div>
