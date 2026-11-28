@@ -1257,6 +1257,19 @@ button:active,
   }
 }
 
+/* — Autofill Chrome/Safari: pertahankan latar kolom input putih —
+   Browser mengisi kolom tersimpan dengan latar biru muda (#E8F0FE);
+   box-shadow inset 1000px menimpanya tanpa mengubah warna teks. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: #0F172A;
+  -webkit-box-shadow: 0 0 0 1000px #FAFAFC inset;
+  caret-color: #0F172A;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════
    TOAST — Clean Solid (design: preview-notif-clean.html)
    ═══════════════════════════════════════════════════════════════════════

@@ -454,8 +454,10 @@ export default function SignInPage() {
         <div className="flex justify-center pt-2.5 pb-1 shrink-0 lg:hidden">
           <span className="block rounded-full" style={{ width: 42, height: 5, background: "#E2E8F0" }} />
         </div>
-        <div className="flex-1 min-h-0 overflow-y-auto px-5 sm:px-7 pb-6 lg:overflow-visible lg:px-14 lg:flex lg:flex-col lg:justify-center">
-          <div className="w-full lg:max-w-[400px] lg:mx-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 sm:px-7 pb-6 lg:overflow-visible lg:px-14 lg:flex lg:flex-col lg:justify-center lg:bg-[#F6F8FC]">
+          {/* CARD — desktop: form login & OTP dalam kartu di atas latar abu muda;
+              mobile tetap full-bleed di sheet putih */}
+          <div className="w-full lg:max-w-[440px] lg:mx-auto lg:p-9 lg:rounded-[26px] lg:bg-white lg:border lg:border-slate-100 lg:shadow-[0_24px_56px_-30px_rgba(15,23,42,0.28)]">
             {/* LOGIN STEP */}
             {step === "login" && (
               <>
