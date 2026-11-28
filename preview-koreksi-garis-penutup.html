@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="id" data-zcode-design>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — "Garis Penutup" di Riwayat Koreksi Dihapus</title>
+<style>
+  :root{
+    --ink:#0F172A; --muted:#64748B; --brand:#2F8BF8; --deep:#1F74E0;
+    --bg:#F4F2FB; --border:#E2E8F0; --textSec:#475569;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Urbanist',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(880px 420px at 8% -10%, #E6EFFF 0%, rgba(230,239,255,0) 62%), #EDF2F9;
+    padding:34px 20px 64px;min-height:100%;
+  }
+  .wrap{max-width:1120px;margin:0 auto;min-width:0}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#1E3A8A;background:#E0ECFF;border:1px solid #BFDBFE;border-radius:999px;padding:5px 12px}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 3px rgba(47,139,248,.18)}
+  h1{font-size:clamp(1.34rem,2.4vw,1.68rem);font-weight:800;letter-spacing:-.03em;line-height:1.35;margin-top:14px}
+  .lead{max-width:78ch;margin-top:10px;font-size:.94rem;line-height:1.7;color:#54657D}
+  .lead b{color:#1E2A3D}
+
+  .stage{display:flex;flex-wrap:wrap;gap:26px;margin-top:28px;align-items:flex-start}
+  .col{width:375px;max-width:100%}
+  .cap{font-size:14px;font-weight:800;color:#334155;text-align:center;margin-top:12px;line-height:1.5}
+  .cap span{color:#64748B;font-weight:600}
+
+  .phone{width:375px;max-width:100%;border-radius:34px;overflow:hidden;background:var(--bg);box-shadow:0 20px 50px -24px rgba(15,23,42,.4);border:1px solid rgba(15,23,42,.06);position:relative}
+  .appbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(135deg,#2F8BF8,#1F74E0)}
+  .appbar .title{font-size:17.5px;font-weight:800;color:#fff;text-align:center;flex:1}
+  .appbar .bk{width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,.14);display:grid;place-items:center;flex:none}
+  .appbar .bk svg{width:18px;height:18px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .appbar .sp{width:40px;flex:none}
+
+  /* rail koreksi — chip persis ukuran aplikasi (hasil audit piksel) */
+  .railzone{position:relative;margin:24px 0 16px}
+  .rail{display:flex;align-items:center;gap:7px;overflow:hidden;padding:2px 16px 4px}
+  .chip{flex:none;font-size:12px;font-weight:700;border-radius:999px;padding:8px 14px;background:#fff;border:1px solid var(--border);color:var(--textSec);white-space:nowrap}
+  .chip.on{background:var(--deep);border-color:var(--deep);color:#fff;box-shadow:0 6px 14px -5px rgba(47,139,248,.5)}
+  /* overlay fade AKTIF (penyebab garis penutup): right:0 pada wrapper inset 16px */
+  .fade{position:absolute;right:16px;top:2px;bottom:4px;width:32px;pointer-events:none;
+    background:linear-gradient(90deg, rgba(244,242,251,0) 0%, var(--bg) 85%)}
+  .cutnote{position:absolute;right:10px;top:-22px;font-size:12px;font-weight:800;color:#BE123C;line-height:1.4}
+  .chip5wrap{position:relative}
+  .empt{font-size:12px;text-align:center;padding:40px 0 56px;color:#475569;font-weight:600}
+
+  .notes{flex:1;min-width:300px;max-width:560px}
+  .notes .k{font-size:12.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#64748B}
+  .notes h2{font-size:1.08rem;font-weight:800;letter-spacing:-.02em;margin-top:8px;color:#0F172A;line-height:1.4}
+  .notes ul{list-style:none;margin-top:14px;display:grid;gap:11px}
+  .notes li{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;line-height:1.68;color:#4A5A70}
+  .notes li .n{width:21px;height:21px;border-radius:7px;background:#fff;border:1px solid #E2E8F0;display:grid;place-items:center;flex:none;font-size:12px;font-weight:800;color:#1E3A8A;margin-top:1px}
+  .notes li b{color:#0F172A}
+  .divider{height:1px;background:#E2E8F0;margin:18px 0}
+  .cmp{display:grid;gap:8px;margin-top:8px}
+  .cmp .r{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:7px 0;border-bottom:1px solid #EDF1F7;line-height:1.4}
+  .cmp .r span{color:#64748B;font-weight:700}
+  .cmp .r b{font-weight:800;color:#0F172A}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow"><span class="dot"></span>Preview · Riwayat Koreksi</span>
+  <h1>"Garis Penutup" di Tengah Chip Dihapus</h1>
+  <p class="lead">
+    Penyebabnya <b>overlay fade berwarna latar</b> (32px, tepi kanan wrapper) yang menimpa kiri
+    chip "Ditarik" saat rail bisa digulung — tampak seperti garis penutup. Detail di panel kanan.
+  </p>
+
+  <div class="stage">
+    <div class="col">
+      <div class="phone">
+        <div class="appbar">
+          <span class="bk"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></span>
+          <span class="title">Riwayat Koreksi</span>
+          <span class="sp"></span>
+        </div>
+        <div class="railzone">
+          <div class="cutnote">← overlay fade menutup chip (dulu)</div>
+          <div class="rail">
+            <span class="chip on">Semua</span><span class="chip">Diproses</span><span class="chip">Disetujui</span><span class="chip">Ditolak</span><span class="chip5wrap"><span class="chip">Ditarik</span><span class="fade"></span></span>
+          </div>
+        </div>
+        <div class="empt">Belum ada pengajuan.</div>
+      </div>
+      <p class="cap">DULU — <span>overlay fade (warna latar) menimpa kiri chip "Ditarik" → garis lurus seolah chip terpotong</span></p>
+    </div>
+
+    <div class="col">
+      <div class="phone">
+        <div class="appbar">
+          <span class="bk"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></span>
+          <span class="title">Riwayat Koreksi</span>
+          <span class="sp"></span>
+        </div>
+        <div class="railzone">
+          <div class="rail" style="overflow-x:auto">
+            <span class="chip on">Semua</span><span class="chip">Diproses</span><span class="chip">Disetujui</span><span class="chip">Ditolak</span><span class="chip">Ditarik</span>
+          </div>
+        </div>
+        <div class="empt">Belum ada pengajuan.</div>
+      </div>
+      <p class="cap">SEKARANG — <span>tanpa overlay: chip "Ditarik" mulai dengan cap bulat dan menerus ke tepi layar; geser rail untuk melihat penuh</span></p>
+    </div>
+
+    <aside class="notes">
+      <div class="k">Akar masalah</div>
+      <h2>Overlay fade yang "ikut pindah" tidak sempurna</h2>
+      <ul>
+        <li><span class="n">1</span><span><b>Desain lama.</b> Dulu rail berhenti 16px sebelum tepi layar, dan overlay fade tepat di tepi rail itu — menandai "masih ada chip yang bisa digulung".</span></li>
+        <li><span class="n">2</span><span><b>Rail jadi full-bleed, overlay tidak pindah.</b> Rail kini menerus sampai tepi layar, tapi overlay masih menempel di tepi wrapper (16px sebelum tepi layar) — jatuh di <b>tengah chip terakhir</b>.</span></li>
+        <li><span class="n">3</span><span><b>Warnanya sama dengan latar.</b> Overlay memudar ke warna latar halaman, jadi bagian chip yang ditimpanya "menghilang" — tinggal garis lurus + potongan teks "Dit".</span></li>
+        <li><span class="n">4</span><span><b>Dihapus total.</b> Sama seperti keputusan di Riwayat Absensi: tanpa overlay — chip menerus ke tepi layar ala referensi; scroll-snap dan auto-scroll chip aktif tetap berfungsi.</span></li>
+      </ul>
+
+      <div class="divider"></div>
+      <div class="k">Perbandingan</div>
+      <div class="cmp">
+        <div class="r"><span>Penyebab</span><b>Overlay fade 32px tepat di tengah chip terakhir</b></div>
+        <div class="r"><span>Sekarang</span><b>Tanpa overlay — cap bulat chip terlihat utuh</b></div>
+        <div class="r"><span>Scroll</span><b>Tetap bisa digulung, chip terakhir terlihat penuh</b></div>
+        <div class="r"><span>Riwayat Lembur</span><b>Sudah dibersihkan di commit sebelumnya</b></div>
+      </div>
+    </aside>
+  </div>
+</div>
+</body>
+</html>

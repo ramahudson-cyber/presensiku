@@ -205,20 +205,18 @@ export default function SanggahPage() {
 
   const { pullDistance, isRefreshing } = usePullToRefresh(load);
 
-  // Chips filter: fade tepi hanya tampil bila rail bisa digulir,
-  // dan chip aktif otomatis digulir ke posisi terlihat (anti terpotong).
+  // Chips filter: snap hanya bila rail bisa digulir; chip aktif otomatis
+  // digulir ke posisi terlihat. Fade overlay dihapus — saat rail full-bleed,
+  // overlay (right:0 pada wrapper yang inset 16px) justru jadi "garis penutup"
+  // di tengah chip terakhir.
   const chipsRef = useRef(null);
-  const fadeRef = useRef(null);
   const activeChipRef = useRef(null);
 
   useEffect(() => {
     const rail = chipsRef.current;
-    const fade = fadeRef.current;
-    if (!rail || !fade) return undefined;
+    if (!rail) return undefined;
     const sync = () => {
-      const over = rail.scrollWidth > rail.clientWidth + 1;
-      fade.style.display = over ? "block" : "none";
-      rail.style.scrollSnapType = over ? "x proximity" : "none";
+      rail.style.scrollSnapType = rail.scrollWidth > rail.clientWidth + 1 ? "x proximity" : "none";
     };
     sync();
     if (typeof ResizeObserver === "undefined") return undefined;
@@ -511,11 +509,6 @@ export default function SanggahPage() {
                 );
               })}
             </div>
-            <div ref={fadeRef} className="pointer-events-none absolute"
-              style={{
-                display: "none", right: 0, top: 16, bottom: 4, width: 32,
-                background: "linear-gradient(90deg, rgba(244,242,251,0) 0%, #F4F2FB 85%)",
-              }} />
           </div>
 
           {/* ── Daftar riwayat ── */}
