@@ -57,7 +57,10 @@ export default function OvertimeHistoryPage() {
         <LightAppBar title="Riwayat Lembur" onBack={() => navigate("/employee/overtime")} />
 
         <div className="px-4">
-          <div className="flex items-center gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+          {/* Rail full-bleed: tepi scroll = tepi layar, chip menerus keluar tepi
+              (ala referensi), padding tetap di dalam scroll */}
+          <div className="no-scrollbar flex items-center gap-2 overflow-x-auto pb-1 -mx-4 pl-4 pr-6"
+            style={{ scrollSnapType: "x proximity", scrollPaddingLeft: 16 }}>
             {FILTERS.map((f) => {
               const active = filter === f.key;
               return (
@@ -65,6 +68,7 @@ export default function OvertimeHistoryPage() {
                   className="active:scale-[0.98] transition"
                   style={{
                     flexShrink: 0, padding: "9px 16px", borderRadius: 999, cursor: "pointer",
+                    scrollSnapAlign: "start",
                     border: active ? "none" : `1px solid ${OT.border}`,
                     background: active ? OT.brand : "#fff",
                     color: active ? "#fff" : OT.textSec,

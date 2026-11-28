@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="id" data-zcode-design>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — Aturan Pill Full-Bleed: Riwayat Lembur &amp; Koreksi</title>
+<style>
+  :root{
+    --ink:#0F172A; --sec:#475569; --muted:#64748B;
+    --brand:#2F8BF8; --deep:#1F74E0; --bad:#E11D48; --ok:#10B981;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Urbanist',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:
+      radial-gradient(880px 420px at 8% -10%, #E6EFFF 0%, rgba(230,239,255,0) 62%),
+      #EDF2F9;
+    padding:34px 20px 64px;min-height:100%;
+  }
+  .wrap{max-width:1120px;margin:0 auto;min-width:0}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#1E3A8A;background:#E0ECFF;border:1px solid #BFDBFE;border-radius:999px;padding:5px 12px}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 3px rgba(47,139,248,.18)}
+  h1{font-size:clamp(1.34rem,2.4vw,1.68rem);font-weight:800;letter-spacing:-.03em;line-height:1.35;margin-top:14px}
+  .lead{max-width:76ch;margin-top:10px;font-size:.94rem;line-height:1.7;color:#54657D}
+  .lead b{color:#1E2A3D}
+
+  .stage{display:flex;flex-wrap:wrap;gap:26px;margin-top:28px;align-items:flex-start}
+  .col{width:375px;max-width:100%}
+  .cap{font-size:14px;font-weight:800;color:#334155;text-align:center;margin-top:12px;line-height:1.5}
+  .cap span{color:#64748B;font-weight:600}
+
+  .phone{width:375px;max-width:100%;border-radius:34px;overflow:hidden;background:#F4F3FB;box-shadow:0 20px 50px -24px rgba(15,23,42,.4);border:1px solid rgba(15,23,42,.06);position:relative}
+  .appbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
+  .appbar .title{font-size:17.5px;font-weight:800;color:#0F172A;text-align:center;flex:1}
+  .appbar .bk{width:40px;height:40px;border-radius:50%;background:#fff;border:1px solid #E2E8F0;display:grid;place-items:center;flex:none}
+  .appbar .bk svg{width:18px;height:18px;stroke:#0F172A;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .appbar .sp{width:40px;flex:none}
+
+  /* rail lembur */
+  .railwrap{position:relative;padding:0 16px}
+  .railwrap.bleed{padding:0;margin:0 -16px}
+  .rail{display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 24px 4px 16px}
+  .railwrap.bleed .rail{padding:2px 24px 4px 16px}
+  .railwrap:not(.bleed) .rail{padding:2px 0 4px}
+  .rail::-webkit-scrollbar{display:none}
+  .chip{flex:none;scroll-snap-align:start;font-size:12px;font-weight:700;border-radius:999px;padding:9px 16px;background:#fff;border:1px solid #E2E8F0;color:#475569;white-space:nowrap}
+  .chip.on{background:var(--deep);border-color:var(--deep);color:#fff}
+  .cutline{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed var(--bad);z-index:5;left:343px}
+
+  .meta{display:flex;align-items:center;justify-content:space-between;margin:16px 16px 10px}
+  .meta .cnt{font-size:13px;font-weight:800;color:#0F172A}
+  .meta .mm{font-size:12.5px;font-weight:800;color:#1B66CC}
+  .card{margin:0 16px 10px;background:#fff;border:1px solid #E2E8F0;border-radius:14px;display:flex;align-items:center;gap:12px;padding:12px 14px}
+  .card .dd{width:44px;text-align:center;line-height:1.15;flex:none}
+  .card .dd b{display:block;font-size:18px;font-weight:800;color:#1E293B}
+  .card .dd span{display:block;font-size:12px;font-weight:700;color:#64748B}
+  .card .bd{flex:1;min-width:0}
+  .card .t{display:block;font-size:13.5px;font-weight:800;color:#0F172A;letter-spacing:-.01em}
+  .card .d{display:block;font-size:12px;font-weight:600;color:#64748B;margin-top:2px}
+  .card .st{flex:none;font-size:12px;font-weight:800;border-radius:999px;padding:5px 12px;background:#D1FAE5;color:#065F46}
+
+  .notes{flex:1;min-width:300px;max-width:560px}
+  .notes .k{font-size:12.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#64748B}
+  .notes h2{font-size:1.08rem;font-weight:800;letter-spacing:-.02em;margin-top:8px;color:#0F172A;line-height:1.4}
+  .notes ul{list-style:none;margin-top:14px;display:grid;gap:11px}
+  .notes li{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;line-height:1.68;color:#4A5A70}
+  .notes li .n{width:21px;height:21px;border-radius:7px;background:#fff;border:1px solid #E2E8F0;display:grid;place-items:center;flex:none;font-size:12px;font-weight:800;color:#1E3A8A;margin-top:1px}
+  .notes li b{color:#0F172A}
+  .divider{height:1px;background:#E2E8F0;margin:18px 0}
+  .cmp{display:grid;gap:8px;margin-top:8px}
+  .cmp .r{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:7px 0;border-bottom:1px solid #EDF1F7;line-height:1.4}
+  .cmp .r span{color:#64748B;font-weight:700}
+  .cmp .r b{font-weight:800;color:#0F172A}
+  .badge-ok{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:#0F172A}
+  .badge-ok svg{width:13px;height:13px;stroke:#0F172A;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow"><span class="dot"></span>Preview · Riwayat Lembur &amp; Koreksi</span>
+  <h1>Aturan Pill Full-Bleed Diterapkan ke Dua Halaman</h1>
+  <p class="lead">
+    Aturan yang sudah disetujui di Riwayat Absensi (rail penuh sampai tepi layar, scroll tetap ada)
+    diterapkan ke <b>Riwayat Lembur</b>. Untuk <b>Riwayat Koreksi</b>, hasil audit piksel membuktikan
+    aturan itu <b>sudah aktif</b> — permukaan chip "Ditarik" tercatat putih sampai piksel terakhir layar (x=749/750).
+  </p>
+
+  <div class="stage">
+    <div class="col">
+      <div class="phone">
+        <div class="appbar">
+          <span class="bk"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></span>
+          <span class="title">Riwayat Lembur</span>
+          <span class="sp"></span>
+        </div>
+        <div class="railwrap">
+          <div class="rail">
+            <span class="chip on">Semua</span><span class="chip">Disetujui</span><span class="chip">Menunggu</span><span class="chip">Ditolak</span>
+          </div>
+          <div class="cutline"></div>
+        </div>
+        <div class="meta"><span class="cnt">1 pengajuan</span><span class="mm">November 2026 ⌄</span></div>
+        <div class="card">
+          <span class="dd"><b>29</b><span>Nov</span></span>
+          <span class="bd"><span class="t">EVENT DADAKAN</span><span class="d">08:00 – 20:00 (12 jam)</span></span>
+          <span class="st">Disetujui</span>
+        </div>
+      </div>
+      <p class="cap">LEMBUR — DULU: <span>chip "Ditolak" dipotong, ada celah 30px sebelum tepi layar</span></p>
+    </div>
+
+    <div class="col">
+      <div class="phone">
+        <div class="appbar">
+          <span class="bk"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></span>
+          <span class="title">Riwayat Lembur</span>
+          <span class="sp"></span>
+        </div>
+        <div class="railwrap bleed">
+          <div class="rail">
+            <span class="chip on">Semua</span><span class="chip">Disetujui</span><span class="chip">Menunggu</span><span class="chip">Ditolak</span>
+          </div>
+        </div>
+        <div class="meta"><span class="cnt">1 pengajuan</span><span class="mm">November 2026 ⌄</span></div>
+        <div class="card">
+          <span class="dd"><b>29</b><span>Nov</span></span>
+          <span class="bd"><span class="t">EVENT DADAKAN</span><span class="d">08:00 – 20:00 (12 jam)</span></span>
+          <span class="st">Disetujui</span>
+        </div>
+      </div>
+      <p class="cap">LEMBUR — SEKARANG: <span>chip menerus sampai tepi layar ala referensi; scroll tetap bisa digeser</span></p>
+    </div>
+
+    <aside class="notes">
+      <div class="k">Audit</div>
+      <h2>Satu halaman diperbaiki, satu halaman sudah benar</h2>
+      <ul>
+        <li><span class="n">1</span><span><b>Riwayat Lembur — diperbaiki.</b> Audit piksel menemukan chip putih berhenti di x=718/750 dengan celah background 30px sebelum tepi layar — dipotong di garis tak terlihat. Rail kini full-bleed dengan padding di dalam scroll, plus scroll-snap seperti Riwayat Absensi.</span></li>
+        <li><span class="n">2</span><span><b>Riwayat Koreksi — sudah menerapkan aturan.</b> Permukaan chip "Ditarik" tercatat sampai piksel terakhir (x=749/750 putih). Yang terlihat "terpotong" adalah fragmen chip yang baru masuk viewport — perilaku yang sama dengan referensi (pill "Ar" di aplikasi salad).</span></li>
+        <li><span class="n">3</span><span><b>Scroll tetap ada di semua halaman.</b> Ukuran chip tidak diubah; geser rail untuk melihat chip terakhir sampai habis.</span></li>
+        <li><span class="n">4</span><span><b>Satu aturan untuk semua rail chip.</b> Riwayat Absensi, Lembur, dan Koreksi kini identik: tepi potong = tepi layar, chip pertama rata 16px dengan konten.</span></li>
+      </ul>
+
+      <div class="divider"></div>
+      <div class="k">Perbandingan</div>
+      <div class="cmp">
+        <div class="r"><span>Lembur — pembatas dulu</span><b>Garis potong 16px sebelum tepi layar</b></div>
+        <div class="r"><span>Lembur — sekarang</span><b>Full-bleed sampai tepi layar</b></div>
+        <div class="r"><span>Koreksi</span><b><span class="badge-ok"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Sudah full-bleed (audit piksel)</span></b></div>
+        <div class="r"><span>Scroll</span><b>Tetap berfungsi di semua halaman</b></div>
+      </div>
+    </aside>
+  </div>
+</div>
+</body>
+</html>
