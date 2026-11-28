@@ -11,6 +11,7 @@ import usePullToRefresh from "../../hooks/usePullToRefresh";
 import PullToRefreshIndicator from "../../components/PullToRefreshIndicator";
 import { MonthMenu, monthOptions, currentMonthKey } from "./overtime/overtimeUi";
 import Skeleton from "../../components/Skeleton";
+import { Search } from "lucide-react";
 
 /**
  * Halaman "Riwayat Absensi" lengkap — dibuka dari tombol "Lihat Semua"
@@ -82,6 +83,7 @@ export default function EmployeeHistoryAll() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("Semua");
+  const [searchQ, setSearchQ] = useState("");
   const [detail, setDetail] = useState(null);
 
   const periodLabel = `${MONTHS[month]} ${year}`;
@@ -211,31 +213,39 @@ export default function EmployeeHistoryAll() {
   }, [history, schedList, shiftDefs]);
 
   const filtered = useMemo(() => {
-    if (filter === "Semua") return rows;
     const map = { Hadir: ["hadir", "terlambat"], Izin: ["izin"], Sakit: ["sakit"], Alpha: ["alpha"] };
     const keys = map[filter] || [];
-    return rows.filter((r) => keys.includes(r.key2));
-  }, [rows, filter]);
+    const q = searchQ.trim().toLowerCase();
+    return rows.filter((r) => {
+      if (filter !== "Semua" && !keys.includes(r.key2)) return false;
+      if (!q) return true;
+      // Cari fleksibel: tanggal (27, 22 nov), status, badge, jam, atau shift — satu kolom untuk semuanya
+      return `${r.date} ${r.dayShort} ${r.dateNum} ${r.monthShort} ${r.label} ${r.badge} ${r.key2} ${r.time} ${r.shift}`
+        .toLowerCase()
+        .includes(q);
+    });
+  }, [rows, filter, searchQ]);
 
   return (
     <div className="min-h-screen w-full absolute top-0 left-0 right-0 flex flex-col" style={{ background: "#FFFFFF" }}>
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
-      {/* HEADER - bersih: tanpa gelombang, tanpa radius, tanpa panah */}
+      {/* HEADER — biru: judul, search, dan filter chip di dalamnya */}
       <header
-        className="relative shrink-0 px-4 text-white"
+        className="relative shrink-0 z-10 px-4 text-white"
         style={{
           background: "linear-gradient(155deg, #2F8BF8 0%, #3F93FD 55%, #4A7CFB 100%)",
           paddingTop: "calc(env(safe-area-inset-top, 0px) + 16px)",
-          paddingBottom: 20,
+          paddingBottom: 46,
         }}
       >
         <div className="relative flex items-center justify-between">
           <button type="button" onClick={() => navigate(-1)} aria-label="Kembali"
-            className="w-10 h-10 active:scale-95 transition flex items-center justify-center"
-            style={{ background: "none", border: "none", color: "#fff", cursor: "pointer" }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 19l-7-7 7-7" />
+            className="w-10 h-10 rounded-full bg-white shadow-md active:scale-95 transition flex items-center justify-center"
+            style={{ border: "none", cursor: "pointer" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F8BF8" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5" />
+              <path d="M12 19l-7-7 7-7" />
             </svg>
           </button>
 
@@ -246,27 +256,30 @@ export default function EmployeeHistoryAll() {
           <span className="w-10 shrink-0" />
         </div>
 
-      </header>
-
-      {/* PERIODE + FILTER PILL */}
-      <div className="shrink-0">
-        <div className="flex justify-end px-4 pt-3.5">
-          <MonthMenu value={monthKey} onChange={setMonthKey}
-            options={monthOptions(rows, currentMonthKey())} tone="soft" />
+        {/* SEARCH — di dalam header, selalu terlihat */}
+        <div className="relative mt-4">
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQ}
+            onChange={(e) => setSearchQ(e.target.value)}
+            placeholder="Cari tanggal atau status…"
+            className="w-full rounded-[16px] bg-white pl-10 pr-3.5 py-2.5 text-[13.5px] font-semibold text-slate-800 placeholder:text-slate-400 outline-none shadow-[0_8px_20px_-10px_rgba(15,23,42,.35)]"
+          />
         </div>
 
-        <div className="relative">
-          <div ref={chipsRef} className="flex items-center gap-1.5 overflow-x-auto pt-3 pb-2 px-4"
+        {/* FILTER CHIP — di dalam header, di bawah search */}
+        <div className="relative mt-3">
+          <div ref={chipsRef} className="flex items-center gap-2 overflow-x-auto pb-1"
             style={{ scrollbarWidth: "none", scrollSnapType: "x proximity", scrollPaddingLeft: 16 }}>
             {FILTERS.map((f) => (
               <button key={f} type="button" onClick={() => setFilter(f)}
                 ref={f === filter ? activeChipRef : undefined}
-                className="shrink-0 px-3.5 py-2 rounded-full text-[12px] font-semibold transition active:scale-[0.97]"
+                className="shrink-0 px-4 py-2 rounded-full text-[12.5px] font-bold transition active:scale-[0.97]"
                 style={{
                   scrollSnapAlign: "start",
-                  background: filter === f ? "#2F8BF8" : "#E9EEF7",
-                  color: filter === f ? "#FFFFFF" : "#334155",
-                  fontWeight: filter === f ? 700 : 600,
+                  background: filter === f ? "#FFFFFF" : "rgba(255,255,255,0.16)",
+                  color: filter === f ? "#1F74E0" : "#FFFFFF",
                 }}>
                 {f}
               </button>
@@ -274,9 +287,29 @@ export default function EmployeeHistoryAll() {
           </div>
           <div ref={fadeRef} className="pointer-events-none absolute"
             style={{
-              display: "none", right: 0, top: 12, bottom: 8, width: 32,
-              background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, #FFFFFF 85%)",
+              display: "none", right: 0, top: 8, bottom: 0, width: 34,
+              background: "linear-gradient(90deg, rgba(63,147,253,0) 0%, #3F93FD 85%)",
             }} />
+        </div>
+      </header>
+
+      {/* SHEET PUTIH — menimpa bawah header; pill bulan di tengah garis atas */}
+      <div className="relative flex-1 min-h-0 z-10 bg-white -mt-6 rounded-t-[28px] shadow-[0_-10px_34px_rgba(15,23,42,0.14)]">
+        <div className="absolute left-0 right-0 flex justify-center" style={{ top: -17, zIndex: 20 }}>
+          <MonthMenu value={monthKey} onChange={setMonthKey}
+            options={monthOptions(rows, currentMonthKey())} tone="soft" />
+        </div>
+
+        <div className="flex justify-center pt-3.5 pb-1">
+          <span className="block rounded-full" style={{ width: 42, height: 5, background: "#E2E8F0" }} />
+        </div>
+
+        <div className="px-4 pt-2" style={{ paddingBottom: 8 }}>
+          <p className="text-[10.5px] text-slate-400 font-semibold text-center">
+            {searchQ.trim()
+              ? `${filtered.length} hasil untuk "${searchQ.trim()}"`
+              : `Periode ${periodLabel}`}
+          </p>
         </div>
       </div>
 
@@ -319,8 +352,14 @@ export default function EmployeeHistoryAll() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center py-16 px-6 text-center">
-            <p className="text-sm font-bold text-slate-800">Tidak ada data {filter === "Semua" ? "" : filter} di bulan ini</p>
-            <p className="text-[11.5px] text-slate-400 mt-1">Periode {periodLabel}</p>
+            <p className="text-sm font-bold text-slate-800">
+              {searchQ.trim()
+                ? `Tidak ada hasil untuk "${searchQ.trim()}"`
+                : `Tidak ada data ${filter === "Semua" ? "" : filter} di bulan ini`}
+            </p>
+            <p className="text-[11.5px] text-slate-400 mt-1">
+              {searchQ.trim() ? "Coba kata kunci lain, mis. tanggal atau status." : `Periode ${periodLabel}`}
+            </p>
           </div>
         ) : (
           <div>
